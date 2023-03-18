@@ -1,23 +1,35 @@
-from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.utils import timezone
-from django.contrib.auth.models import User
-import requests, json
+from users.models import Vcode
+from requests.sessions import Session
+from requests.adapters import HTTPAdapter
+import json
 
 #
-# Main functions
+# Cron functions
 #
 
 
 def update_dmd_cookie(request):
-    if "23:59" < timezone.now().strftime("%H:%M") < "00:01":
-        response = requests.get("https://dgufilm.link/get-dmd-cookie")
+    with Session() as session:
+        session.mount("https://", HTTPAdapter(max_retries=3))
+        response = session.get("https://dgufilm.link/get-dmd-cookie")
         cookie = response.text.rstrip()
-        if "WMONID" in cookie:
-            with open("secrets.json", "r+") as f:
-                data = json.load(f)
-                data["DMD_COOKIE"] = cookie
-                f.seek(0)
-                f.write(json.dumps(data, indent=4))
-                f.truncate()
-    return HttpResponse(status=200)
+
+    if "WMONID" in cookie:
+        with open("secrets.json", "r+") as f:
+            data = json.load(f)
+            data["DMD_COOKIE"] = cookie
+            f.seek(0)
+            f.write(json.dumps(data, indent=4))
+            f.truncate()
+
+    return HttpResponse(f"dmd-cookie: {cookie}")
+
+
+def delete_expired_vcodes(request):
+    expired_vcodes = Vcode.objects.filter(will_expire_on__lt=timezone.now())
+    count = expired_vcodes.count()
+    if count > 0:
+        expired_vcodes.delete()
+    return HttpResponse(f"Number of deleted verification codes: {count}")

@@ -18,13 +18,40 @@ DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
+# Cron functions
+#
+
+
+def delete_inactive_users(request):
+    inactive_users = User.objects.filter(
+        last_login__lt=timezone.now() - timezone.timedelta(days=30)
+    )
+    count = inactive_users.count()
+    if count > 0:
+        for i in range(count):
+            student_id = inactive_users[i].username
+            email = inactive_users[i].email
+            data = {
+                "type": "ADL",
+                "email": email,
+                "content": {
+                    "student_id": student_id,
+                    "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
+                },
+            }
+            send_mail(data)
+        inactive_users.delete()
+    return HttpResponse(f"Number of deleted users: {count}")
+
+
+#
 # Sub functions
 #
 
 
 def is_valid_student(student_id, name):
     """
-    This function relies on the 'Find Student ID' function of Dongguk University's mDRIMS.
+    This function relies on the 'Find Student ID' feature of Dongguk University's mDRIMS.
     """
 
     headers["Cookie"] = DMD_COOKIE
