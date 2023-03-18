@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<meta property="og:url" content="{% url 'home:home' %}">
+<!-- <meta name="robots" content="index,follow"> -->
+{% endblock %}
+
+{% block title %}디닷에프{% endblock %}
+
+{% block body %}
+<!-- Hero -->
+<div class="relative sm:pt-6 lg:pt-8">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="relative shadow-xl sm:rounded-2xl overflow-hidden">
+            <div class="absolute inset-0">
+                <div class="mix-blend-multiply w-full h-full">
+
+                    <!-- Swiper -->
+                    <div class="swiper mySwiper w-full h-full">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img class="object-cover w-full h-full"
+                                    src="https://source.unsplash.com/random/1280×600/?video-editing" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="object-cover w-full h-full"
+                                    src="https://source.unsplash.com/random/1280×600/?camera-lens" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="object-cover w-full h-full"
+                                    src="https://source.unsplash.com/random/1280×600/?film-gear" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="object-cover w-full h-full"
+                                    src="https://source.unsplash.com/random/1280×600/?camera-gear" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img class="object-cover w-full h-full"
+                                    src="https://source.unsplash.com/random/1280×600/?video-camera" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
+            </div>
+            <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                <h1 class="text-center text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+                    <span class="text-white" id="introMessage"></span>
+                    <span class="text-white" id="emoji" aria-hidden="true"></span>
+                </h1>
+                <p
+                    class="mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                    동국대학교 영화영상학과 올인원 플랫폼 <span class="font-semibold">디닷에프</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weather -->
+<div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between gap-1">
+        <div class="flex gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                class="w-6 h-6 text-gray-500" aria-hidden="true">
+                <path fill-rule="evenodd"
+                    d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+                    clip-rule="evenodd" />
+            </svg>
+            <div class="animate-pulse mt-0.5 h-5 w-60 bg-gray-200 rounded"></div>
+            <h3 class="pulse-off cursor-pointer text-lg font-medium leading-6 text-gray-600 hover:text-gray-900 hidden"
+                id="address">-</h3>
+        </div>
+        <a href="https://www.weather.go.kr/w/weather/forecast/short-term.do" target="_blank"
+            class="ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500">
+            기상청
+            <span aria-hidden="true"> ↗</span>
+        </a>
+    </div>
+    <dl class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">기온, 하늘상태</dt>
+            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+                <div class="h-6 bg-gray-200 rounded col-span-5"></div>
+                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+            </div>
+            <dd class="pulse-off mt-1 text-3xl font-semibold tracking-tight text-gray-900 hidden">
+                <span id="temperature">-.-</span>℃<span class="text-sm sm:text-base text-gray-500">(<span
+                        id="temperatureMax">-</span>℃/<span id="temperatureMin">-</span>℃)</span>,
+                <span id="skyState">-</span>
+            </dd>
+        </div>
+
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">일출시각, 일몰시각</dt>
+            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+            </div>
+            <dd class="pulse-off mt-1 text-3xl font-semibold tracking-tight text-gray-900 hidden">
+                <span id="sunrise">--:--</span>,
+                <span id="sunset">--:--</span>
+            </dd>
+        </div>
+
+        <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500">풍속, 강수확률</dt>
+            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+                <div class="h-6 bg-gray-200 rounded col-span-5"></div>
+                <div class="h-6 bg-gray-200 rounded col-span-4"></div>
+            </div>
+            <dd class="pulse-off mt-1 text-3xl font-semibold tracking-tight text-gray-900 hidden">
+                <span id="windSpeed">-.-</span>m/s<span class="text-sm sm:text-base text-gray-500">(<span
+                        id="windName">-</span>)</span>,
+                <span id="precipitationProbability">-</span>%<span class="text-sm sm:text-base text-gray-500">(<span
+                        id="precipitationType">-</span>)</span>
+            </dd>
+        </div>
+    </dl>
+    <div class="animate-pulse mt-3 flex justify-end">
+        <div class="h-[20px] w-36 justify-self-end bg-gray-200 rounded"></div>
+    </div>
+    <p class="pulse-off mt-3 text-sm text-right text-gray-400 hidden"><span id="baseDateTime">0000-00-00 --:--</span> 발표
+    </p>
+</div>
+
+<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
+
+        <!-- DF link -->
+        <div>
+            <div class="flex gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    class="w-6 h-6 text-gray-500" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M19.902 4.098a3.75 3.75 0 00-5.304 0l-4.5 4.5a3.75 3.75 0 001.035 6.037.75.75 0 01-.646 1.353 5.25 5.25 0 01-1.449-8.45l4.5-4.5a5.25 5.25 0 117.424 7.424l-1.757 1.757a.75.75 0 11-1.06-1.06l1.757-1.757a3.75 3.75 0 000-5.304zm-7.389 4.267a.75.75 0 011-.353 5.25 5.25 0 011.449 8.45l-4.5 4.5a5.25 5.25 0 11-7.424-7.424l1.757-1.757a.75.75 0 111.06 1.06l-1.757 1.757a3.75 3.75 0 105.304 5.304l4.5-4.5a3.75 3.75 0 00-1.035-6.037.75.75 0 01-.354-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                <a href="#">
+                    <h3 class="text-lg font-medium leading-6 text-gray-600">동영링크</h3>
+                </a>
+            </div>
+            <div class="mt-5 overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <div class="flow-root">
+                    <ul role="list" class="-my-5 divide-y divide-gray-200">
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://images.unsplash.com/photo-1638439430466-b2bb7fdc1d67?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1065&q=80"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/닭다리시나리오</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-21 만료 | &lt;닭다리가 작아요!&gt; 시나리오</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://images.unsplash.com/photo-1613758235256-43a7bdc21d82?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/국내산소품</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-24 만료 | &lt;국내산 햅쌀&gt; 소품리스트</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://images.unsplash.com/photo-1639843606783-b2f9c50a7468?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1973&q=80"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/korbean</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-14 만료 | &lt;황성주 박사의 국산콩 두유&gt;
+                                        가편집본</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1974&q=80"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/giftbox</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-15 만료 | &lt;선물세트&gt; 비대면 오디션</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://www.dongguk.edu/resources/images/site/layout/logo-small.png"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/개강총회</p>
+                                    <p class="truncate text-sm text-gray-500">2023-03-01 만료 | 2023학년도 1학기 개강총회</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0">
+                                    <img class="h-8 w-8 rounded-full"
+                                        src="https://www.dongguk.edu/resources/images/site/layout/logo-small.png"
+                                        alt="">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">dongguk.film/2023capstone</p>
+                                    <p class="truncate text-sm text-gray-500">2023-11-30 만료 | 2023학년도 캡스톤디자인 사업안내</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">열기<span
+                                            aria-hidden="true">&nbsp;↗</span></a>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice -->
+        <div>
+            <div class="flex gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    class="w-6 h-6 text-gray-500" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z"
+                        clip-rule="evenodd" />
+                </svg>
+                <a href="#">
+                    <h3 class="text-lg font-medium leading-6 text-gray-600">공지사항</h3>
+                </a>
+            </div>
+            <div class="mt-5 overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                <div class="flow-root">
+                    <ul role="list" class="-my-5 divide-y divide-gray-200">
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">디닷에프 이용방법 안내</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-07 | 송요민</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">기재실 방학기간 점검 안내</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-01 | 홍길동</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">2023 동국영화제 프로그램북 안내</p>
+                                    <p class="truncate text-sm text-gray-500">2023-02-01 | 콩순이</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">2023학년도 1학기 학년대표 등록 결과</p>
+                                    <p class="truncate text-sm text-gray-500">2023-01-31 | 콩순이</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">경남 소재 밀양영화고등학교 영화교사 채용</p>
+                                    <p class="truncate text-sm text-gray-500">2023-01-30 | 박막례</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-medium text-gray-900">아마스빈 2월 제휴 안내</p>
+                                    <p class="truncate text-sm text-gray-500">2023-01-27 | 콩순이</p>
+                                </div>
+                                <div>
+                                    <a href="#"
+                                        class="inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-sm font-medium leading-5 text-gray-700 shadow-sm hover:bg-gray-50">더
+                                        보기</a>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <p class="mt-3 text-sm text-right text-gray-500"><span></span></p>
+</div>
+
+<script src="{% static 'js/swiper.js' %}"></script>
+<script src="{% static 'js/random-string.js' %}"></script>
+<script src="{% static 'js/location.js' %}"></script>
+{% endblock %}

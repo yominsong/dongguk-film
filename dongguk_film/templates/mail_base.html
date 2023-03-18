@@ -1,0 +1,50 @@
+{% load static %}
+<div
+    style="box-sizing: border-box; font-family: Apple SD Gothic Neo, Noto Sans KR, Nanum Gothic, Malgun Gothic, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <a href="https://dongguk.film" target="_blank">
+        <img src="https://dongguk.film/static/images/d_dot_f_logo_no_padding.png" alt="디닷에프 로고" style="height: 35px;"
+            loading="lazy">
+    </a>
+    <h1 style="margin: 22px 0 22px; color: #CE400D; font-size: 22px; line-height: 28px; letter-spacing: -0.27px;">
+        {{ title }}</h1>
+    <div style="margin: 22px 0 22px; color: #6b7280;">
+        {% if introduction %}
+        <p
+            style="margin-block-start: 0; margin-block-end: 0; margin-inline-start: 0; margin-inline-end: 0; line-height: 1.47; letter-spacing: -0.22px; font-size: 15px;">
+            {{ introduction }}
+        </p>
+        {% endif %}
+        {% if body %}
+        <p
+            style="margin-block-start: 0; margin-block-end: 0; margin-inline-start: 0; margin-inline-end: 0; line-height: 1.47; letter-spacing: -0.22px; font-size: 15px;">
+            {{ body }}
+        </p>
+        {% endif %}
+        {% if highlighted %}
+        <div
+            style="box-sizing: border-box; background-color: #F8F8F8; border-radius: 2px; margin: 22px 0 22px; padding: 14px;">
+            <p
+                style="margin-block-start: 0; margin-block-end: 0; margin-inline-start: 0; margin-inline-end: 0; line-height: 1.47; letter-spacing: -0.22px; font-size: 24px; text-align: center;">
+                {{ highlighted }}
+            </p>
+        </div>
+        {% endif %}
+        {% if conclusion %}
+        <p
+            style="margin-block-start: 0; margin-block-end: 0; margin-inline-start: 0; margin-inline-end: 0; line-height: 1.47; letter-spacing: -0.22px; font-size: 15px;">
+            {{ conclusion }}
+        </p>
+        {% endif %}
+    </div>
+    <hr style="display: block; height: 1px; background-color: #ebebeb; margin: 24px 0 22px; padding: 0; border: 0;">
+    <div>
+        <p
+            style="margin-block: 0; margin-inline: 0; font-weight: normal; font-size: 12px; font-stretch: normal; font-style: normal; line-height: 1.43; letter-spacing: normal; color: #6B7280; margin: 5px 0 0;">
+            &copy; {% now "Y" %} <a href="https://dongguk.film" target="_blank"
+                style="text-decoration: none; color: #6B7280;font-weight: bold;">D-dot-f</a>.
+            All rights reserved.</p>
+        <p
+            style="margin-block: 0; margin-inline: 0; font-weight: normal; font-size: 12px; font-stretch: normal; font-style: normal; line-height: 1.43; letter-spacing: normal; color: #6B7280; margin: 5px 0 0;">
+            본 메일은 발신 전용이에요.</p>
+    </div>
+</div>
