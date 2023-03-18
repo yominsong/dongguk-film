@@ -145,10 +145,7 @@ def vcode(request):
             for i in range(6):
                 email_vcode += random.choice(string.digits)
                 phone_vcode += random.choice(string.digits)
-            try:
-                Vcode.objects.get(student_id=student_id).delete()
-            except:
-                pass
+            Vcode.objects.filter(student_id=student_id).delete()
             Vcode.objects.create(
                 student_id=student_id,
                 email_vcode=email_vcode,
