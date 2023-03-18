@@ -988,6 +988,15 @@ select {
   width: max-content;
 }
 
+.w-min {
+  width: -moz-min-content;
+  width: min-content;
+}
+
+.w-52 {
+  width: 13rem;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -1247,6 +1256,10 @@ select {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 
 .text-clip {
@@ -1845,6 +1858,30 @@ select {
   color: rgb(107 114 128 / var(--tw-text-opacity));
 }
 
+@media (min-width: 0px) {
+  .min-\[0px\]\:w-full {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1px) {
+  .min-\[1px\]\:w-full {
+    width: 100%;
+  }
+}
+
+@media (min-width: 320px) {
+  .min-\[320px\]\:w-full {
+    width: 100%;
+  }
+}
+
+@media (min-width: 380px) {
+  .min-\[380px\]\:w-full {
+    width: 100%;
+  }
+}
+
 @media (min-width: 390px) {
   .min-\[390px\]\:w-fit {
     width: -moz-fit-content;
@@ -1856,6 +1893,12 @@ select {
   }
 
   .min-\[390px\]\:w-full {
+    width: 100%;
+  }
+}
+
+@media (min-width: 395px) {
+  .min-\[395px\]\:w-full {
     width: 100%;
   }
 }
@@ -2100,6 +2143,12 @@ select {
     --tw-space-x-reverse: 0;
     margin-right: calc(2.5rem * var(--tw-space-x-reverse));
     margin-left: calc(2.5rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+}
+
+@media (min-width: 890px) {
+  .min-\[890px\]\:w-full {
+    width: 100%;
   }
 }
 
