@@ -174,10 +174,6 @@ function controlNoti(notiType) {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
             notiContent.innerText = "위치 액세스가 허용되었는지 확인해주세요. 새로고침도 꼭 부탁드려요!";
-        } else if (notiType == "copyAddress") {
-            notiIconClipboard.classList.remove("hidden");
-            notiTitle.innerText = "주소가 클립보드에 복사되었어요.";
-            notiContent.innerText = "원하는 곳에 붙여넣어 보세요!";
         };
     }
 

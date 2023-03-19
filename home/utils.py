@@ -188,10 +188,12 @@ async def adr(lng, lat):
     headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
     response = requests.get(url, params=params, headers=headers)
 
-    try:
-        ADR = json.loads(response.text)["documents"][0]["road_address"]["address_name"]
-    except:
-        ADR = json.loads(response.text)["documents"][0]["address"]["address_name"]
+    adr = json.loads(response.text)["documents"][0]["address"]
+    r1 = adr["region_1depth_name"]
+    r2 = adr["region_2depth_name"]
+    r3 = adr["region_3depth_name"]
+    
+    ADR = f"{r1} {r2} {r3}"
 
     return ADR
 

@@ -111,13 +111,3 @@ function handleGeolocationError(error) {
 }
 
 navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError);
-
-function copyAddress() {
-    address.onclick = () => {
-        navigator.clipboard.writeText(address.innerText).then(() => {
-            controlNoti("copyAddress");
-        });
-    };
-}
-
-copyAddress();

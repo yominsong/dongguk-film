@@ -5,7 +5,7 @@ import requests
 # users
 #
 
-if timezone.now().strftime("%H:%M") == "00:00":
+if timezone.now().strftime("%H:%M") == "08:00":
     requests.get("https://dongguk.film/users/utils/delete-inactive-users")
 
 #
