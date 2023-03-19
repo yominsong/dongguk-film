@@ -962,6 +962,10 @@ select {
   width: 100%;
 }
 
+.w-44 {
+  width: 11rem;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
