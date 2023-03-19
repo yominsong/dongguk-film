@@ -13,7 +13,7 @@ import json
 def update_dmd_cookie(request):
     with Session() as session:
         session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get("https://dgufilm.link/get-dmd-cookie")
+        response = session.get("https://util.dgufilm.link/get-dmd-cookie")
         cookie = response.text.rstrip()
 
     if "WMONID" in cookie:
