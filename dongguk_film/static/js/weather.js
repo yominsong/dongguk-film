@@ -100,7 +100,7 @@ function handleGeolocationError(error) {
     /* 
      * defaultCoords: Dongguk University Munhwagwan
      */
-    
+
     const defaultCoords = { coords: { longitude: 127.00306709659004, latitude: 37.557852166850196 } };
     if (error.code == 1) {
         controlNoti("requestLocationAccess");
@@ -110,4 +110,4 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError);
+navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true });
