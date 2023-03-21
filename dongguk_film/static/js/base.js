@@ -111,6 +111,7 @@ function handleAjaxCallback(response) {
         document.querySelector("#temperatureMin").innerText = response.result.temperatureMin;
         document.querySelector("#sunrise").innerText = response.result.sunrise;
         document.querySelector("#sunset").innerText = response.result.sunset;
+        document.querySelector("#accuracy").innerText = response.result.accuracy;
         document.querySelector("#baseDateTime").innerText = response.result.baseDateTime;
 
     } else if (response.id == "create_vcode_for_SNP") {

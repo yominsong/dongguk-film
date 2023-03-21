@@ -81,7 +81,7 @@
     <dl class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">기온, 하늘상태</dt>
-            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+            <div class="animate-pulse mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
                 <div class="h-6 bg-gray-200 rounded col-span-5"></div>
                 <div class="h-6 bg-gray-200 rounded col-span-3"></div>
             </div>
@@ -94,7 +94,7 @@
 
         <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">일출시각, 일몰시각</dt>
-            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+            <div class="animate-pulse mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
                 <div class="h-6 bg-gray-200 rounded col-span-3"></div>
                 <div class="h-6 bg-gray-200 rounded col-span-3"></div>
             </div>
@@ -106,7 +106,7 @@
 
         <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
             <dt class="truncate text-sm font-medium text-gray-500">풍속, 강수확률</dt>
-            <div class="animate-pulse mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
+            <div class="animate-pulse mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
                 <div class="h-6 bg-gray-200 rounded col-span-5"></div>
                 <div class="h-6 bg-gray-200 rounded col-span-4"></div>
             </div>
@@ -118,10 +118,12 @@
             </dd>
         </div>
     </dl>
-    <div class="animate-pulse mt-3 flex justify-end">
-        <div class="h-[20px] w-36 justify-self-end bg-gray-200 rounded"></div>
+    <div class="animate-pulse mt-[14px] sm:mt-3 flex justify-end">
+        <div class="h-[18px] sm:h-[20px] w-52 justify-self-end bg-gray-200 rounded"></div>
     </div>
-    <p class="pulse-off mt-3 text-sm text-right text-gray-400 hidden"><span id="baseDateTime">0000-00-00 --:--</span> 발표
+    <p class="pulse-off mt-3 text-sm text-right text-gray-400 hidden">
+        위치 <span id="accuracy">00</span>m 차이 |
+        <span id="baseDateTime">00월 00일 00시</span> 발표
     </p>
 </div>
 

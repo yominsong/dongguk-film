@@ -74,8 +74,8 @@ def get_base_date_time(type, option):
             base_date = yymmdd
             base_time = base_times[hhmm_key]
         if option == "BDT":
-            base_date = f"{base_date[:4]}-{base_date[4:6]}-{base_date[6:]}"
-            base_time = f"{base_time[:2]}:{base_time[2:]}"
+            base_date = f"{base_date[4:6]}월 {base_date[6:]}일"
+            base_time = f"{base_time[:2]}시"
 
     # type: "STM"
     elif type == "STM" and option == None:
@@ -144,6 +144,7 @@ async def weather(request):
     TMN: Minimum Temperature
     SUR: Sunrise
     SUS: Sunset
+    ACC: Accuracy
     BDT: Base Date and Time
     """
 
@@ -153,6 +154,7 @@ async def weather(request):
         lat = request.GET["lat"]
         x = request.GET["x"]
         y = request.GET["y"]
+        acc = request.GET["acc"]
 
         ADR = await adr(lng, lat)
         T1H, PTY, WSD, WNM = await t1h_pty_wsd_wnm(x, y)
@@ -160,6 +162,7 @@ async def weather(request):
         TMX = await tmx(x, y)
         TMN = await tmn(x, y)
         SUR, SUS = await sur_sus(lng, lat)
+        ACC = round(float(acc))
         BDT = f'{(get_base_date_time("UST", "BDT")["bd"])} {get_base_date_time("UST", "BDT")["bt"]}'
 
         response = {
@@ -176,6 +179,7 @@ async def weather(request):
                 "temperatureMin": TMN,
                 "sunrise": SUR,
                 "sunset": SUS,
+                "accuracy": ACC,
                 "baseDateTime": BDT,
             },
         }

@@ -84,12 +84,13 @@ function dfs_xy_conv(code, v1, v2) {
 function requestWeather({ coords }) {
     longitude = coords.longitude;
     latitude = coords.latitude;
+    accuracy = coords.accuracy;
     dfsXyConv = dfs_xy_conv("toXY", longitude, latitude);
     x = dfsXyConv.x;
     y = dfsXyConv.y;
     request.url = `${originLocation}/home/utils/weather`;
     request.type = "GET";
-    request.data = { id: "weather", lng: longitude, lat: latitude, x: x, y: y };
+    request.data = { id: "weather", lng: longitude, lat: latitude, x: x, y: y, acc: accuracy };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);
@@ -110,4 +111,4 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true });
+navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 10000, });
