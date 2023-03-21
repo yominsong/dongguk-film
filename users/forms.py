@@ -135,8 +135,12 @@ class SocialSignupForm(SignupForm):
                 "phone": phone,
             }
 
-            user_registered_with_this_student_id = User.objects.filter(username=student_id)
-            confirmed_vcode = Vcode.objects.filter(student_id=student_id, confirmed=True)
+            user_registered_with_this_student_id = User.objects.filter(
+                username=student_id
+            )
+            confirmed_vcode = Vcode.objects.filter(
+                student_id=student_id, confirmed=True
+            )
 
             if user_registered_with_this_student_id.count() > 0:
                 send_msg(request, "DSA", "DEV")
@@ -146,8 +150,11 @@ class SocialSignupForm(SignupForm):
                 return None
             else:
                 confirmed_vcode.delete()
+            send_msg(request, "SUP", "MGT")
         else:
             send_msg(request, "UXR", "DEV")
+            return None
+
         return self.save(request, data)
 
     def save(self, request, data):
@@ -165,5 +172,4 @@ class SocialSignupForm(SignupForm):
         metadata.name = name
         metadata.phone = phone
         metadata.save()
-        send_msg(request, "SUP", "MGT")
         return user
