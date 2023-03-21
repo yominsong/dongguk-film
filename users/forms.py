@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Metadata
 from users.models import Vcode
-from utility.message import send_msg
+from utility.msg import send_msg
 from utility.d_utils import validation
 
 
@@ -125,39 +125,35 @@ class SocialSignupForm(SignupForm):
 
     def pre_save(self, request):
         if request.method == "POST":
-            agree = self.cleaned_data["agree"]
             student_id = self.cleaned_data["student_id"]
             name = self.cleaned_data["name"]
-            email = self.cleaned_data["email"]
             phone = self.cleaned_data["phone"]
-            raw_data = {
-                "agree": agree,
+
+            data = {
                 "student_id": student_id,
                 "name": name,
-                "email": email,
                 "phone": phone,
             }
+
             user_registered_with_this_student_id = User.objects.filter(username=student_id)
             confirmed_vcode = Vcode.objects.filter(student_id=student_id, confirmed=True)
+
             if user_registered_with_this_student_id.count() > 0:
-                send_msg(request, "duplicate signup attempted")
+                send_msg(request, "DSA", "DEV")
                 return None
             elif confirmed_vcode.count() == 0:
-                send_msg(request, "verification process bypassed")
-                return None
-            elif validation(raw_data, "sign up") == False:
-                send_msg(request, "server-side validation failed")
+                send_msg(request, "AIV", "DEV")
                 return None
             else:
                 confirmed_vcode.delete()
         else:
-            send_msg(request, "unexpected request")
-        return self.save(request, raw_data)
+            send_msg(request, "UXR", "DEV")
+        return self.save(request, data)
 
-    def save(self, request, raw_data):
-        student_id = raw_data["student_id"]
-        name = raw_data["name"]
-        phone = raw_data["phone"]
+    def save(self, request, data):
+        student_id = data["student_id"]
+        name = data["name"]
+        phone = data["phone"]
         user = super(SocialSignupForm, self).save(request)
         user.username = student_id
         user.first_name = ""

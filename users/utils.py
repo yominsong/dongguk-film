@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
 from users.models import Vcode
-from utility.message import send_msg
+from utility.msg import send_msg
 from utility.mail import send_mail
 from utility.sms import send_sms
 from fake_useragent import UserAgent

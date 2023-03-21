@@ -30,6 +30,7 @@ def get_base_date_time(type, option):
     UST: Ultra Short Term
     STM: Short Term
     SUN: Sunrise and Sunset
+    
     BDT, TMX, TMN: refer to `weather()` function annotation
     """
 
