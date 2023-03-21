@@ -165,4 +165,5 @@ class SocialSignupForm(SignupForm):
         metadata.name = name
         metadata.phone = phone
         metadata.save()
+        send_msg(request, "SUP", "MGT")
         return user
