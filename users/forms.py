@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from .models import Metadata
 from users.models import Vcode
-from utility.d_discord import send_msg
+from utility.message import send_msg
 from utility.d_utils import validation
 
 

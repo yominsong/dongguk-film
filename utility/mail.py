@@ -1,8 +1,4 @@
-import os, sys
-
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
-from dongguk_film import settings
+from django.conf import settings
 from django.core.mail import send_mail as django_send_mail
 from django.template.loader import render_to_string
 from .hangul import handle_hangul

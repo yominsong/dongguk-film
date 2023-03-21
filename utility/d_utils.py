@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
 from users.models import Vcode
-from .d_discord import send_msg
+from .message import send_msg
 from .mail import send_mail
 from .sms import send_sms
 import json, re, random, string, requests

@@ -1,8 +1,4 @@
-import os, sys
-
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
-from dongguk_film import settings
+from django.conf import settings
 from .hangul import handle_hangul
 import time, hmac, hashlib, base64, requests, json
 

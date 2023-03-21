@@ -11,5 +11,10 @@ urlpatterns = [
         delete_inactive_users,
         name="delete_inactive_users",
     ),
+    path(
+        "utils/delete-expired-vcodes",
+        delete_expired_vcodes,
+        name="delete_expired_vcodes",
+    ),
     path("utils/vcode", vcode, name="vcode"),
 ]

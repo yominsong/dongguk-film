@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
 from users.models import Vcode
-from utility.d_discord import send_msg
+from utility.message import send_msg
 from utility.mail import send_mail
 from utility.sms import send_sms
 from fake_useragent import UserAgent
@@ -42,6 +42,14 @@ def delete_inactive_users(request):
             send_mail(data)
         inactive_users.delete()
     return HttpResponse(f"Number of deleted users: {count}")
+
+
+def delete_expired_vcodes(request):
+    expired_vcodes = Vcode.objects.filter(will_expire_on__lt=timezone.now())
+    count = expired_vcodes.count()
+    if count > 0:
+        expired_vcodes.delete()
+    return HttpResponse(f"Number of deleted verification codes: {count}")
 
 
 #
@@ -135,12 +143,6 @@ def reg_test(value, type):
 
 
 def vcode(request):
-    """
-    type: "SNP"
-
-    SNP: Sign up
-    """
-
     # id: create_vcode_for_SNP
     if request.POST["id"] == "create_vcode_for_SNP":
         id = request.POST["id"]

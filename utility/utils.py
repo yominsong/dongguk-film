@@ -25,11 +25,3 @@ def update_dmd_cookie(request):
             f.truncate()
 
     return HttpResponse(f"dmd-cookie: {cookie}")
-
-
-def delete_expired_vcodes(request):
-    expired_vcodes = Vcode.objects.filter(will_expire_on__lt=timezone.now())
-    count = expired_vcodes.count()
-    if count > 0:
-        expired_vcodes.delete()
-    return HttpResponse(f"Number of deleted verification codes: {count}")
