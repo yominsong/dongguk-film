@@ -102,7 +102,7 @@ function handleGeolocationError(error) {
      * defaultCoords: Dongguk University Munhwagwan
      */
 
-    const defaultCoords = { coords: { longitude: 127.00306709659004, latitude: 37.557852166850196 } };
+    const defaultCoords = { coords: { longitude: 127.00306709659004, latitude: 37.557852166850196, accuracy: null } };
     if (error.code == 1) {
         controlNoti("requestLocationAccess");
     } else {

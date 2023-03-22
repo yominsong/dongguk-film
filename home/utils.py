@@ -162,8 +162,7 @@ async def weather(request):
         TMX = await tmx(x, y)
         TMN = await tmn(x, y)
         SUR, SUS = await sur_sus(lng, lat)
-        ACC = round(float(acc))
-        BDT = f'{(get_base_date_time("UST", "BDT")["bd"])} {get_base_date_time("UST", "BDT")["bt"]}'
+        ACC, BDT = await acc_bdt(acc)
 
         response = {
             "id": id,
@@ -259,7 +258,6 @@ async def pop_sky(x, y):
         "base_time": get_base_date_time("STM", None)["bt"],
         "nx": x,
         "ny": y,
-        # "numOfRows": 300,
     }
     response = requests.get(url, params=params)
     root = ET.fromstring(response.text)
@@ -335,3 +333,12 @@ async def sur_sus(lng, lat):
     SUS = sunset.strftime("%H:%M")
 
     return SUR, SUS
+
+
+async def acc_bdt(acc):
+    acc = round(float(acc)) if acc else None
+
+    ACC = "위치 액세스 없음" if not acc else f"위치 {acc / 1000}km 차이" if acc >= 1000 else f"위치 {acc}m 차이"
+    BDT = f"{(get_base_date_time('UST', 'BDT')['bd'])} {get_base_date_time('UST', 'BDT')['bt']} 발표"
+
+    return ACC, BDT
