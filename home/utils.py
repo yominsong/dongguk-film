@@ -338,7 +338,7 @@ async def sur_sus(lng, lat):
 async def acc_bdt(acc):
     acc = round(float(acc)) if acc else None
 
-    ACC = "위치 액세스 없음" if not acc else f"위치 {acc / 1000}km 차이" if acc >= 1000 else f"위치 {acc}m 차이"
+    ACC = "위치 정보 없음" if not acc else f"위치 {acc / 1000}km 차이" if acc >= 1000 else f"위치 {acc}m 차이"
     BDT = f"{(get_base_date_time('UST', 'BDT')['bd'])} {get_base_date_time('UST', 'BDT')['bt']} 발표"
 
     return ACC, BDT

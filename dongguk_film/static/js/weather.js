@@ -111,4 +111,4 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 10000, });
+navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 8000, });

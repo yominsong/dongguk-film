@@ -174,7 +174,7 @@ function controlNoti(notiType) {
         } else if (notiType == "recheckLocationAccess") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
-            notiContent.innerText = "위치 액세스가 허용되었는지 확인해주세요. 새로고침도 꼭 부탁드려요!";
+            notiContent.innerText = "잠깐 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
         };
     }
 
