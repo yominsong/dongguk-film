@@ -2,6 +2,7 @@
 {% load static socialaccount %}
 
 {% block meta %}
+<meta property="og:title" content="회원가입 - 디닷에프 | D-dot-f">
 <meta property="og:url" content="{% url 'account_login' %}">
 <!-- <meta name="robots" content="index,follow"> -->
 {% endblock %}
@@ -13,7 +14,7 @@
     <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <a href="{% url 'home:home' %}">
-                <span class="sr-only">홈페이지로 이동하기</span>
+                <span class="sr-only">홈페이지로 이동</span>
                 <svg class="mx-auto h-12 w-auto" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 165.3 100"
                     style="enable-background:new 0 0 165.3 100;" xml:space="preserve">
