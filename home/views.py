@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from .utils import *
 
 
 def home(request):

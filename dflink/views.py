@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def dflink(request):
+    return render(request, "dflink/dflink.html")
