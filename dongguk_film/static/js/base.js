@@ -163,6 +163,7 @@ function handleAjaxCallback(response) {
 function controlNoti(notiType) {
     // Write noti
     function writeNoti() {
+        notiIconDefault.classList.add("hidden");
         notiIconLocation.classList.add("hidden");
         notiIconClipboard.classList.add("hidden");
         notiTitle.innerText = null;
