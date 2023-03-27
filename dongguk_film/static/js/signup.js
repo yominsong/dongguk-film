@@ -22,10 +22,6 @@ function displaySocialAccount() {
 
 displaySocialAccount();
 
-function isValid(input) {
-    return input.type == "checkbox" ? input.checked : controlError(input) == false && code(input, "_descr").hidden && code(input, "_error").hidden;
-}
-
 //
 // Main functions
 //
@@ -54,7 +50,7 @@ function requestConfirmVcodeForSNP() {
     request = {};
 }
 
-function setSignUpPage() {
+function setPage() {
     initValidation(stepOnes, id_create_vcode);
     id_create_vcode.addEventListener("click", () => {
         filteredInputs = inputs.filter(isValid);
@@ -95,4 +91,4 @@ function setSignUpPage() {
     });
 }
 
-setSignUpPage();
+setPage();

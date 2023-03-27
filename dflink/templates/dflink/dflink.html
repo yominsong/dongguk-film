@@ -69,12 +69,12 @@
 </div>
 
 <!-- List -->
-<div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="mt-5 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="overflow-hidden bg-white shadow rounded-lg">
         <ul role="list" class="divide-y divide-gray-200">
             <li id="id_open_form">
                 <a href="#" class="block hover:bg-gray-50">
-                    <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-gray-500">
+                    <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-black">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path
                                 d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
@@ -407,38 +407,53 @@
                                 </div>
                             </div>
                             <div class="flex flex-1 flex-col justify-between">
-                                <div class="divide-y divide-gray-200 px-4 sm:px-6">
+                                <div class="px-4 sm:px-6">
                                     <div class="space-y-6 pt-6 pb-5">
                                         <div>
                                             <label for="id_original_url"
                                                 class="block text-sm font-medium leading-6 text-gray-900">원본 URL</label>
                                             <div class="mt-2">
                                                 <input type="url" name="id_original_url" id="id_original_url"
-                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
-                                                    placeholder="https://www.example.com">
+                                                    class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    placeholder="https://www.example.com" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_original_url_descr" hidden>
+                                            </p>
+                                            <p class="mt-2 text-sm text-flamingo-600" id="id_original_url_error" hidden>
+                                            </p>
                                         </div>
+
                                         <div>
-                                            <label for="id_url"
+                                            <label for="id_dflink_slug"
                                                 class="block text-sm font-medium leading-6 text-gray-900">동영링크
                                                 URL</label>
                                             <div class="mt-2 flex rounded-md shadow-sm">
                                                 <span
                                                     class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
-                                                <input type="text" name="id_url" id="id_url"
-                                                    class="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
-                                                    placeholder="tejavasce">
+                                                <input type="text" name="id_dflink_slug" id="id_dflink_slug"
+                                                    class="step-one only-roman block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    placeholder="tejavasce" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_slug_descr" hidden>
+                                            </p>
+                                            <p class="mt-2 text-sm text-flamingo-600" id="id_dflink_slug_error" hidden>
+                                            </p>
                                         </div>
+
                                         <div>
-                                            <label for="id_title"
+                                            <label for="id_dflink_title"
                                                 class="block text-sm font-medium leading-6 text-gray-900">제목</label>
                                             <div class="mt-2">
-                                                <input type="text" name="id_title" id="id_title"
-                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
-                                                    placeholder="&lt;데자와&gt; 시나리오">
+                                                <input type="text" name="id_dflink_title" id="id_dflink_title"
+                                                    class="step-one block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    placeholder="&lt;데자와&gt; 시나리오" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_title_descr" hidden>
+                                            </p>
+                                            <p class="mt-2 text-sm text-flamingo-600" id="id_dflink_title_error" hidden>
+                                            </p>
                                         </div>
+
                                         <fieldset>
                                             <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                             <div class="mt-2 space-y-4">
@@ -458,31 +473,35 @@
                                                 </div>
                                                 <div class="relative flex items-start">
                                                     <div class="absolute flex h-6 items-center">
-                                                        <input id="privacy-private-to-project" name="id_category"
-                                                            aria-describedby="privacy-private-to-project_descr"
-                                                            type="radio"
+                                                        <input id="id_category_dept" name="id_category"
+                                                            aria-describedby="id_category_dept_descr" type="radio"
                                                             class="h-4 w-4 border-gray-300 text-flamingo-600 focus:ring-flamingo-600">
                                                     </div>
                                                     <div class="pl-7 text-sm leading-6">
-                                                        <label for="privacy-private-to-project"
+                                                        <label for="id_category_dept"
                                                             class="font-medium text-gray-900">학과 관련</label>
-                                                        <p id="privacy-private-to-project_descr" class="text-gray-500">
+                                                        <p id="id_category_dept_descr" class="text-gray-500">
                                                             학생회 및 학과사무실 공지사항 등</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </fieldset>
+
                                         <div>
                                             <label for="id_expiration_date"
                                                 class="block text-sm font-medium leading-6 text-gray-900">만료일</label>
                                             <div class="mt-2">
                                                 <input type="date" name="id_expiration_date" id="id_expiration_date"
-                                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
-                                                    placeholder="&lt;데자와&gt; 시나리오">
+                                                    class="step-one only-numbers block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    placeholder="{% now 'Y' %}-12-31" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_expiration_date_descr" hidden>
+                                            </p>
+                                            <p class="mt-2 text-sm text-flamingo-600" id="id_expiration_date_error"
+                                                hidden>
+                                            </p>
                                         </div>
-                                    </div>
-                                    <div class="pt-4 pb-6">
+
                                         <div class="text-sm inline-flex items-center">
                                             <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"
                                                 aria-hidden="true">
@@ -500,7 +519,7 @@
                             <button type="button"
                                 class="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 @click="open = false">취소</button>
-                            <button type="submit"
+                            <button type="submit" id="id_create_dflink"
                                 class="ml-4 inline-flex justify-center rounded-md bg-flamingo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-flamingo-600">저장</button>
                         </div>
                     </form>
@@ -511,6 +530,7 @@
     </div>
 </div>
 
-<script src="{% static 'js/dflink.js' %}"></script>
+<script src="{% static 'js/consts.js' %}"></script>
 <script src="{% static 'js/forms.js' %}"></script>
+<script src="{% static 'js/dflink.js' %}"></script>
 {% endblock %}

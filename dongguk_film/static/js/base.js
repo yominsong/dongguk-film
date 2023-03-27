@@ -44,6 +44,38 @@ function hideNavbarAndFooter() {
 
 hideNavbarAndFooter();
 
+function convertRomanToHangul(hangul) {
+    const romanToHangul = {
+        a: '에이',
+        b: '비',
+        c: '씨',
+        d: '디',
+        e: '이',
+        f: '에프',
+        g: '쥐',
+        h: '에이치',
+        i: '아이',
+        j: '제이',
+        k: '케이',
+        l: '엘',
+        m: '엠',
+        n: '엔',
+        o: '오',
+        p: '피',
+        q: '큐',
+        r: '알',
+        s: '에스',
+        t: '티',
+        u: '유',
+        v: '브이',
+        w: '더블유',
+        x: '엑스',
+        y: '와이',
+        z: '제트',
+    };
+    return hangul.replace(/[a-z]/g, c => romanToHangul[c]);
+}
+
 //
 // Main functions
 //

@@ -1,4 +1,5 @@
 const onlyHanguls = document.querySelectorAll(".only-hangul");
+const onlyRomans = document.querySelectorAll(".only-roman");
 const onlyNumbers = document.querySelectorAll(".only-number");
 const onlyEmails = document.querySelectorAll(".only-email");
 const onlyPhones = document.querySelectorAll(".only-phone");
@@ -6,6 +7,8 @@ const eventTypes = ["focusin", "focusout", "compositionstart", "compositionupdat
 const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
+const regRoman = /[a-z]+/g;
+const regNotRoman = /[^a-z]+/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
 const regNotPhone = /[^0-9\-]/g;
@@ -126,6 +129,10 @@ function code(id, extra) {
     return eval(String(id.id) + extra);
 }
 
+function isValid(input) {
+    return input.type == "checkbox" ? input.checked : controlError(input) == false && code(input, "_descr").hidden && code(input, "_error").hidden;
+}
+
 //
 // Main functions
 //
@@ -135,6 +142,11 @@ function validation() {
         onlyHanguls.forEach((input) => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotHangul, "");
+            });
+        });
+        onlyRomans.forEach((input) => {
+            input.addEventListener(type, () => {
+                input.value = input.value.replace(regNotRoman, "");
             });
         });
         onlyNumbers.forEach((input) => {
@@ -173,7 +185,7 @@ function controlDescr(input, event) {
     let inputKeyChar = event.key;
 
     // Only numbers allowed
-    if (input == id_student_id || input == id_email_vcode || input == id_phone_vcode) {
+    if ([id_student_id, id_email_vcode, id_phone_vcode].indexOf(input) != -1) {
         if (regNotNumber.test(input.value) ||
             (regNotNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
             displayDescr(true, input, "only numbers");
@@ -183,7 +195,7 @@ function controlDescr(input, event) {
     };
 
     // Only hanguls allowed
-    if (input == id_name) {
+    if ([id_name].indexOf(input) != -1) {
         if (regNotHangul.test(input.value) ||
             (!event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
             displayDescr(true, input, "only hanguls");
@@ -192,8 +204,18 @@ function controlDescr(input, event) {
         };
     };
 
+    // Only romans allowed
+    if ([id_dflink_slug].indexOf(input) != -1) {
+        if (regNotRoman.test(input.value) ||
+            (regNotRoman.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            displayDescr(true, input, "only romans");
+        } else {
+            displayDescr(false, input);
+        };
+    };
+
     // Only phone numbers allowed
-    if (input == id_phone) {
+    if ([id_phone].indexOf(input) != -1) {
         if (regNotPhone.test(input.value) ||
             (regNotPhone.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
             displayDescr(true, input, "only numbers");
@@ -203,7 +225,7 @@ function controlDescr(input, event) {
     };
 
     // No hanguls allowed
-    if (input == id_email) {
+    if ([id_email].indexOf(input) != -1) {
         if (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1) {
             displayDescr(true, input, "no hanguls");
         } else {
@@ -211,15 +233,17 @@ function controlDescr(input, event) {
         };
     };
 
-    // No spaces allowed
-    if (inputKeyChar == " ") {
-        displayDescr(true, input, "no spaces");
+    // Spaces allowed
+    if ([id_dflink_title].indexOf(input) == -1) {
+        if (inputKeyChar == " ") {
+            displayDescr(true, input, "no spaces");
+        };
     };
 }
 
 function controlError(input) {
     // Checkbox
-    if (input == id_agree) {
+    if ([id_agree].indexOf(input) != -1) {
         if (input.checked == false) {
             displayError(true, input, "unchecked");
         } else {
@@ -228,7 +252,7 @@ function controlError(input) {
     };
 
     // Student ID
-    if (input == id_student_id) {
+    if ([id_student_id].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
@@ -240,8 +264,8 @@ function controlError(input) {
         };
     };
 
-    // Name
-    if (input == id_name) {
+    // Hangul
+    if ([id_name].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length == 1) {
@@ -251,8 +275,19 @@ function controlError(input) {
         };
     };
 
+    // Roman
+    if ([id_dflink_slug].indexOf(input) != -1) {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (!input.value.match(regRoman)) {
+            displayError(true, input, "invalid");
+        } else {
+            return false;
+        };
+    };
+
     // Email address
-    if (input == id_email) {
+    if ([id_email].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("@") == -1 ||
@@ -270,7 +305,7 @@ function controlError(input) {
     };
 
     // Phone number
-    if (input == id_phone) {
+    if ([id_phone].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 13) {
@@ -283,7 +318,7 @@ function controlError(input) {
     };
 
     // 6 digit verification code
-    if (input == id_email_vcode || input == id_phone_vcode) {
+    if ([id_email_vcode, id_phone_vcode].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 6) {
@@ -292,6 +327,16 @@ function controlError(input) {
             return false;
         };
     };
+
+    // DF link title
+    if ([id_dflink_title].indexOf(input) != -1) {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (input.value.length == 1) {
+            displayError(true, input, "insufficient");
+        };
+    };
+
     return true;
 }
 
@@ -299,7 +344,7 @@ function displayDescr(bool, input, descrType) {
     /* 
      * bool: Show/hide description
      * input: Target input
-     * descrType: "no spaces", "no hanguls", "only numbers", "only hanguls"
+     * descrType: "no spaces", "no hanguls", "only numbers", "only hanguls", "only romans"
      */
 
     let descrMsg = code(input, "_descr");
@@ -315,10 +360,12 @@ function displayDescr(bool, input, descrType) {
             sentence = "숫자만 입력해주세요.";
         } else if (descrType == "only hanguls") {
             sentence = "한글만 입력해주세요.";
+        } else if (descrType == "only romans") {
+            sentence = "로마자 소문자만 입력해주세요.";
         };
         descrMsg.innerText = `${sentence}`;
         descrMsg.hidden = false;
-        
+
     } else if (bool == false) {
         // Hide description
         descrMsg.innerText = null;
@@ -398,109 +445,3 @@ function displayButtonMsg(bool, button, type, text) {
         msg.hidden = true;
     };
 }
-
-// function makeAjaxCall(callType) {
-//     let defaultUrl = `${location.protocol}//${location.host}`;
-//     let data, additionalData, url, status;
-//     data = {
-//         "agree": `${id_agree.checked}`,
-//         "student_id": `${id_student_id.value}`,
-//         "name": `${id_name.value}`,
-//         "email": `${id_email.value}`,
-//         "phone": `${id_phone.value}`
-//     };
-//     if (callType == "create vcode") {
-//         url = `${defaultUrl}/utility/create-vcode`;
-//         code(id_create_vcode, "_spin").classList.remove("hidden");
-//     } else if (callType == "confirm vcode") {
-//         additionalData = {
-//             "email_vcode": `${id_email_vcode.value}`,
-//             "phone_vcode": `${id_phone_vcode.value}`
-//         };
-//         data = Object.assign({}, data, additionalData);
-//         url = `${defaultUrl}/utility/confirm-vcode`;
-//         code(id_confirm_vcode, "_spin").classList.remove("hidden");
-//     };
-//     $.ajax({
-//         url: url,
-//         type: "POST",
-//         data: JSON.stringify(data),
-//         dataType: "json",
-//         contentType: "application/json",
-//         beforeSend: function (xhr, settings) {
-//             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-//                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-//             };
-//             freezeForm(true);
-//         },
-//         success: function (object) {
-//             status = object.status;
-//             console.log(status);
-//             handleAjaxCallback(status);
-//         },
-//         error: function () {
-//             callType == "create vcode" ?
-//                 status = "failed to create vcode" :
-//                 callType == "confirm vcode" ?
-//                     status = "failed to confirm vcode" :
-//                     status = "an unknown error occurred";
-//             console.log(status);
-//             handleAjaxCallback(status);
-//         },
-//         complete: function () {
-//             spins.forEach((spin) => {
-//                 spin.classList.add("hidden");
-//             });
-//         }
-//     });
-// }
-
-// function handleAjaxCallback(status) {
-//     if (status == "vcode created and sent via mail, sms") {
-//         displayButtonMsg(true, id_create_vcode, "descr", "인증번호가 전송되었어요!");
-//         displayButtonMsg(false, id_create_vcode, "error");
-//         stepOnes.forEach((input) => {
-//             input.type == "checkbox" ? input.disabled = true : input.readOnly = true;
-//         });
-//         stepTwos.forEach((input) => {
-//             input.disabled = false;
-//         });
-//         id_confirm_vcode.disabled = false;
-//         initValidation(stepTwos, id_confirm_vcode);
-//     } else if (status == "failed to create vcode" ||
-//         status == "vcode created and sent via mail" ||
-//         status == "vcode created and sent via sms" ||
-//         status == "vcode created but not sent") {
-//         freezeForm(false);
-//         displayButtonMsg(true, id_create_vcode, "error", "앗, 다시 한 번 시도해주세요!");
-//         displayButtonMsg(false, id_create_vcode, "descr");
-//         id_create_vcode.disabled = false;
-//     } else if (status == "duplicate sign up attempted") {
-//         freezeForm(false);
-//         displayButtonMsg(true, id_create_vcode, "error", `앗, 이미 ${matchJosa(id_student_id.value, "라는이라는", "WJS")} 학번으로 가입된 계정이 있어요!`);
-//         displayButtonMsg(false, id_create_vcode, "descr");
-//         id_create_vcode.disabled = false;
-//     } else if (status == "the student id does not exist") {
-//         freezeForm(false);
-//         displayButtonMsg(true, id_create_vcode, "error", "학번이나 성명이 잘못 입력된 것 같아요.");
-//         displayButtonMsg(false, id_create_vcode, "descr");
-//         id_create_vcode.disabled = false;
-//     } else if (status == "failed to confirm vcode") {
-//         freezeForm(false);
-//         displayButtonMsg(true, id_confirm_vcode, "error", "앗, 다시 한 번 시도해주세요!");
-//         id_confirm_vcode.disabled = false;
-//     } else if (status == "invalid vcode") {
-//         freezeForm(false);
-//         displayButtonMsg(true, id_confirm_vcode, "error", "인증번호가 잘못 입력된 것 같아요.");
-//         id_confirm_vcode.disabled = false;
-//     } else if (status == "vcode confirmed") {
-//         displayButtonMsg(false, id_confirm_vcode, "error");
-//         inputs = document.querySelectorAll("input");
-//         inputs.forEach((input) => {
-//             input.disabled = false;
-//             input.readOnly = true;
-//         });
-//         id_confirm_vcode.disabled = true;
-//         document.querySelector("form").submit();
-//     };
-// }
