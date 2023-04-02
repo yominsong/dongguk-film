@@ -161,6 +161,7 @@ function handleAjaxCallback(response) {
         let ping = document.querySelectorAll(".animate-ping");
         let pingBg = document.querySelectorAll(".animate-ping-bg");
         if (response.result.status == "DONE") {
+            displayForm(false);
             ping.forEach((item) => {
                 item.classList.remove("bg-yellow-400");
                 item.classList.remove("bg-red-400");
@@ -172,6 +173,7 @@ function handleAjaxCallback(response) {
                 item.classList.add("bg-green-500");
             });
         } else if (response.result.status == "FAIL") {
+            freezeForm(false);
             ping.forEach((item) => {
                 item.classList.remove("bg-yellow-400");
                 item.classList.add("bg-red-400");

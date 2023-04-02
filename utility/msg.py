@@ -85,15 +85,17 @@ def get_webhook(channel):
 #
 
 
-def send_msg(request, type, channel):
+def send_msg(request, type, channel, extra=None):
     """
-    type: "DSA", "OVP", "UXR", "SUP"
+    type: "DSA", "OVP", "UXR", "SUP", "DFD", "DFF"
     channel: "DEV", "MGT"
 
     DSA: Duplicate signup attempt
     AIV: Attempting to skip identity verification
     UXR: Unexpected request
     SUP: Signup complete
+    DFD: DF link validation "DONE"
+    DFF: DF link validation "FAIL"
 
     DEV: Development
     MGT: Management
@@ -111,7 +113,7 @@ def send_msg(request, type, channel):
             "title": "중복 회원가입 시도",
             "url": "",
             "thumbnail_url": "",
-            "description": "중복 회원가입 시도가 발생했습니다. 사용자가 DB에 이미 등록되어 있는 학번을 입력한 것으로 보입니다.",
+            "description": "중복 회원가입이 시도되었습니다. 사용자가 DB에 이미 등록되어 있는 학번을 입력한 것으로 보입니다.",
         }
 
     # type: "AIV"
@@ -123,7 +125,7 @@ def send_msg(request, type, channel):
             "title": "본인인증 생략 시도",
             "url": "",
             "thumbnail_url": "",
-            "description": "본인인증 생략 시도가 발생했습니다. 사용자가 비정상적 방법으로 회원가입을 시도하는 것으로 보입니다.",
+            "description": "본인인증 생략이 시도되었습니다. 사용자가 비정상적 방법으로 회원가입을 시도하는 것으로 보입니다.",
         }
 
     # type: "UXR"
@@ -144,10 +146,34 @@ def send_msg(request, type, channel):
             "important": False,
             "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
             "author_url": "",
-            "title": "신규 회원가입",
+            "title": "새로운 회원 가입",
             "url": "",
             "thumbnail_url": "",
-            "description": "신규 회원가입이 완료됐습니다. 개인정보 보호를 위해 AnonymousUser로 표시합니다.",
+            "description": "새로운 회원이 가입했습니다. 개인정보 보호를 위해 AnonymousUser로 표시합니다.",
+        }
+
+    # type: "DFF"
+    elif type == "DFF":
+        main_content = {
+            "important": True,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "author_url": "",
+            "title": "동영링크 생성 실패",
+            "url": "https://dongguk.film/dflink",
+            "thumbnail_url": "",
+            "description": f"동영링크 생성이 실패되었습니다. 세부 정보는 다음과 같습니다.\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크: {extra['dflink']}\nㆍ제목: {extra['title']}\nㆍ유효성 검사 결과: {extra['concern']}",
+        }
+    
+    # type: "DFD"
+    elif type == "DFD":
+        main_content = {
+            "important": False,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "author_url": "",
+            "title": "새로운 동영링크 생성",
+            "url": "https://dongguk.film/dflink",
+            "thumbnail_url": "",
+            "description": f"새로운 동영링크가 생성되었습니다. 세부 정보는 다음과 같습니다.\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크: {extra['dflink']}\nㆍ제목: {extra['title']}",
         }
 
     # channel: "DEV"

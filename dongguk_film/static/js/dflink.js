@@ -5,19 +5,23 @@ let filteredInputs = [];
 // Main functions
 //
 
-function openForm() {
-    id_open_form.addEventListener("click", () => {
-        id_form.classList.remove("hidden");
-        id_form.setAttribute("x-data", "{ open: true }");
-    });
+function displayForm(bool) {
+    if (bool == true) {
+        id_open_form.addEventListener("click", () => {
+            id_form.classList.remove("hidden");
+            id_form.setAttribute("x-data", "{ open: true }");
+        });
+    } else if (bool == false) {
+        id_form.setAttribute("x-data", "{ open: false }");
+    };
 }
 
-openForm();
+displayForm(true);
 
 function requestValidateSite() {
     request.url = `${originLocation}/utility/utils/ai`;
-    request.type = "POST";
-    request.data = { id: "validate_site", original_url: `${id_original_url.value}` };
+    request.type = "GET";
+    request.data = { id: "validate_site", original_url: `${id_original_url.value}`, title: `${id_dflink_title.value}`, dflink: `https://dgufilm.link/${id_dflink_slug.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_dflink, "_spin").classList.remove("hidden");
