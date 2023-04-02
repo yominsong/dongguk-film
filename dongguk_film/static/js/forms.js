@@ -3,19 +3,28 @@ const onlyRomans = document.querySelectorAll(".only-roman");
 const onlyNumbers = document.querySelectorAll(".only-number");
 const onlyEmails = document.querySelectorAll(".only-email");
 const onlyPhones = document.querySelectorAll(".only-phone");
+const onlyDates = document.querySelectorAll(".only-date");
+const onlyUrls = document.querySelectorAll(".only-url");
+const onlySlugs = document.querySelectorAll(".only-slug");
+const labels = document.querySelectorAll("label");
+const radios = document.querySelectorAll(".radio");
+let spins = document.querySelectorAll(".animate-spin");
+let buttons = document.querySelectorAll("button");
+let inputs = [];
+
 const eventTypes = ["focusin", "focusout", "compositionstart", "compositionupdate", "compositionend", "keydown", "keypress", "keyup", "mouseenter", "mouseover", "mousemove", "mousedown", "mouseup", "click", "contextmenu", "mouseleave", "mouseout", "select"];
 const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regRoman = /[a-z]+/g;
 const regNotRoman = /[^a-z]+/g;
+const regNotLowerRomanAndNumber = /[^a-z0-9]/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
-const regNotPhone = /[^0-9\-]/g;
-const labels = document.querySelectorAll("label");
-let inputs = [];
-let buttons = document.querySelectorAll("button");
-let spins = document.querySelectorAll(".animate-spin");
+const regNotNumberWithDash = /[^0-9\-]/g;
+const regUrl = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g;
+
 
 //
 // Sub functions
@@ -32,7 +41,7 @@ function matchJosa(word, josaType, resultType) {
      */
 
     let lastLetter, hasBatchim, josa, result;
-    isNaN(word) == true ? lastLetter = word.substr(-1) : lastLetter = word.getLastNumInKor();
+    isNaN(word) == false ? lastLetter = word.getLastNumInKor() : word.indexOf("URL") != -1 ? lastLetter = "엘" : lastLetter = word.substr(-1);
     hasBatchim = (lastLetter.charCodeAt(0) - parseInt("ac00", 16)) % 28 > 0;
 
     if (josaType == "을를") {
@@ -58,18 +67,6 @@ function matchJosa(word, josaType, resultType) {
     return result;
 }
 
-// function formatDate(date, boolForKor, boolForDay) {
-//     let day, format, formattedDate;
-//     boolForDay ? day = date.getKorDay() : null;
-//     if (boolForKor) {
-//         format = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-//     } else {
-//         format = `${date.getFullYear()}-${(date.getMonth() + 1).toTwoDigits()}-${(date.getDate()).toTwoDigits()}`;
-//     };
-//     formattedDate = boolForDay ? `${format}(${day})` : format;
-//     return formattedDate;
-// }
-
 function findLabel(input) {
     let foundLabel;
     labels.forEach((label) => {
@@ -80,11 +77,6 @@ function findLabel(input) {
     return foundLabel;
 }
 
-// function checkPathname(word) {
-//     let bool = (window.location.pathname).includes(word);
-//     return bool;
-// }
-
 function freezeForm(bool) {
     /*
      * bool: Freeze or Unfreeze active inputs and buttons
@@ -93,6 +85,8 @@ function freezeForm(bool) {
     inputs.forEach((input) => {
         if (input.type == "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
+        } else if (input.getAttribute("origin") == "radio") {
+            bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false })
         } else if (input.disabled == false) {
             bool ? input.readOnly = true : input.readOnly = false;
         };
@@ -130,7 +124,19 @@ function code(id, extra) {
 }
 
 function isValid(input) {
+    /* 
+     * input: Input that needs to be validated
+     */
+
     return input.type == "checkbox" ? input.checked : controlError(input) == false && code(input, "_descr").hidden && code(input, "_error").hidden;
+}
+
+function trim(input) {
+    /* 
+     * input: Input that needs to be trimed
+     */
+
+    return input.value.trim().replace(/\s{2,}/g, " ");
 }
 
 //
@@ -165,20 +171,77 @@ function validation() {
                 input.value = input.value.replace(regNotNumber, "").replace(/(^0[0-9]{2})([0-9]+)?([0-9]{4})$/, "$1-$2-$3").replace("--", "-");
             });
         });
+        onlyDates.forEach((input) => {
+            input.addEventListener(type, () => {
+                input.value = input.value.replace(regNotNumber, "").replace(/(^[0-9]{4})([0-9]+)?([0-9]{2})$/, "$1-$2-$3").replace("--", "-");
+            });
+        });
+        onlyUrls.forEach((input) => {
+            input.addEventListener(type, () => {
+                input.value = input.value.replace(" ", "");
+            });
+        });
+        onlySlugs.forEach((input) => {
+            input.addEventListener(type, () => {
+                input.value = input.value.replace(regNotLowerRomanAndNumber, "");
+                input.value = input.value.replace(" ", "");
+            });
+        });
     });
     inputs.forEach((input) => {
-        input.addEventListener("keydown", (event) => {
-            displayError(false, input);
-            controlDescr(input, event);
-        });
-        input.addEventListener("focusout", () => {
-            displayDescr(false, input);
-            controlError(input);
-        });
-        input.addEventListener("focusin", () => {
-            displayError(false, input);
-        });
+        if (input.type == "radio") {
+            let OriginalInput = eval(input.id.replace(input.id, `${input.id.split("_")[0]}_${input.id.split("_")[1]}`));
+            input.addEventListener("click", () => {
+                displayError(false, OriginalInput);
+            });
+            input.addEventListener("focusout", () => {
+                controlError(OriginalInput);
+            });
+            input.addEventListener("focusin", () => {
+                displayError(false, OriginalInput);
+            });
+        } else {
+            input.addEventListener("click", () => {
+                displayInfo(true, input);
+                displayError(false, input);
+            });
+            input.addEventListener("keydown", (event) => {
+                displayInfo(true, input);
+                displayError(false, input);
+                controlDescr(input, event);
+            });
+            input.addEventListener("focusout", () => {
+                trim(input);
+                displayInfo(false, input);
+                displayDescr(false, input);
+                controlError(input);
+            });
+            input.addEventListener("focusin", () => {
+                trim(input);
+                displayInfo(false, input);
+                displayError(false, input);
+            });
+        };
     });
+}
+
+function displayInfo(bool, input) {
+    /* 
+     * bool: Show/hide description
+     * input: Target input
+     */
+
+    let infoMsg = code(input, "_info");
+
+    if (bool == true) {
+        // Show info
+        infoMsg.hidden = false;
+    }
+
+    else if (bool == false) {
+        // Hide info
+        infoMsg.hidden = true;
+    };
 }
 
 function controlDescr(input, event) {
@@ -204,20 +267,21 @@ function controlDescr(input, event) {
         };
     };
 
-    // Only romans allowed
+    // Only lower romans and numbers allowed
     if ([id_dflink_slug].indexOf(input) != -1) {
-        if (regNotRoman.test(input.value) ||
-            (regNotRoman.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
-            displayDescr(true, input, "only romans");
+        if (regNotLowerRomanAndNumber.test(input.value) ||
+            (regNotLowerRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1) ||
+            (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            displayDescr(true, input, "only lower romans and numbers");
         } else {
             displayDescr(false, input);
         };
     };
 
-    // Only phone numbers allowed
-    if ([id_phone].indexOf(input) != -1) {
-        if (regNotPhone.test(input.value) ||
-            (regNotPhone.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+    // Only phone numbers OR dates allowed
+    if ([id_phone, id_dflink_expiration_date].indexOf(input) != -1) {
+        if (regNotNumberWithDash.test(input.value) ||
+            (regNotNumberWithDash.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
             displayDescr(true, input, "only numbers");
         } else {
             displayDescr(false, input);
@@ -241,11 +305,55 @@ function controlDescr(input, event) {
     };
 }
 
+function displayDescr(bool, input, descrType) {
+    /* 
+     * bool: Show/hide description
+     * input: Target input
+     * descrType: "no spaces", "no hanguls", "only hanguls", "only romans", "only numbers", "only lower romans and numbers"
+     */
+
+    let descrMsg = code(input, "_descr");
+
+    if (bool == true) {
+        // Show description
+        let sentence;
+        if (descrType == "no spaces") {
+            sentence = "공백은 입력될 수 없어요.";
+        } else if (descrType == "no hanguls") {
+            sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
+        } else if (descrType == "only hanguls") {
+            sentence = "한글만 입력해주세요.";
+        } else if (descrType == "only romans") {
+            sentence = "로마자 소문자만 입력해주세요.";
+        } else if (descrType == "only numbers") {
+            sentence = "숫자만 입력해주세요.";
+        } else if (descrType = "only lower romans and numbers") {
+            sentence = "로마자 소문자, 숫자만 입력해주세요.";
+        };
+        descrMsg.innerText = `${sentence}`;
+        descrMsg.hidden = false;
+
+    } else if (bool == false) {
+        // Hide description
+        descrMsg.innerText = null;
+        descrMsg.hidden = true;
+    };
+}
+
 function controlError(input) {
     // Checkbox
     if ([id_agree].indexOf(input) != -1) {
         if (input.checked == false) {
             displayError(true, input, "unchecked");
+        } else {
+            return false;
+        };
+    };
+
+    // Radio button
+    if ([id_category].indexOf(input) != -1) {
+        if (input.value == "") {
+            displayError(true, input, "unselected");
         } else {
             return false;
         };
@@ -264,22 +372,13 @@ function controlError(input) {
         };
     };
 
-    // Hangul
+    // Name
     if ([id_name].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length == 1) {
             displayError(true, input, "insufficient");
-        } else {
-            return false;
-        };
-    };
-
-    // Roman
-    if ([id_dflink_slug].indexOf(input) != -1) {
-        if (input.value.length == 0) {
-            displayError(true, input, "empty");
-        } else if (!input.value.match(regRoman)) {
+        } else if (!input.value.match(regHangul)) {
             displayError(true, input, "invalid");
         } else {
             return false;
@@ -328,56 +427,67 @@ function controlError(input) {
         };
     };
 
+    // Url
+    if ([id_original_url].indexOf(input) != -1) {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (input.value.indexOf("https://") == -1 && input.value.indexOf("http://") == -1) {
+            displayError(true, input, "no protocol");
+        } else if (!input.value.match(regUrl)) {
+            displayError(true, input, "invalid");
+        } else {
+            return false;
+        };
+    };
+
+    // DF link slug
+    if ([id_dflink_slug].indexOf(input) != -1) {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (input.value.length < 2) {
+            displayError(true, input, "insufficient");
+        } else {
+            return false;
+        };
+    };
+
     // DF link title
     if ([id_dflink_title].indexOf(input) != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
-        } else if (input.value.length == 1) {
+        } else if (input.value.replace(/\s/g, "").length == 0) {
+            displayError(true, input, "empty")
+        } else if (input.value.length < 2) {
             displayError(true, input, "insufficient");
+        } else {
+            return false;
+        };
+    };
+
+    // DF link expiration date
+    if ([id_dflink_expiration_date].indexOf(input) != -1) {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (input.value.length !== 10) {
+            displayError(true, input, "insufficient");
+        } else if (!validateDate(input)) {
+            displayError(true, input, "invalid");
+        } else if (Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
+            Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, ""))) {
+            displayError(true, input, "out of range");
+        } else {
+            return false;
         };
     };
 
     return true;
 }
 
-function displayDescr(bool, input, descrType) {
-    /* 
-     * bool: Show/hide description
-     * input: Target input
-     * descrType: "no spaces", "no hanguls", "only numbers", "only hanguls", "only romans"
-     */
-
-    let descrMsg = code(input, "_descr");
-
-    if (bool == true) {
-        // Show description
-        let sentence;
-        if (descrType == "no spaces") {
-            sentence = "공백은 입력될 수 없어요.";
-        } else if (descrType == "no hanguls") {
-            sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
-        } else if (descrType == "only numbers") {
-            sentence = "숫자만 입력해주세요.";
-        } else if (descrType == "only hanguls") {
-            sentence = "한글만 입력해주세요.";
-        } else if (descrType == "only romans") {
-            sentence = "로마자 소문자만 입력해주세요.";
-        };
-        descrMsg.innerText = `${sentence}`;
-        descrMsg.hidden = false;
-
-    } else if (bool == false) {
-        // Hide description
-        descrMsg.innerText = null;
-        descrMsg.hidden = true;
-    };
-}
-
 function displayError(bool, input, errorType) {
     /* 
      * bool: Show/hide error
      * input: Target input
-     * descrType: "unchecked", "empty", "insufficient", "invalid"
+     * descrType: "unchecked", "unselected", "empty", "insufficient", "invalid", "no protocol", "out of range"
      */
 
     let errorMsg = code(input, "_error");
@@ -394,6 +504,9 @@ function displayError(bool, input, errorType) {
         if (errorType == "unchecked") {
             subject = matchJosa(`'${findLabel(input)}'`, "을를", "WJS");
             narrativeClause = "체크해주세요.";
+        } else if (errorType == "unselected") {
+            subject = matchJosa(`${findLabel(input)}`, "을를", "WJS");
+            narrativeClause = "선택해주세요.";
         } else if (errorType == "empty") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
             narrativeClause = "입력해주세요.";
@@ -403,6 +516,12 @@ function displayError(bool, input, errorType) {
         } else if (errorType == "invalid") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = "잘못 입력된 것 같아요.";
+        } else if (errorType == "no protocol") {
+            subject = `${findLabel(input)}에`
+            narrativeClause = "'https://' 또는 'http://'를 포함해주세요.";
+        } else if (errorType == "out of range") {
+            subject = matchJosa(findLabel(input), "이가", "WJS");
+            narrativeClause = `유효 범위를 벗어났어요.`;
         };
         errorMsg.innerText = `${subject} ${narrativeClause}`;
         errorMsg.hidden = false;

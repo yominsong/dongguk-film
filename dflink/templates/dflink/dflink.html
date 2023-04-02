@@ -72,7 +72,7 @@
 <div class="mt-5 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="overflow-hidden bg-white shadow rounded-lg">
         <ul role="list" class="divide-y divide-gray-200">
-            <li id="id_open_form">
+            <li id="id_open_form" class="cursor-pointer">
                 <div class="block hover:bg-gray-50">
                     <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-black">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
@@ -93,7 +93,7 @@
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
                                     class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
-                                    작품 관련</p>
+                                    작품</p>
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
@@ -141,7 +141,7 @@
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
                                     class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
-                                    작품 관련</p>
+                                    작품</p>
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
@@ -188,8 +188,8 @@
                                     class="font-bold">ogmeeting</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
-                                    학과 관련</p>
+                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    학과</p>
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
@@ -236,8 +236,8 @@
                                     class="font-bold">ogmeeting</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
-                                    학과 관련</p>
+                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    학과</p>
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
@@ -284,8 +284,8 @@
                                     class="font-bold">ogmeeting</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
-                                    학과 관련</p>
+                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    학과</p>
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
@@ -414,9 +414,10 @@
                                                 class="block text-sm font-medium leading-6 text-gray-900">원본 URL</label>
                                             <div class="mt-2">
                                                 <input type="url" name="id_original_url" id="id_original_url"
-                                                    class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                     placeholder="https://www.example.com" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_original_url_info" hidden>
                                             <p class="mt-2 text-sm text-gray-500" id="id_original_url_descr" hidden>
                                             </p>
                                             <p class="mt-2 text-sm text-flamingo-600" id="id_original_url_error" hidden>
@@ -431,9 +432,10 @@
                                                 <span
                                                     class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
                                                 <input type="text" name="id_dflink_slug" id="id_dflink_slug"
-                                                    class="step-one only-roman block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    class="step-one only-slug block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                     placeholder="tejavasce" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_slug_info" hidden>
                                             <p class="mt-2 text-sm text-gray-500" id="id_dflink_slug_descr" hidden>
                                             </p>
                                             <p class="mt-2 text-sm text-flamingo-600" id="id_dflink_slug_error" hidden>
@@ -445,9 +447,10 @@
                                                 class="block text-sm font-medium leading-6 text-gray-900">제목</label>
                                             <div class="mt-2">
                                                 <input type="text" name="id_dflink_title" id="id_dflink_title"
-                                                    class="step-one block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
+                                                    class="step-one block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                     placeholder="&lt;데자와&gt; 시나리오" required>
                                             </div>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_title_info" hidden></p>
                                             <p class="mt-2 text-sm text-gray-500" id="id_dflink_title_descr" hidden>
                                             </p>
                                             <p class="mt-2 text-sm text-flamingo-600" id="id_dflink_title_error" hidden>
@@ -459,10 +462,9 @@
                                             <div class="mt-2 space-y-4">
                                                 <div class="relative flex items-start">
                                                     <div class="absolute flex h-6 items-center">
-                                                        <input id="id_category_work" name="id_category"
+                                                        <input id="id_category_work" name="id_category" value="work"
                                                             aria-describedby="id_category_work_descr" type="radio"
-                                                            class="h-4 w-4 border-gray-300 text-flamingo-600 focus:ring-flamingo-600"
-                                                            checked="">
+                                                            class="step-one h-4 w-4 radio border-gray-300 text-flamingo-600 focus:ring-flamingo-600 disabled:opacity-75 disabled:cursor-not-allowed">
                                                     </div>
                                                     <div class="pl-7 text-sm leading-6">
                                                         <label for="id_category_work"
@@ -473,9 +475,9 @@
                                                 </div>
                                                 <div class="relative flex items-start">
                                                     <div class="absolute flex h-6 items-center">
-                                                        <input id="id_category_dept" name="id_category"
+                                                        <input id="id_category_dept" name="id_category" value="dept"
                                                             aria-describedby="id_category_dept_descr" type="radio"
-                                                            class="h-4 w-4 border-gray-300 text-flamingo-600 focus:ring-flamingo-600">
+                                                            class="step-one h-4 w-4 radio border-gray-300 text-flamingo-600 focus:ring-flamingo-600 disabled:opacity-75 disabled:cursor-not-allowed">
                                                     </div>
                                                     <div class="pl-7 text-sm leading-6">
                                                         <label for="id_category_dept"
@@ -485,21 +487,32 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <label for="id_category" hidden>범주</label>
+                                            <input type="text" origin="radio" id="id_category" class="step-one" value=""
+                                                required hidden>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_category_info" hidden></p>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_category_descr" hidden></p>
+                                            <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                                         </fieldset>
 
+
                                         <div>
-                                            <label for="id_expiration_date"
+                                            <label for="id_dflink_expiration_date"
                                                 class="block text-sm font-medium leading-6 text-gray-900">만료일</label>
                                             <div class="mt-2">
-                                                <input type="date" name="id_expiration_date" id="id_expiration_date"
-                                                    class="step-one only-numbers block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6"
-                                                    placeholder="{% now 'Y' %}-12-31" required>
+                                                <input type="text" name="id_dflink_expiration_date"
+                                                    id="id_dflink_expiration_date"
+                                                    class="step-one only-date block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                                    maxlength="10" minlength="10" placeholder="{% now 'Y' %}-00-00"
+                                                    min="" max="" required>
                                             </div>
-                                            <p class="mt-2 text-sm text-gray-500" id="id_expiration_date_descr" hidden>
-                                            </p>
-                                            <p class="mt-2 text-sm text-flamingo-600" id="id_expiration_date_error"
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_expiration_date_info"
                                                 hidden>
                                             </p>
+                                            <p class="mt-2 text-sm text-gray-500" id="id_dflink_expiration_date_descr"
+                                                hidden></p>
+                                            <p class="mt-2 text-sm text-flamingo-600"
+                                                id="id_dflink_expiration_date_error" hidden></p>
                                         </div>
 
                                         <div class="text-sm inline-flex items-center">
@@ -509,18 +522,37 @@
                                                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
                                                     clip-rule="evenodd" />
                                             </svg>
-                                            <span class="ml-2 text-gray-500">악의적 사용 시 관련 법규에 따라 처리됩니다.</span>
+                                            <span class="ml-1 text-gray-500">악의적 사용 시 관련 법령에 의거 처리됩니다.</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-shrink-0 justify-end px-4 py-4">
-                            <button type="button"
-                                class="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                @click="open = false">취소</button>
-                            <button type="submit" id="id_create_dflink"
-                                class="ml-4 inline-flex justify-center rounded-md bg-flamingo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-flamingo-600">저장</button>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="flex relative h-3 w-3">
+                                    <span
+                                        class="animate-ping absolute ml-4 inline-flex h-full w-full rounded-full bg-yellow-400 opacity-100"></span>
+                                    <span class="animate-ping-bg absolute ml-4 inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+                                </span>
+                                <p id="id_create_dflink_info" class="text-sm ml-6 text-gray-500">유해성 여부 감지 중</p>
+                            </div>
+                            <div class="flex flex-shrink-0 justify-end px-4 py-4">
+                                <button type="button"
+                                    class="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                    @click="open = false">취소</button>
+                                <button type="button" id="id_create_dflink"
+                                    class="ml-4 inline-flex justify-center rounded-md bg-flamingo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-flamingo-600 disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"><svg
+                                        class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        id="id_create_dflink_spin">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>저장</button>
+                            </div>
                         </div>
                     </form>
                 </div>

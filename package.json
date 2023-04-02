@@ -10,5 +10,8 @@
   },
   "scripts": {
     "css": "npx tailwindcss -i ./dongguk_film/static/css/input.css -o ./dongguk_film/static/css/output.css --watch"
+  },
+  "dependencies": {
+    "hangul-js": "^0.2.6"
   }
 }

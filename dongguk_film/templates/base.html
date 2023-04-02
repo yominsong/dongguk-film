@@ -61,17 +61,8 @@
 </head>
 
 <body class="antialiased font-pretendard bg-gray-100 overflow-auto">
-    <div class="flex flex-col h-screen justify-between">
-        <div>{% include "shared/_navbar.html" %}</div>
-        <div class="mb-auto">{% block body %}{% endblock %}</div>
-        <div>{% include "shared/_footer.html" %}</div>
-    </div>
-
     <!-- Notification -->
     {% include "shared/_noti.html" %}
-
-    <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/datetime.js' %}"></script>
     <!-- Notify MS IE not supported -->
     <script>
         function notifyMsIeNotSupported() {
@@ -88,6 +79,14 @@
     <!-- FlareLane Web Push JS -->
     <!-- <script src="https://cdn.flarelane.com/WebSDK.js"></script>
     <script src="{% static 'push.js' %}"></script> -->
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/datetime.js' %}"></script>
+
+    <div class="flex flex-col h-screen justify-between">
+        <div>{% include "shared/_navbar.html" %}</div>
+        <div class="mb-auto">{% block body %}{% endblock %}</div>
+        <div>{% include "shared/_footer.html" %}</div>
+    </div>
 </body>
 
 </html>

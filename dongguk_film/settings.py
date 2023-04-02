@@ -56,6 +56,8 @@ DMD_URL = get_secret("DMD_URL")
 
 DMD_COOKIE = get_secret("DMD_COOKIE")
 
+OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
