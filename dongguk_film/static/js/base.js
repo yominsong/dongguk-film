@@ -187,6 +187,9 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+        buttons.forEach((button) => {
+            button.disabled = false;
+        });
     };
 }
 
