@@ -59,11 +59,23 @@ function setPage() {
         filteredInputs = inputs.filter(isValid);
         if (filteredInputs.length == inputs.length) {
             requestValidateSite();
+            id_create_dflink_div.classList.replace("justify-between", "justify-end");
+            displayButtonMsg(false, id_create_dflink, "descr");
+            displayButtonMsg(false, id_create_dflink, "error");
         } else {
             inputs.forEach((input) => {
                 controlError(input);
             });
         };
+    });
+    ["keydown", "focusin"].forEach((type) => {
+        inputs.forEach((input) => {
+            input.addEventListener(type, () => {
+                id_create_dflink_div.classList.replace("justify-between", "justify-end");
+                displayButtonMsg(false, id_create_dflink, "descr");
+                displayButtonMsg(false, id_create_dflink, "error");
+            });
+        });
     });
 }
 

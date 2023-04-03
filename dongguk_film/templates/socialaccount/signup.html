@@ -168,8 +168,10 @@
                                     </svg>
                                     인증번호 받기
                                 </button>
+                                <p class="mt-2 text-sm text-gray-500" id="id_create_vcode_info" hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_create_vcode_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_create_vcode_error" hidden></p>
+                                <p class="mt-2 text-sm text-gray-500" id="id_agree_info" hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_agree_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_agree_error" hidden></p>
                             </div>
@@ -181,6 +183,7 @@
                                 <div class="mt-1 shadow-sm">
                                     {{ form.email_vcode }}
                                 </div>
+                                <p class="mt-2 text-sm text-gray-500" id="id_email_vcode_info" hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_email_vcode_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_email_vcode_error" hidden></p>
                             </div>
@@ -190,6 +193,7 @@
                                 <div class="mt-1 shadow-sm">
                                     {{ form.phone_vcode }}
                                 </div>
+                                <p class="mt-2 text-sm text-gray-500" id="id_phone_vcode_info" hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_phone_vcode_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_phone_vcode_error" hidden></p>
                             </div>
@@ -208,6 +212,7 @@
                                     </svg>
                                     가입하기
                                 </button>
+                                <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_info" hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_confirm_vcode_error" hidden></p>
                             </div>

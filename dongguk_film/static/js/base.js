@@ -152,11 +152,14 @@ function handleAjaxCallback(response) {
     } else if (response.id = "validate_site") {
         // requestValidateSite()
         if (response.result.status == "DONE") {
-            id_create_dflink_info.classList.replace("text-flamingo-600", "text-gray-500");
+            displayForm(false);
+            id_create_dflink_div.classList.replace("justify-end", "justify-between");
+            displayButtonMsg(true, id_create_dflink, "descr", response.result.msg);
+            displayButtonMsg(false, id_create_dflink, "error");
         } else if (response.result.status == "FAIL") {
-            id_create_dflink_info.classList.replace("text-gray-500", "text-flamingo-600");
+            id_create_dflink_div.classList.replace("justify-end", "justify-between");
+            displayButtonMsg(true, id_create_dflink, "error", response.result.msg);
         };
-        id_create_dflink_info.innerText = response.result.msg;
         freezeForm(false);
         spins.forEach((spin) => {
             spin.classList.add("hidden");

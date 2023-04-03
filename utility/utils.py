@@ -72,7 +72,7 @@ def ai(request):
 
         if not "true" in available:
             status = "FAIL"
-            msg = "앗, 원본 URL에 문제가 있어요."
+            msg = "앗, 동영링크를 만들 수 없어요."
             concern = "unavailable"
             send_msg(
                 request,
@@ -87,7 +87,7 @@ def ai(request):
             )
         elif not "false" in harmful:
             status = "FAIL"
-            msg = "앗, 원본 URL에 문제가 있어요."
+            msg = "앗, 동영링크를 만들 수 없어요."
             concern = "harmful"
             send_msg(
                 request,
@@ -102,7 +102,7 @@ def ai(request):
             )
         else:
             status = "DONE"
-            msg = "동영링크가 만들어졌어요! 👍"
+            msg = "동영링크를 만들었어요! 👍"
             concern = None
             send_msg(
                 request,
