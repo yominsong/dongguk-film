@@ -1764,6 +1764,11 @@ select {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-flamingo-500 {
+  --tw-text-opacity: 1;
+  color: rgb(241 89 34 / var(--tw-text-opacity));
+}
+
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

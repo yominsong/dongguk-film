@@ -434,7 +434,7 @@ function controlError(input) {
         } else if (input.value.indexOf("https://") == -1 && input.value.indexOf("http://") == -1) {
             displayError(true, input, "no protocol");
         } else if (!input.value.match(regUrl)) {
-            displayError(true, input, "invalid");
+            displayError(true, input, "insufficient");
         } else {
             return false;
         };

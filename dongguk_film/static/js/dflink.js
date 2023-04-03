@@ -6,7 +6,8 @@ let filteredInputs = [];
 //
 
 function displayForm(bool) {
-    if (bool == true) {
+    let id_open_form = document.querySelector("#id_open_form");
+    if (id_open_form && bool == true) {
         id_open_form.addEventListener("click", () => {
             id_form.classList.remove("hidden");
             id_form.setAttribute("x-data", "{ open: true }");

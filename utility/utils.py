@@ -58,7 +58,7 @@ def ai(request):
             "messages": [
                 {
                     "role": "user",
-                    "content": f"{original_url}\n(1) 존재하는 사이트인지\n(2) 청소년에게 유해한 사이트인지\n'예' 또는 '아니오'로만 답해줘.",
+                    "content": f"{original_url}\n(1) 존재하는 사이트인지\n(2) 청소년에게 유해한 사이트인지\n'true' 또는 'false'로만 답해줘.",
                 }
             ],
             "temperature": 0.7,
@@ -70,9 +70,9 @@ def ai(request):
         available = str(validation_result).split("\n")[0]
         harmful = str(validation_result).split("\n")[1]
 
-        if "아니오" in available:
+        if not "true" in available:
             status = "FAIL"
-            msg = "동영링크를 만들 수 없어요."
+            msg = "앗, 원본 URL에 문제가 있어요."
             concern = "unavailable"
             send_msg(
                 request,
@@ -85,9 +85,9 @@ def ai(request):
                     "concern": concern,
                 },
             )
-        elif not "아니오" in harmful:
+        elif not "false" in harmful:
             status = "FAIL"
-            msg = "동영링크를 만들 수 없어요."
+            msg = "앗, 원본 URL에 문제가 있어요."
             concern = "harmful"
             send_msg(
                 request,
@@ -102,7 +102,7 @@ def ai(request):
             )
         else:
             status = "DONE"
-            msg = "동영링크가 저장되었어요!"
+            msg = "동영링크가 만들어졌어요! 👍"
             concern = None
             send_msg(
                 request,

@@ -72,9 +72,10 @@
 <div class="mt-5 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="overflow-hidden bg-white shadow rounded-lg">
         <ul role="list" class="divide-y divide-gray-200">
+            {% if user.is_authenticated %}
             <li id="id_open_form" class="cursor-pointer">
                 <div class="block hover:bg-gray-50">
-                    <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-black">
+                    <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-gray-900">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path
                                 d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
@@ -83,7 +84,7 @@
                     </div>
                 </div>
             </li>
-
+            {% endif %}
             <li>
                 <a href="#" class="block hover:bg-gray-50">
                     <div class="px-4 py-4 sm:px-6">
@@ -97,8 +98,11 @@
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
+                            <p class="flex items-center font-medium text-sm text-gray-900">
+                                &lt;닭다리가 작아요!&gt; 시나리오
+                            </p>
                             <div class="sm:flex">
-                                <p class="flex items-center text-sm text-gray-500">
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path
@@ -106,26 +110,17 @@
                                     </svg>
                                     양근혁
                                 </p>
-                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                            clip-rule="evenodd" />
+                                            d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                    &lt;닭다리가 작아요!&gt; 시나리오
-                                </p>
-                            </div>
-                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p>
-                                    <time datetime="2020-01-07">2023-03-29</time> 만료
-                                </p>
+                                    <p>
+                                        <time datetime="2020-01-07">2023-03-29</time> 만료
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,8 +140,11 @@
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
+                            <p class="flex items-center font-medium text-sm text-gray-900">
+                                &lt;황성주 박사의 국산콩 두유&gt; 가편집본
+                            </p>
                             <div class="sm:flex">
-                                <p class="flex items-center text-sm text-gray-500">
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path
@@ -154,26 +152,17 @@
                                     </svg>
                                     이상준
                                 </p>
-                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                            clip-rule="evenodd" />
+                                            d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                    &lt;황성주 박사의 국산콩 두유&gt; 가편집본
-                                </p>
-                            </div>
-                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p>
-                                    <time datetime="2020-01-07">2023-04-25</time> 만료
-                                </p>
+                                    <p>
+                                        <time datetime="2020-01-07">2023-04-25</time> 만료
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,8 +182,11 @@
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
+                            <p class="flex items-center font-medium text-sm text-gray-900">
+                                2023학년도 2학기 개강총회
+                            </p>
                             <div class="sm:flex">
-                                <p class="flex items-center text-sm text-gray-500">
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path
@@ -202,26 +194,17 @@
                                     </svg>
                                     나인준
                                 </p>
-                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                            clip-rule="evenodd" />
+                                            d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                    2023학년도 2학기 개강총회
-                                </p>
-                            </div>
-                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p>
-                                    <time datetime="2020-01-07">2023-06-10</time> 만료
-                                </p>
+                                    <p>
+                                        <time datetime="2020-01-07">2023-06-10</time> 만료
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -233,7 +216,7 @@
                     <div class="px-4 py-4 sm:px-6">
                         <div class="flex items-center justify-between">
                             <p class="truncate text-base font-medium text-flamingo-600">dgufilm.link/<span
-                                    class="font-bold">ogmeeting</span></p>
+                                    class="font-bold">website</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
                                     class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
@@ -241,35 +224,29 @@
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
+                            <p class="flex items-center font-medium text-sm text-gray-900">
+                                학과 웹사이트
+                            </p>
                             <div class="sm:flex">
-                                <p class="flex items-center text-sm text-gray-500">
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path
                                             d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
                                     </svg>
-                                    나인준
+                                    김원주
                                 </p>
-                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                            clip-rule="evenodd" />
+                                            d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                    2023학년도 2학기 개강총회
-                                </p>
-                            </div>
-                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p>
-                                    <time datetime="2020-01-07">2023-06-10</time> 만료
-                                </p>
+                                    <p>
+                                        <time datetime="2020-01-07">2023-06-25</time> 만료
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -281,7 +258,7 @@
                     <div class="px-4 py-4 sm:px-6">
                         <div class="flex items-center justify-between">
                             <p class="truncate text-base font-medium text-flamingo-600">dgufilm.link/<span
-                                    class="font-bold">ogmeeting</span></p>
+                                    class="font-bold">chacha</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
                                     class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
@@ -289,35 +266,29 @@
                             </div>
                         </div>
                         <div class="mt-2 sm:flex sm:justify-between">
+                            <p class="flex items-center font-medium text-sm text-gray-900">
+                                차차 시네클럽
+                            </p>
                             <div class="sm:flex">
-                                <p class="flex items-center text-sm text-gray-500">
+                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path
                                             d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
                                     </svg>
-                                    나인준
+                                    윤상운
                                 </p>
-                                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                                     <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
                                         fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                            clip-rule="evenodd" />
+                                            d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
-                                    2023학년도 2학기 개강총회
-                                </p>
-                            </div>
-                            <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                <svg class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20"
-                                    fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd"
-                                        d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                <p>
-                                    <time datetime="2020-01-07">2023-06-10</time> 만료
-                                </p>
+                                    <p>
+                                        <time datetime="2020-01-07">2023-07-01</time> 만료
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -408,7 +379,7 @@
                             </div>
                             <div class="flex flex-1 flex-col justify-between">
                                 <div class="px-4 sm:px-6">
-                                    <div class="space-y-6 pt-6 pb-5">
+                                    <div class="space-y-6 py-6">
                                         <div>
                                             <label for="id_original_url"
                                                 class="block text-sm font-medium leading-6 text-gray-900">원본 URL</label>
@@ -514,35 +485,15 @@
                                             <p class="mt-2 text-sm text-flamingo-600"
                                                 id="id_dflink_expiration_date_error" hidden></p>
                                         </div>
-
-                                        <div class="text-sm inline-flex items-center">
-                                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-                                                aria-hidden="true">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="ml-1 text-gray-500">악의적 사용 시 관련 법령에 의거 처리됩니다.</span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <span class="flex relative h-3 w-3">
-                                    <span
-                                        class="animate-ping absolute ml-4 inline-flex h-full w-full rounded-full bg-yellow-400 opacity-100"></span>
-                                    <span class="animate-ping-bg absolute ml-4 inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
-                                </span>
-                                <p id="id_create_dflink_info" class="text-sm ml-6 text-gray-500">유해성 여부 감지 중</p>
-                            </div>
+                            <p id="id_create_dflink_info" class="px-4 py-4 text-sm text-gray-500"></p>
                             <div class="flex flex-shrink-0 justify-end px-4 py-4">
-                                <button type="button"
-                                    class="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                    @click="open = false">취소</button>
                                 <button type="button" id="id_create_dflink"
-                                    class="ml-4 inline-flex justify-center rounded-md bg-flamingo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-flamingo-600 disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"><svg
+                                    class="inline-flex justify-center rounded-md bg-flamingo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-flamingo-600 disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"><svg
                                         class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         id="id_create_dflink_spin">
@@ -551,7 +502,7 @@
                                         <path class="opacity-75" fill="currentColor"
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                         </path>
-                                    </svg>저장</button>
+                                    </svg>만들기</button>
                             </div>
                         </div>
                     </form>

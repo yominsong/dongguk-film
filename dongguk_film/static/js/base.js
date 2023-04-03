@@ -35,13 +35,6 @@ function inheritObject() {
 
 inheritObject();
 
-window.onload = function hideNavbarAndFooter() {
-    if (location.pathname.indexOf("accounts") != -1) {
-        navbar.hidden = true;
-        footer.hidden = true;
-    };
-}
-
 //
 // Main functions
 //
@@ -158,32 +151,13 @@ function handleAjaxCallback(response) {
 
     } else if (response.id = "validate_site") {
         // requestValidateSite()
-        let ping = document.querySelectorAll(".animate-ping");
-        let pingBg = document.querySelectorAll(".animate-ping-bg");
         if (response.result.status == "DONE") {
-            displayForm(false);
-            ping.forEach((item) => {
-                item.classList.remove("bg-yellow-400");
-                item.classList.remove("bg-red-400");
-                item.classList.add("bg-green-400");
-            });
-            pingBg.forEach((item) => {
-                item.classList.remove("bg-yellow-500");
-                item.classList.remove("bg-red-500");
-                item.classList.add("bg-green-500");
-            });
+            id_create_dflink_info.classList.replace("text-flamingo-600", "text-gray-500");
         } else if (response.result.status == "FAIL") {
-            freezeForm(false);
-            ping.forEach((item) => {
-                item.classList.remove("bg-yellow-400");
-                item.classList.add("bg-red-400");
-            });
-            pingBg.forEach((item) => {
-                item.classList.remove("bg-yellow-500");
-                item.classList.add("bg-red-500");
-            });
+            id_create_dflink_info.classList.replace("text-gray-500", "text-flamingo-600");
         };
         id_create_dflink_info.innerText = response.result.msg;
+        freezeForm(false);
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
