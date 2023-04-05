@@ -381,7 +381,7 @@ function controlError(input) {
     };
 
     // text (email)
-    if (lowercaseId(input).indexOf("email") != -1) {
+    if (lowercaseId(input).indexOf("email") != -1 && lowercaseId(input).indexOf("vcode") == -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("@") == -1 ||
