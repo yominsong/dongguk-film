@@ -20,9 +20,9 @@ function displayForm(bool) {
 displayForm(true);
 
 function requestValidateSite() {
-    request.url = `${originLocation}/utility/utils/ai`;
+    request.url = `${originLocation}/utility/utils/dflink`;
     request.type = "GET";
-    request.data = { id: "validate_site", original_url: `${id_original_url.value}`, title: `${id_dflink_title.value}`, dflink: `https://dgufilm.link/${id_dflink_slug.value}` };
+    request.data = { id: "validate_site", original_url: `${id_original_url.value}`, slug: `${id_dflink_slug.value}`, title: `${id_dflink_title.value}`, category: `${id_category.value}`, expiration_date: `${id_dflink_expiration_date.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_dflink, "_spin").classList.remove("hidden");
@@ -32,19 +32,20 @@ function requestValidateSite() {
 }
 
 function setPage() {
+    let originalInputs = document.querySelectorAll("input[name='id_category']");
+
     id_dflink_expiration_date.setAttribute("min", yyyymmddWithDash);
     id_dflink_expiration_date.setAttribute("max", yyyymmddOfAfter90DaysWithDash);
-    id_dflink_expiration_date_info.innerText = `유효 범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
+    id_dflink_expiration_date_help.innerText = `유효 범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
 
-    id_category_work.addEventListener("click", () => {
-        if (id_category_work.checked) {
-            id_category.value = id_category_work.value;
-        };
-    });
-    id_category_dept.addEventListener("click", () => {
-        if (id_category_dept.checked) {
-            id_category.value = id_category_dept.value;
-        };
+    originalInputs.forEach((input) => {
+        input.addEventListener("click", () => {
+            if (input == id_category_work) {
+                id_category.value = input.value;
+            } else if (input == id_category_dept) {
+                id_category.value = input.value;
+            };
+        });
     });
 
     initValidation(stepOnes, id_create_dflink);

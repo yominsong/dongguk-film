@@ -7,6 +7,7 @@ from requests.adapters import HTTPAdapter
 from .msg import send_msg
 import openai, json, requests
 
+OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 
 #
@@ -36,15 +37,17 @@ def update_dmd_cookie(request):
 #
 
 
-def ai(request):
+def dflink(request):
     # id: validate_site
     if request.GET["id"] == "validate_site":
         id = request.GET["id"]
         original_url = request.GET["original_url"]
-        dflink = request.GET["dflink"]
+        slug = request.GET["slug"]
         title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
 
-        openai.organization = "org-OfbeZYoH3To8cRQJn4Y04evT"
+        openai.organization = OPENAI_ORG
         openai.api_key = OPENAI_API_KEY
         openai.Model.list()
 
@@ -58,7 +61,7 @@ def ai(request):
             "messages": [
                 {
                     "role": "user",
-                    "content": f"{original_url}\n(1) 존재하는 사이트인지\n(2) 청소년에게 유해한 사이트인지\n'true' 또는 'false'로만 답해줘.",
+                    "content": f"{original_url}\n(1) Whether the site exists\n(2) Whether the site is not harmful to young people\nAnswer only with 'true' or 'false'.",
                 }
             ],
             "temperature": 0.7,
@@ -68,52 +71,34 @@ def ai(request):
         ).json()
         validation_result = openai_response["choices"][0]["message"]["content"]
         available = str(validation_result).split("\n")[0]
-        harmful = str(validation_result).split("\n")[1]
-
         if not "true" in available:
             status = "FAIL"
-            msg = "앗, 동영링크를 만들 수 없어요."
+            msg = "앗, 원본 URL이 잘못 입력된 것 같아요."
             concern = "unavailable"
-            send_msg(
-                request,
-                "DFF",
-                "MGT",
-                extra={
-                    "original_url": original_url,
-                    "dflink": dflink,
-                    "title": title,
-                    "concern": concern,
-                },
-            )
-        elif not "false" in harmful:
-            status = "FAIL"
-            msg = "앗, 동영링크를 만들 수 없어요."
-            concern = "harmful"
-            send_msg(
-                request,
-                "DFF",
-                "MGT",
-                extra={
-                    "original_url": original_url,
-                    "dflink": dflink,
-                    "title": title,
-                    "concern": concern,
-                },
-            )
+        elif "true" in available:
+            harmful = str(validation_result).split("\n")[1]
+            if not "true" in harmful:
+                status = "FAIL"
+                msg = "이 원본 URL은 사용할 수 없어요."
+                concern = "harmful"
         else:
             status = "DONE"
             msg = "동영링크를 만들었어요! 👍"
             concern = None
-            send_msg(
-                request,
-                "DFD",
-                "MGT",
-                extra={
-                    "original_url": original_url,
-                    "dflink": dflink,
-                    "title": title,
-                },
-            )
+        send_msg(
+            request,
+            "DFL",
+            "MGT",
+            extra={
+                "status": status,
+                "concern": concern,
+                "original_url": original_url,
+                "dflink": f"https://dgufilm.link/{slug}",
+                "title": title,
+                "category": category,
+                "expiration_date": expiration_date,
+            },
+        )
 
     response = {"id": id, "result": {"status": status, "msg": msg, "concern": concern}}
 

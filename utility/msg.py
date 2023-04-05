@@ -87,15 +87,14 @@ def get_webhook(channel):
 
 def send_msg(request, type, channel, extra=None):
     """
-    type: "DSA", "OVP", "UXR", "SUP", "DFD", "DFF"
+    type: "DSA", "OVP", "UXR", "SUP", "DFL"
     channel: "DEV", "MGT"
 
     DSA: Duplicate signup attempt
     AIV: Attempting to skip identity verification
     UXR: Unexpected request
     SUP: Signup complete
-    DFD: DF link validation "DONE"
-    DFF: DF link validation "FAIL"
+    DFL: DF link validation result
 
     DEV: Development
     MGT: Management
@@ -152,28 +151,16 @@ def send_msg(request, type, channel, extra=None):
             "description": "새로운 회원이 가입했습니다. 개인정보 보호를 위해 AnonymousUser로 표시합니다.",
         }
 
-    # type: "DFF"
-    elif type == "DFF":
+    # type: "DFL"
+    elif type == "DFL":
         main_content = {
-            "important": True,
+            "important": True if extra['status'] == "FAIL" else False,
             "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
             "author_url": "",
-            "title": "동영링크 생성 실패",
+            "title": "동영링크 유효성 검사 결과",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"동영링크 생성이 실패되었습니다. 세부 정보는 다음과 같습니다.\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크: {extra['dflink']}\nㆍ제목: {extra['title']}\nㆍ유효성 검사 결과: {extra['concern']}",
-        }
-    
-    # type: "DFD"
-    elif type == "DFD":
-        main_content = {
-            "important": False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
-            "author_url": "",
-            "title": "새로운 동영링크 생성",
-            "url": "https://dongguk.film/dflink",
-            "thumbnail_url": "",
-            "description": f"새로운 동영링크가 생성되었습니다. 세부 정보는 다음과 같습니다.\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크: {extra['dflink']}\nㆍ제목: {extra['title']}",
+            "description": f"사용자의 동영링크 생성 요청에 따른 유효성 검사 결과입니다.\nㆍ상태: {extra['status']}\nㆍ우려점: {extra['concern']}\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크 URL: {extra['dflink']}\nㆍ제목: {extra['title']}\nㆍ범주: {extra['category']}\nㆍ만료일: {extra['expiration_date']}",
         }
 
     # channel: "DEV"

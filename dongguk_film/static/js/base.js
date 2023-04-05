@@ -91,19 +91,19 @@ function handleAjaxCallback(response) {
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        document.querySelector("#address").innerText = response.result.address;
-        document.querySelector("#temperature").innerText = response.result.temperature;
-        document.querySelector("#precipitationType").innerText = response.result.precipitationType;
-        document.querySelector("#windSpeed").innerText = response.result.windSpeed;
-        document.querySelector("#windName").innerText = response.result.windName;
-        document.querySelector("#skyState").innerText = response.result.skyState;
-        document.querySelector("#precipitationProbability").innerText = response.result.precipitationProbability;
-        document.querySelector("#temperatureMax").innerText = response.result.temperatureMax;
-        document.querySelector("#temperatureMin").innerText = response.result.temperatureMin;
-        document.querySelector("#sunrise").innerText = response.result.sunrise;
-        document.querySelector("#sunset").innerText = response.result.sunset;
-        document.querySelector("#accuracy").innerText = response.result.accuracy;
-        document.querySelector("#baseDateTime").innerText = response.result.baseDateTime;
+        address.innerText = response.result.address;
+        temperature.innerText = response.result.temperature;
+        precipitationType.innerText = response.result.precipitationType;
+        windSpeed.innerText = response.result.windSpeed;
+        windName.innerText = response.result.windName;
+        skyState.innerText = response.result.skyState;
+        precipitationProbability.innerText = response.result.precipitationProbability;
+        temperatureMax.innerText = response.result.temperatureMax;
+        temperatureMin.innerText = response.result.temperatureMin;
+        sunrise.innerText = response.result.sunrise;
+        sunset.innerText = response.result.sunset;
+        accuracy.innerText = response.result.accuracy;
+        baseDateTime.innerText = response.result.baseDateTime;
 
     } else if (response.id == "create_vcode_for_SNP") {
         // requestCreateVcodeForSNP()

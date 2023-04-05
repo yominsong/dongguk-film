@@ -1,9 +1,8 @@
 const onlyHanguls = document.querySelectorAll(".only-hangul");
-const onlyRomans = document.querySelectorAll(".only-roman");
 const onlyNumbers = document.querySelectorAll(".only-number");
-const onlyEmails = document.querySelectorAll(".only-email");
 const onlyPhones = document.querySelectorAll(".only-phone");
 const onlyDates = document.querySelectorAll(".only-date");
+const onlyEmails = document.querySelectorAll(".only-email");
 const onlyUrls = document.querySelectorAll(".only-url");
 const onlySlugs = document.querySelectorAll(".only-slug");
 const labels = document.querySelectorAll("label");
@@ -17,8 +16,6 @@ const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "Ha
 
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
-const regRoman = /[a-z]+/g;
-const regNotRoman = /[^a-z]+/g;
 const regNotLowerRomanAndNumber = /[^a-z0-9]/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
@@ -85,9 +82,9 @@ function freezeForm(bool) {
     inputs.forEach((input) => {
         if (input.type == "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
-        } else if (input.getAttribute("origin") == "radio") {
+        } else if (input.classList.contains("alt-radio")) {
             bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false })
-        } else if (input.disabled == false) {
+        } else {
             bool ? input.readOnly = true : input.readOnly = false;
         };
     });
@@ -133,10 +130,14 @@ function isValid(input) {
 
 function trim(input) {
     /* 
-     * input: Input that needs to be trimed
+     * input: Input whose value needs to be trimmed
      */
 
-    return input.value.trim().replace(/\s{2,}/g, " ");
+    return input.value = input.value.trim().replace(/\s{2,}/g, " ");
+}
+
+function lowercaseId(input) {
+    return input.id.replace(/_/g, "").toLowerCase();
 }
 
 //
@@ -150,20 +151,9 @@ function validation() {
                 input.value = input.value.replace(regNotHangul, "");
             });
         });
-        onlyRomans.forEach((input) => {
-            input.addEventListener(type, () => {
-                input.value = input.value.replace(regNotRoman, "");
-            });
-        });
         onlyNumbers.forEach((input) => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotNumber, "");
-            });
-        });
-        onlyEmails.forEach((input) => {
-            input.addEventListener(type, () => {
-                input.value = input.value.replace(regHangul, "");
-                input.value = input.value.replace(" ", "");
             });
         });
         onlyPhones.forEach((input) => {
@@ -174,6 +164,12 @@ function validation() {
         onlyDates.forEach((input) => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotNumber, "").replace(/(^[0-9]{4})([0-9]+)?([0-9]{2})$/, "$1-$2-$3").replace("--", "-");
+            });
+        });
+        onlyEmails.forEach((input) => {
+            input.addEventListener(type, () => {
+                input.value = input.value.replace(regHangul, "");
+                input.value = input.value.replace(" ", "");
             });
         });
         onlyUrls.forEach((input) => {
@@ -188,119 +184,105 @@ function validation() {
             });
         });
     });
+
     inputs.forEach((input) => {
         if (input.type == "radio") {
-            let OriginalInput = eval(input.id.replace(input.id, `${input.id.split("_")[0]}_${input.id.split("_")[1]}`));
+            let altInput = eval(input.id.replace(`_${input.id.split("_")[2]}`, ""));
             input.addEventListener("click", () => {
-                displayError(false, OriginalInput);
+                displayError(false, altInput);
             });
             input.addEventListener("focusout", () => {
-                controlError(OriginalInput);
+                controlError(altInput);
             });
             input.addEventListener("focusin", () => {
-                displayError(false, OriginalInput);
+                displayError(false, altInput);
             });
         } else {
             input.addEventListener("click", () => {
-                displayInfo(true, input);
                 displayError(false, input);
             });
             input.addEventListener("keydown", (event) => {
-                displayInfo(true, input);
                 displayError(false, input);
                 controlDescr(input, event);
             });
             input.addEventListener("focusout", () => {
                 trim(input);
-                displayInfo(false, input);
                 displayDescr(false, input);
                 controlError(input);
             });
             input.addEventListener("focusin", () => {
                 trim(input);
-                displayInfo(false, input);
                 displayError(false, input);
             });
         };
     });
 }
 
-function displayInfo(bool, input) {
-    /* 
-     * bool: Show/hide description
-     * input: Target input
-     */
-
-    let infoMsg = code(input, "_info");
-
-    if (bool == true) {
-        // Show info
-        infoMsg.hidden = false;
-    }
-
-    else if (bool == false) {
-        // Hide info
-        infoMsg.hidden = true;
-    };
-}
-
 function controlDescr(input, event) {
     let inputKeyChar = event.key;
 
-    // Only numbers allowed
-    if ([id_student_id, id_email_vcode, id_phone_vcode].indexOf(input) != -1) {
-        if (regNotNumber.test(input.value) ||
-            (regNotNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
-            displayDescr(true, input, "only numbers");
-        } else {
-            displayDescr(false, input);
-        };
-    };
-
-    // Only hanguls allowed
-    if ([id_name].indexOf(input) != -1) {
+    // only-hangul
+    if (input.classList.contains("only-hangul")) {
         if (regNotHangul.test(input.value) ||
             (!event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
-            displayDescr(true, input, "only hanguls");
+            displayDescr(true, input, "only hangul");
         } else {
             displayDescr(false, input);
         };
     };
 
-    // Only lower romans and numbers allowed
-    if ([id_dflink_slug].indexOf(input) != -1) {
+    // only-number
+    if (input.classList.contains("only-number")) {
+        if (regNotNumber.test(input.value) ||
+            (regNotNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            displayDescr(true, input, "only number");
+        } else {
+            displayDescr(false, input);
+        };
+    };
+
+    // only-phone, only-date
+    if (input.classList.contains("only-phone") || input.classList.contains("only-date")) {
+        if (regNotNumberWithDash.test(input.value) ||
+            (regNotNumberWithDash.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            displayDescr(true, input, "only number");
+        } else {
+            displayDescr(false, input);
+        };
+    };
+
+    // only-slug
+    if (input.classList.contains("only-slug")) {
         if (regNotLowerRomanAndNumber.test(input.value) ||
             (regNotLowerRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1) ||
             (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
-            displayDescr(true, input, "only lower romans and numbers");
+            displayDescr(true, input, "only lower roman and number");
         } else {
             displayDescr(false, input);
         };
     };
 
-    // Only phone numbers OR dates allowed
-    if ([id_phone, id_dflink_expiration_date].indexOf(input) != -1) {
-        if (regNotNumberWithDash.test(input.value) ||
-            (regNotNumberWithDash.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
-            displayDescr(true, input, "only numbers");
-        } else {
-            displayDescr(false, input);
-        };
-    };
-
-    // No hanguls allowed
-    if ([id_email].indexOf(input) != -1) {
+    // only-email
+    if (input.classList.contains("only-email")) {
         if (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1) {
-            displayDescr(true, input, "no hanguls");
+            displayDescr(true, input, "no hangul");
         } else {
             displayDescr(false, input);
         };
     };
 
-    // Spaces allowed
-    if ([id_dflink_title].indexOf(input) == -1) {
+    // only-url
+    if (input.classList.contains("only-url")) {
+        if (input.value.length >= 8 &&
+            (input.value.indexOf("http://") == -1 && input.value.indexOf("https://") == -1)) {
+            input.value = `http://${input.value}`;
+        };
+    };
+
+    // space-allowed
+    if (!input.classList.contains("space-allowed")) {
         if (inputKeyChar == " ") {
-            displayDescr(true, input, "no spaces");
+            displayDescr(true, input, "no space");
         };
     };
 }
@@ -309,7 +291,7 @@ function displayDescr(bool, input, descrType) {
     /* 
      * bool: Show/hide description
      * input: Target input
-     * descrType: "no spaces", "no hanguls", "only hanguls", "only romans", "only numbers", "only lower romans and numbers"
+     * descrType: "only hangul", "only number", "only lower roman and number", "no hangul", "no space"
      */
 
     let descrMsg = code(input, "_descr");
@@ -317,18 +299,16 @@ function displayDescr(bool, input, descrType) {
     if (bool == true) {
         // Show description
         let sentence;
-        if (descrType == "no spaces") {
-            sentence = "공백은 입력될 수 없어요.";
-        } else if (descrType == "no hanguls") {
-            sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
-        } else if (descrType == "only hanguls") {
+        if (descrType == "only hangul") {
             sentence = "한글만 입력해주세요.";
-        } else if (descrType == "only romans") {
-            sentence = "로마자 소문자만 입력해주세요.";
-        } else if (descrType == "only numbers") {
+        } else if (descrType == "only number") {
             sentence = "숫자만 입력해주세요.";
-        } else if (descrType = "only lower romans and numbers") {
+        } else if (descrType = "only lower roman and number") {
             sentence = "로마자 소문자, 숫자만 입력해주세요.";
+        } else if (descrType == "no hangul") {
+            sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
+        } else if (descrType == "no space") {
+            sentence = "공백은 입력될 수 없어요.";
         };
         descrMsg.innerText = `${sentence}`;
         descrMsg.hidden = false;
@@ -341,17 +321,19 @@ function displayDescr(bool, input, descrType) {
 }
 
 function controlError(input) {
-    // Checkbox
-    if ([id_agree].indexOf(input) != -1) {
-        if (input.checked == false) {
+    // checkbox
+    if (input.type == "checkbox") {
+        if (input.classList.contains("agree-checkbox") && input.checked == false) {
+            displayError(true, input, "disagree");
+        } else if (input.classList.contains("default-checkbox") && input.checked == false) {
             displayError(true, input, "unchecked");
         } else {
             return false;
         };
     };
 
-    // Radio button
-    if ([id_category].indexOf(input) != -1) {
+    // alt-radio
+    if (input.classList.contains("alt-radio")) {
         if (input.value == "") {
             displayError(true, input, "unselected");
         } else {
@@ -359,8 +341,21 @@ function controlError(input) {
         };
     };
 
-    // Student ID
-    if ([id_student_id].indexOf(input) != -1) {
+    // tel
+    if (input.type == "tel") {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else if (input.value.length !== 13) {
+            displayError(true, input, "insufficient");
+        } else if (input.value.indexOf("-") !== 3 && input.value.lastIndexOf("-") !== 8) {
+            displayError(true, input, "invalid");
+        } else {
+            return false;
+        };
+    };
+
+    // text (student ID)
+    if (lowercaseId(input).indexOf("studentid") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
@@ -372,8 +367,8 @@ function controlError(input) {
         };
     };
 
-    // Name
-    if ([id_name].indexOf(input) != -1) {
+    // text (name)
+    if (lowercaseId(input).indexOf("name") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length == 1) {
@@ -385,8 +380,8 @@ function controlError(input) {
         };
     };
 
-    // Email address
-    if ([id_email].indexOf(input) != -1) {
+    // text (email)
+    if (lowercaseId(input).indexOf("email") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("@") == -1 ||
@@ -403,21 +398,8 @@ function controlError(input) {
         };
     };
 
-    // Phone number
-    if ([id_phone].indexOf(input) != -1) {
-        if (input.value.length == 0) {
-            displayError(true, input, "empty");
-        } else if (input.value.length !== 13) {
-            displayError(true, input, "insufficient");
-        } else if (input.value.indexOf("-") !== 3 && input.value.lastIndexOf("-") !== 8) {
-            displayError(true, input, "invalid");
-        } else {
-            return false;
-        };
-    };
-
-    // 6 digit verification code
-    if ([id_email_vcode, id_phone_vcode].indexOf(input) != -1) {
+    // text (vcode)
+    if (lowercaseId(input).indexOf("vcode") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 6) {
@@ -427,12 +409,12 @@ function controlError(input) {
         };
     };
 
-    // Url
-    if ([id_original_url].indexOf(input) != -1) {
+    // text (url)
+    if (lowercaseId(input).indexOf("url") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("https://") == -1 && input.value.indexOf("http://") == -1) {
-            displayError(true, input, "no protocol");
+            input.value = `http://${input.value}`;
         } else if (!input.value.match(regUrl)) {
             displayError(true, input, "insufficient");
         } else {
@@ -440,8 +422,8 @@ function controlError(input) {
         };
     };
 
-    // DF link slug
-    if ([id_dflink_slug].indexOf(input) != -1) {
+    // text (slug)
+    if (lowercaseId(input).indexOf("slug") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length < 2) {
@@ -451,8 +433,8 @@ function controlError(input) {
         };
     };
 
-    // DF link title
-    if ([id_dflink_title].indexOf(input) != -1) {
+    // text (title)
+    if (lowercaseId(input).indexOf("title") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.replace(/\s/g, "").length == 0) {
@@ -464,8 +446,8 @@ function controlError(input) {
         };
     };
 
-    // DF link expiration date
-    if ([id_dflink_expiration_date].indexOf(input) != -1) {
+    // text (date)
+    if (lowercaseId(input).indexOf("date") != -1) {
         if (input.value.length == 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
@@ -487,7 +469,7 @@ function displayError(bool, input, errorType) {
     /* 
      * bool: Show/hide error
      * input: Target input
-     * descrType: "unchecked", "unselected", "empty", "insufficient", "invalid", "no protocol", "out of range"
+     * descrType: "disagree", "unchecked", "unselected", "empty", "insufficient", "invalid", "out of range"
      */
 
     let errorMsg = code(input, "_error");
@@ -496,13 +478,29 @@ function displayError(bool, input, errorType) {
         // Change input's style and show error
         let subject;
         let narrativeClause;
-        if (input.type != "checkbox") {
+        if (input.type == "checkbox") {
+            input.classList.remove("border-gray-300");
+            input.classList.add("bg-flamingo-50");
+            input.classList.add("border-4");
+            input.classList.add("border-flamingo-300");
+        } else if (input.classList.contains("alt-radio")) {
+            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+            originalInputs.forEach((input) => {
+                input.classList.remove("border-gray-300");
+                input.classList.add("bg-flamingo-50");
+                input.classList.add("border-4");
+                input.classList.add("border-flamingo-300");
+            });
+        } else {
             input.classList.remove("border-gray-300");
             input.classList.add("bg-flamingo-50");
             input.classList.add("border-transparent");
         };
-        if (errorType == "unchecked") {
-            subject = matchJosa(`'${findLabel(input)}'`, "을를", "WJS");
+        if (errorType == "disagree") {
+            subject = findLabel(input).replace(" 동의합니다.", "")
+            narrativeClause = "동의해주세요.";
+        } else if (errorType == "unchecked") {
+            subject = matchJosa(`${findLabel(input)}`, "을를", "WJS");
             narrativeClause = "체크해주세요.";
         } else if (errorType == "unselected") {
             subject = matchJosa(`${findLabel(input)}`, "을를", "WJS");
@@ -516,9 +514,6 @@ function displayError(bool, input, errorType) {
         } else if (errorType == "invalid") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = "잘못 입력된 것 같아요.";
-        } else if (errorType == "no protocol") {
-            subject = `${findLabel(input)}에`
-            narrativeClause = "'https://' 또는 'http://'를 포함해주세요.";
         } else if (errorType == "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효 범위를 벗어났어요.`;
@@ -528,7 +523,20 @@ function displayError(bool, input, errorType) {
 
     } else if (bool == false) {
         // Init input's style and hide error
-        if (input.type != "checkbox") {
+        if (input.type == "checkbox") {
+            input.classList.add("border-gray-300");
+            input.classList.remove("bg-flamingo-50");
+            input.classList.remove("border-4");
+            input.classList.remove("border-flamingo-300");
+        } else if (input.classList.contains("alt-radio")) {
+            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+            originalInputs.forEach((input) => {
+                input.classList.add("border-gray-300");
+                input.classList.remove("bg-flamingo-50");
+                input.classList.remove("border-4");
+                input.classList.remove("border-flamingo-300");
+            });
+        } else {
             input.classList.add("border-gray-300");
             input.classList.remove("bg-flamingo-50");
             input.classList.remove("border-transparent");

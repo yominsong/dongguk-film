@@ -13,6 +13,7 @@ checkbox_input_focus_state_class = (
     "focus:ring-offset-flamingo-50 focus:ring-flamingo-500"
 )
 checkbox_input_disabled_state_class = "disabled:opacity-75 disabled:cursor-not-allowed"
+agree_class = "agree-checkbox"
 text_input_class = (
     "block w-full sm:text-sm placeholder-gray-400 rounded-md border-gray-300"
 )
@@ -38,7 +39,7 @@ class SocialSignupForm(SignupForm):
         label="개인정보 수집 및 이용에 동의합니다.",
         widget=forms.CheckboxInput(
             attrs={
-                "class": f"{checkbox_input_class} {step_one_class} {checkbox_input_focus_state_class} {checkbox_input_disabled_state_class}",
+                "class": f"{checkbox_input_class} {agree_class} {step_one_class} {checkbox_input_focus_state_class} {checkbox_input_disabled_state_class}",
                 "required": "",
             }
         ),
