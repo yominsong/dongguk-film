@@ -71,13 +71,13 @@ def dflink(request):
         ).json()
         validation_result = openai_response["choices"][0]["message"]["content"]
         available = str(validation_result).split("\n")[0]
-        if not "true" in available:
+        if not "True" in available:
             status = "FAIL"
             msg = "앗, 원본 URL이 잘못 입력된 것 같아요."
             concern = "unavailable"
-        elif "true" in available:
+        elif "True" in available:
             harmful = str(validation_result).split("\n")[1]
-            if not "true" in harmful:
+            if not "True" in harmful:
                 status = "FAIL"
                 msg = "이 원본 URL은 사용할 수 없어요."
                 concern = "harmful"
