@@ -20,7 +20,7 @@ function displayForm(bool) {
 displayForm(true);
 
 function requestValidateSite() {
-    request.url = `${originLocation}/utility/utils/dflink`;
+    request.url = `${originLocation}/dflink/utils/branded_link`;
     request.type = "GET";
     request.data = { id: "validate_site", original_url: `${id_original_url.value}`, slug: `${id_dflink_slug.value}`, title: `${id_dflink_title.value}`, category: `${id_category.value}`, expiration_date: `${id_dflink_expiration_date.value}` };
     request.async = true;
