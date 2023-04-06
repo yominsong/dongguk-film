@@ -91,19 +91,19 @@ function handleAjaxCallback(response) {
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        address.innerText = response.result.address;
-        temperature.innerText = response.result.temperature;
-        precipitationType.innerText = response.result.precipitationType;
-        windSpeed.innerText = response.result.windSpeed;
-        windName.innerText = response.result.windName;
-        skyState.innerText = response.result.skyState;
-        precipitationProbability.innerText = response.result.precipitationProbability;
-        temperatureMax.innerText = response.result.temperatureMax;
-        temperatureMin.innerText = response.result.temperatureMin;
-        sunrise.innerText = response.result.sunrise;
-        sunset.innerText = response.result.sunset;
-        accuracy.innerText = response.result.accuracy;
-        baseDateTime.innerText = response.result.baseDateTime;
+        id_address.innerText = response.result.address;
+        id_temperature.innerText = response.result.temperature;
+        id_temperatureMax.innerText = response.result.temperatureMax;
+        id_temperatureMin.innerText = response.result.temperatureMin;
+        id_precipitationProbability.innerText = response.result.precipitationProbability;
+        id_precipitationType.innerText = response.result.precipitationType;
+        id_windSpeed.innerText = response.result.windSpeed;
+        id_windName.innerText = response.result.windName;
+        id_skyState.innerText = response.result.skyState;
+        id_sunrise.innerText = response.result.sunrise;
+        id_sunset.innerText = response.result.sunset;
+        id_accuracy.innerText = response.result.accuracy;
+        id_baseDateTime.innerText = response.result.baseDateTime;
 
     } else if (response.id == "create_vcode_for_SNP") {
         // requestCreateVcodeForSNP()
