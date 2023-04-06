@@ -24,3 +24,9 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("utility/", include("utility.urls")),
 ]
+
+handler400 = "home.views.error_400"
+handler404 = "home.views.error_404"
+handler408 = "home.views.error_408"
+handler500 = "home.views.error_500"
+handler502 = "home.views.error_502"
