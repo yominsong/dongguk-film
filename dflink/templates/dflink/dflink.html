@@ -84,6 +84,21 @@
                     </div>
                 </div>
             </li>
+            {% else %}
+            <li>
+                <a href="{% url 'account_login' %}" class="login-button">
+                    <div class="block hover:bg-gray-50">
+                        <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-gray-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                            <p class="text-sm">여기를 눌러 새로 만드세요.</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
             {% endif %}
             <li>
                 <a href="#" class="block hover:bg-gray-50">
@@ -93,7 +108,7 @@
                                     class="font-bold">cksce</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
+                                    class="inline-flex rounded-full bg-flamingo-700 px-2 text-xs font-semibold leading-5 text-white">
                                     작품</p>
                             </div>
                         </div>
@@ -135,7 +150,7 @@
                                     class="font-bold">korbean</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-800">
+                                    class="inline-flex rounded-full bg-flamingo-700 px-2 text-xs font-semibold leading-5 text-white">
                                     작품</p>
                             </div>
                         </div>
@@ -177,7 +192,7 @@
                                     class="font-bold">ogmeeting</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-900">
                                     학과</p>
                             </div>
                         </div>
@@ -219,7 +234,7 @@
                                     class="font-bold">website</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-900">
                                     학과</p>
                             </div>
                         </div>
@@ -261,7 +276,7 @@
                                     class="font-bold">chacha</span></p>
                             <div class="ml-2 flex flex-shrink-0">
                                 <p
-                                    class="inline-flex rounded-full bg-stone-100 px-2 text-xs font-semibold leading-5 text-stone-800">
+                                    class="inline-flex rounded-full bg-flamingo-100 px-2 text-xs font-semibold leading-5 text-flamingo-900">
                                     학과</p>
                             </div>
                         </div>

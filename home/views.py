@@ -17,7 +17,7 @@ def error_408(request, exception):
     return render(request, "error/408.html")
 
 
-def error_500(request, exception):
+def error_500(request):
     return render(request, "error/500.html")
 
 

@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import home
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,8 +26,8 @@ urlpatterns = [
     path("utility/", include("utility.urls")),
 ]
 
-handler400 = "home.views.error_400"
-handler404 = "home.views.error_404"
-handler408 = "home.views.error_408"
-handler500 = "home.views.error_500"
-handler502 = "home.views.error_502"
+handler400 = home.views.error_400
+handler404 = home.views.error_404
+handler408 = home.views.error_408
+handler500 = home.views.error_500
+handler502 = home.views.error_502

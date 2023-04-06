@@ -239,11 +239,9 @@
                         @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)"
                         class="relative flex-shrink-0">
                         <div>
-                            <button type="button" class="bg-flamingo-500 flex text-sm rounded-full text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flamingo-500
-                                {% if not '/' == request.get_full_path %}
-                                focus:ring-offset-flamingo-800
-                                {% endif %}
-                                " id="user-menu-button" x-ref="button" @click="onButtonClick()"
+                            <button type="button"
+                                class="bg-flamingo-500 flex text-sm rounded-full text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flamingo-500"
+                                id="user-menu-button" x-ref="button" @click="onButtonClick()"
                                 @keyup.space.prevent="onButtonEnter()" @keydown.enter.prevent="onButtonEnter()"
                                 aria-expanded="false" aria-haspopup="true" x-bind:aria-expanded="open.toString()"
                                 @keydown.arrow-up.prevent="onArrowUp()" @keydown.arrow-down.prevent="onArrowDown()">
@@ -273,7 +271,8 @@
                                 :class="{ 'bg-gray-100': activeIndex === 1 }" role="menuitem" tabindex="-1"
                                 id="user-menu-item-1" @mouseenter="activeIndex = 1" @mouseleave="activeIndex = -1"
                                 @click="open = false; focusButton()">환경설정</a>
-                            <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-sm text-gray-700"
+                            <a href="{% url 'account_logout' %}"
+                                class="logout-button block px-4 py-2 text-sm text-gray-700"
                                 :class="{ 'bg-gray-100': activeIndex === 2 }" role="menuitem" tabindex="-1"
                                 id="user-menu-item-2" @mouseenter="activeIndex = 2" @mouseleave="activeIndex = -1"
                                 @click="open = false; focusButton()">로그아웃</a>
@@ -282,7 +281,7 @@
                     {% else %}
                     <div class="flex items-center md:ml-12">
                         <a href="{% url 'account_login' %}"
-                            class="inline-flex items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 h-10 text-base font-medium text-white shadow-sm hover:bg-flamingo-700">로그인</a>
+                            class="login-button inline-flex items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 h-10 text-base font-medium text-white shadow-sm hover:bg-flamingo-700">로그인</a>
                     </div>
                     {% endif %}
                 </div>
@@ -430,7 +429,7 @@
                     {% if user.is_anonymous %}
                     <div class="mt-6">
                         <a href="{% url 'account_login' %}"
-                            class="flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-flamingo-700">로그인</a>
+                            class="login-button flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-flamingo-700">로그인</a>
                     </div>
                     {% endif %}
                 </div>
@@ -469,7 +468,7 @@
                         </div>
                     </div>
                     <a href="{% url 'account_logout' %}"
-                        class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-flamingo-600 hover:bg-flamingo-700">
+                        class="logout-button w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-flamingo-600 hover:bg-flamingo-700">
                         로그아웃
                     </a>
                 </div>
