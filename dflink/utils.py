@@ -46,9 +46,9 @@ def is_harmfulness(original_url):
         "choices"
     ][0]["message"]["content"]
 
-    if "False" in openai_response:
+    if "True" in openai_response:
         result = True
-    elif "True" in openai_response:
+    elif "False" in openai_response:
         result = False
     else:
         result = False
