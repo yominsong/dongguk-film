@@ -1,12 +1,11 @@
 from django.urls import path
-from .views import *
-from .utils import *
+from . import views, utils
 
 
 app_name = "dflink"
 urlpatterns = [
     # views.py
-    path("", dflink, name="dflink"),
+    path("", views.dflink, name="dflink"),
     # utils.py
-    path("utils/branded_link", branded_link, name="branded_link"),
+    path("utils/dflink", utils.dflink),
 ]

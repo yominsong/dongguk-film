@@ -6,15 +6,7 @@ from .utils import *
 app_name = "users"
 urlpatterns = [
     # utils.py
-    path(
-        "utils/delete-inactive-users",
-        delete_inactive_users,
-        name="delete_inactive_users",
-    ),
-    path(
-        "utils/delete-expired-vcodes",
-        delete_expired_vcodes,
-        name="delete_expired_vcodes",
-    ),
-    path("utils/vcode", vcode, name="vcode"),
+    path("utils/delete-inactive-users", delete_inactive_users),
+    path("utils/delete-expired-vcodes", delete_expired_vcodes),
+    path("utils/vcode", vcode),
 ]

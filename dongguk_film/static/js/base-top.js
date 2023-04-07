@@ -149,8 +149,8 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id = "validate_site") {
-        // requestValidateSite()
+    } else if (response.id = "create_dflink") {
+        // requestCreateDflink()
         if (response.result.status == "DONE") {
             displayForm(false);
             id_create_dflink_div.classList.replace("justify-end", "justify-between");

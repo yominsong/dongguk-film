@@ -34,7 +34,7 @@ function validateDate(input) {
             return false;
         };
 
-        let dateParts = dateString.split('-');
+        let dateParts = dateString.split("-");
         let year = parseInt(dateParts[0], 10);
         let month = parseInt(dateParts[1], 10);
         let day = parseInt(dateParts[2], 10);

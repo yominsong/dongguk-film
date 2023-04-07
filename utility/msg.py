@@ -153,14 +153,21 @@ def send_msg(request, type, channel, extra=None):
 
     # type: "DFL"
     elif type == "DFL":
+        status = extra["result"]["status"]
+        reason = extra["result"]["reason"]
+        original_url = extra["result"]["original_url"]
+        dflink = extra["result"]["dflink"]
+        title = extra["result"]["title"]
+        category = extra["result"]["category"]
+        expiration_date = extra["result"]["expiration_date"]
         main_content = {
-            "important": True if extra['status'] == "FAIL" else False,
+            "important": True if status == "FAIL" else False,
             "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
             "author_url": "",
-            "title": "동영링크 유효성 검사 결과",
+            "title": "동영링크 생성 요청 결과",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"사용자의 동영링크 생성 요청에 따른 유효성 검사 결과입니다.\nㆍ상태: {extra['status']}\nㆍ우려점: {extra['concern']}\nㆍ원본 URL: {extra['original_url']}\nㆍ동영링크 URL: {extra['dflink']}\nㆍ제목: {extra['title']}\nㆍ범주: {extra['category']}\nㆍ만료일: {extra['expiration_date']}",
+            "description": f"사용자의 동영링크 생성 요청에 따른 결과입니다.\nㆍ상태: {status}\nㆍ사유: {reason}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
     # channel: "DEV"

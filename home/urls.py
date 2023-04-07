@@ -6,5 +6,5 @@ from .utils import *
 app_name = "home"
 urlpatterns = [
     path("", home, name="home"),
-    path("home/utils/weather", weather, name="weather"),
+    path("home/utils/weather", weather),
 ]

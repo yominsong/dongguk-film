@@ -16,7 +16,7 @@ const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "Ha
 
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
-const regNotLowerRomanAndNumber = /[^a-z0-9]/g;
+const regNotLowerCaseRomanAndNumber = /[^a-z0-9]/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
 const regNotNumberWithDash = /[^0-9\-]/g;
@@ -179,7 +179,7 @@ function validation() {
         });
         onlySlugs.forEach((input) => {
             input.addEventListener(type, () => {
-                input.value = input.value.replace(regNotLowerRomanAndNumber, "");
+                input.value = input.value.replace(regNotLowerCaseRomanAndNumber, "");
                 input.value = input.value.replace(" ", "");
             });
         });
@@ -253,8 +253,8 @@ function controlDescr(input, event) {
 
     // only-slug
     if (input.classList.contains("only-slug")) {
-        if (regNotLowerRomanAndNumber.test(input.value) ||
-            (regNotLowerRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1) ||
+        if (regNotLowerCaseRomanAndNumber.test(input.value) ||
+            (regNotLowerCaseRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1) ||
             (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
             displayDescr(true, input, "only lower roman and number");
         } else {

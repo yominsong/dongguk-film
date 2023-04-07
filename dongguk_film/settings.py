@@ -60,6 +60,10 @@ OPENAI_ORG = get_secret("OPENAI_ORG")
 
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 
+SHORT_IO_DOMAIN_ID = get_secret("SHORT_IO_DOMAIN_ID")
+
+SHORT_IO_API_KEY = get_secret("SHORT_IO_API_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
