@@ -104,17 +104,17 @@ def dflink(request):
 
         if not is_available(original_url):
             status = "FAIL"
-            reason = "unavailable"
+            reason = "무효(접속 불가)"
             msg = "원본 URL이 잘못 입력된 것 같아요."
 
         elif not is_harmfulness(original_url):
             status = "FAIL"
-            reason = "harmful"
+            reason = "무효(유해 사이트)"
             msg = "이 원본 URL은 사용할 수 없어요."
 
         elif not is_new_slug(slug):
             status = "FAIL"
-            reason = "already exist"
+            reason = "무효(중복)"
             msg = "앗, 이미 존재하는 동영링크 URL이에요!"
 
         else:
@@ -135,7 +135,7 @@ def dflink(request):
             response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 status = "DONE"
-                reason = "safe"
+                reason = "유효"
                 msg = "동영링크를 만들었어요! 👍"
             elif (
                 response.status_code == 409
