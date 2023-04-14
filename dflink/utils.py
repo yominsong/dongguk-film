@@ -68,7 +68,7 @@ def is_well_known(original_url):
 
 def is_harmfulness(original_url):
     openai_response = chap_gpt(
-        f"{original_url}\n청소년에게 유해하지 않은 사이트인지 'True' 또는 'False'로만 답해줘."
+        f"{original_url}\n유해하지 않은 사이트인지 'True' 또는 'False'로만 답해줘."
     )
 
     if "True" in openai_response:
