@@ -46,8 +46,8 @@ def chap_gpt(prompt):
 
 def is_available(original_url):
     try:
-        # response = requests.get(original_url, headers=headers)
         with Session() as session:
+            session.mount("http://", HTTPAdapter(max_retries=3))
             session.mount("https://", HTTPAdapter(max_retries=3))
             response = session.get(original_url, headers=headers)
             result = True if response.status_code == 200 else False
