@@ -3,8 +3,6 @@ from django.http import JsonResponse
 from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
-from requests.sessions import Session
-from requests.adapters import HTTPAdapter
 import openai, json, requests
 
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
@@ -45,11 +43,11 @@ def chap_gpt(prompt):
 
 
 def is_available(original_url):
-    with Session() as session:
-        session.mount("http://", HTTPAdapter(max_retries=3))
-        session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get(original_url, headers=headers)
+    try:
+        response = requests.get(original_url)
         result = True if response.status_code == 200 else False
+    except:
+        result = False
     return result
 
 
