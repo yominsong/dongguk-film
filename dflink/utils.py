@@ -2,11 +2,13 @@ from django.conf import settings
 from django.http import JsonResponse
 from utility.msg import send_msg
 from utility.utils import reg_test
+from fake_useragent import UserAgent
 import openai, json, requests
 
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
 # Sub functions
@@ -15,7 +17,7 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 def is_available(original_url):
     try:
-        response = requests.get(original_url)
+        response = requests.get(original_url, headers=headers)
         result = True if response.status_code == 200 else False
     except:
         result = False
