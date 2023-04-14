@@ -15,16 +15,7 @@ headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 #
 
 
-def is_available(original_url):
-    try:
-        response = requests.get(original_url, headers=headers)
-        result = True if response.status_code == 200 else False
-    except:
-        result = False
-    return result
-
-
-def is_harmfulness(original_url):
+def chap_gpt(prompt):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
@@ -39,14 +30,44 @@ def is_harmfulness(original_url):
         "messages": [
             {
                 "role": "user",
-                "content": f"{original_url}\n청소년에게 유해하지 않은 사이트인지 'True' 또는 'False'로만 답해줘.",
+                "content": prompt,
             }
         ],
-        "temperature": 0.7,
+        "temperature": 0,
     }
     openai_response = requests.post(url, headers=headers, data=json.dumps(data)).json()[
         "choices"
     ][0]["message"]["content"]
+
+    return openai_response
+
+
+def is_available(original_url):
+    try:
+        response = requests.get(original_url, headers=headers)
+        result = True if response.status_code == 200 else False
+    except:
+        result = False
+    return result
+
+
+def is_well_known(original_url):
+    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+
+    if "True" in openai_response:
+        result = True
+    elif "False" in openai_response:
+        result = False
+    else:
+        result = False
+
+    return result
+
+
+def is_harmfulness(original_url):
+    openai_response = chap_gpt(
+        f"{original_url}\n청소년에게 유해하지 않은 사이트인지 'True' 또는 'False'로만 답해줘."
+    )
 
     if "True" in openai_response:
         result = True
@@ -108,6 +129,11 @@ def dflink(request):
             status = "FAIL"
             reason = "무효(접속 불가)"
             msg = "원본 URL이 잘못 입력된 것 같아요."
+
+        elif not is_well_known(original_url):
+            status = "FAIL"
+            reason = "무효(유효성 검사 불가)"
+            msg = "이 원본 URL은 관리자 승인이 필요해요."
 
         elif not is_harmfulness(original_url):
             status = "FAIL"
