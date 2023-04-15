@@ -5,6 +5,7 @@ from utility.utils import reg_test
 from fake_useragent import UserAgent
 import openai, json, requests
 
+SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
@@ -45,7 +46,17 @@ def chap_gpt(prompt):
 def is_available(original_url):
     try:
         response = requests.get(original_url)
-        result = True if response.status_code == 200 else False
+        if response.status_code == 200:
+            result = True
+        else:
+            response = requests.get(
+                url="https://proxy.scrapeops.io/v1/",
+                params={
+                    "api_key": SCRAPEOPS_API_KEY,
+                    "url": original_url,
+                },
+            )
+            result = True if response.status_code == 200 else False
     except:
         result = False
     return result

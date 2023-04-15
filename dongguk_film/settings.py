@@ -56,6 +56,8 @@ DMD_URL = get_secret("DMD_URL")
 
 DMD_COOKIE = get_secret("DMD_COOKIE")
 
+SCRAPEOPS_API_KEY = get_secret("SCRAPEOPS_API_KEY")
+
 OPENAI_ORG = get_secret("OPENAI_ORG")
 
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
