@@ -3,8 +3,6 @@ from django.http import JsonResponse
 from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
-from requests.sessions import Session
-from requests.adapters import HTTPAdapter
 import openai, json, requests
 
 SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
