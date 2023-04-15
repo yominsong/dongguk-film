@@ -87,14 +87,15 @@ def get_webhook(channel):
 
 def send_msg(request, type, channel, extra=None):
     """
-    type: "DSA", "OVP", "UXR", "SUP", "DFL"
+    type: "DSA", "OVP", "UXR", "SUP", "DLC"
     channel: "DEV", "MGT"
 
     DSA: Duplicate signup attempt
     AIV: Attempting to skip identity verification
     UXR: Unexpected request
     SUP: Signup complete
-    DFL: DF link validation result
+    DLC: DF Link Create
+    DLD: DF Link Delete
 
     DEV: Development
     MGT: Management
@@ -112,7 +113,7 @@ def send_msg(request, type, channel, extra=None):
             "title": "중복 회원가입 시도",
             "url": "",
             "thumbnail_url": "",
-            "description": "중복 회원가입이 시도되었습니다. 사용자가 DB에 이미 등록되어 있는 학번을 입력한 것으로 보입니다.",
+            "description": "중복 회원가입이 시도되었습니다. 사용자가 이미 회원가입을 완료한 다른 사용자의 학번 및 성명을 입력했을 수 있습니다.",
         }
 
     # type: "AIV"
@@ -124,7 +125,7 @@ def send_msg(request, type, channel, extra=None):
             "title": "본인인증 생략 시도",
             "url": "",
             "thumbnail_url": "",
-            "description": "본인인증 생략이 시도되었습니다. 사용자가 비정상적 방법으로 회원가입을 시도하는 것으로 보입니다.",
+            "description": "본인인증 생략이 시도되었습니다. 사용자가 비정상적인 방법으로 회원가입을 시도하는 것일 수 있습니다.",
         }
 
     # type: "UXR"
@@ -133,10 +134,10 @@ def send_msg(request, type, channel, extra=None):
             "important": True,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "예상치 못한 요청",
+            "title": "예상치 못한 요청 발생",
             "url": "",
             "thumbnail_url": "",
-            "description": "예상지 못한 요청이 발생했습니다. 사용자가 비정상적 시도를 하는 것으로 보입니다.",
+            "description": "예상지 못한 요청이 발생했습니다. 사용자가 비정상적인 방법으로 서비스를 이용하는 것일 수 있습니다.",
         }
     
     # type: "SUP"
@@ -145,14 +146,14 @@ def send_msg(request, type, channel, extra=None):
             "important": False,
             "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
             "author_url": "",
-            "title": "새로운 회원 가입",
+            "title": "새 회원가입",
             "url": "",
             "thumbnail_url": "",
-            "description": "새로운 회원이 가입했습니다. 개인정보 보호를 위해 AnonymousUser로 표시합니다.",
+            "description": "새로운 회원이 가입했습니다.",
         }
 
-    # type: "DFL"
-    elif type == "DFL":
+    # type: "DLC"
+    elif type == "DLC":
         status = extra["result"]["status"]
         reason = extra["result"]["reason"]
         original_url = extra["result"]["original_url"]
@@ -164,10 +165,26 @@ def send_msg(request, type, channel, extra=None):
             "important": True if status == "FAIL" else False,
             "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
             "author_url": "",
-            "title": "동영링크 생성 요청 결과",
+            "title": "동영링크 생성",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"사용자의 동영링크 생성 요청에 따른 결과입니다.\nㆍ상태: {status}\nㆍ사유: {reason}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"동영링크 생성이 요청되었으며, 그 결과는 아래와 같습니다.\nㆍ상태: {status}\nㆍ사유: {reason}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+        }
+
+    # type: "DLD"
+    elif type == "DLD":
+        sub_content = ""
+        for i in range(len(extra)):
+            new_line = f"\nㆍ[{extra[i]['category']}] {extra[i]['dflink']} {extra[i]['title']}"
+            sub_content += new_line
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": "만료된 동영링크 삭제",
+            "url": "https://dongguk.film/dflink",
+            "thumbnail_url": "",
+            "description": f"다음 {len(extra)}개의 동영링크가 만료일 도달로 삭제되었습니다.{sub_content}",
         }
 
     # channel: "DEV"

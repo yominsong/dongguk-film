@@ -8,7 +8,7 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 
 def dflink(request):
-    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&limit=5&dateSortOrder=desc"
+    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
     headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
     response = requests.get(url, headers=headers).json()
     dflinks = response["links"]
@@ -18,8 +18,8 @@ def dflink(request):
             "slug": dflinks[i]["lcpath"],
             "title": dflinks[i]["title"],
             "category": dflinks[i]["tags"][0],
-            "expiration_date": dflinks[i]["tags"][1],
-            "user": Metadata.objects.get(student_id=dflinks[i]["tags"][2]).name,
+            "expiration_date": dflinks[i]["tags"][2],
+            "user": Metadata.objects.get(student_id=dflinks[i]["tags"][1]),
         }
         dflink_list.append(dflink)
 

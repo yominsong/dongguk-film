@@ -12,9 +12,7 @@ from requests.adapters import HTTPAdapter
 import random, string, json
 
 DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
-
 DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
-
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #

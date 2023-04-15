@@ -159,6 +159,7 @@ function handleAjaxCallback(response) {
             window.location.href = `${originLocation}/dflink`;
         } else if (response.result.status == "FAIL") {
             id_create_dflink_div.classList.replace("justify-end", "justify-between");
+            displayError(true, eval(response.result.element), "inappropriate");
             displayButtonMsg(true, id_create_dflink, "error", response.result.msg);
         };
         freezeForm(false);

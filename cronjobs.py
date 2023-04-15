@@ -11,6 +11,13 @@ if timezone.now().strftime("%H:%M") == "08:00":
     requests.get("https://dongguk.film/users/utils/delete-inactive-users")
 
 #
+# dflink
+#
+
+if timezone.now().strftime("%H:%M") == "00:02":
+    requests.get("https://dongguk.film/dflink/utils/delete-expired-dflinks")
+
+#
 # utility
 #
 

@@ -469,7 +469,7 @@ function displayError(bool, input, errorType) {
     /* 
      * bool: Show/hide error
      * input: Target input
-     * descrType: "disagree", "unchecked", "unselected", "empty", "insufficient", "invalid", "out of range"
+     * descrType: "disagree", "unchecked", "unselected", "empty", "insufficient", "invalid", "inappropriate", "out of range"
      */
 
     let errorMsg = code(input, "_error");
@@ -514,6 +514,9 @@ function displayError(bool, input, errorType) {
         } else if (errorType == "invalid") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = "잘못 입력된 것 같아요.";
+        } else if (errorType == "inappropriate") {
+            subject = matchJosa(findLabel(input), "을를", "WJS");
+            narrativeClause = "변경해주세요.";
         } else if (errorType == "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효 범위를 벗어났어요.`;
