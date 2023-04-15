@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
+from requests.sessions import Session
+from requests.adapters import HTTPAdapter
 import openai, json, requests
 
 SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
@@ -45,7 +47,7 @@ def chap_gpt(prompt):
 
 def is_available(original_url):
     try:
-        response = requests.get(original_url)
+        response = requests.get(original_url, headers=headers)
         if response.status_code == 200:
             result = True
         else:
@@ -58,7 +60,10 @@ def is_available(original_url):
             )
             result = True if response.status_code == 200 else False
     except:
-        result = False
+        if not "www." in original_url:
+            result = is_available(original_url.replace("://", "://www."))
+        else:
+            result = False
     return result
 
 
@@ -144,7 +149,7 @@ def dflink(request):
         elif not is_well_known(original_url):
             status = "FAIL"
             reason = "무효(유효성 검사 불가)"
-            msg = "이 원본 URL은 관리자 승인이 필요해요."
+            msg = "이 원본 URL은 관리자 승인 후 사용할 수 있어요."
 
         elif not is_harmfulness(original_url):
             status = "FAIL"
@@ -157,6 +162,13 @@ def dflink(request):
             msg = "앗, 이미 존재하는 동영링크 URL이에요!"
 
         else:
+            original_url_with_www = original_url.replace("://", "://www.")
+            original_url = (
+                original_url_with_www
+                if not "www." in original_url
+                else original_url
+            )
+
             url = "https://api.short.io/links"
             payload = {
                 "tags": [category, expiration_date, f"{request.user}"],

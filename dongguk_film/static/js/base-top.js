@@ -156,6 +156,7 @@ function handleAjaxCallback(response) {
             id_create_dflink_div.classList.replace("justify-end", "justify-between");
             displayButtonMsg(true, id_create_dflink, "descr", response.result.msg);
             displayButtonMsg(false, id_create_dflink, "error");
+            window.location.href = `${originLocation}/dflink`;
         } else if (response.result.status == "FAIL") {
             id_create_dflink_div.classList.replace("justify-end", "justify-between");
             displayButtonMsg(true, id_create_dflink, "error", response.result.msg);
