@@ -72,35 +72,6 @@
 <div class="mt-5 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="overflow-hidden bg-white shadow rounded-lg">
         <ul role="list" class="divide-y divide-gray-200">
-            {% if user.is_authenticated %}
-            <li id="id_open_form" class="cursor-pointer" tabindex="0">
-                <div class="block hover:bg-gray-50">
-                    <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-gray-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                            <path
-                                d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                        </svg>
-                        <p class="text-sm">여기를 눌러 새로 만드세요.</p>
-                    </div>
-                </div>
-            </li>
-            {% else %}
-            <li id="id_open_form">
-                <a href="{% url 'account_login' %}" class="login-button">
-                    <div class="block hover:bg-gray-50">
-                        <div class="flex gap-1 justify-center sm:justify-start px-4 py-4 sm:px-6 text-gray-900">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                class="w-5 h-5">
-                                <path
-                                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                            </svg>
-                            <p class="text-sm">여기를 눌러 새로 만드세요.</p>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            {% endif %}
-
             {% for dflink in dflink_list %}
             {% if dflink.user.student_id == request.user.username %}
             <li>
@@ -152,7 +123,6 @@
                     </div>
                 </div>
             </li>
-            <input value="" hidden>
             {% else %}
             <li>
                 <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="block hover:bg-gray-50">
@@ -204,7 +174,34 @@
                 </a>
             </li>
             {% endif %}
-            {% endfor %}
+            {% endfor %}{% if user.is_authenticated %}
+            <li id="id_open_form" class="cursor-pointer" tabindex="0">
+                <div class="block hover:bg-gray-50">
+                    <div class="flex gap-1 justify-center px-4 py-4 sm:px-6 text-gray-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path
+                                d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                        <p class="text-sm">새로 만들기</p>
+                    </div>
+                </div>
+            </li>
+            {% else %}
+            <li id="id_open_form">
+                <a href="{% url 'account_login' %}" class="login-button">
+                    <div class="block hover:bg-gray-50">
+                        <div class="flex gap-1 justify-center px-4 py-4 sm:px-6 text-gray-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                            <p class="text-sm">새로 만들기</p>
+                        </div>
+                    </div>
+                </a>
+            </li>
+            {% endif %}
         </ul>
 
         <!-- Pagination -->
@@ -389,6 +386,34 @@
                                             </p>
                                             <p class="mt-2 text-sm text-flamingo-600" id="id_expiration_date_error"
                                                 hidden></p>
+                                        </div>
+
+                                        <div>
+                                            <div class="rounded-md bg-flamingo-50 p-4">
+                                                <div class="flex">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-5 w-5 text-flamingo-400"
+                                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                                            fill="currentColor" aria-hidden="true">
+                                                            <path fill-rule="evenodd"
+                                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                                clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="ml-3">
+                                                        <h3 class="text-sm font-medium text-flamingo-800">
+                                                            동영링크 관련 안내사항
+                                                        </h3>
+                                                        <div class="mt-2 text-sm text-flamingo-700">
+                                                            <ul role="list" class="list-disc space-y-1 pl-5">
+                                                                <li>안전한 서비스 운영을 위해 관리자는 {{ request.user.metadata.name }}님의 동영링크 생성 및 관리 내역을 조회할 수 있습니다.</li>
+                                                                <li>하단의 '만들기' 버튼 클릭 시 AI 기반 유해성 검사가 진행되며, 일부 검사 결과는 부정확할 수 있습니다.</li>
+                                                                <li>일부 원본 URL은 관리자의 allowlist 등재 후 사용 가능하며, 별도의 등재 요청은 접수하지 않고 있습니다.</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

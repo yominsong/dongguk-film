@@ -157,12 +157,12 @@ def is_new_slug(dflink_slug):
 
 def is_not_swearing(dflink_slug_or_title):
     openai_response = chap_gpt(
-        f"'{dflink_slug_or_title}'이라는 말에 폭력적인 표현, 선정적인 표현, 성차별적인 표현이 전혀 없는지 'True' 또는 'False'로만 답해줘."
+        f"'{dflink_slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
     )
 
-    if "True" in openai_response:
+    if "False" in openai_response:
         result = True
-    elif "False" in openai_response:
+    elif "True" in openai_response:
         result = False
     else:
         result = False
@@ -208,37 +208,37 @@ def dflink(request):
 
         if not is_available(original_url):
             status = "FAIL"
-            reason = "무효(접속 불가)"
+            reason = "원본 URL 접속 불가"
             msg = "원본 URL이 잘못 입력된 것 같아요."
             element = "id_original_url"
 
         elif not is_well_known(original_url):
             status = "FAIL"
-            reason = "무효(유효성 검사 불가)"
-            msg = "이 원본 URL은 관리자의 검토가 필요해요."
+            reason = "allowlist 등재 필요"
+            msg = "이 원본 URL은 현재 사용할 수 없어요."
             element = "id_original_url"
 
         elif not is_harmfulness(original_url):
             status = "FAIL"
-            reason = "무효(유해 사이트)"
+            reason = "유해 사이트"
             msg = "이 원본 URL은 사용할 수 없어요."
             element = "id_original_url"
 
         elif not is_new_slug(dflink_slug):
             status = "FAIL"
-            reason = "무효(중복)"
+            reason = "이미 존재하는 동영링크 URL"
             msg = "앗, 이미 존재하는 동영링크 URL이에요!"
             element = "id_dflink_slug"
 
         elif not is_not_swearing(dflink_slug):
             status = "FAIL"
-            reason = "무효(비속어 또는 욕설)"
+            reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
             msg = "이 동영링크 URL은 사용할 수 없어요."
             element = "id_dflink_slug"
 
         elif not is_not_swearing(title):
             status = "FAIL"
-            reason = "무효(비속어 또는 욕설)"
+            reason = "비속어 또는 욕설로 해석될 수 있는 제목"
             msg = "이 제목은 사용할 수 없어요."
             element = "id_title"
 
@@ -262,14 +262,14 @@ def dflink(request):
             response = requests.post(url, json=payload, headers=headers)
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효"
+                reason = "유효성 검사 통과"
                 msg = "동영링크를 만들었어요! 👍"
             elif (
                 response.status_code == 409
                 and response.json()["error"] == "Link already exists"
             ):
                 status = "FAIL"
-                reason = "무효(중복)"
+                reason = "이미 존재하는 동영링크 URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
                 element = "id_dflink_slug"
 
