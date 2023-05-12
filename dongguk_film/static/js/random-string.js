@@ -7,13 +7,13 @@ function randomItem(e) {
 }
 if (document.querySelector("#introMessage")) {
     document.querySelector("#introMessage").innerText = randomItem(introMessage);
-}
+};
 if (document.querySelector("#welcome")) {
     document.querySelector("#welcome").innerText = randomItem(welcome);
-}
+};
 if (document.querySelector("#emoji")) {
     document.querySelector("#emoji").innerText = randomItem(emoji);
-}
+};
 if (document.querySelector("#emoticon")) {
     document.querySelector("#emoticon").innerText = randomItem(emoticon);
-}
+};

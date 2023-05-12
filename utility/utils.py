@@ -27,7 +27,7 @@ def update_dmd_cookie(request):
 
 
 #
-# Sub functions
+# Main functions
 #
 
 
@@ -45,7 +45,7 @@ def reg_test(value, type):
     """
 
     reg_hangul = re.compile("[가-힣]+")
-    reg_lower_case_roman_and_number = re.compile("[^a-z0-9]")
+    reg_lower_case_roman_and_number = re.compile("[a-z0-9]")
     reg_number = re.compile("[0-9]")
     reg_number_with_dash = re.compile("[0-9\-]")
     reg_email = re.compile(

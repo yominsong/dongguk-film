@@ -55,7 +55,7 @@ def delete_expired_vcodes(request):
 #
 
 
-def is_valid_student(student_id, name):
+def is_registered_student(student_id, name):
     """
     This function relies on the 'Find Student ID' feature of Dongguk University's mDRIMS.
     """
@@ -84,7 +84,7 @@ def is_non_member(student_id):
     return result
 
 
-def validation(request):
+def is_valid(request):
     agree = request.POST["agree"]
     student_id = request.POST["student_id"]
     name = request.POST["name"]
@@ -110,6 +110,30 @@ def validation(request):
     return result
 
 
+def validation(data):
+    student_id = data["student_id"]
+    name = data["name"]
+    request = data["request"]
+
+    if not is_registered_student(student_id, name):
+        status = "FAIL"
+        msg = "학번이나 성명이 잘못 입력된 것 같아요."
+
+    elif not is_non_member(student_id):
+        status = "FAIL"
+        msg = f"앗, 이미 {student_id} 학번으로 가입된 계정이 있어요!"
+
+    elif not is_valid(request):
+        status = "FAIL"
+        msg = "뭔가 잘못 입력된 것 같아요."
+
+    else:
+        status = None
+        msg = None
+
+    return status, msg
+
+
 #
 # Main functions
 #
@@ -124,23 +148,10 @@ def vcode(request):
         email = request.POST["email"]
         phone = "".join(filter(str.isalnum, request.POST["phone"]))
 
-        if not is_valid_student(student_id, name):
-            status = "FAIL"
-            msg = "학번이나 성명이 잘못 입력된 것 같아요."
+        data = {"student_id": student_id, "name": name, "request": request}
+        status, msg = validation(data)
 
-        elif not is_non_member(student_id):
-            status = "FAIL"
-            msg = f"앗, 이미 {student_id} 학번으로 가입된 계정이 있어요!"
-
-        elif not validation(request):
-            status = "FAIL"
-            msg = "뭔가 잘못 입력된 것 같아요."
-
-        elif (
-            is_valid_student(student_id, name)
-            and is_non_member(student_id)
-            and validation(request)
-        ):
+        if status == None:
             email_vcode = ""
             phone_vcode = ""
             will_expire_on = timezone.now() + timezone.timedelta(minutes=5)
@@ -182,23 +193,10 @@ def vcode(request):
         email_vcode = request.POST["email_vcode"]
         phone_vcode = request.POST["phone_vcode"]
 
-        if not is_valid_student(student_id, name):
-            status = "FAIL"
-            msg = "학번이나 성명이 잘못 입력된 것 같아요."
+        data = {"student_id": student_id, "name": name, "request": request}
+        status, msg = validation(data)
 
-        elif not is_non_member(student_id):
-            status = "FAIL"
-            msg = f"앗, 이미 {student_id} 학번으로 가입된 계정이 있어요!"
-
-        elif not validation(request):
-            status = "FAIL"
-            msg = "뭔가 잘못 입력된 것 같아요."
-
-        elif (
-            is_valid_student(student_id, name)
-            and is_non_member(student_id)
-            and validation(request)
-        ):
+        if status == None and msg == None:
             try:
                 vcode = Vcode.objects.get(
                     student_id=student_id,

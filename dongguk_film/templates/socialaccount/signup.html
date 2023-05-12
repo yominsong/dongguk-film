@@ -1,221 +1,208 @@
 {% extends "base.html" %}
 {% load static socialaccount %}
-
 {% block meta %}
-<meta property="og:title" content="회원가입 - 디닷에프 | D-dot-f">
-<meta property="og:url" content="{% url 'account_login' %}">
-<!-- <meta name="robots" content="index,follow"> -->
+    <meta property="og:title" content="회원가입 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'account_login' %}">
+    <meta name="robots" content="noindex,nofollow">
 {% endblock %}
-
 {% block title %}회원가입 - 디닷에프{% endblock %}
-
 {% block body %}
-<div class="absolute inset-0">
-    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div class="sm:mx-auto sm:w-full sm:max-w-md">
-            <a href="{% url 'home:home' %}">
-                <span class="sr-only">홈페이지로 이동</span>
-                <svg class="mx-auto h-12 w-auto" xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 165.3 100"
-                    style="enable-background:new 0 0 165.3 100;" xml:space="preserve">
-                    <style type="text/css">
-                        .st0 {
-                            fill: #A39890;
-                        }
-
-                        .st1 {
-                            fill: #F15922;
-                        }
-                    </style>
-                    <path class="st0"
-                        d="M49.1,98l-1.3-7.5c-4.4,5.9-11.1,9.5-19.5,9.5C13,100,0,92.5,0,68V57.5c0-24.5,13-32,28.3-32  c6.4,0,11.6,2.1,15.7,5.5V11.6C44,3.9,49.6,0,55.8,0s11.7,3.9,11.7,11.6V98H49.1z M23.9,69.6c0,7.9,5.9,10.6,10,10.6  c3.9,0,9.7-2.6,10.1-10V55.3c-0.3-7.4-6.1-10-10.1-10c-4.1,0-10,2.7-10,10.6V69.6z" />
-                    <path class="st1"
-                        d="M94.7,63c12.2,0,19.5,7.3,19.5,18.4s-7.3,18.4-19.5,18.4s-19.5-7.1-19.5-18.4S82.5,63,94.7,63z" />
-                    <path class="st0"
-                        d="M121.9,98V47h-3.9c-7.3,0-10.2-4.5-10.2-9.5c0-4.9,2.8-9.7,10.2-9.7h3.9v-2.6c0-18.7,9-25.2,25.8-25.2  c4.5,0,9.6,0.9,13.3,3.2c3.9,2.4,5,6.4,3.9,10.8c-1,3.5-4.1,6.6-7.9,6.6c-1.9,0-2.8-0.2-4.8-0.6c-1.4-0.2-2.2-0.3-3.2-0.3  c-2.3,0-3.5,1.2-3.5,4.8v3.2h6.6c7.4,0,10.2,4.9,10.2,9.7c0,5-2.9,9.5-10.2,9.5h-6.6v51H121.9z" />
-                </svg>
-            </a>
-            <h2 class="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">회원가입이 필요해요!
-            </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                디닷에프 이용을 위해 개인정보를 제공해주세요.
-            </p>
-        </div>
-        <div class="mt-8 px-4 sm:px-0 mx-auto w-full max-w-md">
-            <form action="{% url 'socialaccount_signup' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.first_name }}
-                {{ form.last_name }}
-                <div class="mb-6 rounded-md shadow bg-flamingo-50 p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-flamingo-400" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-medium text-flamingo-800">개인정보 수집 및 이용 동의</h3>
-                            <div class="mt-2 text-sm text-flamingo-700 space-y-2">
-                                <p><span class="font-semibold">디닷에프</span>는 아래의 목적으로 개인정보를 수집 및 이용하며 회원의 개인정보를 안전하게 취급하는
-                                    데
-                                    최선을 다하고 있습니다.</p>
-                                <ul role="list" class="list-disc pl-5 space-y-2">
-                                    <li><span class="font-semibold">이용목적</span>: 회원 본인확인 및 개인식별, 서비스 이용의사 확인, 서비스 진행,
-                                        고지사항
-                                        전달, 회원과의 원활한 의사소통, 서비스 이용내역 확인, 동국대학교 예술대학 영화영상학과, 영상대학원 영화영상제작학과, 일반대학원 영화영상학과
-                                        구성원 외 가입 제한</li>
-                                    <li><span class="font-semibold">수집항목</span>: 프로필 사진, 학번, 성명, 이메일 주소, 휴대전화 번호</li>
-                                    <li><span class="font-semibold">보유기간</span>: 회원탈퇴 시까지 보유하나 30일 간 로그인 이력 부재 시 자동 파기
-                                    </li>
-                                </ul>
-                                <p>위 개인정보 수집 및 이용에 대한 동의를 거부할 수 있으며 동의 거부 시 서비스 이용이 제한됩니다.</p>
-                                <div class="flex flex-row-reverse pt-3">
-                                    <div class="flex items-center h-5">
-                                        {{ form.agree }}
-                                    </div>
-                                    <div class="mr-3 text-sm">
-                                        <label for="id_agree"
-                                            class="font-medium text-gray-600">{{ form.agree.label }}</label>
-                                    </div>
-                                </div>
+    <div class="absolute inset-0">
+        <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <a href="{% url 'home:home' %}">
+                    <span class="sr-only">홈페이지로 이동</span>
+                    <svg class="mx-auto h-12 w-auto"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         version="1.1"
+                         x="0px"
+                         y="0px"
+                         viewBox="0 0 165.3 100"
+                         style="enable-background:new 0 0 165.3 100"
+                         xml:space="preserve">
+                        <path class="st0" d="M49.1,98l-1.3-7.5c-4.4,5.9-11.1,9.5-19.5,9.5C13,100,0,92.5,0,68V57.5c0-24.5,13-32,28.3-32  c6.4,0,11.6,2.1,15.7,5.5V11.6C44,3.9,49.6,0,55.8,0s11.7,3.9,11.7,11.6V98H49.1z M23.9,69.6c0,7.9,5.9,10.6,10,10.6  c3.9,0,9.7-2.6,10.1-10V55.3c-0.3-7.4-6.1-10-10.1-10c-4.1,0-10,2.7-10,10.6V69.6z" />
+                        <path class="st1" d="M94.7,63c12.2,0,19.5,7.3,19.5,18.4s-7.3,18.4-19.5,18.4s-19.5-7.1-19.5-18.4S82.5,63,94.7,63z" />
+                        <path class="st0" d="M121.9,98V47h-3.9c-7.3,0-10.2-4.5-10.2-9.5c0-4.9,2.8-9.7,10.2-9.7h3.9v-2.6c0-18.7,9-25.2,25.8-25.2  c4.5,0,9.6,0.9,13.3,3.2c3.9,2.4,5,6.4,3.9,10.8c-1,3.5-4.1,6.6-7.9,6.6c-1.9,0-2.8-0.2-4.8-0.6c-1.4-0.2-2.2-0.3-3.2-0.3  c-2.3,0-3.5,1.2-3.5,4.8v3.2h6.6c7.4,0,10.2,4.9,10.2,9.7c0,5-2.9,9.5-10.2,9.5h-6.6v51H121.9z" />
+                    </svg>
+                </a>
+                <h2 class="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">회원가입이 필요해요!</h2>
+                <p class="mt-2 text-center text-sm text-gray-600">디닷에프 이용을 위해 개인정보를 제공해주세요.</p>
+            </div>
+            <div class="mt-8 px-4 sm:px-0 mx-auto w-full max-w-md">
+                <form action="{% url 'socialaccount_signup' %}"
+                      method="post"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.first_name }}
+                    {{ form.last_name }}
+                    <div class="mb-6 rounded-md shadow bg-flamingo-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-flamingo-400"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white py-8 px-4 shadow rounded-md sm:px-10">
-                    <div class="space-y-5 divide-y divide-gray-200">
-                        <div class="space-y-5">
-                            <div>
-                                <span class="block text-sm font-medium text-gray-700">연결된 소셜계정</span>
-                                <div class="mt-1 relative rounded-md shadow-sm">
-                                    <div
-                                        class="relative flex justify-between items-center w-full p-3 rounded-md border border-gray-300">
-                                        <div class="flex truncate">
-                                            <img class="h-10 w-10 rounded-full" src="" alt="" id="id_picture">
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-700">
-                                                    {{ form.email.value }}
-                                                </p>
-                                                <p class="text-sm text-gray-500 provider-name"></p>
-                                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-flamingo-800">개인정보 수집 및 이용 동의</h3>
+                                <div class="mt-2 text-sm text-flamingo-700 space-y-2">
+                                    <p>
+                                        <span class="font-semibold">디닷에프</span>는 아래의 목적으로 개인정보를 수집 및 이용하며 회원의 개인정보를 안전하게 취급하는 데 최선을 다하고 있습니다.
+                                    </p>
+                                    <ul role="list" class="list-disc pl-5 space-y-2">
+                                        <li>
+                                            <span class="font-semibold">이용목적</span>: 회원 본인확인 및 개인식별, 서비스 이용의사 확인, 서비스 진행, 고지사항 전달, 회원과의 원활한 의사소통, 서비스 이용내역 확인, 동국대학교 예술대학 영화영상학과, 영상대학원 영화영상제작학과, 일반대학원 영화영상학과 구성원 외 가입 제한
+                                        </li>
+                                        <li>
+                                            <span class="font-semibold">수집항목</span>: 프로필 사진, 학번, 성명, 이메일 주소, 휴대전화 번호
+                                        </li>
+                                        <li>
+                                            <span class="font-semibold">보유기간</span>: 회원탈퇴 시까지 보유하나 30일 간 로그인 이력 부재 시 자동 파기
+                                        </li>
+                                    </ul>
+                                    <p>위 개인정보 수집 및 이용에 대한 동의를 거부할 수 있으며 동의 거부 시 서비스 이용이 제한됩니다.</p>
+                                    <div class="flex flex-row-reverse pt-3">
+                                        <div class="flex items-center h-5">{{ form.agree }}</div>
+                                        <div class="mr-3 text-sm">
+                                            <label for="id_agree" class="font-medium text-gray-600">{{ form.agree.label }}</label>
                                         </div>
-                                        <a href="{% url 'account_login' %}"
-                                            class="rounded-md text-gray-400 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
-                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            <span class="sr-only">소셜계정 연결 취소</span>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <label for="id_student_id"
-                                    class="block text-sm font-medium text-gray-700">{{ form.student_id.label }}</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.student_id }}
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_student_id_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_student_id_error" hidden></p>
-                            </div>
-                            <div>
-                                <label for="id_name"
-                                    class="block text-sm font-medium text-gray-700">{{ form.name.label }}</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.name }}
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_name_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_name_error" hidden></p>
-                            </div>
-                            <div>
-                                <label for="id_email" class="block text-sm font-medium text-gray-700">이메일 주소</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.email }}
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_email_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_email_error" hidden></p>
-                            </div>
-                            <div>
-                                <label for="id_phone"
-                                    class="block text-sm font-medium text-gray-700">{{ form.phone.label }}</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.phone }}
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
-                            </div>
-                            <div>
-                                <button type="button"
-                                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-stone-600 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500 disabled:opacity-75 disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
-                                    id="id_create_vcode">
-                                    <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        id="id_create_vcode_spin">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    인증번호 받기
-                                </button>
-                                <p class="mt-2 text-sm text-gray-500" id="id_create_vcode_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_create_vcode_error" hidden></p>
-                                <p class="mt-2 text-sm text-gray-500" id="id_agree_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_agree_error" hidden></p>
-                            </div>
                         </div>
-                        <div class="space-y-5 pt-5">
-                            <div>
-                                <label for="id_email_vcode"
-                                    class="block text-sm font-medium text-gray-700">{{ form.email_vcode.label }}</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.email_vcode }}
+                    </div>
+                    <div class="bg-white py-8 px-4 shadow rounded-md sm:px-10">
+                        <div class="space-y-5 divide-y divide-gray-200">
+                            <div class="space-y-5">
+                                <div>
+                                    <span class="block text-sm font-medium text-gray-700">연결된 소셜계정</span>
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <div class="relative flex justify-between items-center w-full p-3 rounded-md border border-gray-300">
+                                            <div class="flex truncate">
+                                                <img class="h-10 w-10 rounded-full"
+                                                     src=""
+                                                     alt=""
+                                                     height=""
+                                                     width=""
+                                                     id="id_picture">
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-gray-700">{{ form.email.value }}</p>
+                                                    <p class="text-sm text-gray-500 provider-name"></p>
+                                                </div>
+                                            </div>
+                                            <a href="{% url 'account_login' %}"
+                                               class="rounded-md text-gray-400 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                                                <svg class="h-6 w-6"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     stroke="currentColor"
+                                                     stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                                <span class="sr-only">소셜계정 연결 취소</span>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_email_vcode_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_email_vcode_error" hidden></p>
-                            </div>
-                            <div>
-                                <label for="id_phone_vcode"
-                                    class="block text-sm font-medium text-gray-700">{{ form.phone_vcode.label }}</label>
-                                <div class="mt-1 shadow-sm">
-                                    {{ form.phone_vcode }}
+                                <div>
+                                    <label for="id_student_id" class="block text-sm font-medium text-gray-700">{{ form.student_id.label }}</label>
+                                    <div class="mt-1 shadow-sm">{{ form.student_id }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_student_id_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_student_id_error"
+                                       hidden></p>
                                 </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_phone_vcode_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_phone_vcode_error" hidden></p>
+                                <div>
+                                    <label for="id_name" class="block text-sm font-medium text-gray-700">{{ form.name.label }}</label>
+                                    <div class="mt-1 shadow-sm">{{ form.name }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_name_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_name_error" hidden></p>
+                                </div>
+                                <div>
+                                    <label for="id_email" class="block text-sm font-medium text-gray-700">이메일 주소</label>
+                                    <div class="mt-1 shadow-sm">{{ form.email }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_email_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_email_error" hidden></p>
+                                </div>
+                                <div>
+                                    <label for="id_phone" class="block text-sm font-medium text-gray-700">{{ form.phone.label }}</label>
+                                    <div class="mt-1 shadow-sm">{{ form.phone }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
+                                </div>
+                                <div>
+                                    <button type="button"
+                                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-stone-600 hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500 disabled:opacity-75 disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
+                                            id="id_create_vcode">
+                                        <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             id="id_create_vcode_spin">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        인증번호 받기
+                                    </button>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_create_vcode_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_create_vcode_error"
+                                       hidden></p>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_agree_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_agree_error" hidden></p>
+                                </div>
                             </div>
-                            <div>
-                                <button type="button"
-                                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flamingo-500 disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                    id="id_confirm_vcode" disabled>
-                                    <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        id="id_confirm_vcode_spin">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    가입하기
-                                </button>
-                                <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_confirm_vcode_error" hidden></p>
+                            <div class="space-y-5 pt-5">
+                                <div>
+                                    <label for="id_email_vcode" class="block text-sm font-medium text-gray-700">{{ form.email_vcode.label }}</label>
+                                    <div class="mt-1 shadow-sm">{{ form.email_vcode }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_email_vcode_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_email_vcode_error"
+                                       hidden></p>
+                                </div>
+                                <div>
+                                    <label for="id_phone_vcode" class="block text-sm font-medium text-gray-700">{{ form.phone_vcode.label }}</label>
+                                    <div class="mt-1 shadow-sm">{{ form.phone_vcode }}</div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_phone_vcode_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_phone_vcode_error"
+                                       hidden></p>
+                                </div>
+                                <div>
+                                    <button type="button"
+                                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-flamingo-500 disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                            id="id_confirm_vcode"
+                                            disabled>
+                                        <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             id="id_confirm_vcode_spin">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        가입하기
+                                    </button>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_confirm_vcode_error"
+                                       hidden></p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
-<script src="{% static 'js/consts.js' %}"></script>
-<script src="{% static 'js/forms.js' %}"></script>
-<script src="{% static 'js/signup.js' %}"></script>
+    <script src="{% static 'js/consts.js' %}"></script>
+    <script src="{% static 'js/forms.js' %}"></script>
+    <script src="{% static 'js/signup.js' %}"></script>
 {% endblock %}

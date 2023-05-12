@@ -1,6 +1,10 @@
 from django.utils import timezone
 import requests
 
+"""
+If the time is not specified with an if statement, it is executed every 30 minutes.
+"""
+
 #
 # users
 #
@@ -14,7 +18,7 @@ if timezone.now().strftime("%H:%M") == "08:00":
 # dflink
 #
 
-if timezone.now().strftime("%H:%M") == "00:02":
+if timezone.now().strftime("%H:%M") == "00:00":
     requests.get("https://dongguk.film/dflink/utils/delete-expired-dflinks")
 
 #

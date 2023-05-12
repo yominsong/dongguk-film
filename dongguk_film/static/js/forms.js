@@ -111,13 +111,28 @@ function initValidation(array, button) {
     validation();
 }
 
-function code(id, extra) {
+function code(one, two) {
     /*
-     * id: Target element
-     * extra: String to concatenate as element's ID
+     * one: Something to concatenate with two
+     * two: Something to concatenate with one
      */
+    let result;
 
-    return eval(String(id.id) + extra);
+    if (two == null) {
+        two = "";
+    };
+
+    if (typeof (one) == "object" && typeof (two) == "string") {
+        result = one.id + two;
+    } else if (typeof (one) == "string" && typeof (two) == "object") {
+        result = one + two.id;
+    } else if (typeof (one) == "object" && typeof (two) == "object") {
+        result = one.id + two.id;
+    } else if (typeof (one) == "string" && typeof (two) == "string") {
+        result = one + two;
+    };
+
+    return eval(result);
 }
 
 function isValid(input) {
@@ -187,7 +202,7 @@ function validation() {
 
     inputs.forEach((input) => {
         if (input.type == "radio") {
-            let altInput = eval(input.id.replace(`_${input.id.split("_")[2]}`, ""));
+            let altInput = code(input.id.replace(`_${input.id.split("_")[2]}`, ""));
             input.addEventListener("click", () => {
                 displayError(false, altInput);
             });

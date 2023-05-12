@@ -149,25 +149,57 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id = "create_dflink") {
+    } else if (response.id == "create_dflink") {
         // requestCreateDflink()
         if (response.result.status == "DONE") {
-            displayForm(false);
-            id_create_dflink_div.classList.replace("justify-end", "justify-between");
-            displayButtonMsg(true, id_create_dflink, "descr", response.result.msg);
-            displayButtonMsg(false, id_create_dflink, "error");
-            window.location.href = `${originLocation}/dflink`;
+            displayButtonMsg(true, id_create_or_update_dflink, "descr", response.result.msg);
+            displayButtonMsg(false, id_create_or_update_dflink, "error");
+            location.href = originLocation + "/dflink";
         } else if (response.result.status == "FAIL") {
-            id_create_dflink_div.classList.replace("justify-end", "justify-between");
-            displayError(true, eval(response.result.element), "inappropriate");
-            displayButtonMsg(true, id_create_dflink, "error", response.result.msg);
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
         };
-        freezeForm(false);
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-        buttons.forEach((button) => {
-            button.disabled = false;
+
+    } else if (response.id == "update_dflink") {
+        // requestUpdateDflink()
+        if (response.result.status == "DONE") {
+            displayButtonMsg(true, id_create_or_update_dflink, "descr", response.result.msg);
+            displayButtonMsg(false, id_create_or_update_dflink, "error");
+            location.href = originLocation + "/dflink";
+        } else if (response.result.status == "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+
+    } else if (response.id == "delete_dflink") {
+        // requestDeleteDflink()
+        if (response.result.status == "DONE") {
+            displayButtonMsg(true, id_delete_dflink, "descr", response.result.msg);
+            displayButtonMsg(false, id_delete_dflink, "error");
+            location.href = originLocation + "/dflink";
+        } else if (response.result.status == "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            displayButtonMsg(true, id_delete_dflink, "error", response.result.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
         });
     };
 }

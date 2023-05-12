@@ -51,6 +51,7 @@ function requestConfirmVcodeForSNP() {
 }
 
 function setPage() {
+    // Step one (first)
     initValidation(stepOnes, id_create_vcode);
     id_create_vcode.addEventListener("click", () => {
         filteredInputs = inputs.filter(isValid);
@@ -71,6 +72,8 @@ function setPage() {
             });
         });
     });
+
+    // Step two (last)
     id_confirm_vcode.addEventListener("click", () => {
         filteredInputs = inputs.filter(isValid);
         if (filteredInputs.length == inputs.length) {
