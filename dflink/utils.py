@@ -42,7 +42,7 @@ def delete_expired_dflinks(request):
             response = requests.delete(url, headers=headers)
 
     if len(expired_dflink_list) > 0:
-        send_msg(request, "DLD", "MGT", extra=expired_dflink_list)
+        send_msg(request, "DLA", "MGT", extra=expired_dflink_list)
 
     return HttpResponse(f"Number of deleted DFlinks: {len(expired_dflink_list)}")
 
@@ -50,6 +50,9 @@ def delete_expired_dflinks(request):
 #
 # Sub functions
 #
+
+
+need_www = False
 
 
 def chap_gpt(prompt):
@@ -83,6 +86,11 @@ def is_right_url(original_url):
     try:
         response = requests.get(original_url, headers=headers)
     except:
+        original_url = original_url.replace("://", "://www.")
+        response = requests.get(original_url, headers=headers)
+        global need_www
+        need_www = True
+    else:
         response = requests.get(
             url="https://proxy.scrapeops.io/v1/",
             params={
@@ -91,25 +99,6 @@ def is_right_url(original_url):
             },
         )
     result = True if response.status_code == 200 else False
-    return result
-
-
-def add_www_if_needed(original_url):
-    if not "www." in original_url and not is_right_url(original_url):
-        result = original_url.replace("://", "://www.")
-    else:
-        result = original_url
-    return result
-
-
-def is_available(original_url):
-    try:
-        result = is_right_url(original_url)
-    except:
-        try:
-            result = is_available(add_www_if_needed(original_url))
-        except:
-            result = False
     return result
 
 
@@ -203,7 +192,7 @@ def validation(data):
     title = data["title"]
     request = data["request"]
 
-    if not is_available(original_url):
+    if not is_right_url(original_url):
         status = "FAIL"
         reason = "원본 URL 접속 불가"
         msg = "원본 URL이 잘못 입력된 것 같아요."
@@ -280,7 +269,8 @@ def dflink(request):
         status, reason, msg, element = validation(data)
 
         if status == None:
-            original_url = add_www_if_needed(original_url)
+            if need_www:
+                original_url = original_url.replace("://", "://www.")
 
             url = "https://api.short.io/links"
             payload = {
@@ -347,7 +337,8 @@ def dflink(request):
         status, reason, msg, element = validation(data)
 
         if status == None:
-            original_url = add_www_if_needed(original_url)
+            if need_www:
+                original_url = original_url.replace("://", "://www.")
 
             url = f"https://api.short.io/links/{string_id}"
             payload = {
@@ -401,10 +392,7 @@ def dflink(request):
             dflink_slug = request.GET["dflink_slug"]
 
             url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
-            headers = {
-                "accept": "application/json",
-                "Authorization": SHORT_IO_API_KEY
-            }
+            headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
             response = requests.get(url, headers=headers).json()
             original_url = response["originalURL"]
             title = response["title"]

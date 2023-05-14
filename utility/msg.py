@@ -92,10 +92,12 @@ def send_msg(request, type, channel, extra=None):
     AIV: Attempting to skip identity verification
     UXR: Unexpected request
     SUP: Signup complete
+    DVA: Delete expired Vcodes Automatically
+    DUA: Delete inactive Users Automatically
     DLC: DF Link Create
     DLU: DF Link Update
     DLD: DF Link Delete
-    DLA: DF Link Delete
+    DLA: DF Link Delete Automatically
 
     DEV: Development
     MGT: Management
@@ -144,12 +146,41 @@ def send_msg(request, type, channel, extra=None):
     elif type == "SUP":
         main_content = {
             "important": False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": default_picture_url,
             "author_url": "",
-            "title": "새로운 회원이 가입함",
+            "title": "새로운 사용자 계정이 생성됨",
             "url": "",
             "thumbnail_url": "",
-            "description": f"이제 총 회원 수는 {User.objects.count()}명입니다.",
+            "description": f"현 기준 사용자는 총 {User.objects.count() + 1}명입니다.",
+        }
+
+    # type: "DVA"
+    elif type == "DVA":
+        sub_content = ""
+        for i in range(len(extra)):
+            new_line = f"\nㆍ[E] {extra[i].email_vcode}, [P] {extra[i].phone_vcode}"
+            new_line.replace("\n", "") if i == 0 else None
+            sub_content += new_line
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{len(extra)}개의 만료된 인증번호가 삭제됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": sub_content,
+        }
+
+    # type: "DUA"
+    elif type == "DUA":
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{extra}개의 비활성 사용자 계정이 삭제됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": f"현 기준 사용자는 총 {User.objects.count() - extra}명입니다.",
         }
 
     # type: "DLC"
@@ -213,15 +244,16 @@ def send_msg(request, type, channel, extra=None):
         sub_content = ""
         for i in range(len(extra)):
             new_line = f"\nㆍ[{extra[i]['category']}] {extra[i]['dflink']} {extra[i]['title']}"
+            new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
         main_content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "만료된 동영링크가 삭제됨",
+            "title": f"{len(extra)}개의 만료된 동영링크가 삭제됨",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"다음 {len(extra)}개의 동영링크가 만료일 도달로 삭제되었습니다.{sub_content}",
+            "description": sub_content,
         }
 
     # channel: "DEV"

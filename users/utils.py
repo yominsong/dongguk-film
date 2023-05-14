@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from users.models import Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
+from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
 from requests.sessions import Session
@@ -38,6 +39,7 @@ def delete_inactive_users(request):
                 },
             }
             send_mail(data)
+        send_msg(request, "DUA", "MGT", extra=count)
         inactive_users.delete()
     return HttpResponse(f"Number of deleted users: {count}")
 
@@ -46,6 +48,7 @@ def delete_expired_vcodes(request):
     expired_vcodes = Vcode.objects.filter(will_expire_on__lt=timezone.now())
     count = expired_vcodes.count()
     if count > 0:
+        send_msg(request, "DVA", "MGT", extra=expired_vcodes)
         expired_vcodes.delete()
     return HttpResponse(f"Number of deleted verification codes: {count}")
 
