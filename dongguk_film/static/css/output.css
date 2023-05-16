@@ -950,10 +950,6 @@ select {
   height: 100vh;
 }
 
-.h-3 {
-  height: 0.75rem;
-}
-
 .min-h-full {
   min-height: 100%;
 }
@@ -996,10 +992,6 @@ select {
 
 .w-full {
   width: 100%;
-}
-
-.w-3 {
-  width: 0.75rem;
 }
 
 .min-w-0 {
