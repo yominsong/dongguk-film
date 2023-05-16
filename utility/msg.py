@@ -18,7 +18,7 @@ DISCORD_DEV_WEBHOOK_URL = getattr(
 #
 
 
-def format_msg(content):
+def format_msg(content: dict):
 
     target = content["target"]
     important = content["important"]
@@ -47,7 +47,7 @@ def format_msg(content):
             name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
         )
         embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
-        embed.add_field(name="Referer", value=content["referer"], inline=False)
+        # embed.add_field(name="Referer", value=content["referer"], inline=False)
         embed.add_field(name="Method", value=content["method"], inline=True)
         embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
         embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
@@ -57,12 +57,11 @@ def format_msg(content):
     return embed
 
 
-def get_webhook(channel):
+def get_webhook(channel: str):
     """
-    channel: "DEV", "MGT"
-
-    DEV: Development
-    MGT: Management
+    - channel | `str`:
+        - DEV: Development
+        - MGT: Management
     """
 
     # channel: "DEV"
@@ -83,31 +82,44 @@ def get_webhook(channel):
 #
 
 
-def send_msg(request, type, channel, extra=None):
+def send_msg(request, type: str, channel: str, extra=None):
     """
-    type: "DSA", "OVP", "UXR", "SUP", "DLC", "DLU", "DLD", "DLA"
-    channel: "DEV", "MGT"
-
-    DSA: Duplicate signup attempt
-    AIV: Attempting to skip identity verification
-    UXR: Unexpected request
-    SUP: Signup complete
-    DVA: Delete expired Vcodes Automatically
-    DUA: Delete inactive Users Automatically
-    DLC: DF Link Create
-    DLU: DF Link Update
-    DLD: DF Link Delete
-    DLA: DF Link Delete Automatically
-
-    DEV: Development
-    MGT: Management
+    - request | `HttpRequest`
+    - type | `str`:
+        - UDC: Update DMD Cookie
+        - DSA: Duplicate signup attempt
+        - AIV: Attempting to skip identity verification
+        - UXR: Unexpected request
+        - SUP: Signup complete
+        - DVA: Delete expired Vcodes Automatically
+        - DUA: Delete inactive Users Automatically
+        - DLC: DF Link Create
+        - DLU: DF Link Update
+        - DLD: DF Link Delete
+        - DLA: DF Link Delete Automatically
+    - channel | `str`:
+        - DEV: Development
+        - MGT: Management
+    - extra | `Any` | optional
     """
 
     webhook = get_webhook(channel)
     default_picture_url = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
+    # type: "UDC"
+    if type == "UDC":
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": "DMD 쿠키 업데이트됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": extra,
+        }
+
     # type: "DSA"
-    if type == "DSA":
+    elif type == "DSA":
         main_content = {
             "important": True,
             "picture_url": default_picture_url,
@@ -264,7 +276,7 @@ def send_msg(request, type, channel, extra=None):
             "content_type": request.content_type,
             "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
             "user_agent": request.headers["user-agent"],
-            "referer": request.headers["referer"],
+            # "referer": request.headers["referer"],
             "method": request.method,
             "full_path": request.get_full_path(),
             "user_auth": request.user.is_authenticated,

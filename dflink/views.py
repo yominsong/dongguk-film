@@ -30,7 +30,7 @@ def dflink(request):
 
     # Query
     q = request.GET.get("q")
-    query_result_list_count = None
+    query_result_count = None
     query_param = None
     if q:
         query_result_list = []
@@ -39,7 +39,7 @@ def dflink(request):
                 if k != "user" and q in v and dflink not in query_result_list:
                     query_result_list.append(dflink)
         dflink_list = query_result_list
-        query_result_list_count = len(query_result_list)
+        query_result_count = len(query_result_list)
         query_param = f"q={q}&"
 
     # Pagination
@@ -56,7 +56,7 @@ def dflink(request):
         "dflink/dflink.html",
         {
             "dflink_count": dflink_count,
-            "query_result_list_count": query_result_list_count,
+            "query_result_count": query_result_count,
             "query_param": query_param,
             "page_value": page_value,
             "page_range": page_range,

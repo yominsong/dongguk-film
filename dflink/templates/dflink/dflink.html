@@ -34,47 +34,64 @@
     <!-- Search -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
-            <div>
-                <label for="id_dflink_q"
-                       class="block text-sm font-medium leading-6 text-gray-500">
-                    {% if "?q=" in request.get_full_path %}
-                        <span class="font-semibold">{{ dflink_count }}개</span> 중 <span class="font-semibold">{{ query_result_list_count }}개</span>의 동영링크 검색됨
-                    {% else %}
-                        <span class="font-semibold">{{ dflink_count }}개</span>의 동영링크 검색
-                    {% endif %}
-                </label>
-                <div class="mt-2 flex rounded-md shadow-sm">
-                    <div class="relative flex flex-grow items-stretch focus-within:z-10">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg class="h-5 w-5 text-gray-400"
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor"
-                                 aria-hidden="true">
-                                <path d="M12.232 4.232a2.5 2.5 0 013.536 3.536l-1.225 1.224a.75.75 0 001.061 1.06l1.224-1.224a4 4 0 00-5.656-5.656l-3 3a4 4 0 00.225 5.865.75.75 0 00.977-1.138 2.5 2.5 0 01-.142-3.667l3-3z" />
-                                <path d="M11.603 7.963a.75.75 0 00-.977 1.138 2.5 2.5 0 01.142 3.667l-3 3a2.5 2.5 0 01-3.536-3.536l1.225-1.224a.75.75 0 00-1.061-1.06l-1.224 1.224a4 4 0 105.656 5.656l3-3a4 4 0 00-.225-5.865z" />
-                            </svg>
-                        </div>
-                        <input type="text"
-                               name="name_dflink_q"
-                               id="id_dflink_q"
-                               class="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-500 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                               placeholder="dgufilm.link/example">
-                    </div>
-                    <button type="button"
-                            id="id_search_dflink"
-                            class="relative -ml-px rounded-r-md px-3 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-50 disabled:cursor-not-allowed">
+            {% if "?q=" in request.get_full_path %}
+                <div class="flex justify-between items-center">
+                    <label for="id_dflink_q"
+                           class="flex text-sm font-medium leading-6 text-gray-500">
+                        <span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
+                    </label>
+                    <div id="id_search_dflink_init"
+                         class="flex text-gray-500 cursor-pointer hover:text-gray-900"
+                         tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
                              stroke-width="1.5"
                              stroke="currentColor"
-                             class="w-5 h-5"
+                             class="w-4 h-4"
                              aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                         </svg>
-                        <span class="sr-only">검색</span>
-                    </button>
+                        <span class="sr-only">검색 초기화</span>
+                    </div>
                 </div>
+            {% else %}
+                <label for="id_dflink_q"
+                       class="block text-sm font-medium leading-6 text-gray-500">
+                    <span class="font-semibold">{{ dflink_count }}개</span>의 동영링크 검색
+                </label>
+            {% endif %}
+            <div class="mt-2 flex rounded-md shadow-sm">
+                <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-gray-400"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             aria-hidden="true">
+                            <path d="M12.232 4.232a2.5 2.5 0 013.536 3.536l-1.225 1.224a.75.75 0 001.061 1.06l1.224-1.224a4 4 0 00-5.656-5.656l-3 3a4 4 0 00.225 5.865.75.75 0 00.977-1.138 2.5 2.5 0 01-.142-3.667l3-3z" />
+                            <path d="M11.603 7.963a.75.75 0 00-.977 1.138 2.5 2.5 0 01.142 3.667l-3 3a2.5 2.5 0 01-3.536-3.536l1.225-1.224a.75.75 0 00-1.061-1.06l-1.224 1.224a4 4 0 105.656 5.656l3-3a4 4 0 00-.225-5.865z" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                           name="name_dflink_q"
+                           id="id_dflink_q"
+                           class="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-500 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                           placeholder="dgufilm.link/example">
+                </div>
+                <button type="button"
+                        id="id_search_dflink"
+                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.5"
+                         stroke="currentColor"
+                         class="w-5 h-5"
+                         aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <span class="sr-only">검색</span>
+                </button>
             </div>
         </div>
     </div>
@@ -147,9 +164,9 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
+                <li class="class-open relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
                     tabindex="0">
-                    <span class="class-open absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <svg xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20"
                          fill="currentColor"

@@ -161,6 +161,7 @@ function handleAjaxCallback(response) {
                 button.disabled = false;
             });
             response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            displayButtonMsg(false, id_create_or_update_dflink, "descr");
             displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
         };
         spins.forEach((spin) => {
@@ -179,6 +180,7 @@ function handleAjaxCallback(response) {
                 button.disabled = false;
             });
             response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            displayButtonMsg(false, id_create_or_update_dflink, "descr");
             displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
         };
         spins.forEach((spin) => {
@@ -196,6 +198,7 @@ function handleAjaxCallback(response) {
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+            displayButtonMsg(false, id_delete_dflink, "descr");
             displayButtonMsg(true, id_delete_dflink, "error", response.result.msg);
         };
         spins.forEach((spin) => {

@@ -58,9 +58,12 @@ def delete_expired_vcodes(request):
 #
 
 
-def is_registered_student(student_id, name):
+def is_registered_student(student_id: str, name: str):
     """
     This function relies on the 'Find Student ID' feature of Dongguk University's mDRIMS.
+
+    - student_id | `str`
+    - name | `str`
     """
 
     headers["Cookie"] = DMD_COOKIE
@@ -82,12 +85,19 @@ def is_registered_student(student_id, name):
     return result
 
 
-def is_non_member(student_id):
+def is_non_member(student_id: str):
     result = True if User.objects.filter(username=student_id).count() == 0 else False
     return result
 
 
 def is_valid(request):
+    """
+    - request | `HttpRequest`:
+        - agree
+        - student_id
+        - name
+        - email
+    """
     agree = request.POST["agree"]
     student_id = request.POST["student_id"]
     name = request.POST["name"]
@@ -113,7 +123,14 @@ def is_valid(request):
     return result
 
 
-def validation(data):
+def validation(data: dict):
+    """
+    - data | `dict`:
+        - student_id
+        - name
+        - request
+    """
+
     student_id = data["student_id"]
     name = data["name"]
     request = data["request"]
@@ -143,6 +160,19 @@ def validation(data):
 
 
 def vcode(request):
+    """
+    - request | `HttpRequest`:
+        - id:
+            - create_vcode_for_SNP
+            - confirm_vcode_for_SNP
+        - student_id
+        - name
+        - email
+        - phone
+        - email_vcode
+        - phone_vcode
+    """
+
     # id: create_vcode_for_SNP
     if request.POST["id"] == "create_vcode_for_SNP":
         id = request.POST["id"]

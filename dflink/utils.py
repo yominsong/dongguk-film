@@ -55,7 +55,7 @@ def delete_expired_dflinks(request):
 need_www = False
 
 
-def chap_gpt(prompt):
+def chap_gpt(prompt: str):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
@@ -82,14 +82,15 @@ def chap_gpt(prompt):
     return openai_response
 
 
-def is_right_url(original_url):
+def is_right_url(original_url: str):
     try:
         response = requests.get(original_url, headers=headers)
     except:
-        original_url = original_url.replace("://", "://www.")
-        response = requests.get(original_url, headers=headers)
-        global need_www
-        need_www = True
+        if not "://www." in original_url:
+            original_url = original_url.replace("://", "://www.")
+            response = requests.get(original_url, headers=headers)
+            global need_www
+            need_www = True
     else:
         response = requests.get(
             url="https://proxy.scrapeops.io/v1/",
@@ -102,7 +103,7 @@ def is_right_url(original_url):
     return result
 
 
-def is_well_known(original_url):
+def is_well_known(original_url: str):
     openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
 
     if "True" in openai_response:
@@ -115,7 +116,7 @@ def is_well_known(original_url):
     return result
 
 
-def is_harmfulness(original_url):
+def is_harmfulness(original_url: str):
     openai_response = chap_gpt(
         f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
     )
@@ -130,7 +131,14 @@ def is_harmfulness(original_url):
     return result
 
 
-def is_new_slug(id, dflink_slug):
+def is_new_slug(id: str, dflink_slug: str):
+    """
+    - id | `str`:
+        - create_dflink
+        - update_dflink
+    - dflink_slug | `str`
+    """
+
     url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
     headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
     response = requests.get(url, headers=headers)
@@ -149,7 +157,7 @@ def is_new_slug(id, dflink_slug):
     return result
 
 
-def is_not_swearing(dflink_slug_or_title):
+def is_not_swearing(dflink_slug_or_title: str):
     openai_response = chap_gpt(
         f"'{dflink_slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
     )
@@ -165,6 +173,13 @@ def is_not_swearing(dflink_slug_or_title):
 
 
 def is_valid(request):
+    """
+    - request | `HttpRequest`:
+        - original_url
+        - dflink_slug
+        - expiration_date
+    """
+
     original_url = request.GET["original_url"]
     dflink_slug = request.GET["dflink_slug"]
     expiration_date = request.GET["expiration_date"]
@@ -185,7 +200,16 @@ def is_valid(request):
     return result
 
 
-def validation(data):
+def validation(data: dict):
+    """
+    - data | `dict`:
+        - id
+        - original_url
+        - dflink_slug
+        - title
+        - request
+    """
+
     id = data["id"]
     original_url = data["original_url"]
     dflink_slug = data["dflink_slug"]
@@ -249,6 +273,20 @@ def validation(data):
 
 
 def dflink(request):
+    """
+    - request | `HttpRequest`:
+        - id:
+            - create_dflink
+            - update_dflink
+            - delete_dflink
+        - string_id
+        - original_url
+        - dflink_slug
+        - title
+        - category
+        - expiration_date
+    """
+
     id = request.GET["id"]
 
     # id: create_dflink

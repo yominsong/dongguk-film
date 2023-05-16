@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
+from .msg import send_msg
 import json, re
 
 #
@@ -23,6 +24,8 @@ def update_dmd_cookie(request):
             f.write(json.dumps(data, indent=4))
             f.truncate()
 
+    send_msg(request, "UDC", "DEV", cookie)
+
     return HttpResponse(f"dmd-cookie: {cookie}")
 
 
@@ -31,17 +34,16 @@ def update_dmd_cookie(request):
 #
 
 
-def reg_test(value, type):
+def reg_test(value: str, type: str):
     """
-    value: String to test regular expression for
-    type: "HGL", "LRN", "NUM", "DAT", "EML", "URL"
-
-    HGL: Hangul
-    LRN: Lower case Roman and Number
-    NUM: Number
-    DAT: Date
-    EML: Email
-    URL: URL
+    - value | `str`: String to test regular expression for
+    - type | `str`:
+        - HGL: Hangul
+        - LRN: Lower case Roman and Number
+        - NUM: Number
+        - DAT: Date
+        - EML: Email
+        - URL: URL
     """
 
     reg_hangul = re.compile("[가-힣]+")
