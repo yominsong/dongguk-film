@@ -1,5 +1,7 @@
 from django.utils import timezone
-import requests
+import os, requests
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dongguk_film.settings")
 
 """
 If the time is not specified with an if statement, it is executed every 30 minutes.
