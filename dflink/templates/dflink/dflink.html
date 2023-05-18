@@ -176,9 +176,10 @@
                     새로 만들기
                 </li>
             {% else %}
-                <li class="class-open relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
+                <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
                     tabindex="0">
-                    <a href="{% url 'account_login' %}" class="absolute inset-x-0 -top-px bottom-0"></a>
+                    <a href="{% url 'account_login' %}"
+                       class="login-button absolute inset-x-0 -top-px bottom-0"></a>
                     <svg xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20"
                          fill="currentColor"
