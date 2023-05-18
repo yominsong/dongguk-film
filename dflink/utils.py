@@ -82,6 +82,14 @@ def chap_gpt(prompt: str):
     return openai_response
 
 
+def need_www_switch(boolean: bool):
+    global need_www
+    if boolean == True:
+        need_www = True
+    elif boolean == False:
+        need_www = False
+
+
 def is_right_url(original_url: str):
     try:
         response = requests.get(original_url, headers=headers)
@@ -89,8 +97,7 @@ def is_right_url(original_url: str):
         if not "://www." in original_url:
             original_url = original_url.replace("://", "://www.")
             response = requests.get(original_url, headers=headers)
-            global need_www
-            need_www = True
+            need_www_switch(True)
     else:
         response = requests.get(
             url="https://proxy.scrapeops.io/v1/",
@@ -99,7 +106,11 @@ def is_right_url(original_url: str):
                 "url": original_url,
             },
         )
-    result = True if response.status_code == 200 else False
+    try:
+        if int(response.status_code) < 400:
+            result = True
+    except:
+        result = False
     return result
 
 
@@ -309,6 +320,7 @@ def dflink(request):
         if status == None:
             if need_www:
                 original_url = original_url.replace("://", "://www.")
+                need_www_switch(False)
 
             url = "https://api.short.io/links"
             payload = {
@@ -377,6 +389,7 @@ def dflink(request):
         if status == None:
             if need_www:
                 original_url = original_url.replace("://", "://www.")
+                need_www_switch(False)
 
             url = f"https://api.short.io/links/{string_id}"
             payload = {
