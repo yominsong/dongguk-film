@@ -11,7 +11,6 @@ OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
-headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
 # Cron functions
@@ -55,6 +54,11 @@ def delete_expired_dflinks(request):
 need_www = False
 
 
+def random_headers():
+    headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+    return headers
+
+
 def chap_gpt(prompt: str):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
@@ -92,38 +96,25 @@ def need_www_switch(boolean: bool):
 
 def is_right_url(original_url: str):
     try:
-        response = requests.get(original_url, headers=headers)
+        response = requests.get(original_url, headers=random_headers())
     except:
-        if not "://www." in original_url:
-            original_url = original_url.replace("://", "://www.")
-            response = requests.get(original_url, headers=headers)
-            need_www_switch(True)
-    else:
-        response = requests.get(
-            url="https://proxy.scrapeops.io/v1/",
-            params={
-                "api_key": SCRAPEOPS_API_KEY,
-                "url": original_url,
-            },
-        )
+        try:
+            if not "://www." in original_url:
+                original_url = original_url.replace("://", "://www.")
+                response = requests.get(original_url, headers=random_headers())
+                need_www_switch(True)
+        except:
+            response = requests.get(
+                url="https://proxy.scrapeops.io/v1/",
+                params={
+                    "api_key": SCRAPEOPS_API_KEY,
+                    "url": original_url,
+                },
+            )
     try:
-        if int(response.status_code) < 400:
-            result = True
+        result = True if int(response.status_code) < 400 else False
     except:
         result = False
-    return result
-
-
-def is_well_known(original_url: str):
-    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
-
-    if "True" in openai_response:
-        result = True
-    elif "False" in openai_response:
-        result = False
-    else:
-        result = False
-
     return result
 
 
@@ -231,12 +222,6 @@ def validation(data: dict):
         status = "FAIL"
         reason = "원본 URL 접속 불가"
         msg = "원본 URL이 잘못 입력된 것 같아요."
-        element = "id_original_url"
-
-    elif not is_well_known(original_url):
-        status = "FAIL"
-        reason = "allowlist 등재 필요"
-        msg = "이 원본 URL은 현재 사용할 수 없어요."
         element = "id_original_url"
 
     elif not is_harmfulness(original_url):
