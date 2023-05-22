@@ -118,6 +118,19 @@ def is_right_url(original_url: str):
     return result
 
 
+def is_well_known(original_url: str):
+    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+
+    if "True" in openai_response:
+        result = True
+    elif "False" in openai_response:
+        result = False
+    else:
+        result = False
+
+    return result
+
+
 def is_harmfulness(original_url: str):
     openai_response = chap_gpt(
         f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
@@ -222,6 +235,12 @@ def validation(data: dict):
         status = "FAIL"
         reason = "원본 URL 접속 불가"
         msg = "원본 URL이 잘못 입력된 것 같아요."
+        element = "id_original_url"
+
+    elif not is_well_known(original_url):
+        status = "FAIL"
+        reason = "allowlist 등재 필요"
+        msg = "이 원본 URL은 현재 사용할 수 없어요."
         element = "id_original_url"
 
     elif not is_harmfulness(original_url):
