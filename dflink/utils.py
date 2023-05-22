@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
+from urllib.parse import urlparse
 from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
@@ -119,6 +120,7 @@ def is_right_url(original_url: str):
 
 
 def is_well_known(original_url: str):
+    original_url = urlparse(original_url).netloc
     openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
 
     if "True" in openai_response:
@@ -132,6 +134,7 @@ def is_well_known(original_url: str):
 
 
 def is_harmfulness(original_url: str):
+    original_url = urlparse(original_url).netloc
     openai_response = chap_gpt(
         f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
     )
