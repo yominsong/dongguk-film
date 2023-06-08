@@ -226,7 +226,7 @@ function controlNoti(notiType) {
         } else if (notiType == "nonExistentDflink") {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "존재하지 않는 동영링크예요.";
-            notiContent.innerText = "주소가 잘못되었거나 만료일이 지나 삭제된 것 같아요.";
+            notiContent.innerText = "주소가 잘못되었거나 삭제된 것 같아요.";
         };
     }
 

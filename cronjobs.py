@@ -27,5 +27,5 @@ if timezone.now().strftime("%H:%M") == "00:00":
 # utility
 #
 
-if timezone.now().strftime("%H:%M") == "00:30":
+if timezone.now().strftime("%H:%M") == "23:30":
     requests.get("https://dongguk.film/utility/utils/update-dmd-cookie")
