@@ -8,22 +8,22 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 
 def home(request):
-    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
-    headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-    response = requests.get(url, headers=headers).json()
-    dflinks = response["links"]
+    # url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
+    # headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
+    # response = requests.get(url, headers=headers).json()
+    # dflinks = response["links"]
     dflink_list = []
-    for i in range(len(dflinks) - 1):
-        dflink = {
-            "id_string": dflinks[i]["idString"],
-            "original_url": dflinks[i]["originalURL"],
-            "slug": dflinks[i]["path"],
-            "title": dflinks[i]["title"],
-            "category": dflinks[i]["tags"][0],
-            "user": Metadata.objects.get(student_id=dflinks[i]["tags"][1]),
-            "expiration_date": dflinks[i]["tags"][2],
-        }
-        dflink_list.append(dflink)
+    # for i in range(len(dflinks) - 1):
+    #     dflink = {
+    #         "id_string": dflinks[i]["idString"],
+    #         "original_url": dflinks[i]["originalURL"],
+    #         "slug": dflinks[i]["path"],
+    #         "title": dflinks[i]["title"],
+    #         "category": dflinks[i]["tags"][0],
+    #         "user": Metadata.objects.get(student_id=dflinks[i]["tags"][1]),
+    #         "expiration_date": dflinks[i]["tags"][2],
+    #     }
+        # dflink_list.append(dflink)
     return render(request, "home/home.html", {"dflink_list": dflink_list})
 
 

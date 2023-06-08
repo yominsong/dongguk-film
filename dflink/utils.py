@@ -1,12 +1,15 @@
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
 from utility.utils import reg_test
 from fake_useragent import UserAgent
 import openai, json, requests
 
+NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
+NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
@@ -52,11 +55,20 @@ def delete_expired_dflinks(request):
 #
 
 
+global need_www
 need_www = False
 
 
-def random_headers():
-    headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+def set_headers(type: str):
+    if type == "RANDOM":
+        headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+    elif type == "NOTION":
+        headers = {
+            "Authorization": f"Bearer {NOTION_SECRET}",
+            "Accept": "application/json",
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+        }
     return headers
 
 
@@ -87,23 +99,17 @@ def chap_gpt(prompt: str):
     return openai_response
 
 
-def need_www_switch(boolean: bool):
-    global need_www
-    if boolean == True:
-        need_www = True
-    elif boolean == False:
-        need_www = False
-
-
 def is_right_url(original_url: str):
+    global need_www
+
     try:
-        response = requests.get(original_url, headers=random_headers())
+        response = requests.get(original_url, headers=set_headers("RANDOM"))
     except:
         try:
             if not "://www." in original_url:
                 original_url = original_url.replace("://", "://www.")
-                response = requests.get(original_url, headers=random_headers())
-                need_www_switch(True)
+                response = requests.get(original_url, headers=set_headers("RANDOM"))
+                need_www = True
         except:
             response = requests.get(
                 url="https://proxy.scrapeops.io/v1/",
@@ -116,19 +122,63 @@ def is_right_url(original_url: str):
         result = True if int(response.status_code) < 400 else False
     except:
         result = False
+
+    return result
+
+
+def is_listed(original_url: str):
+    url = (
+        f"https://api.notion.com/v1/databases/{NOTION_DB_ID['dflink-allowlist']}/query"
+    )
+    payload = {
+        "filter": {
+            "and": [
+                {"property": "URL", "rich_text": {"equals": original_url}},
+                {"property": "Validation", "rich_text": {"contains": "🟢"}},
+            ]
+        }
+    }
+    notion_response = requests.post(
+        url, json=payload, headers=set_headers("NOTION")
+    ).json()
+
+    try:
+        listed_url = notion_response["results"][0]["properties"]["URL"]["url"]
+        if original_url == listed_url:
+            result = True
+    except:
+        result = False
+
     return result
 
 
 def is_well_known(original_url: str):
-    original_url = urlparse(original_url).netloc
-    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+    global need_www
 
-    if "True" in openai_response:
+    if "://" in original_url:
+        original_url = urlparse(original_url).netloc
+
+    if is_listed(original_url):
         result = True
-    elif "False" in openai_response:
-        result = False
     else:
-        result = False
+        openai_response = chap_gpt(
+            f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘."
+        )
+
+        if "True" in openai_response:
+            result = True
+        elif "False" in openai_response:
+            if not "www." == original_url[:4]:
+                original_url = f"www.{original_url}"
+                if is_well_known(original_url):
+                    need_www = True
+                    result = True
+                else:
+                    result = False
+            else:
+                result = False
+        else:
+            result = False
 
     return result
 
@@ -234,52 +284,59 @@ def validation(data: dict):
     title = data["title"]
     request = data["request"]
 
-    if not is_right_url(original_url):
-        status = "FAIL"
-        reason = "원본 URL 접속 불가"
-        msg = "원본 URL이 잘못 입력된 것 같아요."
-        element = "id_original_url"
+    try:
+        if not is_right_url(original_url):
+            status = "FAIL"
+            reason = "원본 URL 접속 불가"
+            msg = "원본 URL이 잘못 입력된 것 같아요."
+            element = "id_original_url"
 
-    elif not is_well_known(original_url):
-        status = "FAIL"
-        reason = "allowlist 등재 필요"
-        msg = "이 원본 URL은 현재 사용할 수 없어요."
-        element = "id_original_url"
+        elif not is_well_known(original_url):
+            status = "FAIL"
+            reason = "allowlist 등재 필요"
+            msg = "이 원본 URL은 현재 사용할 수 없어요."
+            element = "id_original_url"
 
-    elif not is_harmfulness(original_url):
-        status = "FAIL"
-        reason = "유해 사이트"
-        msg = "이 원본 URL은 사용할 수 없어요."
-        element = "id_original_url"
+        elif not is_harmfulness(original_url):
+            status = "FAIL"
+            reason = "유해 사이트"
+            msg = "이 원본 URL은 사용할 수 없어요."
+            element = "id_original_url"
 
-    elif not is_new_slug(id, dflink_slug):
-        status = "FAIL"
-        reason = "이미 존재하는 동영링크 URL"
-        msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-        element = "id_dflink_slug"
+        elif not is_new_slug(id, dflink_slug):
+            status = "FAIL"
+            reason = "이미 존재하는 동영링크 URL"
+            msg = "앗, 이미 존재하는 동영링크 URL이에요!"
+            element = "id_dflink_slug"
 
-    elif not is_not_swearing(dflink_slug):
-        status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
-        msg = "이 동영링크 URL은 사용할 수 없어요."
-        element = "id_dflink_slug"
+        elif not is_not_swearing(dflink_slug):
+            status = "FAIL"
+            reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
+            msg = "이 동영링크 URL은 사용할 수 없어요."
+            element = "id_dflink_slug"
 
-    elif not is_not_swearing(title):
-        status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 제목"
-        msg = "이 제목은 사용할 수 없어요."
-        element = "id_title"
+        elif not is_not_swearing(title):
+            status = "FAIL"
+            reason = "비속어 또는 욕설로 해석될 수 있는 제목"
+            msg = "이 제목은 사용할 수 없어요."
+            element = "id_title"
 
-    elif not is_valid(request):
+        elif not is_valid(request):
+            status = "FAIL"
+            reason = "알 수 없는 오류"
+            msg = "뭔가 잘못 입력된 것 같아요."
+            element = None
+
+        else:
+            status = None
+            reason = None
+            msg = None
+            element = None
+
+    except:
         status = "FAIL"
         reason = "알 수 없는 오류"
-        msg = "뭔가 잘못 입력된 것 같아요."
-        element = None
-
-    else:
-        status = None
-        reason = None
-        msg = None
+        msg = "앗, 다시 한 번 시도해주세요!"
         element = None
 
     return status, reason, msg, element
@@ -290,6 +347,7 @@ def validation(data: dict):
 #
 
 
+@login_required
 def dflink(request):
     """
     - request | `HttpRequest`:
@@ -305,6 +363,7 @@ def dflink(request):
         - expiration_date
     """
 
+    global need_www
     id = request.GET["id"]
 
     # id: create_dflink
@@ -327,7 +386,7 @@ def dflink(request):
         if status == None:
             if need_www:
                 original_url = original_url.replace("://", "://www.")
-                need_www_switch(False)
+                need_www = False
 
             url = "https://api.short.io/links"
             payload = {
@@ -396,7 +455,7 @@ def dflink(request):
         if status == None:
             if need_www:
                 original_url = original_url.replace("://", "://www.")
-                need_www_switch(False)
+                need_www = False
 
             url = f"https://api.short.io/links/{string_id}"
             payload = {
@@ -445,36 +504,28 @@ def dflink(request):
 
     # id: delete_dflink
     elif id == "delete_dflink":
-        try:
-            string_id = request.GET["string_id"]
-            dflink_slug = request.GET["dflink_slug"]
+        string_id = request.GET["string_id"]
+        dflink_slug = request.GET["dflink_slug"]
 
-            url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
-            headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-            response = requests.get(url, headers=headers).json()
-            original_url = response["originalURL"]
-            title = response["title"]
-            category = response["tags"][0]
-            expiration_date = response["tags"][2]
+        url = (
+            f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
+        )
+        headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
+        response = requests.get(url, headers=headers).json()
+        original_url = response["originalURL"]
+        title = response["title"]
+        category = response["tags"][0]
+        expiration_date = response["tags"][2]
 
-            url = f"https://api.short.io/links/{string_id}"
-            headers = {"Authorization": SHORT_IO_API_KEY}
-            response = requests.delete(url, headers=headers)
-            if response.status_code == 200:
-                status = "DONE"
-                msg = "동영링크가 삭제되었어요! 🗑️"
-            elif response.status_code == 404:
-                status = "FAIL"
-                msg = "앗, 삭제할 수 없는 동영링크예요!"
-        except:
-            string_id = request.GET["string_id"]
-            original_url = request.GET["original_url"]
-            dflink_slug = request.GET["dflink_slug"]
-            title = request.GET["title"]
-            category = request.GET["category"]
-            expiration_date = request.GET["expiration_date"]
+        url = f"https://api.short.io/links/{string_id}"
+        headers = {"Authorization": SHORT_IO_API_KEY}
+        response = requests.delete(url, headers=headers)
+        if response.status_code == 200:
+            status = "DONE"
+            msg = "동영링크가 삭제되었어요! 🗑️"
+        elif response.status_code == 404:
             status = "FAIL"
-            msg = "앗, 다시 한 번 시도해주세요!"
+            msg = "앗, 삭제할 수 없는 동영링크예요!"
 
         response = {
             "id": id,

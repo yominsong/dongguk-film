@@ -223,6 +223,10 @@ function controlNoti(notiType) {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
             notiContent.innerText = "잠깐 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
+        } else if (notiType == "nonExistentDflink") {
+            notiIconDefault.classList.remove("hidden");
+            notiTitle.innerText = "존재하지 않는 동영링크예요.";
+            notiContent.innerText = "주소가 잘못되었거나 만료일이 지나 삭제된 것 같아요.";
         };
     }
 

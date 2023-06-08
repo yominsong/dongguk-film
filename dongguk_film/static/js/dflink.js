@@ -88,6 +88,7 @@ function controlDflinkModal() {
                             });
                             id_string_id.value = dflink[0];
                             id_original_url.value = dflink[1];
+                            id_dflink_slug_original.value = dflink[2];
                             id_dflink_slug.value = dflink[2];
                             id_title.value = dflink[3];
                             if (dflink[4] == "작품") {
@@ -140,7 +141,7 @@ function requestUpdateDflink() {
 function requestDeleteDflink() {
     request.url = `${originLocation}/dflink/utils/dflink`;
     request.type = "GET";
-    request.data = { id: "delete_dflink", string_id: `${id_string_id.value}`, original_url: `${id_original_url.value}`, dflink_slug: `${id_dflink_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
+    request.data = { id: "delete_dflink", string_id: `${id_string_id.value}`, original_url: `${id_original_url.value}`, dflink_slug: `${id_dflink_slug_original.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
     request.headers = null;
     code(id_delete_dflink, "_spin").classList.remove("hidden");
@@ -210,3 +211,4 @@ function setPage() {
 }
 
 if (id_dflink_modal != null) { setPage() };
+if (window.location.search.indexOf("non-existing-url") != -1) { controlNoti("nonExistentDflink") };
