@@ -284,60 +284,60 @@ def validation(data: dict):
     title = data["title"]
     request = data["request"]
 
-    # try:
-    if not is_right_url(original_url):
-        status = "FAIL"
-        reason = "원본 URL 접속 불가"
-        msg = "원본 URL이 잘못 입력된 것 같아요."
-        element = "id_original_url"
+    try:
+        if not is_right_url(original_url):
+            status = "FAIL"
+            reason = "원본 URL 접속 불가"
+            msg = "원본 URL이 잘못 입력된 것 같아요."
+            element = "id_original_url"
 
-    elif not is_well_known(original_url):
-        status = "FAIL"
-        reason = "allowlist 등재 필요"
-        msg = "이 원본 URL은 현재 사용할 수 없어요."
-        element = "id_original_url"
+        elif not is_well_known(original_url):
+            status = "FAIL"
+            reason = "allowlist 등재 필요"
+            msg = "이 원본 URL은 현재 사용할 수 없어요."
+            element = "id_original_url"
 
-    elif not is_harmfulness(original_url):
-        status = "FAIL"
-        reason = "유해 사이트"
-        msg = "이 원본 URL은 사용할 수 없어요."
-        element = "id_original_url"
+        elif not is_harmfulness(original_url):
+            status = "FAIL"
+            reason = "유해 사이트"
+            msg = "이 원본 URL은 사용할 수 없어요."
+            element = "id_original_url"
 
-    elif not is_new_slug(id, dflink_slug):
-        status = "FAIL"
-        reason = "이미 존재하는 동영링크 URL"
-        msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-        element = "id_dflink_slug"
+        elif not is_new_slug(id, dflink_slug):
+            status = "FAIL"
+            reason = "이미 존재하는 동영링크 URL"
+            msg = "앗, 이미 존재하는 동영링크 URL이에요!"
+            element = "id_dflink_slug"
 
-    elif not is_not_swearing(dflink_slug):
-        status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
-        msg = "이 동영링크 URL은 사용할 수 없어요."
-        element = "id_dflink_slug"
+        elif not is_not_swearing(dflink_slug):
+            status = "FAIL"
+            reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
+            msg = "이 동영링크 URL은 사용할 수 없어요."
+            element = "id_dflink_slug"
 
-    elif not is_not_swearing(title):
-        status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 제목"
-        msg = "이 제목은 사용할 수 없어요."
-        element = "id_title"
+        elif not is_not_swearing(title):
+            status = "FAIL"
+            reason = "비속어 또는 욕설로 해석될 수 있는 제목"
+            msg = "이 제목은 사용할 수 없어요."
+            element = "id_title"
 
-    elif not is_valid(request):
+        elif not is_valid(request):
+            status = "FAIL"
+            reason = "알 수 없는 오류"
+            msg = "뭔가 잘못 입력된 것 같아요."
+            element = None
+
+        else:
+            status = None
+            reason = None
+            msg = None
+            element = None
+
+    except:
         status = "FAIL"
         reason = "알 수 없는 오류"
-        msg = "뭔가 잘못 입력된 것 같아요."
+        msg = "앗, 다시 한 번 시도해주세요!"
         element = None
-
-    else:
-        status = None
-        reason = None
-        msg = None
-        element = None
-
-    # except:
-    #     status = "FAIL"
-    #     reason = "알 수 없는 오류"
-    #     msg = "앗, 다시 한 번 시도해주세요!"
-    #     element = None
 
     return status, reason, msg, element
 

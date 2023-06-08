@@ -56,6 +56,10 @@ DMD_URL = get_secret("DMD_URL")
 
 DMD_COOKIE = get_secret("DMD_COOKIE")
 
+NOTION_SECRET = get_secret("NOTION_SECRET")
+
+NOTION_DB_ID = get_secret("NOTION_DB_ID")
+
 SCRAPEOPS_API_KEY = get_secret("SCRAPEOPS_API_KEY")
 
 OPENAI_ORG = get_secret("OPENAI_ORG")
