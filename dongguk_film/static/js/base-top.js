@@ -73,6 +73,7 @@ function makeAjaxCall(request) {
             };
         }
     }).done((response) => {
+        console.log(response);
         console.log(response.result);
         handleAjaxCallback(response);
     }).fail((errorThrown, status) => {

@@ -421,11 +421,6 @@ def dflink(request):
                 reason = "이미 존재하는 동영링크 URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
                 element = "id_dflink_slug"
-        else:
-            status = "FAIL"
-            reason = "알 수 없는 오류"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
 
         response = {
             "id": id,
@@ -494,11 +489,6 @@ def dflink(request):
                 reason = "이미 존재하는 동영링크 URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
                 element = "id_dflink_slug"
-        else:
-            status = "FAIL"
-            reason = "알 수 없는 오류"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
 
         response = {
             "id": id,
