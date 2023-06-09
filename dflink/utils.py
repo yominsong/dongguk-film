@@ -69,6 +69,7 @@ def set_headers(type: str):
             "Notion-Version": "2022-06-28",
             "Content-Type": "application/json",
         }
+
     return headers
 
 
@@ -99,6 +100,18 @@ def chap_gpt(prompt: str):
     return openai_response
 
 
+def has_www(original_url: str):
+    if "://" in original_url:
+        original_url = urlparse(original_url).netloc
+
+    if "www." == original_url[:4]:
+        result = True
+    elif not "www." == original_url[:4]:
+        result = False
+
+    return result
+
+
 def is_right_url(original_url: str):
     global need_www
 
@@ -106,7 +119,7 @@ def is_right_url(original_url: str):
         response = requests.get(original_url, headers=set_headers("RANDOM"))
     except:
         try:
-            if not "://www." in original_url:
+            if not has_www(original_url):
                 original_url = original_url.replace("://", "://www.")
                 response = requests.get(original_url, headers=set_headers("RANDOM"))
                 need_www = True
@@ -118,6 +131,7 @@ def is_right_url(original_url: str):
                     "url": original_url,
                 },
             )
+
     try:
         result = True if int(response.status_code) < 400 else False
     except:
@@ -127,13 +141,18 @@ def is_right_url(original_url: str):
 
 
 def is_listed(original_url: str):
+    if "://" in original_url:
+        original_url = urlparse(original_url).netloc
+    if has_www(original_url):
+        original_url = original_url[4:]
+
     url = (
         f"https://api.notion.com/v1/databases/{NOTION_DB_ID['dflink-allowlist']}/query"
     )
     payload = {
         "filter": {
             "and": [
-                {"property": "URL", "rich_text": {"equals": original_url}},
+                {"property": "URL", "rich_text": {"contains": original_url}},
                 {"property": "Validation", "rich_text": {"contains": "🟢"}},
             ]
         }
@@ -143,9 +162,8 @@ def is_listed(original_url: str):
     ).json()
 
     try:
-        listed_url = notion_response["results"][0]["properties"]["URL"]["url"]
-        if original_url == listed_url:
-            result = True
+        notion_response["results"][0]["properties"]["URL"]["url"]
+        result = True
     except:
         result = False
 
@@ -153,77 +171,35 @@ def is_listed(original_url: str):
 
 
 def is_well_known(original_url: str):
-    global need_www
-
     if "://" in original_url:
         original_url = urlparse(original_url).netloc
 
-    if is_listed(original_url):
-        result = True
-    else:
-        openai_response = chap_gpt(
-            f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘."
-        )
+    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
 
-        if "True" in openai_response:
-            result = True
-        elif "False" in openai_response:
-            if not "www." == original_url[:4]:
-                original_url = f"www.{original_url}"
-                if is_well_known(original_url):
-                    need_www = True
-                    result = True
-                else:
-                    result = False
-            elif "www." == original_url[:4]:
-                original_url = original_url.replace(original_url[:4], "")
-                if is_well_known(original_url):
-                    need_www = False
-                    result = True
-                else:
-                    result = False
-            else:
-                result = False
-        else:
-            result = False
+    if "True" in openai_response:
+        result = True
+    elif "False" in openai_response:
+        result = False
+    else:
+        result = False
 
     return result
 
 
 def is_harmfulness(original_url: str):
-    global need_www
-
     if "://" in original_url:
         original_url = urlparse(original_url).netloc
 
-    if is_listed(original_url):
-        result = True
-    else:
-        openai_response = chap_gpt(
-            f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
-        )
+    openai_response = chap_gpt(
+        f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
+    )
 
-        if "True" in openai_response:
-            result = True
-        elif "False" in openai_response:
-            if not "www." == original_url[:4]:
-                original_url = f"www.{original_url}"
-                if is_harmfulness(original_url):
-                    need_www = True
-                    result = True
-                else:
-                    result = False
-            elif "www." == original_url[:4]:
-                original_url = original_url.replace(original_url[:4], "")
-                if is_harmfulness(original_url):
-                    need_www = False
-                    result = True
-                else:
-                    result = False
-            else:
-                result = False
-        else:
-            result = False
+    if "True" in openai_response:
+        result = True
+    elif "False" in openai_response:
+        result = False
+    else:
+        result = False
 
     return result
 
@@ -313,14 +289,15 @@ def validation(data: dict):
     title = data["title"]
     request = data["request"]
 
-    try:
-        if not is_right_url(original_url):
-            status = "FAIL"
-            reason = "원본 URL 접속 불가"
-            msg = "원본 URL이 잘못 입력된 것 같아요."
-            element = "id_original_url"
+    # try:
+    if not is_right_url(original_url):
+        status = "FAIL"
+        reason = "원본 URL 접속 불가"
+        msg = "원본 URL이 잘못 입력된 것 같아요."
+        element = "id_original_url"
 
-        elif not is_well_known(original_url):
+    elif not is_listed(original_url):
+        if not is_well_known(original_url):
             status = "FAIL"
             reason = "allowlist 등재 필요"
             msg = "이 원본 URL은 현재 사용할 수 없어요."
@@ -332,41 +309,41 @@ def validation(data: dict):
             msg = "이 원본 URL은 사용할 수 없어요."
             element = "id_original_url"
 
-        elif not is_new_slug(id, dflink_slug):
-            status = "FAIL"
-            reason = "이미 존재하는 동영링크 URL"
-            msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-            element = "id_dflink_slug"
+    elif not is_new_slug(id, dflink_slug):
+        status = "FAIL"
+        reason = "이미 존재하는 동영링크 URL"
+        msg = "앗, 이미 존재하는 동영링크 URL이에요!"
+        element = "id_dflink_slug"
 
-        elif not is_not_swearing(dflink_slug):
-            status = "FAIL"
-            reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
-            msg = "이 동영링크 URL은 사용할 수 없어요."
-            element = "id_dflink_slug"
+    elif not is_not_swearing(dflink_slug):
+        status = "FAIL"
+        reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
+        msg = "이 동영링크 URL은 사용할 수 없어요."
+        element = "id_dflink_slug"
 
-        elif not is_not_swearing(title):
-            status = "FAIL"
-            reason = "비속어 또는 욕설로 해석될 수 있는 제목"
-            msg = "이 제목은 사용할 수 없어요."
-            element = "id_title"
+    elif not is_not_swearing(title):
+        status = "FAIL"
+        reason = "비속어 또는 욕설로 해석될 수 있는 제목"
+        msg = "이 제목은 사용할 수 없어요."
+        element = "id_title"
 
-        elif not is_valid(request):
-            status = "FAIL"
-            reason = "알 수 없는 오류"
-            msg = "뭔가 잘못 입력된 것 같아요."
-            element = None
-
-        else:
-            status = None
-            reason = None
-            msg = None
-            element = None
-
-    except:
+    elif not is_valid(request):
         status = "FAIL"
         reason = "알 수 없는 오류"
-        msg = "앗, 다시 한 번 시도해주세요!"
+        msg = "뭔가 잘못 입력된 것 같아요."
         element = None
+
+    else:
+        status = None
+        reason = None
+        msg = None
+        element = None
+
+    # except:
+    #     status = "FAIL"
+    #     reason = "알 수 없는 오류"
+    #     msg = "앗, 다시 한 번 시도해주세요!"
+    #     element = None
 
     return status, reason, msg, element
 
