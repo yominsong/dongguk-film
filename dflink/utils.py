@@ -175,6 +175,13 @@ def is_well_known(original_url: str):
                     result = True
                 else:
                     result = False
+            elif "www." == original_url[:4]:
+                original_url = original_url.replace(original_url[:4], "")
+                if is_well_known(original_url):
+                    need_www = False
+                    result = True
+                else:
+                    result = False
             else:
                 result = False
         else:
@@ -184,17 +191,39 @@ def is_well_known(original_url: str):
 
 
 def is_harmfulness(original_url: str):
-    original_url = urlparse(original_url).netloc
-    openai_response = chap_gpt(
-        f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
-    )
+    global need_www
 
-    if "True" in openai_response:
+    if "://" in original_url:
+        original_url = urlparse(original_url).netloc
+
+    if is_listed(original_url):
         result = True
-    elif "False" in openai_response:
-        result = False
     else:
-        result = False
+        openai_response = chap_gpt(
+            f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
+        )
+
+        if "True" in openai_response:
+            result = True
+        elif "False" in openai_response:
+            if not "www." == original_url[:4]:
+                original_url = f"www.{original_url}"
+                if is_harmfulness(original_url):
+                    need_www = True
+                    result = True
+                else:
+                    result = False
+            elif "www." == original_url[:4]:
+                original_url = original_url.replace(original_url[:4], "")
+                if is_harmfulness(original_url):
+                    need_www = False
+                    result = True
+                else:
+                    result = False
+            else:
+                result = False
+        else:
+            result = False
 
     return result
 
