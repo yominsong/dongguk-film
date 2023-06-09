@@ -179,7 +179,11 @@ def is_well_known(original_url: str):
     if "True" in openai_response:
         result = True
     elif "False" in openai_response:
-        result = False
+        if not has_www(original_url):
+            original_url = f"www.{original_url}"
+            result = is_well_known(original_url)
+        else:
+            result = False
     else:
         result = False
 
