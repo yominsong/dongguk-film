@@ -42,15 +42,19 @@ def format_msg(content: dict):
     embed.set_thumbnail(url=content["thumbnail_url"])
 
     if target == "DEV":
-        embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
-        embed.add_field(
-            name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
-        )
-        embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
-        # embed.add_field(name="Referer", value=content["referer"], inline=False)
-        embed.add_field(name="Method", value=content["method"], inline=True)
-        embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
-        embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
+        try:
+            embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
+            embed.add_field(
+                name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
+            )
+            embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
+            # embed.add_field(name="Referer", value=content["referer"], inline=False)
+            embed.add_field(name="Method", value=content["method"], inline=True)
+            embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
+            embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
+        except:
+            embed.add_field(name="Method", value=content["method"], inline=True)
+            embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
 
     embed.set_footer(text=content["footer"])
 
@@ -270,18 +274,28 @@ def send_msg(request, type: str, channel: str, extra=None):
 
     # channel: "DEV"
     if channel == "DEV":
-        content = {
-            "target": "DEV",
-            "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
-            "content_type": request.content_type,
-            "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
-            "user_agent": request.headers["user-agent"],
-            # "referer": request.headers["referer"],
-            "method": request.method,
-            "full_path": request.get_full_path(),
-            "user_auth": request.user.is_authenticated,
-            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
-        }
+        try:
+            content = {
+                "target": "DEV",
+                "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
+                "content_type": request.content_type,
+                "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
+                "user_agent": request.headers["user-agent"],
+                # "referer": request.headers["referer"],
+                "method": request.method,
+                "full_path": request.get_full_path(),
+                "user_auth": request.user.is_authenticated,
+                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
+            }
+        except:
+            content = {
+                "target": "DEV",
+                "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
+                "method": request.method,
+                "full_path": request.get_full_path(),
+                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
+            }
+
 
     # channel: "MGT"
     elif channel == "MGT":
