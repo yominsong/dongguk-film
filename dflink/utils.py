@@ -383,7 +383,13 @@ def dflink(request):
             "title": title,
             "request": request,
         }
-        status, reason, msg, element = validation(data)
+        try:
+            status, reason, msg, element = validation(data)
+        except:
+            status = "FAIL"
+            reason = "유효성 검사 실패"
+            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+            element = None
 
         if status == None:
             if need_www:
