@@ -253,9 +253,9 @@ function controlNoti(notiType) {
         };
     };
 
-    if (notiType == "requestLocationAccess" || notiType == "recheckLocationAccess" || notiType == "nonExistentDflink") {
+    if (notiType == "requestLocationAccess" || notiType == "recheckLocationAccess") {
         setTimeout(() => { masterNoti() }, 2000);
     } else {
-        masterNoti();
+        setTimeout(() => { masterNoti() }, 1000);
     };
 }
