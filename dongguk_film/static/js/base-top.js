@@ -253,7 +253,7 @@ function controlNoti(notiType) {
         };
     };
 
-    if (notiType == "requestLocationAccess" || notiType == "recheckLocationAccess") {
+    if (notiType == "requestLocationAccess" || notiType == "recheckLocationAccess" || notiType == "nonExistentDflink") {
         setTimeout(() => { masterNoti() }, 2000);
     } else {
         masterNoti();
