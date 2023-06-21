@@ -211,6 +211,7 @@ function controlNoti(notiType, params = null) {
     // Write noti
     function writeNoti() {
         notiIconDefault.classList.add("hidden");
+        notiIconSmile.classList.add("hidden");
         notiIconLocation.classList.add("hidden");
         notiIconClipboard.classList.add("hidden");
         notiTitle.innerText = null;
