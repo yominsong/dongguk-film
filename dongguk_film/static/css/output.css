@@ -1450,6 +1450,14 @@ select {
   background-color: rgb(252 219 207 / 0.3);
 }
 
+.bg-flamingo-50\/5 {
+  background-color: rgb(252 219 207 / 0.05);
+}
+
+.bg-flamingo-50\/10 {
+  background-color: rgb(252 219 207 / 0.1);
+}
+
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -1742,6 +1750,11 @@ select {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
+}
+
+.text-flamingo-900 {
+  --tw-text-opacity: 1;
+  color: rgb(48 15 3 / var(--tw-text-opacity));
 }
 
 .antialiased {

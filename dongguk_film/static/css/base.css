@@ -19,3 +19,14 @@
 .st1 {
     fill: #F15922;
 }
+
+/* For change bg color */
+@keyframes pulseBg {
+    0% { background-color: #FFFFFF; }
+    50% { background-color: #ffebe4; }
+    100% { background-color: #FFFFFF; }
+}
+
+.animate-pulse-bg {
+    animation: pulseBg 3s infinite;
+}
