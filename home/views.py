@@ -1,10 +1,26 @@
 from django.conf import settings
+from django.utils import timezone
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from users.models import Metadata
 import requests
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+
+
+#
+# Sub functions
+#
+
+
+def is_new_user(user):
+    return timezone.now() - user.date_joined < timezone.timedelta(minutes=1)
+
+
+#
+# Main functions
+#
 
 
 def home(request):
@@ -23,8 +39,18 @@ def home(request):
     #         "user": Metadata.objects.get(student_id=dflinks[i]["tags"][1]),
     #         "expiration_date": dflinks[i]["tags"][2],
     #     }
-        # dflink_list.append(dflink)
-    return render(request, "home/home.html", {"dflink_list": dflink_list})
+    # dflink_list.append(dflink)
+
+    return render(
+        request,
+        "home/home.html",
+        {
+            "dflink_list": dflink_list,
+            "is_new_user": is_new_user(request.user)
+            if request.user.is_authenticated
+            else False,
+        },
+    )
 
 
 def error_400(request, exception):

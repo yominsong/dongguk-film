@@ -23,7 +23,7 @@
 /* For change bg color */
 @keyframes pulseBg {
     0% { background-color: #FFFFFF; }
-    50% { background-color: #ffebe4; }
+    50% { background-color: #fdf1ed; }
     100% { background-color: #FFFFFF; }
 }
 

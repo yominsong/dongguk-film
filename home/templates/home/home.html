@@ -20,30 +20,35 @@
                                     <img class="object-cover w-full h-full grayscale"
                                          height=""
                                          width=""
+                                         alt="영상 편집 사진"
                                          src="https://source.unsplash.com/random/1280×600/?video-editing" />
                                 </div>
                                 <div class="swiper-slide">
                                     <img class="object-cover w-full h-full grayscale"
                                          height=""
                                          width=""
+                                         alt="카메라 렌즈 사진"
                                          src="https://source.unsplash.com/random/1280×600/?camera-lens" />
                                 </div>
                                 <div class="swiper-slide">
                                     <img class="object-cover w-full h-full grayscale"
                                          height=""
                                          width=""
+                                         alt="영화 장비 사진"
                                          src="https://source.unsplash.com/random/1280×600/?film-gear" />
                                 </div>
                                 <div class="swiper-slide">
                                     <img class="object-cover w-full h-full grayscale"
                                          height=""
                                          width=""
+                                         alt="카메라 장비 사진"
                                          src="https://source.unsplash.com/random/1280×600/?camera-gear" />
                                 </div>
                                 <div class="swiper-slide">
                                     <img class="object-cover w-full h-full grayscale"
                                          height=""
                                          width=""
+                                         alt="카메라 사진"
                                          src="https://source.unsplash.com/random/1280×600/?video-camera" />
                                 </div>
                             </div>
@@ -142,4 +147,10 @@
     <script src="{% static 'js/swiper.js' %}"></script>
     <script src="{% static 'js/random-string.js' %}"></script>
     <script src="{% static 'js/home.js' %}"></script>
+    {% if user.is_authenticated and is_new_user %}
+        <script>
+            let name = "{{ user.metadata.name }}"
+            alertWelcomeNewUser(name);
+        </script>
+    {% endif %}
 {% endblock %}

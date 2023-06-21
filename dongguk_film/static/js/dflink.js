@@ -110,6 +110,12 @@ function controlDflinkModal() {
 
 controlDflinkModal();
 
+function alertNonExistentDflink() {
+    if (window.location.search.indexOf("non-existing-url") != -1) { controlNoti("nonExistentDflink") };
+}
+
+alertNonExistentDflink();
+
 //
 // Main functions
 //
@@ -211,4 +217,3 @@ function setPage() {
 }
 
 if (id_dflink_modal != null) { setPage() };
-if (window.location.search.indexOf("non-existing-url") != -1) { controlNoti("nonExistentDflink") };

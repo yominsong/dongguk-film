@@ -1094,22 +1094,6 @@ select {
   animation: spin 1s linear infinite;
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(-25%);
-    animation-timing-function: cubic-bezier(0.8,0,1,1);
-  }
-
-  50% {
-    transform: none;
-    animation-timing-function: cubic-bezier(0,0,0.2,1);
-  }
-}
-
-.animate-bounce {
-  animation: bounce 1s infinite;
-}
-
 .cursor-pointer {
   cursor: pointer;
 }
@@ -1442,22 +1426,6 @@ select {
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
 }
 
-.bg-flamingo-50\/50 {
-  background-color: rgb(252 219 207 / 0.5);
-}
-
-.bg-flamingo-50\/30 {
-  background-color: rgb(252 219 207 / 0.3);
-}
-
-.bg-flamingo-50\/5 {
-  background-color: rgb(252 219 207 / 0.05);
-}
-
-.bg-flamingo-50\/10 {
-  background-color: rgb(252 219 207 / 0.1);
-}
-
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -1750,11 +1718,6 @@ select {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
-}
-
-.text-flamingo-900 {
-  --tw-text-opacity: 1;
-  color: rgb(48 15 3 / var(--tw-text-opacity));
 }
 
 .antialiased {

@@ -207,7 +207,7 @@ function handleAjaxCallback(response) {
     };
 }
 
-function controlNoti(notiType) {
+function controlNoti(notiType, params = null) {
     // Write noti
     function writeNoti() {
         notiIconDefault.classList.add("hidden");
@@ -215,7 +215,11 @@ function controlNoti(notiType) {
         notiIconClipboard.classList.add("hidden");
         notiTitle.innerText = null;
         notiContent.innerText = null;
-        if (notiType == "requestLocationAccess") {
+        if (notiType == "welcomeNewUser") {
+            notiIconSmile.classList.remove("hidden");
+            notiTitle.innerText = "디닷에프 가입을 환영해요! 🎉";
+            notiContent.innerText = `시설이용, 프로덕션, 동영링크 등 ${params}님을 위한 다양한 서비스를 이용해보세요!`;
+        } else if (notiType == "requestLocationAccess") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "지금 계신 지역의 기상정보를 받아보세요.";
             notiContent.innerText = "사용 중인 브라우저에서 위치 액세스를 허용해주세요. 새로고침도 꼭 부탁드려요!";

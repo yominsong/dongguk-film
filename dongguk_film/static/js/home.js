@@ -77,6 +77,10 @@ function dfs_xy_conv(code, v1, v2) {
     return rs;
 }
 
+function alertWelcomeNewUser(name) {
+    controlNoti("welcomeNewUser", name);
+};
+
 //
 // Main functions
 //
