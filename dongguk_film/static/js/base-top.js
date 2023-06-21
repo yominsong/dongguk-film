@@ -83,9 +83,9 @@ function makeAjaxCall(request) {
 function handleAjaxCallback(response) {
     if (response.id == "weather") {
         // requestWeather()
-        let pulse = document.querySelectorAll(".animate-pulse");
+        let pulseOn = document.querySelectorAll(".pulse-on");
         let pulseOff = document.querySelectorAll(".pulse-off");
-        pulse.forEach((item) => {
+        pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
         pulseOff.forEach((item) => {
