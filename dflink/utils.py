@@ -163,7 +163,7 @@ def is_listed(original_url: str):
 
     try:
         listed_url = notion_response["results"][0]["properties"]["URL"]["url"]
-        result = True if original_url == listed_url else False
+        result = True if original_url in listed_url else False
     except:
         result = False
 
