@@ -22,11 +22,11 @@
 
 /* For change bg color */
 @keyframes pulseBg {
-    0% { background-color: #FFFFFF; }
-    50% { background-color: #fdf1ed; }
-    100% { background-color: #FFFFFF; }
+    0% { background-color: #FBE9E3; }
+    50% { background-color: #FFFFFF; }
+    100% { background-color: #FBE9E3; }
 }
 
 .animate-pulse-bg {
-    animation: pulseBg 3s infinite;
+    animation: pulseBg 2s infinite;
 }
