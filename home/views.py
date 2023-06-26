@@ -2,8 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from users.models import Metadata
-import requests
+from dflink.utils import short_io
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
@@ -24,32 +23,16 @@ def is_new_user(user):
 
 
 def home(request):
-    # url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
-    # headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-    # response = requests.get(url, headers=headers).json()
-    # dflinks = response["links"]
-    dflink_list = []
-    # for i in range(len(dflinks) - 1):
-    #     dflink = {
-    #         "id_string": dflinks[i]["idString"],
-    #         "original_url": dflinks[i]["originalURL"],
-    #         "slug": dflinks[i]["path"],
-    #         "title": dflinks[i]["title"],
-    #         "category": dflinks[i]["tags"][0],
-    #         "user": Metadata.objects.get(student_id=dflinks[i]["tags"][1]),
-    #         "expiration_date": dflinks[i]["tags"][2],
-    #     }
-    # dflink_list.append(dflink)
+    new_user_bool = (
+        is_new_user(request.user) if request.user.is_authenticated else False
+    )
+
+    dflink_list = short_io(5)
 
     return render(
         request,
         "home/home.html",
-        {
-            "dflink_list": dflink_list,
-            "is_new_user": is_new_user(request.user)
-            if request.user.is_authenticated
-            else False,
-        },
+        {"is_new_user": new_user_bool, "dflink_list": dflink_list},
     )
 
 

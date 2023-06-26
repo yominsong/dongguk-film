@@ -139,9 +139,95 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
             <!-- DF link -->
-            <div>동영링크 리스트</div>
+            <div>
+                <a class="flex gap-2" href="/dflink" target="_self">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.5"
+                         stroke="currentColor"
+                         class="w-6 h-6 text-gray-500"
+                         aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                    </svg>
+                    <h3 class="text-lg font-medium leading-6 text-gray-600">동영링크</h3>
+                </a>
+                <ul role="list"
+                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow ring-1 ring-gray-900/5 rounded-md">
+                    {% for dflink in dflink_list %}
+                        <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
+                            <div class="flex gap-x-4">
+                                <div class="min-w-0 flex-auto">
+                                    <!-- dflink.title -->
+                                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                                        <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank">
+                                            <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                                            {{ dflink.title }}
+                                        </a>
+                                    </p>
+                                    <!-- dflink.slug -->
+                                    <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ dflink.slug }}</p>
+                                    <!-- dflink.expiration_date(<=sm ) -->
+                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                        <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-x-4">
+                                <div class="flex flex-col items-end">
+                                    <!-- dflink.category -->
+                                    {% if dflink.category == "작품" %}
+                                        <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
+                                            {{ dflink.category }}
+                                        </p>
+                                    {% else %}
+                                        <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                                            {{ dflink.category }}
+                                        </p>
+                                    {% endif %}
+                                    <!-- dflink.expiration_date(>sm) -->
+                                    <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                        <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                                    </p>
+                                </div>
+                                <svg class="h-5 w-5 flex-none text-gray-400"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd">
+                                    </path>
+                                </svg>
+                            </div>
+                            <input id="id_dflink_{{ dflink.id_string }}"
+                                   value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
+                                   hidden>
+                        </li>
+                    {% empty %}
+                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                            등록된 동영링크가 없어요.
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
             <!-- Notice -->
-            <div>공지사항 리스트</div>
+            <div>
+                <a class="flex gap-2" href="#" target="_self">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 24 24"
+                         fill="currentColor"
+                         class="w-5 h-5 text-gray-500"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z" clip-rule="evenodd" />
+                    </svg>
+                    <h3 class="text-lg font-medium leading-6 text-gray-600">공지사항</h3>
+                </a>
+                <ul role="list"
+                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow ring-1 ring-gray-900/5 rounded-md">
+                    <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        등록된 공지사항이 없어요.
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <script src="{% static 'js/swiper.js' %}"></script>

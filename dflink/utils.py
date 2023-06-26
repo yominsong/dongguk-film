@@ -59,6 +59,31 @@ global need_www
 need_www = False
 
 
+def short_io(limit: int = None):
+    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
+    url = url if limit == None else url + f"&limit={limit}"
+    headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
+    response = requests.get(url, headers=headers).json()
+
+    dflink_count = int(response["count"]) - 1 if limit == None else limit
+    dflinks = response["links"]
+    dflink_list = []
+
+    for i in range(dflink_count):
+        dflink = {
+            "id_string": dflinks[i]["idString"],
+            "original_url": dflinks[i]["originalURL"],
+            "slug": dflinks[i]["path"],
+            "title": dflinks[i]["title"],
+            "category": dflinks[i]["tags"][0],
+            "user": dflinks[i]["tags"][1],
+            "expiration_date": dflinks[i]["tags"][2],
+        }
+        dflink_list.append(dflink)
+
+    return dflink_list
+
+
 def set_headers(type: str):
     if type == "RANDOM":
         headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}

@@ -1,32 +1,13 @@
 from django.conf import settings
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from users.models import Metadata
-import requests
-
-SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
-SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+from .utils import short_io
 
 
 def dflink(request):
     # Short.io
-    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
-    headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-    response = requests.get(url, headers=headers).json()
-    dflink_count = int(response["count"]) - 1
-    dflinks = response["links"]
-    dflink_list = []
-    for i in range(dflink_count):
-        dflink = {
-            "id_string": dflinks[i]["idString"],
-            "original_url": dflinks[i]["originalURL"],
-            "slug": dflinks[i]["path"],
-            "title": dflinks[i]["title"],
-            "category": dflinks[i]["tags"][0],
-            "user": dflinks[i]["tags"][1],
-            "expiration_date": dflinks[i]["tags"][2],
-        }
-        dflink_list.append(dflink)
+    dflink_list = short_io()
+    dflink_count = len(dflink_list)
 
     # Query
     q = request.GET.get("q")
