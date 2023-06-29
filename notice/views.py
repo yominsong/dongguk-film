@@ -1,16 +1,14 @@
-from django.conf import settings
 from django.shortcuts import render
-from django.core.paginator import Paginator
 from utility.img import get_img
-from .utils import short_io
+from django.core.paginator import Paginator
 
 
-def dflink(request):
-    image_list = get_img("dflink")
+def notice(request):
+    image_list = get_img("notice")
 
     # Short.io
-    dflink_list = short_io()
-    dflink_count = len(dflink_list)
+    notice_list = []
+    notice_count = len(notice_list)
 
     # Query
     q = request.GET.get("q")
@@ -18,11 +16,11 @@ def dflink(request):
     query_param = None
     if q:
         query_result_list = []
-        for dflink in dflink_list:
-            for k, v in dflink.items():
-                if k != "user" and q in v and dflink not in query_result_list:
-                    query_result_list.append(dflink)
-        dflink_list = query_result_list
+        for notice in notice_list:
+            for k, v in notice.items():
+                if k != "user" and q in v and notice not in query_result_list:
+                    query_result_list.append(notice)
+        notice_list = query_result_list
         query_result_count = len(query_result_list)
         query_param = f"q={q}&"
 
@@ -31,16 +29,16 @@ def dflink(request):
         page = request.GET["page"]
     except:
         page = 1
-    paginator = Paginator(dflink_list, 7)
+    paginator = Paginator(notice_list, 7)
     page_value = paginator.get_page(page)
     page_range = paginator.page_range
 
     return render(
         request,
-        "dflink/dflink.html",
+        "notice/notice.html",
         {
             "image_list": image_list,
-            "dflink_count": dflink_count,
+            "notice_count": notice_count,
             "query_result_count": query_result_count,
             "query_param": query_param,
             "page_value": page_value,
