@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from utility.img import get_img
 from dflink.utils import short_io
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
@@ -27,12 +27,17 @@ def home(request):
         is_new_user(request.user) if request.user.is_authenticated else False
     )
 
+    image_list = get_img("home")
     dflink_list = short_io(5)
 
     return render(
         request,
         "home/home.html",
-        {"is_new_user": new_user_bool, "dflink_list": dflink_list},
+        {
+            "is_new_user": new_user_bool,
+            "image_list": image_list,
+            "dflink_list": dflink_list,
+        },
     )
 
 

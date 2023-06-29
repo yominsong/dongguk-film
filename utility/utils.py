@@ -2,12 +2,23 @@ from django.conf import settings
 from django.http import HttpResponse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
+from .img import save_img
 from .msg import send_msg
 import json, re
 
 #
 # Cron functions
 #
+
+
+def update_img(request):
+    home = save_img("video-camera", "home")
+    dflink = save_img("keyboard", "dflink")
+    notice = save_img("office", "notice")
+
+    result = "DONE" if home == 200 and dflink == 200 and notice == 200 else "FAIL"
+
+    return HttpResponse(f"Images update result: {result}")
 
 
 def update_dmd_cookie(request):
