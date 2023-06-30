@@ -125,11 +125,11 @@ def send_msg(request, type: str, channel: str, extra=None):
 
     # type: "UIG"
     elif type == "UIG":
-        # sub_content = ""
-        # for i in range(len(extra)):
-        #     new_line = f"\nㆍ[{extra[i]['app_name']}] {extra[i]['image_url']}"
-        #     new_line.replace("\n", "") if i == 0 else None
-        #     sub_content += new_line
+        sub_content = ""
+        for i in range(len(extra)):
+            new_line = f"\nㆍ[{extra[i]['app_name']}] {extra[i]['image_url']}"
+            new_line.replace("\n", "") if i == 0 else None
+            sub_content += new_line
         main_content = {
             "important": False,
             "picture_url": default_picture_url,
@@ -137,7 +137,7 @@ def send_msg(request, type: str, channel: str, extra=None):
             "title": "Hero 배경 이미지 업데이트됨",
             "url": "",
             "thumbnail_url": "",
-            "description": extra,
+            "description": sub_content,
         }
 
     # type: "DSA"
