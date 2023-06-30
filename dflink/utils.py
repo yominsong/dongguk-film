@@ -69,17 +69,20 @@ def short_io(limit: int = None):
     dflinks = response["links"]
     dflink_list = []
 
-    for i in range(dflink_count):
-        dflink = {
-            "id_string": dflinks[i]["idString"],
-            "original_url": dflinks[i]["originalURL"],
-            "slug": dflinks[i]["path"],
-            "title": dflinks[i]["title"],
-            "category": dflinks[i]["tags"][0],
-            "user": dflinks[i]["tags"][1],
-            "expiration_date": dflinks[i]["tags"][2],
-        }
-        dflink_list.append(dflink)
+    try:
+        for i in range(dflink_count):
+            dflink = {
+                "id_string": dflinks[i]["idString"],
+                "original_url": dflinks[i]["originalURL"],
+                "slug": dflinks[i]["path"],
+                "title": dflinks[i]["title"],
+                "category": dflinks[i]["tags"][0],
+                "user": dflinks[i]["tags"][1],
+                "expiration_date": dflinks[i]["tags"][2],
+            }
+            dflink_list.append(dflink)
+    except:
+        pass
 
     return dflink_list
 
