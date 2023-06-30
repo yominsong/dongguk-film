@@ -20,14 +20,20 @@ def save_img(query: str, app_name: str):
     - app_name | `str`: The name of the app the image will be used for
     """
 
-    url = f"https://api.unsplash.com/photos/random?client_id={UNSPLASH_ACCESS_KEY}&count=5&query={query}"
+    url = f"https://api.unsplash.com/photos/random?client_id={UNSPLASH_ACCESS_KEY}&count=5&orientation=landscape&query={query}"
     headers = {"accept": "application/json", "Accept-Version": "v1"}
     response = requests.get(url, headers=headers)
     image_list = []
+    image_list_for_msg = []
 
-    for image in response.json():
-        image_url = image["urls"]["regular"]
+    for randomly_selected_image in response.json():
+        image_url = randomly_selected_image["urls"]["regular"]
         image_list.append(image_url)
+        image = {
+            "app_name": app_name,
+            "image_url": image_url
+        }
+        image_list_for_msg.append(image)
 
     with open(json_path, "r+") as f:
         data = json.load(f)
@@ -36,7 +42,7 @@ def save_img(query: str, app_name: str):
         f.write(json.dumps(data, indent=4))
         f.truncate()
 
-    return response.status_code
+    return image_list_for_msg
 
 
 def get_img(app_name: str):

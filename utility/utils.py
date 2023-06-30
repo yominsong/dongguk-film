@@ -12,13 +12,15 @@ import json, re
 
 
 def update_img(request):
-    home = save_img("video-camera", "home")
-    dflink = save_img("keyboard", "dflink")
-    notice = save_img("office", "notice")
+    home_img = save_img("video-camera", "home")
+    dflink_img = save_img("keyboard", "dflink")
+    notice_img = save_img("office", "notice")
 
-    result = "DONE" if home == 200 and dflink == 200 and notice == 200 else "FAIL"
+    image_list_for_msg = home_img + dflink_img + notice_img
 
-    return HttpResponse(f"Images update result: {result}")
+    send_msg(request, "UIG", "DEV", image_list_for_msg)
+
+    return HttpResponse(f"Updated images URL: {image_list_for_msg}")
 
 
 def update_dmd_cookie(request):

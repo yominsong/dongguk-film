@@ -43,17 +43,17 @@ def format_msg(content: dict):
 
     if target == "DEV":
         try:
+            embed.add_field(name="From", value="Client", inline=True)
             embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
             embed.add_field(
                 name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
             )
             embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
-            # embed.add_field(name="Referer", value=content["referer"], inline=False)
             embed.add_field(name="Method", value=content["method"], inline=True)
             embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
             embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         except:
-            embed.add_field(name="Method", value=content["method"], inline=True)
+            embed.add_field(name="From", value="Server", inline=True)
             embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
 
     embed.set_footer(text=content["footer"])
@@ -91,6 +91,7 @@ def send_msg(request, type: str, channel: str, extra=None):
     - request | `HttpRequest`
     - type | `str`:
         - UDC: Update DMD Cookie
+        - UIG: Update images
         - DSA: Duplicate signup attempt
         - AIV: Attempting to skip identity verification
         - UXR: Unexpected request
@@ -120,6 +121,23 @@ def send_msg(request, type: str, channel: str, extra=None):
             "url": "",
             "thumbnail_url": "",
             "description": extra,
+        }
+
+    # type: "UIG"
+    elif type == "UIG":
+        sub_content = ""
+        for i in range(len(extra)):
+            new_line = f"\nㆍ[{extra[i]['app_name']}] {extra[i]['image_url']}"
+            new_line.replace("\n", "") if i == 0 else None
+            sub_content += new_line
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": "Hero 배경 이미지 업데이트됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": sub_content,
         }
 
     # type: "DSA"
