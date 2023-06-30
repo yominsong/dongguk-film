@@ -26,8 +26,8 @@ def save_img(query: str, app_name: str):
     image_list = []
     image_list_for_msg = []
 
-    for randomly_selected_image in response.json():
-        image_url = randomly_selected_image["urls"]["regular"]
+    for random_image in response.json():
+        image_url = random_image["urls"]["regular"]
         image_list.append(image_url)
         image = {
             "app_name": app_name,
