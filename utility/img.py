@@ -22,11 +22,11 @@ def save_img(query: str, app_name: str):
 
     url = f"https://api.unsplash.com/photos/random?client_id={UNSPLASH_ACCESS_KEY}&count=5&orientation=landscape&query={query}"
     headers = {"accept": "application/json", "Accept-Version": "v1"}
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers).json()
     image_list = []
     image_list_for_msg = []
 
-    for random_image in response.json():
+    for random_image in response:
         image_url = random_image["urls"]["regular"]
         image_list.append(image_url)
         image = {
