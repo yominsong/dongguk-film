@@ -27,12 +27,9 @@ def save_img(query: str, app_name: str):
     image_list_for_msg = []
 
     for random_image in response:
-        image_url = random_image["urls"]["regular"]
+        image_url = dict(random_image)["urls"]["regular"]
         image_list.append(image_url)
-        image = {
-            "app_name": app_name,
-            "image_url": image_url
-        }
+        image = {"app_name": app_name, "image_url": image_url}
         image_list_for_msg.append(image)
 
     with open(json_path, "r+") as f:
