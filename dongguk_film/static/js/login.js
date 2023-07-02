@@ -15,6 +15,7 @@ function blockInAppBrowser() {
         };
 
         if (boolean == true) {
+            login_google.href = "#";
             controlNoti("blockInAppBrowser", app);
         };
     });
