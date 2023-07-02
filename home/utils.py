@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
 import xml.etree.ElementTree as ET
-import requests, json
+import requests, json, aiohttp, asyncio
 
 KAKAO_REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY", "KAKAO_REST_API_KEY")
 
@@ -133,19 +133,19 @@ def get_base_date_time(type, option):
 
 async def weather(request):
     """
-    ADR: Address
-    T1H: Current Temperature
-    PTY: Precipitation Type
-    WSD: Wind Speed
-    WNM: Wind Name
-    SKY: Sky State
-    POP: Probability of Precipitation
-    TMX: Maximum Temperature
-    TMN: Minimum Temperature
-    SUR: Sunrise
-    SUS: Sunset
-    ACC: Accuracy
-    BDT: Base Date and Time
+    - ADR: Address
+    - T1H: Current Temperature
+    - PTY: Precipitation Type
+    - WSD: Wind Speed
+    - WNM: Wind Name
+    - SKY: Sky State
+    - POP: Probability of Precipitation
+    - TMX: Maximum Temperature
+    - TMN: Minimum Temperature
+    - SUR: Sunrise
+    - SUS: Sunset
+    - ACC: Accuracy
+    - BDT: Base Date and Time
     """
 
     if request.GET["id"] == "weather":
@@ -156,13 +156,31 @@ async def weather(request):
         y = request.GET["y"]
         acc = request.GET["acc"]
 
-        ADR = await adr(lng, lat)
-        T1H, PTY, WSD, WNM = await t1h_pty_wsd_wnm(x, y)
-        POP, SKY = await pop_sky(x, y)
-        TMX = await tmx(x, y)
-        TMN = await tmn(x, y)
-        SUR, SUS = await sur_sus(lng, lat)
-        ACC, BDT = await acc_bdt(acc)
+        adr_future = adr(lng, lat)
+        t1h_pty_wsd_wnm_future = t1h_pty_wsd_wnm(x, y)
+        pop_sky_future = pop_sky(x, y)
+        tmx_future = tmx(x, y)
+        tmn_future = tmn(x, y)
+        sur_sus_future = sur_sus(lng, lat)
+        acc_bdt_future = acc_bdt(acc)
+
+        results = await asyncio.gather(
+            adr_future, 
+            t1h_pty_wsd_wnm_future, 
+            pop_sky_future, 
+            tmx_future, 
+            tmn_future, 
+            sur_sus_future, 
+            acc_bdt_future
+        )
+
+        ADR = results[0]
+        T1H, PTY, WSD, WNM = results[1]
+        POP, SKY = results[2]
+        TMX = results[3]
+        TMN = results[4]
+        SUR, SUS = results[5]
+        ACC, BDT = results[6]
 
         response = {
             "id": id,
@@ -190,13 +208,15 @@ async def adr(lng, lat):
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
     params = {"x": lng, "y": lat, "input_coord": "WGS84"}
     headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
-    response = requests.get(url, params=params, headers=headers)
 
-    adr = json.loads(response.text)["documents"][0]["address"]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params, headers=headers) as response:
+            data = await response.json()
+
+    adr = data["documents"][0]["address"]
     r1 = adr["region_1depth_name"]
     r2 = adr["region_2depth_name"]
     r3 = adr["region_3depth_name"]
-    
     ADR = f"{r1} {r2} {r3}"
 
     return ADR
@@ -211,8 +231,11 @@ async def t1h_pty_wsd_wnm(x, y):
         "nx": x,
         "ny": y,
     }
-    response = requests.get(url, params=params)
-    root = ET.fromstring(response.text)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as response:
+            data = await response.text()
+            root = ET.fromstring(data)
 
     pty_map = {
         "0": "강수 없음",
@@ -259,8 +282,11 @@ async def pop_sky(x, y):
         "nx": x,
         "ny": y,
     }
-    response = requests.get(url, params=params)
-    root = ET.fromstring(response.text)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as response:
+            data = await response.text()
+            root = ET.fromstring(data)
 
     sky_map = {
         "1": "맑음",
@@ -286,8 +312,11 @@ async def tmx(x, y):
         "ny": y,
         "numOfRows": 200,
     }
-    response = requests.get(url, params=params)
-    root = ET.fromstring(response.text)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as response:
+            data = await response.text()
+            root = ET.fromstring(data)
 
     TMX = root.find(".//item[category='TMX']").find("fcstValue").text
 
@@ -304,8 +333,11 @@ async def tmn(x, y):
         "ny": y,
         "numOfRows": 200,
     }
-    response = requests.get(url, params=params)
-    root = ET.fromstring(response.text)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as response:
+            data = await response.text()
+            root = ET.fromstring(data)
 
     TMN = root.find(".//item[category='TMN']").find("fcstValue").text
 
@@ -321,8 +353,11 @@ async def sur_sus(lng, lat):
         "locdate": get_base_date_time("SUN", None)["bd"],
         "dnYn": "Y",
     }
-    response = requests.get(url, params=params)
-    root = ET.fromstring(response.text)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as response:
+            data = await response.text()
+            root = ET.fromstring(data)
 
     sunrise = timezone.datetime.strptime(
         root.find(".//sunrise").text.strip(), "%H%M"
