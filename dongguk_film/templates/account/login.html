@@ -1,71 +1,62 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block meta %}
-<meta property="og:title" content="로그인 - 디닷에프 | D-dot-f">
-<meta property="og:url" content="{% url 'account_login' %}">
-<!-- <meta name="robots" content="index,follow"> -->
+    <meta property="og:title" content="로그인 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'account_login' %}">
+    <!-- <meta name="robots" content="index,follow"> -->
 {% endblock %}
-
 {% block title %}로그인 - 디닷에프{% endblock %}
-
 {% block body %}
-<div class="absolute inset-0">
-    <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div class="sm:mx-auto sm:w-full sm:max-w-md">
-            <a href="{% url 'home:home' %}">
-                <span class="sr-only">홈페이지로 이동</span>
-                <svg class="mx-auto h-12 w-auto" xmlns="http://www.w3.org/2000/svg"
-                    xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 165.3 100"
-                    style="enable-background:new 0 0 165.3 100;" xml:space="preserve">
-                    <style type="text/css">
-                        .st0 {
-                            fill: #A39890;
-                        }
-
-                        .st1 {
-                            fill: #F15922;
-                        }
-                    </style>
-                    <path class="st0"
-                        d="M49.1,98l-1.3-7.5c-4.4,5.9-11.1,9.5-19.5,9.5C13,100,0,92.5,0,68V57.5c0-24.5,13-32,28.3-32  c6.4,0,11.6,2.1,15.7,5.5V11.6C44,3.9,49.6,0,55.8,0s11.7,3.9,11.7,11.6V98H49.1z M23.9,69.6c0,7.9,5.9,10.6,10,10.6  c3.9,0,9.7-2.6,10.1-10V55.3c-0.3-7.4-6.1-10-10.1-10c-4.1,0-10,2.7-10,10.6V69.6z" />
-                    <path class="st1"
-                        d="M94.7,63c12.2,0,19.5,7.3,19.5,18.4s-7.3,18.4-19.5,18.4s-19.5-7.1-19.5-18.4S82.5,63,94.7,63z" />
-                    <path class="st0"
-                        d="M121.9,98V47h-3.9c-7.3,0-10.2-4.5-10.2-9.5c0-4.9,2.8-9.7,10.2-9.7h3.9v-2.6c0-18.7,9-25.2,25.8-25.2  c4.5,0,9.6,0.9,13.3,3.2c3.9,2.4,5,6.4,3.9,10.8c-1,3.5-4.1,6.6-7.9,6.6c-1.9,0-2.8-0.2-4.8-0.6c-1.4-0.2-2.2-0.3-3.2-0.3  c-2.3,0-3.5,1.2-3.5,4.8v3.2h6.6c7.4,0,10.2,4.9,10.2,9.7c0,5-2.9,9.5-10.2,9.5h-6.6v51H121.9z" />
-                </svg>
-            </a>
-            <h2 class="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900"><span id="welcome"></span>
-                <span id="emoticon" aria-hidden="true"></span>
-            </h2>
-            <p class="mt-2 text-center text-sm text-gray-600">
-                디닷에프를 이용하려면 로그인해주세요.
-            </p>
+    <div class="absolute inset-0">
+        <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div class="sm:mx-auto sm:w-full sm:max-w-md">
+                <a href="{% url 'home:home' %}">
+                    <span class="sr-only">홈페이지로 이동</span>
+                    <svg class="mx-auto h-12 w-auto"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         version="1.1"
+                         x="0px"
+                         y="0px"
+                         viewBox="0 0 165.3 100"
+                         style="enable-background:new 0 0 165.3 100"
+                         xml:space="preserve">
+                        <path class="st0" d="M49.1,98l-1.3-7.5c-4.4,5.9-11.1,9.5-19.5,9.5C13,100,0,92.5,0,68V57.5c0-24.5,13-32,28.3-32  c6.4,0,11.6,2.1,15.7,5.5V11.6C44,3.9,49.6,0,55.8,0s11.7,3.9,11.7,11.6V98H49.1z M23.9,69.6c0,7.9,5.9,10.6,10,10.6  c3.9,0,9.7-2.6,10.1-10V55.3c-0.3-7.4-6.1-10-10.1-10c-4.1,0-10,2.7-10,10.6V69.6z" />
+                        <path class="st1" d="M94.7,63c12.2,0,19.5,7.3,19.5,18.4s-7.3,18.4-19.5,18.4s-19.5-7.1-19.5-18.4S82.5,63,94.7,63z" />
+                        <path class="st0" d="M121.9,98V47h-3.9c-7.3,0-10.2-4.5-10.2-9.5c0-4.9,2.8-9.7,10.2-9.7h3.9v-2.6c0-18.7,9-25.2,25.8-25.2  c4.5,0,9.6,0.9,13.3,3.2c3.9,2.4,5,6.4,3.9,10.8c-1,3.5-4.1,6.6-7.9,6.6c-1.9,0-2.8-0.2-4.8-0.6c-1.4-0.2-2.2-0.3-3.2-0.3  c-2.3,0-3.5,1.2-3.5,4.8v3.2h6.6c7.4,0,10.2,4.9,10.2,9.7c0,5-2.9,9.5-10.2,9.5h-6.6v51H121.9z" />
+                    </svg>
+                </a>
+                <h2 class="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
+                    <span id="welcome"></span>
+                    <span id="emoticon" aria-hidden="true"></span>
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">디닷에프를 이용하려면 로그인해주세요.</p>
+            </div>
+            {% include "shared/_social_login.html" %}
         </div>
-        {% include "shared/_social_login.html" %}
     </div>
-</div>
-
-<script src="{% static 'js/random-string.js' %}"></script>
-<!-- block In-App Browser -->
-<script>
+    <script src="{% static 'js/random-string.js' %}"></script>
+    <!-- block In-App Browser -->
+    <script>
     login_google.addEventListener("mousedown", () => {
         let agent = navigator.userAgent.toLowerCase();
         let boolean, app, browser, message;
         if ((agent.indexOf("kakaotalk")) !== -1) {
             boolean = true;
             app = "카카오톡";
-            browser = "카카오톡 인앱 브라우저";
-        };
-        if ((agent.indexOf("naver")) !== -1) {
+        } else if ((agent.indexOf("naver")) !== -1) {
             boolean = true;
-            app = "네이버앱";
-            browser = "네이버앱 인앱 브라우저";
+            app = "네이버";
+        } else if ((agent.indexOf("fban")) !== -1 || (agent.indexOf("fbav")) !== -1) {
+            boolean = true;
+            app = "페이스북";
+        }  else if ((agent.indexOf("instagram")) !== -1) {
+            boolean = true;
+            app = "인스타그램";
         };
         if (boolean == true) {
-            message = `앗, ${app}을 통해 들어오셨군요!\nGoogle 정책에 의해 ${browser}에서는 'Google로 로그인'이 불가해요. 😭\n번거로우시겠지만 다음 중 편한 방법을 골라 이용해주세요! 🙏\n\n1) '카카오로 로그인' 또는 '네이버로 로그인'하기\n2) Google Chrome이나 Apple Safari로 들어오기`;
-            alert(message);
+            alertBlockInAppBrowser(app);
         };
     })
-</script>
+    </script>
 {% endblock %}

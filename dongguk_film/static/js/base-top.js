@@ -216,7 +216,11 @@ function controlNoti(notiType, params = null) {
         notiIconClipboard.classList.add("hidden");
         notiTitle.innerText = null;
         notiContent.innerText = null;
-        if (notiType == "welcomeNewUser") {
+        if (notiType == "blockInAppBrowser") {
+            notiIconDefault.classList.remove("hidden");
+            notiTitle.innerText = "'Google로 로그인'이 잠겼어요.";
+            notiContent.innerText = `${params} 인앱 브라우저에서는 'Google로 로그인'을 불가해요. Chrome이나 Safari에서는 가능해요!`;
+        } else if (notiType == "welcomeNewUser") {
             notiIconSmile.classList.remove("hidden");
             notiTitle.innerText = "디닷에프 가입을 환영해요! 🎉";
             notiContent.innerText = `시설이용, 프로덕션, 동영링크 등 ${params}님을 위한 다양한 서비스를 이용해보세요!`;
@@ -231,7 +235,7 @@ function controlNoti(notiType, params = null) {
         } else if (notiType == "nonExistentDflink") {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "존재하지 않는 동영링크예요.";
-            notiContent.innerText = "주소가 잘못되었거나 삭제된 것 같아요.";
+            notiContent.innerText = "주소가 잘못되었거나 삭제된 동영링크 같아요.";
         };
     }
 
