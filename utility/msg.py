@@ -52,8 +52,7 @@ def format_msg(content: dict):
             embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         except:
             pass
-
-    embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
+        embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
     embed.set_footer(text=content["footer"])
 
     return embed
