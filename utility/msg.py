@@ -42,20 +42,18 @@ def format_msg(content: dict):
     embed.set_thumbnail(url=content["thumbnail_url"])
 
     if target == "DEV":
-        try:
-            embed.add_field(name="From", value="Client", inline=True)
-            embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
-            embed.add_field(
+        embed.add_field(
                 name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
             )
+        try:
+            embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
             embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
             embed.add_field(name="Method", value=content["method"], inline=True)
-            embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
             embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         except:
-            embed.add_field(name="From", value="Server", inline=True)
-            embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
+            pass
 
+    embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
     embed.set_footer(text=content["footer"])
 
     return embed
