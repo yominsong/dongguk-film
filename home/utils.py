@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
 import xml.etree.ElementTree as ET
-import requests, json, aiohttp, asyncio
+import asyncio, aiohttp
 
 KAKAO_REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY", "KAKAO_REST_API_KEY")
 
@@ -211,12 +211,13 @@ async def adr(lng, lat):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, headers=headers) as response:
-            data = await response.json()
+            response = await response.json()
 
-    adr = data["documents"][0]["address"]
+    adr = response["documents"][0]["address"]
     r1 = adr["region_1depth_name"]
     r2 = adr["region_2depth_name"]
     r3 = adr["region_3depth_name"]
+
     ADR = f"{r1} {r2} {r3}"
 
     return ADR
@@ -234,8 +235,9 @@ async def t1h_pty_wsd_wnm(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            data = await response.text()
-            root = ET.fromstring(data)
+            response = await response.text()
+    
+    root = ET.fromstring(response)
 
     pty_map = {
         "0": "강수 없음",
@@ -285,8 +287,9 @@ async def pop_sky(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            data = await response.text()
-            root = ET.fromstring(data)
+            response = await response.text()
+    
+    root = ET.fromstring(response)
 
     sky_map = {
         "1": "맑음",
@@ -315,8 +318,9 @@ async def tmx(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            data = await response.text()
-            root = ET.fromstring(data)
+            response = await response.text()
+    
+    root = ET.fromstring(response)
 
     TMX = root.find(".//item[category='TMX']").find("fcstValue").text
 
@@ -336,8 +340,9 @@ async def tmn(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            data = await response.text()
-            root = ET.fromstring(data)
+            response = await response.text()
+    
+    root = ET.fromstring(response)
 
     TMN = root.find(".//item[category='TMN']").find("fcstValue").text
 
@@ -356,9 +361,9 @@ async def sur_sus(lng, lat):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            data = await response.text()
-            root = ET.fromstring(data)
-
+            response = await response.text()
+    
+    root = ET.fromstring(response)
     sunrise = timezone.datetime.strptime(
         root.find(".//sunrise").text.strip(), "%H%M"
     )
