@@ -218,8 +218,8 @@ function controlNoti(notiType, params = null) {
         notiContent.innerText = null;
         if (notiType == "blockInAppBrowser") {
             notiIconDefault.classList.remove("hidden");
-            notiTitle.innerText = "'Google로 로그인'이 잠겼어요.";
-            notiContent.innerText = `${params} 인앱 브라우저에서는 'Google로 로그인'이 불가해요. 번거로우시겠지만 Chrome이나 Safari를 이용해주세요.`;
+            notiTitle.innerText = "'Google로 로그인'이 잠겼어요. 😢";
+            notiContent.innerText = `${params} 인앱 브라우저에서는 'Google로 로그인'이 불가해요. Chrome이나 Safari를 이용해주세요.`;
         } else if (notiType == "welcomeNewUser") {
             notiIconSmile.classList.remove("hidden");
             notiTitle.innerText = "디닷에프 가입을 환영해요! 🎉";
