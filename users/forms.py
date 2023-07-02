@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from .models import Metadata
 from users.models import Vcode
 from utility.msg import send_msg
-from users.utils import validation
 
 
 checkbox_input_class = "h-4 w-4 text-flamingo-600 rounded border-gray-300"
