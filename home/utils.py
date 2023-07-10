@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils import timezone
+from tenacity import retry, stop_after_attempt, wait_fixed
 import xml.etree.ElementTree as ET
 import asyncio, aiohttp
 
@@ -204,6 +205,7 @@ async def weather(request):
         return JsonResponse(response)
     
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def adr(lng, lat):
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
     params = {"x": lng, "y": lat, "input_coord": "WGS84"}
@@ -223,6 +225,7 @@ async def adr(lng, lat):
     return ADR
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def t1h_pty_wsd_wnm(x, y):
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
     params = {
@@ -275,6 +278,7 @@ async def t1h_pty_wsd_wnm(x, y):
     return T1H, PTY, WSD, WNM
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def pop_sky(x, y):
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
     params = {
@@ -305,6 +309,7 @@ async def pop_sky(x, y):
     return POP, SKY
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def tmx(x, y):
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
     params = {
@@ -327,6 +332,7 @@ async def tmx(x, y):
     return TMX
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def tmn(x, y):
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
     params = {
@@ -349,6 +355,7 @@ async def tmn(x, y):
     return TMN
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def sur_sus(lng, lat):
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getLCRiseSetInfo"
     params = {
@@ -375,6 +382,7 @@ async def sur_sus(lng, lat):
     return SUR, SUS
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
 async def acc_bdt(acc):
     acc = float(acc) if acc else None
 
