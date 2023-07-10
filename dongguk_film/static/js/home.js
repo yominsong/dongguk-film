@@ -95,7 +95,7 @@ function requestWeather({ coords }) {
     request.url = `${originLocation}/home/utils/weather`;
     request.type = "GET";
     request.data = { id: "weather", lng: longitude, lat: latitude, x: x, y: y, acc: accuracy };
-    request.async = false;
+    request.async = true;
     request.headers = null;
     makeAjaxCall(request);
     request = {};
@@ -115,4 +115,4 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 8000, });
+navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 4000 });
