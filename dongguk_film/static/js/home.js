@@ -95,7 +95,7 @@ function requestWeather({ coords }) {
     request.url = `${originLocation}/home/utils/weather`;
     request.type = "GET";
     request.data = { id: "weather", lng: longitude, lat: latitude, x: x, y: y, acc: accuracy };
-    request.async = true;
+    request.async = false;
     request.headers = null;
     makeAjaxCall(request);
     request = {};
