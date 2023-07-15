@@ -16,7 +16,8 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.views.static import serve as serve_static
+from django.urls import path, re_path, include
 import home
 
 urlpatterns = [
@@ -30,6 +31,16 @@ urlpatterns = [
     path(
         "ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"
     ),
+    re_path(
+        r"^sw.js$",
+        serve_static,
+        {"document_root": settings.STATIC_ROOT, "path": "js/sw.js"},
+    ),
+    # re_path(
+    #     r"^sw.js$",
+    #     serve_static,
+    #     {"document_root": settings.STATICFILES_DIRS[0], "path": "js/sw.js"},
+    # ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
