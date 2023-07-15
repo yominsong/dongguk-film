@@ -115,4 +115,4 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.watchPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 4000 });
+navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: true, timeout: 3000 });
