@@ -91,6 +91,9 @@ function handleAjaxCallback(response) {
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
+        if (response.result.accuracy.indexOf("km") !== -1) {
+            alertLowAccuracy();
+        };
         id_address.innerText = response.result.address;
         id_temperature.innerText = response.result.temperature;
         id_temperatureMax.innerText = response.result.temperatureMax;
@@ -231,7 +234,11 @@ function controlNoti(notiType, params = null) {
         } else if (notiType == "recheckLocationAccess") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
-            notiContent.innerText = "잠깐 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
+            notiContent.innerText = "잠시 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
+        } else if (notiType == "lowAccuracy") {
+            notiIconLocation.classList.remove("hidden");
+            notiTitle.innerText = "혹시 위치정보가 부정확한가요?";
+            notiContent.innerText = "안정적인 Wi-Fi 연결을 통해 더욱 정확한 기상정보를 불러올 수 있어요.";
         } else if (notiType == "nonExistentDflink") {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "존재하지 않는 동영링크예요.";

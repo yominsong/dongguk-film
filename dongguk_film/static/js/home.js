@@ -81,6 +81,10 @@ function alertWelcomeNewUser(name) {
     controlNoti("welcomeNewUser", name);
 };
 
+function alertLowAccuracy() {
+    controlNoti("lowAccuracy");
+};
+
 //
 // Main functions
 //
