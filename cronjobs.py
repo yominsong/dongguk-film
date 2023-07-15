@@ -10,6 +10,10 @@ from dflink.utils import delete_expired_dflinks
 
 import os
 
+from django.conf import settings
+
+settings.configure()
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dongguk_film.settings")
 application = get_wsgi_application()
 
