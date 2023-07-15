@@ -11,18 +11,6 @@ import json, re
 #
 
 
-def update_img(request):
-    home_img = save_img("video-camera", "home")
-    dflink_img = save_img("keyboard", "dflink")
-    notice_img = save_img("office", "notice")
-
-    image_list_for_msg = home_img + dflink_img + notice_img
-
-    send_msg(request, "UIG", "DEV", image_list_for_msg)
-
-    return HttpResponse(f"Updated images URL: {image_list_for_msg}")
-
-
 def update_dmd_cookie(request):
     with Session() as session:
         session.mount("https://", HTTPAdapter(max_retries=3))
@@ -40,6 +28,18 @@ def update_dmd_cookie(request):
     send_msg(request, "UDC", "DEV", cookie)
 
     return HttpResponse(f"dmd-cookie: {cookie}")
+
+
+def update_img(request):
+    home_img = save_img("video-camera", "home")
+    dflink_img = save_img("keyboard", "dflink")
+    notice_img = save_img("office", "notice")
+
+    image_list_for_msg = home_img + dflink_img + notice_img
+
+    send_msg(request, "UIG", "DEV", image_list_for_msg)
+
+    return HttpResponse(f"Updated images URL: {image_list_for_msg}")
 
 
 #

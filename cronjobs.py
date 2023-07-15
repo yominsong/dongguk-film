@@ -1,4 +1,5 @@
 from django.utils import timezone
+from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import os, requests
@@ -9,11 +10,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dongguk_film.settings")
 If the time is not specified with an if statement, it is executed every 30 minutes.
 """
 
-session = requests.Session()
-retries = Retry(total=5,
-                backoff_factor=0.1,
-                status_forcelist=[ 500, 502, 503, 504 ])
-session.mount('https://', HTTPAdapter(max_retries=retries))
+session = Session()
+retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+session.mount("https://", HTTPAdapter(max_retries=retries))
 
 #
 # users
