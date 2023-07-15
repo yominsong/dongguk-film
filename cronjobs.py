@@ -2,7 +2,7 @@ from django.utils import timezone
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-import os, requests
+import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dongguk_film.settings")
 
