@@ -50,6 +50,15 @@ function requestConfirmVcodeForSNP() {
     request = {};
 }
 
+function subscribeWebPush() {
+    const callback = (isSubscribed) => {
+        console.log(isSubscribed);
+    };
+    FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
+    FlareLane.setIsSubscribed(true, callback);
+    FlareLane.setUserId(id_student_id.value);
+}
+
 function setPage() {
     // Step one (first)
     initValidation(stepOnes, id_create_vcode);
