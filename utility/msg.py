@@ -42,10 +42,10 @@ def format_msg(content: dict):
     embed.set_thumbnail(url=content["thumbnail_url"])
 
     if target == "DEV":
-        embed.add_field(
+        try:
+            embed.add_field(
                 name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
             )
-        try:
             embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
             embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
             embed.add_field(name="Method", value=content["method"], inline=True)
