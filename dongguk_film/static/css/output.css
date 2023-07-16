@@ -1094,6 +1094,10 @@ select {
   cursor: pointer;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .list-disc {
   list-style-type: disc;
 }

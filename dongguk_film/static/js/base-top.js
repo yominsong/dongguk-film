@@ -35,6 +35,14 @@ function inheritObject() {
 
 inheritObject();
 
+function writeWeather(oldValue, newValue) {
+    newValue = String(newValue);
+    if (oldValue !== newValue && !newValue.includes("-")) {
+        return newValue;
+    };
+    return oldValue;
+}
+
 //
 // Main functions
 //
@@ -92,45 +100,34 @@ function handleAjaxCallback(response) {
             item.classList.remove("hidden");
         });
         id_refresh_weather.classList.remove("animate-spin");
+        id_refresh_weather.classList.remove("cursor-not-allowed");
+        id_refresh_weather.classList.add("cursor-pointer");
         if (response.result.accuracy.indexOf("km") !== -1) {
             alertLowAccuracy();
         };
-        
-        function writeValue(oldValue, newValue) {
-            newValue = String(newValue);
-            if (oldValue !== newValue && !newValue.includes('-')) {
-                return newValue;
-            }
-            return oldValue;
-        }
-        
-        id_address.innerText = writeValue(id_address.innerText, response.result.address);
-        id_temperature.innerText = writeValue(id_temperature.innerText, response.result.temperature);
-        id_temperatureMax.innerText = writeValue(id_temperatureMax.innerText, response.result.temperatureMax);
-        id_temperatureMin.innerText = writeValue(id_temperatureMin.innerText, response.result.temperatureMin);
-        id_precipitationProbability.innerText = writeValue(id_precipitationProbability.innerText, response.result.precipitationProbability);
-        id_precipitationType.innerText = writeValue(id_precipitationType.innerText, response.result.precipitationType);
-        id_windSpeed.innerText = writeValue(id_windSpeed.innerText, response.result.windSpeed);
-        id_windName.innerText = writeValue(id_windName.innerText, response.result.windName);
-        id_skyState.innerText = writeValue(id_skyState.innerText, response.result.skyState);
-        id_sunrise.innerText = writeValue(id_sunrise.innerText, response.result.sunrise);
-        id_sunset.innerText = writeValue(id_sunset.innerText, response.result.sunset);
-        id_accuracy.innerText = writeValue(id_accuracy.innerText, response.result.accuracy);
-        id_baseDateTime.innerText = writeValue(id_baseDateTime.innerText, response.result.baseDateTime);
-        
-        // id_address.innerText = response.result.address;
-        // id_temperature.innerText = response.result.temperature;
-        // id_temperatureMax.innerText = response.result.temperatureMax;
-        // id_temperatureMin.innerText = response.result.temperatureMin;
-        // id_precipitationProbability.innerText = response.result.precipitationProbability;
-        // id_precipitationType.innerText = response.result.precipitationType;
-        // id_windSpeed.innerText = response.result.windSpeed;
-        // id_windName.innerText = response.result.windName;
-        // id_skyState.innerText = response.result.skyState;
-        // id_sunrise.innerText = response.result.sunrise;
-        // id_sunset.innerText = response.result.sunset;
-        // id_accuracy.innerText = response.result.accuracy;
-        // id_baseDateTime.innerText = response.result.baseDateTime;
+        localStorage.setItem("weatherUpdatedAt", new Date().toString());
+        let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
+        for (let key in response.result) {
+            if (response.result.hasOwnProperty(key)) {
+                if (typeof cachedWeather[key] === "string" && cachedWeather[key].includes("-")) {
+                    cachedWeather[key] = response.result[key];
+                };
+            };
+        };
+        localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
+        id_address.innerText = writeWeather(id_address.innerText, response.result.address);
+        id_temperature.innerText = writeWeather(id_temperature.innerText, response.result.temperature);
+        id_temperatureMax.innerText = writeWeather(id_temperatureMax.innerText, response.result.temperatureMax);
+        id_temperatureMin.innerText = writeWeather(id_temperatureMin.innerText, response.result.temperatureMin);
+        id_precipitationProbability.innerText = writeWeather(id_precipitationProbability.innerText, response.result.precipitationProbability);
+        id_precipitationType.innerText = writeWeather(id_precipitationType.innerText, response.result.precipitationType);
+        id_windSpeed.innerText = writeWeather(id_windSpeed.innerText, response.result.windSpeed);
+        id_windName.innerText = writeWeather(id_windName.innerText, response.result.windName);
+        id_skyState.innerText = writeWeather(id_skyState.innerText, response.result.skyState);
+        id_sunrise.innerText = writeWeather(id_sunrise.innerText, response.result.sunrise);
+        id_sunset.innerText = writeWeather(id_sunset.innerText, response.result.sunset);
+        id_accuracy.innerText = writeWeather(id_accuracy.innerText, response.result.accuracy);
+        id_baseDateTime.innerText = writeWeather(id_baseDateTime.innerText, response.result.baseDateTime);
 
     } else if (response.id == "create_vcode_for_SNP") {
         // requestCreateVcodeForSNP()
