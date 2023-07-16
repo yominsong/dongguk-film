@@ -35,7 +35,9 @@ function controlPush() {
         if (permission == "granted") {
             FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
             FlareLane.setIsSubscribed(true);
-            FlareLane.setUserId(`${student_id} (${getOS()})`);
+            FlareLane.getDeviceId((deviceId) => {
+                FlareLane.setUserId(`${student_id} (${getOS()} / ${deviceId.split("-")[1]})`);
+            });
         } else if (permission == "denied") {
             requestConsentForPushNoti();
         };
