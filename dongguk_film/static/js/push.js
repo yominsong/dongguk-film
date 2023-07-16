@@ -32,8 +32,8 @@ function controlPush() {
         let permission = Notification.permission;
         let student_id = document.getElementById("pushJS").dataset.studentId;
 
+        FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
         if (permission == "granted") {
-            FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
             FlareLane.setIsSubscribed(true);
             FlareLane.getDeviceId((deviceId) => {
                 FlareLane.setUserId(`${student_id} (${getOS()} / ${deviceId.split("-")[1]})`);
