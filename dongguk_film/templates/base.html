@@ -111,7 +111,7 @@
             <!-- FlareLane Web Push JS -->
             <script src="https://cdn.flarelane.com/WebSDK.js" charset="UTF-8"></script>
             {% if request.user.is_authenticated %}
-                  <script id="push"
+                  <script id="pushJS"
                           src="{% static 'js/push.js' %}"
                           data-student-id="{{ request.user.metadata.student_id }}"></script>
             {% endif %}
