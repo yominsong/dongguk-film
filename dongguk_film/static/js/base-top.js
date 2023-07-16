@@ -224,8 +224,8 @@ function controlNoti(notiType, params = null) {
             notiTitle.innerText = "Google로 로그인이 잠겼어요. 😢";
             notiContent.innerText = `${params} 인앱 브라우저에서는 Google로 로그인이 불가해요. Chrome이나 Safari를 이용해주세요.`;
         } else if (notiType == "requestPushPermission") {
-            notiIconDefault.classList.remove("hidden");
-            notiTitle.innerText = "푸시 알림으로 서비스 내역과 공지사항을 받아보세요.";
+            notiIconBell.classList.remove("hidden");
+            notiTitle.innerText = "푸시 알림을 받아보세요.";
             notiContent.innerText = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "welcomeNewUser") {
             notiIconSmile.classList.remove("hidden");
