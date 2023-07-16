@@ -91,6 +91,7 @@ function handleAjaxCallback(response) {
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
+        id_refresh_weather.classList.remove("animate-spin");
         if (response.result.accuracy.indexOf("km") !== -1) {
             alertLowAccuracy();
         };

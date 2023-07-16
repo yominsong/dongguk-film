@@ -77,6 +77,19 @@ function dfs_xy_conv(code, v1, v2) {
     return rs;
 }
 
+function refreshWeather() {
+    ["click", "keyup"].forEach(type => {
+        id_refresh_weather.addEventListener(type, (event) => {
+            if (type == "click" || event.key == "Enter") {
+                getWeather();
+                id_refresh_weather.classList.add("animate-spin");
+            };
+        });
+    });
+}
+
+refreshWeather();
+
 function alertWelcomeNewUser(name) {
     controlNoti("welcomeNewUser", name);
 };
@@ -119,4 +132,8 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 180000 });
+function getWeather() {
+    navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 180000 });
+}
+
+getWeather();

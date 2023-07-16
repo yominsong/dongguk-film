@@ -130,8 +130,7 @@ def find_value_from_text(category: str, text: str):
     - category | `str`:
         - T1H, PTY, WSD, POP, SKY, TMX, TMN: refer to `weather()` function annotation
     
-    - text | `str`:
-        - Response text for HTTP request
+    - text | `str`: Response text for HTTP request
     """
 
     try:
@@ -141,8 +140,18 @@ def find_value_from_text(category: str, text: str):
         elif category in ["POP", "SKY", "TMX", "TMN"]:
             value_type = "fcstValue"
         result = root.find(f".//item[category='{category}']").find(value_type).text
+
     except:
-        result = "-"
+        default_values = {
+            "T1H": "--.-",
+            "PTY": "-",
+            "WSD": "-.-",
+            "POP": "--",
+            "SKY": "-",
+            "TMX": "--.-",
+            "TMN": "--.-"
+        }
+        result = default_values[category]
 
     return result
 
@@ -206,9 +215,9 @@ async def weather(request):
 
         for key in futures:
             try:
-                results[key] = await asyncio.wait_for(futures[key], timeout=3)
+                results[key] = await asyncio.wait_for(futures[key], timeout=2.5)
             except asyncio.TimeoutError:
-                results[key] = "-"
+                results[key] = None
 
         # ADR = results[0]
         # T1H, PTY, WSD, WNM = results[1]
@@ -218,11 +227,11 @@ async def weather(request):
         # ACC, BDT = results[5]
 
         ADR = results["adr"]
-        T1H, PTY, WSD, WNM = results["t1h_pty_wsd_wnm"] if results["t1h_pty_wsd_wnm"] != "-" else ("-", "-", "-", "-")
-        POP, SKY = results["pop_sky"] if results["pop_sky"] != "-" else ("-", "-")
-        TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != "-" else ("-", "-")
-        SUR, SUS = results["sur_sus"] if results["sur_sus"] != "-" else ("-", "-")
-        ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != "-" else ("-", "-")
+        T1H, PTY, WSD, WNM = results["t1h_pty_wsd_wnm"] if results["t1h_pty_wsd_wnm"] != None else ("--.-", "-", "-.-", "-")
+        POP, SKY = results["pop_sky"] if results["pop_sky"] != None else ("--", "-")
+        TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != None else ("--.-", "--.-")
+        SUR, SUS = results["sur_sus"] if results["sur_sus"] != None else ("--:--", "--:--")
+        ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != None else ("위치정보 없음", "--월 --일 --시 발표")
 
         response = {
             "id": id,
@@ -415,7 +424,7 @@ async def acc_bdt(acc):
     start_time = time.time()
     acc = float(acc) if acc else None
 
-    ACC = "위치 정보 없음" if not acc else f"약 {round(acc / 1000)}km 오차" if acc >= 1000 else f"약 {round(acc)}m 오차"
+    ACC = "위치정보 없음" if not acc else f"약 {round(acc / 1000)}km 오차" if acc >= 1000 else f"약 {round(acc)}m 오차"
     BDT = f"{(get_base_date_time('UST', 'BDT')['bd'])} {get_base_date_time('UST', 'BDT')['bt']} 발표"
     print(f'acc_bdt execution time: {time.time() - start_time} seconds')
 
