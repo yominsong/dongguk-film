@@ -14,7 +14,7 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 #
 
 
-async def is_new_user(user):
+def is_new_user(user):
     return timezone.now() - user.date_joined < timezone.timedelta(minutes=3)
 
 
@@ -25,7 +25,7 @@ async def is_new_user(user):
 
 async def home(request):
     new_user_bool = (
-        await is_new_user(request.user) if request.user.is_authenticated else False
+        await sync_to_async(is_new_user)(request.user) if request.user.is_authenticated else False
     )
 
     image_list = await sync_to_async(get_img)("home")
