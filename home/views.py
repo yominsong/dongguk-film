@@ -23,7 +23,7 @@ def is_new_user(user):
 #
 
 
-async def home(request):
+def home(request):
     new_user_bool = (
         is_new_user(request.user) if request.user.is_authenticated else False
     )
