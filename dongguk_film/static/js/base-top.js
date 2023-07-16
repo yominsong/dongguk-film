@@ -106,15 +106,19 @@ function handleAjaxCallback(response) {
             alertLowAccuracy();
         };
         localStorage.setItem("weatherUpdatedAt", new Date().toString());
-        let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
-        for (let key in response.result) {
-            if (response.result.hasOwnProperty(key)) {
-                if (typeof cachedWeather[key] === "string" && cachedWeather[key].includes("-")) {
-                    cachedWeather[key] = response.result[key];
+        if (localStorage.getItem("cachedWeather") !== null) {
+            let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
+            for (let key in response.result) {
+                if (response.result.hasOwnProperty(key)) {
+                    if (typeof cachedWeather[key] === "string" && cachedWeather[key].includes("-")) {
+                        cachedWeather[key] = response.result[key];
+                    };
                 };
             };
+            localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
+        } else {
+            localStorage.setItem("cachedWeather", JSON.stringify(response.result));
         };
-        localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
         id_address.innerText = writeWeather(id_address.innerText, response.result.address);
         id_temperature.innerText = writeWeather(id_temperature.innerText, response.result.temperature);
         id_temperatureMax.innerText = writeWeather(id_temperatureMax.innerText, response.result.temperatureMax);
