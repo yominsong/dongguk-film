@@ -25,13 +25,13 @@ def is_new_user(user):
 
 async def home(request):
     new_user_bool = (
-        await sync_to_async(is_new_user)(request.user) if request.user.is_authenticated else False
+        is_new_user(request.user) if request.user.is_authenticated else False
     )
 
-    image_list = await sync_to_async(get_img)("home")
-    dflink_list = await sync_to_async(short_io)(5)
+    image_list = get_img("home")
+    dflink_list = short_io(5)
 
-    return await sync_to_async(render)(
+    return render(
         request,
         "home/home.html",
         {
