@@ -142,7 +142,6 @@ function handleAjaxCallback(response) {
                 input.readOnly = true;
             });
             id_confirm_vcode.disabled = true;
-            subscribeWebPush();
             document.querySelector("form").submit();
         } else if (response.result.status == "FAIL") {
             freezeForm(false);

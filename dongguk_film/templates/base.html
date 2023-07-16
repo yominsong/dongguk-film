@@ -1,129 +1,136 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="application-name" content="디닷에프">
-        <meta name="theme-color" content="#F15922">
-        <meta name="keywords" content="디닷에프,동국대학교,영화영상학과">
-        <meta name="format-detection" content="telephone=no">
-        <meta property="og:locale" content="ko-KR">
-        <meta property="og:type" content="website">
-        <meta property="og:image" content="{% static 'images/d_dot_f_og.png' %}">
-        <meta property="og:image:secure_url"
-              content="{% static 'images/d_dot_f_og.png' %}">
-        <meta property="og:site_name" content="디닷에프">
-        <meta property="og:description" content="동국대학교 영화영상학과 올인원 플랫폼">
-        <meta name="description" content="동국대학교 영화영상학과 올인원 플랫폼">
-        <!--
-     --- TODO: Template-specific settings are required.
-     -->
-        <meta name="robots" content="noindex,nofollow">
-        {% block meta %}{% endblock %}
-        <!-- Base CSS -->
-        <link rel="stylesheet" href="{% static 'css/base.css' %}">
-        <!-- Tailwind CSS -->
-        <link rel="stylesheet" href="{% static 'css/output.css' %}">
-        <!-- Bootstrap Icons -->
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-        <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-                integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-                crossorigin="anonymous"></script>
-        <!-- Alpine.js -->
-        <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
-        <script src="{% static 'js/alpine.js' %}"></script>
-        <!-- components JS -->
-        <script src="{% static 'js/components.js' %}"></script>
-        <!-- Swiper JS -->
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-        <!-- Pretendard -->
-        <link rel="stylesheet"
-              as="style"
-              crossorigin
-              href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-        <!-- Favicon -->
-        <link rel="apple-touch-icon"
-              sizes="57x57"
-              href="{% static 'favicon/apple-icon-57x57.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="60x60"
-              href="{% static 'favicon/apple-icon-60x60.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="72x72"
-              href="{% static 'favicon/apple-icon-72x72.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="76x76"
-              href="{% static 'favicon/apple-icon-76x76.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="114x114"
-              href="{% static 'favicon/apple-icon-114x114.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="120x120"
-              href="{% static 'favicon/apple-icon-120x120.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="144x144"
-              href="{% static 'favicon/apple-icon-144x144.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="152x152"
-              href="{% static 'favicon/apple-icon-152x152.png' %}">
-        <link rel="apple-touch-icon"
-              sizes="180x180"
-              href="{% static 'favicon/apple-icon-180x180.png' %}">
-        <link rel="icon"
-              type="image/png"
-              sizes="192x192"
-              href="{% static 'favicon/android-icon-192x192.png' %}">
-        <link rel="icon"
-              type="image/png"
-              sizes="32x32"
-              href="{% static 'favicon/favicon-32x32.png' %}">
-        <link rel="icon"
-              type="image/png"
-              sizes="96x96"
-              href="{% static 'favicon/favicon-96x96.png' %}">
-        <link rel="icon"
-              type="image/png"
-              sizes="16x16"
-              href="{% static 'favicon/favicon-16x16.png' %}">
-        <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
-        <title>
-            {% block title %}{% endblock %}
-        </title>
-    </head>
-    <body class="antialiased font-pretendard bg-gray-100 overflow-auto">
-        <!-- Notification -->
-        {% include "shared/_noti.html" %}
-        <!-- FlareLane Web Push JS -->
-        <script src="https://cdn.flarelane.com/WebSDK.js" charset="UTF-8"></script>
-        <script src="{% static 'js/base-top.js' %}"></script>
-        <script src="{% static 'js/datetime.js' %}"></script>
-        <div class="flex flex-col h-screen justify-between">
-            <div>{% include "shared/_navbar.html" %}</div>
-            <div class="mb-auto">
-                {% block body %}{% endblock %}
+      <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="application-name" content="디닷에프">
+            <meta name="theme-color" content="#F15922">
+            <meta name="keywords" content="디닷에프,동국대학교,영화영상학과">
+            <meta name="format-detection" content="telephone=no">
+            <meta property="og:locale" content="ko-KR">
+            <meta property="og:type" content="website">
+            <meta property="og:image" content="{% static 'images/d_dot_f_og.png' %}">
+            <meta property="og:image:secure_url"
+                  content="{% static 'images/d_dot_f_og.png' %}">
+            <meta property="og:site_name" content="디닷에프">
+            <meta property="og:description" content="동국대학교 영화영상학과 올인원 플랫폼">
+            <meta name="description" content="동국대학교 영화영상학과 올인원 플랫폼">
+            <!--
+            --- TODO: Template-specific settings are required.
+            -->
+            <meta name="robots" content="noindex,nofollow">
+            {% block meta %}{% endblock %}
+            <!-- Base CSS -->
+            <link rel="stylesheet" href="{% static 'css/base.css' %}">
+            <!-- Tailwind CSS -->
+            <link rel="stylesheet" href="{% static 'css/output.css' %}">
+            <!-- Bootstrap Icons -->
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+            <!-- jQuery -->
+            <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+                    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+                    crossorigin="anonymous"></script>
+            <!-- Alpine.js -->
+            <script defer src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js"></script>
+            <script src="{% static 'js/alpine.js' %}"></script>
+            <!-- components JS -->
+            <script src="{% static 'js/components.js' %}"></script>
+            <!-- Swiper JS -->
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+            <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+            <!-- Pretendard -->
+            <link rel="stylesheet"
+                  as="style"
+                  crossorigin
+                  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+            <!-- Favicon -->
+            <link rel="apple-touch-icon"
+                  sizes="57x57"
+                  href="{% static 'favicon/apple-icon-57x57.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="60x60"
+                  href="{% static 'favicon/apple-icon-60x60.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="72x72"
+                  href="{% static 'favicon/apple-icon-72x72.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="76x76"
+                  href="{% static 'favicon/apple-icon-76x76.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="114x114"
+                  href="{% static 'favicon/apple-icon-114x114.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="120x120"
+                  href="{% static 'favicon/apple-icon-120x120.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="144x144"
+                  href="{% static 'favicon/apple-icon-144x144.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="152x152"
+                  href="{% static 'favicon/apple-icon-152x152.png' %}">
+            <link rel="apple-touch-icon"
+                  sizes="180x180"
+                  href="{% static 'favicon/apple-icon-180x180.png' %}">
+            <link rel="icon"
+                  type="image/png"
+                  sizes="192x192"
+                  href="{% static 'favicon/android-icon-192x192.png' %}">
+            <link rel="icon"
+                  type="image/png"
+                  sizes="32x32"
+                  href="{% static 'favicon/favicon-32x32.png' %}">
+            <link rel="icon"
+                  type="image/png"
+                  sizes="96x96"
+                  href="{% static 'favicon/favicon-96x96.png' %}">
+            <link rel="icon"
+                  type="image/png"
+                  sizes="16x16"
+                  href="{% static 'favicon/favicon-16x16.png' %}">
+            <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
+            <title>
+                  {% block title %}{% endblock %}
+            </title>
+      </head>
+      <body class="antialiased font-pretendard bg-gray-100 overflow-auto">
+            <!-- Notification -->
+            {% include "shared/_noti.html" %}
+            <!-- FlareLane Web Push JS -->
+            <script src="https://cdn.flarelane.com/WebSDK.js" charset="UTF-8"></script>
+            {% if request.user.is_authenticated %}
+                  <script>
+                        FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
+                        FlareLane.setIsSubscribed(true);
+                        FlareLane.setUserId("{{ request.user.metadata.student_id }}");
+                  </script>
+            {% endif %}
+            <script src="{% static 'js/base-top.js' %}"></script>
+            <script src="{% static 'js/datetime.js' %}"></script>
+            <div class="flex flex-col h-screen justify-between">
+                  <div>{% include "shared/_navbar.html" %}</div>
+                  <div class="mb-auto">
+                        {% block body %}{% endblock %}
+                  </div>
+                  <div>{% include "shared/_footer.html" %}</div>
             </div>
-            <div>{% include "shared/_footer.html" %}</div>
-        </div>
-        <script src="{% static 'js/swiper.js' %}"></script>
-        <script src="{% static 'js/base-bottom.js' %}"></script>
-        <!-- Notify MS IE not supported -->
-        <script>
-        function notifyMsIeNotSupported() {
-            let agent = navigator.userAgent.toLowerCase();
-            if (agent.indexOf("trident") !== -1 || agent.indexOf("msie") !== -1) {
-                alert("Internet Explorer에서는 디닷에프를 이용하실 수 없어요.\nChrome이나 Edge, 또는 Safari에서 이용해주세요!");
-                document.body.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
-                document.body.innerHTML = "<img src='{% static 'images/d_dot_f_logo.svg' %}' style='height: 3rem; text-align: center;' /><p style='margin-top: 1rem;'>Internet Explorer에서는 디닷에프를 이용하실 수 없어요.<br><a href='https://www.google.com/chrome/' target='_blank' style='color: #F15922;'>Chrome</a>이나 <a href='microsoft-edge:{{ request.build_absolute_uri }}' target='_blank' style='color: #F15922;'>Edge</a>, 또는 Safari에서 이용해주세요.</p>";
-            };
-        }
+            <script src="{% static 'js/swiper.js' %}"></script>
+            <script src="{% static 'js/base-bottom.js' %}"></script>
+            <!-- Notify MS IE not supported -->
+            <script>
+                  function notifyMsIeNotSupported() {
+                        let agent = navigator.userAgent.toLowerCase();
+                        if (agent.indexOf("trident") !== -1 || agent.indexOf("msie") !== -1) {
+                        alert("Internet Explorer에서는 디닷에프를 이용하실 수 없어요.\nChrome이나 Edge, 또는 Safari에서 이용해주세요!");
+                        document.body.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
+                        document.body.innerHTML = "<img src='{% static 'images/d_dot_f_logo.svg' %}' style='height: 3rem; text-align: center;' /><p style='margin-top: 1rem;'>Internet Explorer에서는 디닷에프를 이용하실 수 없어요.<br><a href='https://www.google.com/chrome/' target='_blank' style='color: #F15922;'>Chrome</a>이나 <a href='microsoft-edge:{{ request.build_absolute_uri }}' target='_blank' style='color: #F15922;'>Edge</a>, 또는 Safari에서 이용해주세요.</p>";
+                        };
+                  }
 
-        notifyMsIeNotSupported();
-        </script>
-    </body>
+                  notifyMsIeNotSupported();
+            </script>
+      </body>
 </html>
