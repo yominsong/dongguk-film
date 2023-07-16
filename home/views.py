@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.utils import timezone
+from asgiref.sync import sync_to_async
 from django.shortcuts import render
 from utility.img import get_img
 from dflink.utils import short_io
@@ -13,7 +14,7 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 #
 
 
-def is_new_user(user):
+async def is_new_user(user):
     return timezone.now() - user.date_joined < timezone.timedelta(minutes=3)
 
 
@@ -22,15 +23,15 @@ def is_new_user(user):
 #
 
 
-def home(request):
+async def home(request):
     new_user_bool = (
-        is_new_user(request.user) if request.user.is_authenticated else False
+        await is_new_user(request.user) if request.user.is_authenticated else False
     )
 
-    image_list = get_img("home")
-    dflink_list = short_io(5)
+    image_list = await sync_to_async(get_img)("home")
+    dflink_list = await sync_to_async(short_io)(5)
 
-    return render(
+    return await sync_to_async(render)(
         request,
         "home/home.html",
         {

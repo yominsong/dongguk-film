@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from tenacity import retry, stop_after_attempt, wait_fixed
 import xml.etree.ElementTree as ET
-import asyncio, aiohttp
+import asyncio, aiohttp, time
 
 KAKAO_REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY", "KAKAO_REST_API_KEY")
 
@@ -23,16 +23,14 @@ def st(hhmm):  # set time
     return now.replace(hour=hh, minute=mm)
 
 
-def get_base_date_time(type, option):
+def get_base_date_time(type: str, option: str):
     """
-    type: "UST", "STM", "SUN"
-    option: "BDT", "TMX", "TMN"
-
-    UST: Ultra Short Term
-    STM: Short Term
-    SUN: Sunrise and Sunset
-    
-    BDT, TMX, TMN: refer to `weather()` function annotation
+    - type | `str`:
+        - UST: Ultra Short Term
+        - STM: Short Term
+        - SUN: Sunrise and Sunset
+    - option | `str`:
+        - BDT, TMX, TMN: refer to `weather()` function annotation
     """
 
     now = timezone.now()
@@ -127,6 +125,28 @@ def get_base_date_time(type, option):
     return {"bd": base_date, "bt": base_time}
 
 
+def find_value_from_text(category: str, text: str):
+    """
+    - category | `str`:
+        - T1H, PTY, WSD, POP, SKY, TMX, TMN: refer to `weather()` function annotation
+    
+    - text | `str`:
+        - Response text for HTTP request
+    """
+
+    try:
+        root = ET.fromstring(text)
+        if category in ["T1H", "PTY", "WSD"]:
+            value_type = "obsrValue"
+        elif category in ["POP", "SKY", "TMX", "TMN"]:
+            value_type = "fcstValue"
+        result = root.find(f".//item[category='{category}']").find(value_type).text
+    except:
+        result = "-"
+
+    return result
+
+
 #
 # Main functions
 #
@@ -157,31 +177,52 @@ async def weather(request):
         y = request.GET["y"]
         acc = request.GET["acc"]
 
-        adr_future = adr(lng, lat)
-        t1h_pty_wsd_wnm_future = t1h_pty_wsd_wnm(x, y)
-        pop_sky_future = pop_sky(x, y)
-        tmx_future = tmx(x, y)
-        tmn_future = tmn(x, y)
-        sur_sus_future = sur_sus(lng, lat)
-        acc_bdt_future = acc_bdt(acc)
+        # adr_future = adr(lng, lat)
+        # t1h_pty_wsd_wnm_future = t1h_pty_wsd_wnm(x, y)
+        # pop_sky_future = pop_sky(x, y)
+        # tmx_tmn_future = tmx_tmn(x, y)
+        # sur_sus_future = sur_sus(lng, lat)
+        # acc_bdt_future = acc_bdt(acc)
 
-        results = await asyncio.gather(
-            adr_future, 
-            t1h_pty_wsd_wnm_future, 
-            pop_sky_future, 
-            tmx_future, 
-            tmn_future, 
-            sur_sus_future, 
-            acc_bdt_future
-        )
+        futures = {
+            "adr": adr(lng, lat),
+            "t1h_pty_wsd_wnm": t1h_pty_wsd_wnm(x, y),
+            "pop_sky": pop_sky(x, y),
+            "tmx_tmn": tmx_tmn(x, y),
+            "sur_sus": sur_sus(lng, lat),
+            "acc_bdt": acc_bdt(acc)
+        }
 
-        ADR = results[0]
-        T1H, PTY, WSD, WNM = results[1]
-        POP, SKY = results[2]
-        TMX = results[3]
-        TMN = results[4]
-        SUR, SUS = results[5]
-        ACC, BDT = results[6]
+        # results = await asyncio.gather(
+        #     adr_future,
+        #     t1h_pty_wsd_wnm_future,
+        #     pop_sky_future,
+        #     tmx_tmn_future,
+        #     sur_sus_future,
+        #     acc_bdt_future
+        # )
+
+        results = {}
+
+        for key in futures:
+            try:
+                results[key] = await asyncio.wait_for(futures[key], timeout=3)
+            except asyncio.TimeoutError:
+                results[key] = "-"
+
+        # ADR = results[0]
+        # T1H, PTY, WSD, WNM = results[1]
+        # POP, SKY = results[2]
+        # TMX, TMN = results[3]
+        # SUR, SUS = results[4]
+        # ACC, BDT = results[5]
+
+        ADR = results["adr"]
+        T1H, PTY, WSD, WNM = results["t1h_pty_wsd_wnm"] if results["t1h_pty_wsd_wnm"] != "-" else ("-", "-", "-", "-")
+        POP, SKY = results["pop_sky"] if results["pop_sky"] != "-" else ("-", "-")
+        TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != "-" else ("-", "-")
+        SUR, SUS = results["sur_sus"] if results["sur_sus"] != "-" else ("-", "-")
+        ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != "-" else ("-", "-")
 
         response = {
             "id": id,
@@ -205,28 +246,31 @@ async def weather(request):
         return JsonResponse(response)
     
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def adr(lng, lat):
+    start_time = time.time()
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
     params = {"x": lng, "y": lat, "input_coord": "WGS84"}
     headers = {"Authorization": f"KakaoAK {KAKAO_REST_API_KEY}"}
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, headers=headers) as response:
-            response = await response.json()
+            json = await response.json()
 
-    adr = response["documents"][0]["address"]
+    adr = json["documents"][0]["address"]
     r1 = adr["region_1depth_name"]
     r2 = adr["region_2depth_name"]
     r3 = adr["region_3depth_name"]
 
     ADR = f"{r1} {r2} {r3}"
+    print(f'adr execution time: {time.time() - start_time} seconds')
 
     return ADR
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def t1h_pty_wsd_wnm(x, y):
+    start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
     params = {
         "serviceKey": PUBLIC_DATA_SERVICE_KEY,
@@ -238,9 +282,7 @@ async def t1h_pty_wsd_wnm(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            response = await response.text()
-    
-    root = ET.fromstring(response)
+            text = await response.text()
 
     pty_map = {
         "0": "강수 없음",
@@ -268,18 +310,18 @@ async def t1h_pty_wsd_wnm(x, y):
         32.7: "싹쓸바람",
     }
 
-    T1H = root.find(".//item[category='T1H']").find("obsrValue").text
-    PTY = pty_map.get(
-        root.find(".//item[category='PTY']").find("obsrValue").text, "-"
-    )
-    WSD = float(root.find(".//item[category='WSD']").find("obsrValue").text)
+    T1H = find_value_from_text("T1H", text)
+    PTY = pty_map.get(find_value_from_text("PTY", text), "-")
+    WSD = float(find_value_from_text("WSD", text))
     WNM = next((wnm_map[wnm] for wnm in wnm_map.keys() if WSD <= wnm), "-")
+    print(f't1h_pty_wsd_wnm execution time: {time.time() - start_time} seconds')
 
     return T1H, PTY, WSD, WNM
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def pop_sky(x, y):
+    start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
     params = {
         "serviceKey": PUBLIC_DATA_SERVICE_KEY,
@@ -291,9 +333,7 @@ async def pop_sky(x, y):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            response = await response.text()
-    
-    root = ET.fromstring(response)
+            text = await response.text()
 
     sky_map = {
         "1": "맑음",
@@ -301,62 +341,49 @@ async def pop_sky(x, y):
         "4": "흐림",
     }
 
-    POP = root.find(".//item[category='POP']").find("fcstValue").text
-    SKY = sky_map.get(
-        root.find(".//item[category='SKY']").find("fcstValue").text, "-"
-    )
+    POP = find_value_from_text("POP", text)
+    SKY = sky_map.get(find_value_from_text("SKY", text), "-")
+    print(f'pop_sky execution time: {time.time() - start_time} seconds')
 
     return POP, SKY
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def tmx(x, y):
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
+async def tmx_tmn(x, y):
+    start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
-    params = {
-        "serviceKey": PUBLIC_DATA_SERVICE_KEY,
-        "base_date": get_base_date_time("STM", "TMX")["bd"],
-        "base_time": get_base_date_time("STM", "TMX")["bt"],
-        "nx": x,
-        "ny": y,
-        "numOfRows": 200,
-    }
+    results = []
+    categories = ["TMX", "TMN"]
+    for i, category in enumerate(categories):
+        params = {
+            "serviceKey": PUBLIC_DATA_SERVICE_KEY,
+            "base_date": get_base_date_time("STM", category)["bd"],
+            "base_time": get_base_date_time("STM", category)["bt"],
+            "nx": x,
+            "ny": y,
+            "numOfRows": 200,
+        }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as response:
-            response = await response.text()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params) as response:
+                text = await response.text()
+        
+        results.append(find_value_from_text(category, text))
+
+        if i < len(categories) - 1:
+            await asyncio.sleep(0.3)
     
-    root = ET.fromstring(response)
+    TMX = results[0]
+    TMN = results[1]
+    print(f'tmx_tmn execution time: {time.time() - start_time} seconds')
 
-    TMX = root.find(".//item[category='TMX']").find("fcstValue").text
-
-    return TMX
-
-
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-async def tmn(x, y):
-    url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
-    params = {
-        "serviceKey": PUBLIC_DATA_SERVICE_KEY,
-        "base_date": get_base_date_time("STM", "TMN")["bd"],
-        "base_time": get_base_date_time("STM", "TMN")["bt"],
-        "nx": x,
-        "ny": y,
-        "numOfRows": 200,
-    }
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as response:
-            response = await response.text()
-    
-    root = ET.fromstring(response)
-
-    TMN = root.find(".//item[category='TMN']").find("fcstValue").text
-
-    return TMN
+    return TMX, TMN
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def sur_sus(lng, lat):
+    start_time = time.time()
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getLCRiseSetInfo"
     params = {
         "ServiceKey": PUBLIC_DATA_SERVICE_KEY,
@@ -368,9 +395,9 @@ async def sur_sus(lng, lat):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
-            response = await response.text()
+            text = await response.text()
     
-    root = ET.fromstring(response)
+    root = ET.fromstring(text)
     sunrise = timezone.datetime.strptime(
         root.find(".//sunrise").text.strip(), "%H%M"
     )
@@ -378,15 +405,18 @@ async def sur_sus(lng, lat):
 
     SUR = sunrise.strftime("%H:%M")
     SUS = sunset.strftime("%H:%M")
+    print(f'sur_sus execution time: {time.time() - start_time} seconds')
 
     return SUR, SUS
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def acc_bdt(acc):
+    start_time = time.time()
     acc = float(acc) if acc else None
 
     ACC = "위치 정보 없음" if not acc else f"약 {round(acc / 1000)}km 오차" if acc >= 1000 else f"약 {round(acc)}m 오차"
     BDT = f"{(get_base_date_time('UST', 'BDT')['bd'])} {get_base_date_time('UST', 'BDT')['bt']} 발표"
+    print(f'acc_bdt execution time: {time.time() - start_time} seconds')
 
     return ACC, BDT
