@@ -102,11 +102,7 @@
             <!-- FlareLane Web Push JS -->
             <script src="https://cdn.flarelane.com/WebSDK.js" charset="UTF-8"></script>
             {% if request.user.is_authenticated %}
-                  <script>
-                        FlareLane.initialize({ projectId: "f7935dfb-3492-4cee-9ddc-9eb74d30602e" });
-                        FlareLane.setIsSubscribed(true);
-                        FlareLane.setUserId("{{ request.user.metadata.student_id }}");
-                  </script>
+                  <script src="{% static 'js/push.js' %}"></script>
             {% endif %}
             <script src="{% static 'js/base-top.js' %}"></script>
             <script src="{% static 'js/datetime.js' %}"></script>

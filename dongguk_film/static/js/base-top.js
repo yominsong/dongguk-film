@@ -223,6 +223,10 @@ function controlNoti(notiType, params = null) {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "Google로 로그인이 잠겼어요. 😢";
             notiContent.innerText = `${params} 인앱 브라우저에서는 Google로 로그인이 불가해요. Chrome이나 Safari를 이용해주세요.`;
+        } else if (notiType == "requestPushPermission") {
+            notiIconDefault.classList.remove("hidden");
+            notiTitle.innerText = "푸시 알림으로 서비스 내역과 공지사항을 받아보세요.";
+            notiContent.innerText = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "welcomeNewUser") {
             notiIconSmile.classList.remove("hidden");
             notiTitle.innerText = "디닷에프 가입을 환영해요! 🎉";
@@ -230,7 +234,7 @@ function controlNoti(notiType, params = null) {
         } else if (notiType == "requestLocationAccess") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "지금 계신 지역의 기상정보를 받아보세요.";
-            notiContent.innerText = "사용 중인 브라우저에서 위치 액세스를 허용해주세요. 새로고침도 꼭 부탁드려요!";
+            notiContent.innerText = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "recheckLocationAccess") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
