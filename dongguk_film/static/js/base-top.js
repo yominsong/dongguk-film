@@ -91,6 +91,7 @@ function makeAjaxCall(request) {
 function handleAjaxCallback(response) {
     let resID = response.id
     let resResult = response.result;
+    let notified = false;
 
     if (resID == "weather") {
         // requestWeather()
@@ -113,6 +114,11 @@ function handleAjaxCallback(response) {
                     obj.innerText = writeWeather(obj.innerText, resResult[key]);
                     obj.classList.add("blink");
                     setTimeout(() => { obj.classList.remove("blink") }, 3000);
+                } else {
+                    if (!notified) {
+                        alertRefreshWeather();
+                        notified = true;
+                    };
                 };
             };
             localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
@@ -271,10 +277,14 @@ function controlNoti(notiType, params = null) {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
             notiContent.innerText = "잠시 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
+        } else if (notiType == "refreshWeather") {
+            notiIconLocation.classList.remove("hidden");
+            notiTitle.innerText = "기상정보를 마저 불러올 수 있어요.";
+            notiContent.innerText = "새로고침 버튼을 눌러 기상정보를 계속 불러올 수 있어요.";
         } else if (notiType == "lowAccuracy") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "혹시 위치정보가 부정확한가요?";
-            notiContent.innerText = "안정적인 Wi-Fi 연결을 통해 더욱 정확한 기상정보를 불러올 수 있어요.";
+            notiContent.innerText = "Wi-Fi 연결 또는 다른 웹 브라우저 사용으로 더욱 정확한 기상정보를 불러올 수 있어요.";
         } else if (notiType == "nonExistentDflink") {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "존재하지 않는 동영링크예요.";
