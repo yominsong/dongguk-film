@@ -91,10 +91,10 @@ function makeAjaxCall(request) {
 function handleAjaxCallback(response) {
     let resID = response.id
     let resResult = response.result;
-    let notified = false;
 
     if (resID == "weather") {
         // requestWeather()
+        let notified = false;
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
