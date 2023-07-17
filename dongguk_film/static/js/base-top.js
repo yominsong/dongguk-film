@@ -113,11 +113,10 @@ function handleAjaxCallback(response) {
                     obj.innerText = writeWeather(obj.innerText, resResult[key]);
                     obj.classList.add("blink");
                     setTimeout(() => { obj.classList.remove("blink") }, 3000);
-                } else {
-                    if (!notified) {
-                        alertRefreshWeather();
-                        notified = true;
-                    };
+                };
+                if (!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-") && !notified) {
+                    alertRefreshWeather();
+                    notified = true;
                 };
             };
             localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
