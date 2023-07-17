@@ -114,7 +114,7 @@ function handleAjaxCallback(response) {
                     obj.classList.add("blink");
                     setTimeout(() => { obj.classList.remove("blink") }, 3000);
                 };
-                if (!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-") && !notified) {
+                if ((!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-")) && !notified) {
                     alertRefreshWeather();
                     notified = true;
                 };
