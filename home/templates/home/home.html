@@ -83,7 +83,7 @@
                 <h3 class="pulse-off text-lg font-medium leading-6 text-gray-600 hidden"
                     id="id_address">-</h3>
             </div>
-            <div id="id_refresh_weather"
+            <div id="id_get_weather"
                  class="animate-spin cursor-not-allowed ml-2 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:text-gray-500"
                  tabindex="0">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -242,6 +242,7 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'js/consts.js' %}"></script>
     <script src="{% static 'js/random-string.js' %}"></script>
     <script src="{% static 'js/home.js' %}"></script>
     {% if user.is_authenticated and is_new_user %}

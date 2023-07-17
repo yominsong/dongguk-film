@@ -11,7 +11,7 @@
     /* Firefox */
 }
 
-/* For D-dot-f logo */
+/* D-dot-f logo */
 .st0 {
     fill: #A39890;
 }
@@ -20,13 +20,42 @@
     fill: #F15922;
 }
 
-/* For change bg color */
+/* change bg color */
 @keyframes pulseBg {
-    0% { background-color: #FBE9E3; }
-    50% { background-color: #FFFFFF; }
-    100% { background-color: #FBE9E3; }
+    0% {
+        background-color: #FBE9E3;
+    }
+
+    50% {
+        background-color: #FFFFFF;
+    }
+
+    100% {
+        background-color: #FBE9E3;
+    }
 }
 
 .animate-pulse-bg {
     animation: pulseBg 2s infinite;
+}
+
+/* blink once */
+@keyframes blink {
+    0% {
+        color: inherit;
+    }
+
+    10%,
+    90% {
+        color: #F15922;
+    }
+
+    100% {
+        color: inherit;
+    }
+}
+
+.blink {
+    animation: blink 3s ease;
+    animation-iteration-count: 1;
 }

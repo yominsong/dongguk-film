@@ -89,54 +89,61 @@ function makeAjaxCall(request) {
 }
 
 function handleAjaxCallback(response) {
-    if (response.id == "weather") {
+    let resID = response.id
+    let resResult = response.result;
+
+    if (resID == "weather") {
         // requestWeather()
-        let pulseOn = document.querySelectorAll(".pulse-on");
-        let pulseOff = document.querySelectorAll(".pulse-off");
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        id_refresh_weather.classList.remove("animate-spin");
-        id_refresh_weather.classList.remove("cursor-not-allowed");
-        id_refresh_weather.classList.add("cursor-pointer");
-        if (response.result.accuracy.indexOf("km") !== -1) {
-            alertLowAccuracy();
-        };
-        localStorage.setItem("weatherUpdatedAt", new Date().toString());
+        resResult.accuracy.indexOf("km") !== -1 ? alertLowAccuracy() : null;
+        localStorage.setItem("weatherCachedAt", new Date().toString());
         if (localStorage.getItem("cachedWeather") !== null) {
             let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
-            for (let key in response.result) {
-                if (response.result.hasOwnProperty(key)) {
-                    if (typeof cachedWeather[key] === "string" && cachedWeather[key].includes("-")) {
-                        cachedWeather[key] = response.result[key];
-                    };
+            for (let key in cachedWeather) {
+                if ((!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-")) ||
+                    (((!/\d+/.test(resResult[key]) && !resResult[key].includes("-")) && cachedWeather[key] !== resResult[key])) ||
+                    (/\d+/.test(resResult[key]) && cachedWeather[key] !== resResult[key])) {
+                    cachedWeather[key] = resResult[key];
+                    let obj = document.getElementById(`id_${key}`);
+                    obj.innerText = writeWeather(obj.innerText, resResult[key]);
+                    obj.classList.add("blink");
+                    setTimeout(() => { obj.classList.remove("blink") }, 3000);
                 };
             };
             localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
         } else {
-            localStorage.setItem("cachedWeather", JSON.stringify(response.result));
+            for (let key in resResult) {
+                let obj = document.getElementById(`id_${key}`);
+                obj.innerText = writeWeather(obj.innerText, resResult[key]);
+            };
+            localStorage.setItem("cachedWeather", JSON.stringify(resResult));
         };
-        id_address.innerText = writeWeather(id_address.innerText, response.result.address);
-        id_temperature.innerText = writeWeather(id_temperature.innerText, response.result.temperature);
-        id_temperatureMax.innerText = writeWeather(id_temperatureMax.innerText, response.result.temperatureMax);
-        id_temperatureMin.innerText = writeWeather(id_temperatureMin.innerText, response.result.temperatureMin);
-        id_precipitationProbability.innerText = writeWeather(id_precipitationProbability.innerText, response.result.precipitationProbability);
-        id_precipitationType.innerText = writeWeather(id_precipitationType.innerText, response.result.precipitationType);
-        id_windSpeed.innerText = writeWeather(id_windSpeed.innerText, response.result.windSpeed);
-        id_windName.innerText = writeWeather(id_windName.innerText, response.result.windName);
-        id_skyState.innerText = writeWeather(id_skyState.innerText, response.result.skyState);
-        id_sunrise.innerText = writeWeather(id_sunrise.innerText, response.result.sunrise);
-        id_sunset.innerText = writeWeather(id_sunset.innerText, response.result.sunset);
-        id_accuracy.innerText = writeWeather(id_accuracy.innerText, response.result.accuracy);
-        id_baseDateTime.innerText = writeWeather(id_baseDateTime.innerText, response.result.baseDateTime);
+        // id_address.innerText = writeWeather(id_address.innerText, resResult.address);
+        // id_temperature.innerText = writeWeather(id_temperature.innerText, resResult.temperature);
+        // id_temperatureMax.innerText = writeWeather(id_temperatureMax.innerText, resResult.temperatureMax);
+        // id_temperatureMin.innerText = writeWeather(id_temperatureMin.innerText, resResult.temperatureMin);
+        // id_precipitationProbability.innerText = writeWeather(id_precipitationProbability.innerText, resResult.precipitationProbability);
+        // id_precipitationType.innerText = writeWeather(id_precipitationType.innerText, resResult.precipitationType);
+        // id_windSpeed.innerText = writeWeather(id_windSpeed.innerText, resResult.windSpeed);
+        // id_windName.innerText = writeWeather(id_windName.innerText, resResult.windName);
+        // id_skyState.innerText = writeWeather(id_skyState.innerText, resResult.skyState);
+        // id_sunrise.innerText = writeWeather(id_sunrise.innerText, resResult.sunrise);
+        // id_sunset.innerText = writeWeather(id_sunset.innerText, resResult.sunset);
+        // id_accuracy.innerText = writeWeather(id_accuracy.innerText, resResult.accuracy);
+        // id_baseDateTime.innerText = writeWeather(id_baseDateTime.innerText, resResult.baseDateTime);
+        id_get_weather.classList.remove("animate-spin");
+        id_get_weather.classList.remove("cursor-not-allowed");
+        id_get_weather.classList.add("cursor-pointer");
 
-    } else if (response.id == "create_vcode_for_SNP") {
+    } else if (resID == "create_vcode_for_SNP") {
         // requestCreateVcodeForSNP()
-        if (response.result.status == "DONE") {
-            displayButtonMsg(true, id_create_vcode, "descr", response.result.msg);
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_create_vcode, "descr", resResult.msg);
             displayButtonMsg(false, id_create_vcode, "error");
             stepOnes.forEach((input) => {
                 input.type == "checkbox" ? input.disabled = true : input.readOnly = true;
@@ -146,9 +153,9 @@ function handleAjaxCallback(response) {
             });
             id_confirm_vcode.disabled = false;
             initValidation(stepTwos, id_confirm_vcode);
-        } else if (response.result.status == "FAIL") {
+        } else if (resResult.status == "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_create_vcode, "error", response.result.msg);
+            displayButtonMsg(true, id_create_vcode, "error", resResult.msg);
             displayButtonMsg(false, id_create_vcode, "descr");
             id_create_vcode.disabled = false;
         };
@@ -156,10 +163,10 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id == "confirm_vcode_for_SNP") {
+    } else if (resID == "confirm_vcode_for_SNP") {
         // requestConfirmVcodeForSNP()
-        if (response.result.status == "DONE") {
-            displayButtonMsg(true, id_confirm_vcode, "descr", response.result.msg);
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_confirm_vcode, "descr", resResult.msg);
             displayButtonMsg(false, id_confirm_vcode, "error");
             inputs = document.querySelectorAll("input");
             inputs.forEach((input) => {
@@ -168,66 +175,66 @@ function handleAjaxCallback(response) {
             });
             id_confirm_vcode.disabled = true;
             document.querySelector("form").submit();
-        } else if (response.result.status == "FAIL") {
+        } else if (resResult.status == "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_confirm_vcode, "error", response.result.msg);
+            displayButtonMsg(true, id_confirm_vcode, "error", resResult.msg);
             id_confirm_vcode.disabled = false;
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id == "create_dflink") {
+    } else if (resID == "create_dflink") {
         // requestCreateDflink()
-        if (response.result.status == "DONE") {
-            displayButtonMsg(true, id_create_or_update_dflink, "descr", response.result.msg);
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
             location.href = originLocation + "/dflink";
-        } else if (response.result.status == "FAIL") {
+        } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_dflink, "descr");
-            displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
+            displayButtonMsg(true, id_create_or_update_dflink, "error", resResult.msg);
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id == "update_dflink") {
+    } else if (resID == "update_dflink") {
         // requestUpdateDflink()
-        if (response.result.status == "DONE") {
-            displayButtonMsg(true, id_create_or_update_dflink, "descr", response.result.msg);
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
             location.href = originLocation + "/dflink";
-        } else if (response.result.status == "FAIL") {
+        } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            response.result.element != null ? displayError(true, code(response.result.element), "inappropriate") : null;
+            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_dflink, "descr");
-            displayButtonMsg(true, id_create_or_update_dflink, "error", response.result.msg);
+            displayButtonMsg(true, id_create_or_update_dflink, "error", resResult.msg);
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
 
-    } else if (response.id == "delete_dflink") {
+    } else if (resID == "delete_dflink") {
         // requestDeleteDflink()
-        if (response.result.status == "DONE") {
-            displayButtonMsg(true, id_delete_dflink, "descr", response.result.msg);
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_delete_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_dflink, "error");
             location.href = originLocation + "/dflink";
-        } else if (response.result.status == "FAIL") {
+        } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
             displayButtonMsg(false, id_delete_dflink, "descr");
-            displayButtonMsg(true, id_delete_dflink, "error", response.result.msg);
+            displayButtonMsg(true, id_delete_dflink, "error", resResult.msg);
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");

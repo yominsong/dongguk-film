@@ -303,6 +303,7 @@ async def t1h_pty_wsd_wnm(x, y):
         "6": "빗방울/눈날림",
         "7": "눈날림",
     }
+    wsd = float(find_value_from_text("WSD", text))
     wnm_map = {
         0: "고요",
         0.3: "실바람",
@@ -321,8 +322,8 @@ async def t1h_pty_wsd_wnm(x, y):
 
     T1H = find_value_from_text("T1H", text)
     PTY = pty_map.get(find_value_from_text("PTY", text), "-")
-    WSD = float(find_value_from_text("WSD", text))
-    WNM = next((wnm_map[wnm] for wnm in wnm_map.keys() if WSD <= wnm), "-")
+    WSD = str(wsd)
+    WNM = next((wnm_map[wnm] for wnm in wnm_map.keys() if wsd <= wnm), "-")
     print(f't1h_pty_wsd_wnm execution time: {time.time() - start_time} seconds')
 
     return T1H, PTY, WSD, WNM

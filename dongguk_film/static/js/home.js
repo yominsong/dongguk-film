@@ -79,7 +79,7 @@ function dfs_xy_conv(code, v1, v2) {
 
 function refreshWeather() {
     ["click", "keyup"].forEach(type => {
-        id_refresh_weather.addEventListener(type, (event) => {
+        id_get_weather.addEventListener(type, (event) => {
             if (type == "click" || event.key == "Enter") {
                 getWeather("sudo");
             };
@@ -88,6 +88,44 @@ function refreshWeather() {
 }
 
 refreshWeather();
+
+// function watchMutation() {
+//     let weatherObjs = [
+//         id_address,
+//         id_temperature,
+//         id_temperatureMax,
+//         id_temperatureMin,
+//         id_precipitationProbability,
+//         id_precipitationType,
+//         id_windSpeed,
+//         id_windName,
+//         id_skyState,
+//         id_sunrise,
+//         id_sunset,
+//         id_accuracy,
+//         id_baseDateTime
+//     ];
+
+//     weatherObjs.forEach(obj => {
+//         let observer = new MutationObserver(function (mutations) {
+//             mutations.forEach(function (mutation) {
+//                 if (mutation.type == "characterData" || mutation.type == "childList") {
+//                     obj.classList.add("blink");
+//                     obj.addEventListener("animationend", () => {
+//                         obj.classList.remove("blink");
+//                     });
+//                 };
+//             });
+//         });
+//         observer.observe(obj, {
+//             childList: true,
+//             characterData: true,
+//             subtree: true
+//         });
+//     });
+// }
+
+// watchMutation();
 
 function alertWelcomeNewUser(name) {
     controlNoti("welcomeNewUser", name);
@@ -132,38 +170,41 @@ function handleGeolocationError(error) {
 }
 
 function getWeather(type = null) {
-    let weatherUpdatedAt = new Date(localStorage.getItem("weatherUpdatedAt"));
+    let weatherCachedAt = new Date(localStorage.getItem("weatherCachedAt"));
     let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
-    if (((now - weatherUpdatedAt) / (1000 * 60) > 5) || type == "sudo") {
+
+    if (((now - weatherCachedAt) / (1000 * 60) > 5) || type == "sudo") {
         navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 });
-        id_refresh_weather.classList.remove("cursor-pointer");
-        id_refresh_weather.classList.add("animate-spin");
-        id_refresh_weather.classList.add("cursor-not-allowed");
+        id_get_weather.classList.remove("cursor-pointer");
+        id_get_weather.classList.add("animate-spin");
+        id_get_weather.classList.add("cursor-not-allowed");
     } else {
-        let pulseOn = document.querySelectorAll(".pulse-on");
-        let pulseOff = document.querySelectorAll(".pulse-off");
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        id_refresh_weather.classList.remove("animate-spin");
-        id_refresh_weather.classList.remove("cursor-not-allowed");
-        id_refresh_weather.classList.add("cursor-pointer");
-        id_address.innerText = cachedWeather.address;
-        id_temperature.innerText = cachedWeather.temperature;
-        id_temperatureMax.innerText = cachedWeather.temperatureMax;
-        id_temperatureMin.innerText = cachedWeather.temperatureMin;
-        id_precipitationProbability.innerText = cachedWeather.precipitationProbability;
-        id_precipitationType.innerText = cachedWeather.precipitationType;
-        id_windSpeed.innerText = cachedWeather.windSpeed;
-        id_windName.innerText = cachedWeather.windName;
-        id_skyState.innerText = cachedWeather.skyState;
-        id_sunrise.innerText = cachedWeather.sunrise;
-        id_sunset.innerText = cachedWeather.sunset;
-        id_accuracy.innerText = cachedWeather.accuracy;
-        id_baseDateTime.innerText = cachedWeather.baseDateTime;
+        for (let key in cachedWeather) {
+            let obj = document.getElementById(`id_${key}`);
+            obj.innerText = writeWeather(obj.innerText, cachedWeather[key]);
+        };
+        // id_address.innerText = cachedWeather.address;
+        // id_temperature.innerText = cachedWeather.temperature;
+        // id_temperatureMax.innerText = cachedWeather.temperatureMax;
+        // id_temperatureMin.innerText = cachedWeather.temperatureMin;
+        // id_precipitationProbability.innerText = cachedWeather.precipitationProbability;
+        // id_precipitationType.innerText = cachedWeather.precipitationType;
+        // id_windSpeed.innerText = cachedWeather.windSpeed;
+        // id_windName.innerText = cachedWeather.windName;
+        // id_skyState.innerText = cachedWeather.skyState;
+        // id_sunrise.innerText = cachedWeather.sunrise;
+        // id_sunset.innerText = cachedWeather.sunset;
+        // id_accuracy.innerText = cachedWeather.accuracy;
+        // id_baseDateTime.innerText = cachedWeather.baseDateTime;
+        id_get_weather.classList.remove("animate-spin");
+        id_get_weather.classList.remove("cursor-not-allowed");
+        id_get_weather.classList.add("cursor-pointer");
     };
 }
 
