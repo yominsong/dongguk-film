@@ -135,10 +135,6 @@ function alertRefreshWeather() {
     controlNoti("refreshWeather");
 };
 
-function alertLowAccuracy() {
-    controlNoti("lowAccuracy");
-};
-
 //
 // Main functions
 //

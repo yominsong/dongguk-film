@@ -101,7 +101,6 @@ function handleAjaxCallback(response) {
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        resResult.accuracy.indexOf("km") !== -1 ? alertLowAccuracy() : null;
         localStorage.setItem("weatherCachedAt", new Date().toString());
         if (localStorage.getItem("cachedWeather") !== null) {
             let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
@@ -281,10 +280,6 @@ function controlNoti(notiType, params = null) {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "기상정보를 마저 불러올 수 있어요.";
             notiContent.innerText = "새로고침 버튼을 눌러 기상정보를 계속 불러올 수 있어요.";
-        } else if (notiType == "lowAccuracy") {
-            notiIconLocation.classList.remove("hidden");
-            notiTitle.innerText = "혹시 위치정보가 부정확한가요?";
-            notiContent.innerText = "Wi-Fi 연결 또는 다른 웹 브라우저 사용으로 더욱 정확한 기상정보를 불러올 수 있어요.";
         } else if (notiType == "nonExistentDflink") {
             notiIconDefault.classList.remove("hidden");
             notiTitle.innerText = "존재하지 않는 동영링크예요.";
