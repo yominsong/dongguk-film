@@ -170,8 +170,8 @@ function handleGeolocationError(error) {
 }
 
 function getWeather(type = null) {
-    let weatherCachedAt = new Date(localStorage.getItem("weatherCachedAt"));
-    let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
+    let weatherCachedAt = new Date(sessionStorage.getItem("weatherCachedAt"));
+    let cachedWeather = JSON.parse(sessionStorage.getItem("cachedWeather"));
 
     if (((now - weatherCachedAt) / (1000 * 60) > 5) || type == "sudo") {
         navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 });

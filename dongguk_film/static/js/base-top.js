@@ -36,11 +36,17 @@ function inheritObject() {
 inheritObject();
 
 function writeWeather(oldValue, newValue) {
-    newValue = String(newValue);
-    if (oldValue !== newValue && !newValue.includes("-")) {
-        return newValue;
-    };
-    return oldValue;
+    let result;
+
+    if ((!/\d+/.test(oldValue) && oldValue.includes("-")) ||
+        (((!/\d+/.test(newValue) && !newValue.includes("-")) && oldValue !== newValue)) ||
+        (/\d+/.test(newValue) && oldValue !== newValue)) {
+        result = newValue;
+    } else {
+        result = oldValue;
+    }
+
+    return result;
 }
 
 //
@@ -95,22 +101,23 @@ function handleAjaxCallback(response) {
     if (resID == "weather") {
         // requestWeather()
         let notified = false;
+
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
-        localStorage.setItem("weatherCachedAt", new Date().toString());
-        if (localStorage.getItem("cachedWeather") !== null) {
-            let cachedWeather = JSON.parse(localStorage.getItem("cachedWeather"));
+
+        sessionStorage.setItem("weatherCachedAt", new Date().toString());
+        if (sessionStorage.getItem("cachedWeather") !== null) {
+            let cachedWeather = JSON.parse(sessionStorage.getItem("cachedWeather"));
             for (let key in cachedWeather) {
                 if ((!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-")) ||
                     (((!/\d+/.test(resResult[key]) && !resResult[key].includes("-")) && cachedWeather[key] !== resResult[key])) ||
                     (/\d+/.test(resResult[key]) && cachedWeather[key] !== resResult[key])) {
                     cachedWeather[key] = resResult[key];
                     let obj = document.getElementById(`id_${key}`);
-                    obj.innerText = writeWeather(obj.innerText, resResult[key]);
                     obj.classList.add("blink");
                     setTimeout(() => { obj.classList.remove("blink") }, 3000);
                 };
@@ -119,13 +126,14 @@ function handleAjaxCallback(response) {
                     notified = true;
                 };
             };
-            localStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
+            sessionStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
         } else {
-            for (let key in resResult) {
-                let obj = document.getElementById(`id_${key}`);
-                obj.innerText = writeWeather(obj.innerText, resResult[key]);
-            };
-            localStorage.setItem("cachedWeather", JSON.stringify(resResult));
+            sessionStorage.setItem("cachedWeather", JSON.stringify(resResult));
+        };
+
+        for (let key in resResult) {
+            let obj = document.getElementById(`id_${key}`);
+            obj.innerText = writeWeather(obj.innerText, resResult[key]);
         };
         // id_address.innerText = writeWeather(id_address.innerText, resResult.address);
         // id_temperature.innerText = writeWeather(id_temperature.innerText, resResult.temperature);
@@ -140,6 +148,7 @@ function handleAjaxCallback(response) {
         // id_sunset.innerText = writeWeather(id_sunset.innerText, resResult.sunset);
         // id_accuracy.innerText = writeWeather(id_accuracy.innerText, resResult.accuracy);
         // id_baseDateTime.innerText = writeWeather(id_baseDateTime.innerText, resResult.baseDateTime);
+
         id_get_weather.classList.remove("animate-spin");
         id_get_weather.classList.remove("cursor-not-allowed");
         id_get_weather.classList.add("cursor-pointer");
@@ -261,7 +270,7 @@ function controlNoti(notiType, params = null) {
             notiContent.innerText = `${params} 인앱 브라우저에서는 Google로 로그인이 불가해요. Chrome이나 Safari를 이용해주세요.`;
         } else if (notiType == "requestPushPermission") {
             notiIconBell.classList.remove("hidden");
-            notiTitle.innerText = "푸시 알림을 받아보세요.";
+            notiTitle.innerText = "디닷에프 푸시 알림을 받아보세요.";
             notiContent.innerText = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "welcomeNewUser") {
             notiIconSmile.classList.remove("hidden");
@@ -273,8 +282,8 @@ function controlNoti(notiType, params = null) {
             notiContent.innerText = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "recheckLocationAccess") {
             notiIconLocation.classList.remove("hidden");
-            notiTitle.innerText = "혹시 기상정보가 부정확한가요?";
-            notiContent.innerText = "잠시 문제가 생긴 것 같아요. 새로고침으로 기상정보를 다시 불러올 수 있어요.";
+            notiTitle.innerText = "혹시 위치정보가 부정확한가요?";
+            notiContent.innerText = "잠시 문제가 생긴 것 같아요. 새로고침으로 위치정보를 다시 불러올 수 있어요.";
         } else if (notiType == "refreshWeather") {
             notiIconLocation.classList.remove("hidden");
             notiTitle.innerText = "기상정보를 마저 불러올 수 있어요.";
