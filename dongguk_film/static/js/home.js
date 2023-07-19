@@ -134,6 +134,7 @@ function handleGeolocationError(error) {
 function getWeather(type = null) {
     let weatherCachedAt = new Date(sessionStorage.getItem("weatherCachedAt"));
     let cachedWeather = JSON.parse(sessionStorage.getItem("cachedWeather"));
+    let notified = false;
 
     if (((now - weatherCachedAt) / (1000 * 60) > 5) || type == "sudo") {
         navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 });
@@ -151,6 +152,10 @@ function getWeather(type = null) {
         for (let key in cachedWeather) {
             let obj = document.getElementById(`id_${key}`);
             obj.innerText = writeWeather(obj.innerText, cachedWeather[key]);
+            if ((!/\d+/.test(obj.innerText) && obj.innerText.includes("-")) && !notified) {
+                alertRefreshWeather();
+                notified = true;
+            };
         };
 
         id_get_weather.classList.remove("animate-spin");
