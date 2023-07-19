@@ -135,19 +135,6 @@ function handleAjaxCallback(response) {
             let obj = document.getElementById(`id_${key}`);
             obj.innerText = writeWeather(obj.innerText, resResult[key]);
         };
-        // id_address.innerText = writeWeather(id_address.innerText, resResult.address);
-        // id_temperature.innerText = writeWeather(id_temperature.innerText, resResult.temperature);
-        // id_temperatureMax.innerText = writeWeather(id_temperatureMax.innerText, resResult.temperatureMax);
-        // id_temperatureMin.innerText = writeWeather(id_temperatureMin.innerText, resResult.temperatureMin);
-        // id_precipitationProbability.innerText = writeWeather(id_precipitationProbability.innerText, resResult.precipitationProbability);
-        // id_precipitationType.innerText = writeWeather(id_precipitationType.innerText, resResult.precipitationType);
-        // id_windSpeed.innerText = writeWeather(id_windSpeed.innerText, resResult.windSpeed);
-        // id_windName.innerText = writeWeather(id_windName.innerText, resResult.windName);
-        // id_skyState.innerText = writeWeather(id_skyState.innerText, resResult.skyState);
-        // id_sunrise.innerText = writeWeather(id_sunrise.innerText, resResult.sunrise);
-        // id_sunset.innerText = writeWeather(id_sunset.innerText, resResult.sunset);
-        // id_accuracy.innerText = writeWeather(id_accuracy.innerText, resResult.accuracy);
-        // id_baseDateTime.innerText = writeWeather(id_baseDateTime.innerText, resResult.baseDateTime);
 
         id_get_weather.classList.remove("animate-spin");
         id_get_weather.classList.remove("cursor-not-allowed");
