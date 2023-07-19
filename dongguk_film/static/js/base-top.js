@@ -121,10 +121,6 @@ function handleAjaxCallback(response) {
                     obj.classList.add("blink");
                     setTimeout(() => { obj.classList.remove("blink") }, 3000);
                 };
-                if ((!/\d+/.test(cachedWeather[key]) && cachedWeather[key].includes("-")) && !notified) {
-                    alertRefreshWeather();
-                    notified = true;
-                };
             };
             sessionStorage.setItem("cachedWeather", JSON.stringify(cachedWeather));
         } else {
@@ -134,6 +130,10 @@ function handleAjaxCallback(response) {
         for (let key in resResult) {
             let obj = document.getElementById(`id_${key}`);
             obj.innerText = writeWeather(obj.innerText, resResult[key]);
+            if ((!/\d+/.test(obj.innerText) && obj.innerText.includes("-")) && !notified) {
+                alertRefreshWeather();
+                notified = true;
+            };
         };
 
         id_get_weather.classList.remove("animate-spin");
