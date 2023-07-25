@@ -886,10 +886,6 @@ select {
   margin-top: 14px;
 }
 
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
 .block {
   display: block;
 }
@@ -1733,16 +1729,6 @@ select {
   color: rgb(161 98 7 / var(--tw-text-opacity));
 }
 
-.text-flamingo-200 {
-  --tw-text-opacity: 1;
-  color: rgb(248 175 149 / var(--tw-text-opacity));
-}
-
-.text-green-400 {
-  --tw-text-opacity: 1;
-  color: rgb(74 222 128 / var(--tw-text-opacity));
-}
-
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -1977,9 +1963,9 @@ select {
   background-color: rgb(68 64 60 / var(--tw-bg-opacity));
 }
 
-.hover\:text-gray-200:hover {
+.hover\:text-gray-300:hover {
   --tw-text-opacity: 1;
-  color: rgb(229 231 235 / var(--tw-text-opacity));
+  color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
 .hover\:text-gray-500:hover {
@@ -2005,26 +1991,6 @@ select {
 .hover\:text-red-700:hover {
   --tw-text-opacity: 1;
   color: rgb(185 28 28 / var(--tw-text-opacity));
-}
-
-.hover\:text-gray-300:hover {
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity));
-}
-
-.hover\:text-gray-400:hover {
-  --tw-text-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-text-opacity));
-}
-
-.hover\:text-flamingo-50:hover {
-  --tw-text-opacity: 1;
-  color: rgb(252 219 207 / var(--tw-text-opacity));
-}
-
-.hover\:text-flamingo-100:hover {
-  --tw-text-opacity: 1;
-  color: rgb(251 204 187 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {
@@ -2074,11 +2040,6 @@ select {
 .focus\:ring-stone-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(120 113 108 / var(--tw-ring-opacity));
-}
-
-.focus\:ring-indigo-500:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-offset-2:focus {
@@ -2143,6 +2104,10 @@ select {
     margin-bottom: 2rem;
   }
 
+  .sm\:mb-4 {
+    margin-bottom: 1rem;
+  }
+
   .sm\:ml-3 {
     margin-left: 0.75rem;
   }
@@ -2169,10 +2134,6 @@ select {
 
   .sm\:mt-8 {
     margin-top: 2rem;
-  }
-
-  .sm\:mb-4 {
-    margin-bottom: 1rem;
   }
 
   .sm\:flex {

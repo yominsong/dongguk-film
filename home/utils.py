@@ -186,13 +186,6 @@ async def weather(request):
         y = request.GET["y"]
         acc = request.GET["acc"]
 
-        # adr_future = adr(lng, lat)
-        # t1h_pty_wsd_wnm_future = t1h_pty_wsd_wnm(x, y)
-        # pop_sky_future = pop_sky(x, y)
-        # tmx_tmn_future = tmx_tmn(x, y)
-        # sur_sus_future = sur_sus(lng, lat)
-        # acc_bdt_future = acc_bdt(acc)
-
         futures = {
             "adr": adr(lng, lat),
             "t1h_pty_wsd_wnm": t1h_pty_wsd_wnm(x, y),
@@ -202,15 +195,6 @@ async def weather(request):
             "acc_bdt": acc_bdt(acc)
         }
 
-        # results = await asyncio.gather(
-        #     adr_future,
-        #     t1h_pty_wsd_wnm_future,
-        #     pop_sky_future,
-        #     tmx_tmn_future,
-        #     sur_sus_future,
-        #     acc_bdt_future
-        # )
-
         results = {}
 
         for key in futures:
@@ -219,17 +203,10 @@ async def weather(request):
             except asyncio.TimeoutError:
                 results[key] = None
 
-        # ADR = results[0]
-        # T1H, PTY, WSD, WNM = results[1]
-        # POP, SKY = results[2]
-        # TMX, TMN = results[3]
-        # SUR, SUS = results[4]
-        # ACC, BDT = results[5]
-
         ADR = results["adr"]
-        T1H, PTY, WSD, WNM = results["t1h_pty_wsd_wnm"] if results["t1h_pty_wsd_wnm"] != None else ("--.-", "-", "-.-", "-")
-        POP, SKY = results["pop_sky"] if results["pop_sky"] != None else ("--", "-")
-        TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != None else ("--.-", "--.-")
+        T1H, PTY, WSD, WNM = results["t1h_pty_wsd_wnm"] if results["t1h_pty_wsd_wnm"] != None else ("--.-℃", "-", "-.-m/s", "-")
+        POP, SKY = results["pop_sky"] if results["pop_sky"] != None else ("--%", "-")
+        TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != None else ("--.-℃", "--.-℃")
         SUR, SUS = results["sur_sus"] if results["sur_sus"] != None else ("--:--", "--:--")
         ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != None else ("위치정보 없음", "--월 --일 --시 발표")
 
@@ -255,7 +232,6 @@ async def weather(request):
         return JsonResponse(response)
     
 
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def adr(lng, lat):
     start_time = time.time()
     url = "https://dapi.kakao.com/v2/local/geo/coord2address.json"
@@ -277,7 +253,6 @@ async def adr(lng, lat):
     return ADR
 
 
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def t1h_pty_wsd_wnm(x, y):
     start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
@@ -320,16 +295,15 @@ async def t1h_pty_wsd_wnm(x, y):
         32.7: "싹쓸바람",
     }
 
-    T1H = find_value_from_text("T1H", text)
+    T1H = find_value_from_text("T1H", text) + "℃"
     PTY = pty_map.get(find_value_from_text("PTY", text), "-")
-    WSD = str(wsd)
+    WSD = str(wsd) + "m/s"
     WNM = next((wnm_map[wnm] for wnm in wnm_map.keys() if wsd <= wnm), "-")
     print(f't1h_pty_wsd_wnm execution time: {time.time() - start_time} seconds')
 
     return T1H, PTY, WSD, WNM
 
 
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def pop_sky(x, y):
     start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
@@ -351,14 +325,13 @@ async def pop_sky(x, y):
         "4": "흐림",
     }
 
-    POP = find_value_from_text("POP", text)
+    POP = find_value_from_text("POP", text) + "%"
     SKY = sky_map.get(find_value_from_text("SKY", text), "-")
     print(f'pop_sky execution time: {time.time() - start_time} seconds')
 
     return POP, SKY
 
 
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def tmx_tmn(x, y):
     start_time = time.time()
     url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
@@ -383,15 +356,13 @@ async def tmx_tmn(x, y):
         if i < len(categories) - 1:
             await asyncio.sleep(0.3)
     
-    TMX = results[0]
-    TMN = results[1]
+    TMX = results[0] + "℃"
+    TMN = results[1] + "℃"
     print(f'tmx_tmn execution time: {time.time() - start_time} seconds')
 
     return TMX, TMN
 
 
-
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def sur_sus(lng, lat):
     start_time = time.time()
     url = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getLCRiseSetInfo"
@@ -420,7 +391,6 @@ async def sur_sus(lng, lat):
     return SUR, SUS
 
 
-#@retry(stop=stop_after_attempt(1), wait=wait_fixed(0.3))
 async def acc_bdt(acc):
     start_time = time.time()
     acc = float(acc) if acc else None
