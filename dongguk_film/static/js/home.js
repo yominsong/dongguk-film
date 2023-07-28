@@ -139,8 +139,10 @@ function getWeather(type = null) {
     if (((now - weatherCachedAt) / (1000 * 60) > 5) || type == "sudo") {
         navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 });
         id_get_weather.classList.remove("cursor-pointer");
+        id_get_weather.classList.remove("hover:cursor-pointer");
         id_get_weather.classList.add("animate-spin");
         id_get_weather.classList.add("cursor-not-allowed");
+        id_get_weather.classList.add("hover:cursor-not-allowed");
     } else {
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
@@ -160,7 +162,9 @@ function getWeather(type = null) {
 
         id_get_weather.classList.remove("animate-spin");
         id_get_weather.classList.remove("cursor-not-allowed");
+        id_get_weather.classList.remove("hover:cursor-not-allowed");
         id_get_weather.classList.add("cursor-pointer");
+        id_get_weather.classList.add("hover:cursor-pointer");
     };
 }
 

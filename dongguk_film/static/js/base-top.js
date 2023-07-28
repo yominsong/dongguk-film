@@ -1,3 +1,7 @@
+//
+// Global constants and variables
+//
+
 const originLocation = window.location.origin;
 let request = {}; // for `makeAjaxCall()` function
 
@@ -140,7 +144,9 @@ function handleAjaxCallback(response) {
 
         id_get_weather.classList.remove("animate-spin");
         id_get_weather.classList.remove("cursor-not-allowed");
+        id_get_weather.classList.remove("hover:cursor-not-allowed");
         id_get_weather.classList.add("cursor-pointer");
+        id_get_weather.classList.add("hover:cursor-pointer");
 
     } else if (resID == "create_vcode_for_SNP") {
         // requestCreateVcodeForSNP()
@@ -346,13 +352,14 @@ function controlNoti(notiType, param = null) {
 
     notiFormat = `
     <div x-show="${notiType}"
-            x-transition:enter="transform ease-out duration-300 transition"
-            x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-            x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-            x-transition:leave="transition ease-in duration-100"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="mt-4 backdrop-blur-sm bg-flamingo-900/60 pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 sm:mt-0 sm:mb-4">
+        x-transition:enter="transform ease-out duration-300 transition"
+        x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+        x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+        x-transition:leave="transition ease-in duration-100"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="mt-4 backdrop-blur-sm bg-flamingo-900/60 pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 sm:mt-0 sm:mb-4"
+        id="id_${notiType}">
         <div class="p-4">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
@@ -364,7 +371,7 @@ function controlNoti(notiType, param = null) {
                 </div>
                 <div class="ml-4 flex flex-shrink-0">
                     <button type="button"
-                            @click="${notiType} = false"
+                            @click="${notiType} = false; setTimeout(() => { let body = document.querySelector('#id_${notiType}'); if (body != null) {body.remove()} }, 150)"
                             class="inline-flex rounded-md text-white hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2">
                         <span class="sr-only">알림 닫기</span>
                         <svg class="h-5 w-5"
