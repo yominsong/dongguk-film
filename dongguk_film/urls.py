@@ -28,9 +28,6 @@ urlpatterns = [
     path("notice/", include("notice.urls")),
     path("users/", include("users.urls")),
     path("utility/", include("utility.urls")),
-    path(
-        "ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"
-    ),
     re_path(
         r"^sw.js$",
         serve_static,
@@ -41,7 +38,7 @@ urlpatterns = [
     #     serve_static,
     #     {"document_root": settings.STATICFILES_DIRS[0], "path": "js/sw.js"},
     # ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

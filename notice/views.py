@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from utility.img import get_img
 from django.core.paginator import Paginator
+from utility.img import get_img
 
 
 def notice(request):

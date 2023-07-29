@@ -110,11 +110,11 @@ function controlDflinkModal() {
 
 controlDflinkModal();
 
-function alertNonExistentDflink() {
-    if (window.location.search.indexOf("non-existing-url") != -1) { displayNoti(true, "INL") };
+function alertNonexistentLink() {
+    if (window.location.search.indexOf("nonexistent-link") != -1) { displayNoti(true, "INL") };
 }
 
-alertNonExistentDflink();
+alertNonexistentLink();
 
 //
 // Main functions
