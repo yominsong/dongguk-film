@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load tags %}
 {% block meta %}
     <meta property="og:title" content="동영링크 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'dflink:dflink' %}">
@@ -16,41 +17,15 @@
                         <!-- Swiper -->
                         <div class="swiper mySwiper w-full h-full">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <img class="object-cover w-full h-full grayscale"
-                                         height=""
-                                         width=""
-                                         alt=""
-                                         src="{{ image_list.0 }}" />
-                                </div>
-                                <div class="swiper-slide">
-                                    <img class="object-cover w-full h-full grayscale"
-                                         height=""
-                                         width=""
-                                         alt=""
-                                         src="{{ image_list.1 }}" />
-                                </div>
-                                <div class="swiper-slide">
-                                    <img class="object-cover w-full h-full grayscale"
-                                         height=""
-                                         width=""
-                                         alt=""
-                                         src="{{ image_list.2 }}" />
-                                </div>
-                                <div class="swiper-slide">
-                                    <img class="object-cover w-full h-full grayscale"
-                                         height=""
-                                         width=""
-                                         alt=""
-                                         src="{{ image_list.3 }}" />
-                                </div>
-                                <div class="swiper-slide">
-                                    <img class="object-cover w-full h-full grayscale"
-                                         height=""
-                                         width=""
-                                         alt=""
-                                         src="{{ image_list.4 }}" />
-                                </div>
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
