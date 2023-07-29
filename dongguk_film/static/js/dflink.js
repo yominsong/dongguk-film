@@ -111,7 +111,7 @@ function controlDflinkModal() {
 controlDflinkModal();
 
 function alertNonExistentDflink() {
-    if (window.location.search.indexOf("non-existing-url") != -1) { controlNoti("nonExistentDflink") };
+    if (window.location.search.indexOf("non-existing-url") != -1) { displayNoti(true, "INL") };
 }
 
 alertNonExistentDflink();

@@ -3,7 +3,7 @@
 //
 
 function requestConsentForPushNoti() {
-    controlNoti("requestPushPermission");
+    displayNoti(true, "requestPushPermission");
 }
 
 function getOS() {

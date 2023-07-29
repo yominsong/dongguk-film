@@ -82,6 +82,8 @@ function refreshWeather() {
         id_get_weather.addEventListener(type, (event) => {
             if ((type == "click" || event.key == "Enter") &&
                 id_get_weather.classList.contains("cursor-pointer")) {
+                displayNoti(false, "RRL");
+                displayNoti(false, "CWF");
                 getWeather("sudo");
             };
         });
@@ -91,11 +93,11 @@ function refreshWeather() {
 refreshWeather();
 
 function alertWelcomeNewUser(name) {
-    controlNoti("welcomeNewUser", name);
+    displayNoti(true, "WNU", name);
 };
 
 function alertRefreshWeather() {
-    controlNoti("refreshWeather");
+    displayNoti(true, "CWF");
 };
 
 //
@@ -125,9 +127,9 @@ function handleGeolocationError(error) {
 
     const defaultCoords = { coords: { longitude: 127.00306709659004, latitude: 37.557852166850196, accuracy: null } };
     if (error.code == 1) {
-        controlNoti("requestLocationAccess");
+        displayNoti(true, "RLP");
     } else {
-        controlNoti("recheckLocationAccess");
+        displayNoti(true, "RRL");
     };
     requestWeather(defaultCoords);
 }

@@ -1,3 +1,7 @@
+//
+// Global constants and variables
+//
+
 const onlyHanguls = document.querySelectorAll(".only-hangul");
 const onlyNumbers = document.querySelectorAll(".only-number");
 const onlyPhones = document.querySelectorAll(".only-phone");

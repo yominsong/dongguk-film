@@ -16,7 +16,7 @@ function blockInAppBrowser() {
     if (boolean == true) {
         login_google.href = "#";
         login_google.addEventListener("mousedown", () => {
-            controlNoti("blockInAppBrowser", app);
+            displayNoti(true, "RBG", app);
         });
     };
 }
