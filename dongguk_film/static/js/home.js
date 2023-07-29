@@ -80,7 +80,8 @@ function dfs_xy_conv(code, v1, v2) {
 function refreshWeather() {
     ["click", "keyup"].forEach(type => {
         id_get_weather.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            if ((type == "click" || event.key == "Enter") &&
+                id_get_weather.classList.contains("cursor-pointer")) {
                 getWeather("sudo");
             };
         });
