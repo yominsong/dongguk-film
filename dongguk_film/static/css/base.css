@@ -59,3 +59,28 @@
     animation: blink 3s ease;
     animation-iteration-count: 1;
 }
+
+/* CKEditor */
+:root {
+    --ck-color-focus-border-coordinates: 17, 85%, 54% !important;
+    --ck-color-base-focus: #F8AF95 !important;
+    --ck-color-base-active: #F37648 !important;
+    --ck-color-base-active-focus: #F15922 !important;
+    --ck-color-button-on-color: #F37648 !important;
+    --ck-color-button-on-background: #fff3ef !important;
+    --ck-color-button-on-hover-background: #ffe9e0 !important;
+    --ck-color-button-on-active-background: #ffe9e0 !important;
+    --ck-color-base-action: #CE400D !important;
+    --ck-color-button-action-hover-background: #99300A !important;
+    --ck-color-button-action-active-background: #99300A !important;
+    --ck-color-button-action-disabled-background: #99300A !important;
+    --ck-color-switch-button-on-hover-background: #99300A !important;
+    --ck-color-focus-outer-shadow: #fff3ef !important;
+    --ck-color-focus-disabled-shadow: rgba(255, 243, 239, .3) !important;
+}
+
+.ck h1 {
+    margin-top: 0.75rem !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+}

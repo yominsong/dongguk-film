@@ -1,3 +1,4 @@
+{% load static %}
 <div id="id_notice_modal"
      x-data="{ open: false }"
      @keydown.window.escape="open = false"
@@ -24,13 +25,14 @@
                  x-transition:leave="ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
+                 id="id_notice_modal_body"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-4 block">
                     <button type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2 disabled:cursor-not-allowed"
                             @click="open = false">
-                        <span class="sr-only">공지사항 <span class="class-keyword">올리기</span> 화면 닫기</span>
+                        <span class="sr-only">공지사항 <span class="class-keyword">작성하기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -45,76 +47,36 @@
                     <div class="flex mb-5">
                         <div class="mt-0 text-left">
                             <h3 class="text-base font-semibold leading-6 text-gray-900">
-                                공지사항 <span class="class-keyword">올리기</span>
+                                공지사항 <span class="class-keyword">작성하기</span>
                             </h3>
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
                         <div class="space-y-5">
-                            <input id="id_string_id" value="" hidden>
-                            <div>
-                                <label for="id_original_url"
-                                       class="block text-sm font-medium leading-6 text-gray-900">원본 URL</label>
+                            <!-- <div>
+                                <label for="id_title" class="block text-sm font-medium leading-6 text-gray-900">제목</label>
                                 <div class="mt-2">
-                                    <div class="relative flex flex-grow items-stretch focus-within:z-10">
-                                        <input type="url"
-                                               id="id_original_url"
-                                               class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                                               placeholder="https://www.example.com"
-                                               required>
-                                    </div>
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_original_url_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600"
-                                   id="id_original_url_error"
-                                   hidden></p>
-                            </div>
-                            <input id="id_notice_slug_original" value="" hidden>
-                            <div>
-                                <label for="id_notice_slug"
-                                       class="block text-sm font-medium leading-6 text-gray-900">공지사항 URL</label>
-                                <div class="mt-2 flex rounded-md shadow-sm">
-                                    <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
-                                    <input type="text"
-                                           id="id_notice_slug"
-                                           class="step-one only-slug block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                                           placeholder="tejavasce"
-                                           required>
-                                </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_notice_slug_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600"
-                                   id="id_notice_slug_error"
-                                   hidden></p>
-                            </div>
-                            <div>
-                                <label for="id_title"
-                                       class="block text-sm font-medium leading-6 text-gray-900">제목</label>
-                                <div class="mt-2">
-                                    <input type="text"
-                                           id="id_title"
-                                           class="step-one space-allowed block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                                           placeholder="&lt;데자와&gt; 시나리오"
-                                           required>
+                                    <input type="text" id="id_title" class="step-one space-allowed block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed" placeholder="&lt;데자와&gt; 시나리오" required>
                                 </div>
                                 <p class="mt-2 text-sm text-gray-500" id="id_title_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
-                            </div>
+                            </div> -->
                             <fieldset>
                                 <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                 <div class="mt-2 space-y-4">
                                     <div class="relative flex items-start">
                                         <div class="absolute flex h-6 items-center">
-                                            <input id="id_category_work"
+                                            <input id="id_category_serv"
                                                    name="id_category"
-                                                   value="작품"
-                                                   aria-describedby="id_category_work_descr"
+                                                   value="서비스"
+                                                   aria-describedby="id_category_serv_descr"
                                                    type="radio"
                                                    class="step-one h-4 w-4 radio border-gray-300 text-flamingo-600 focus:ring-flamingo-600 disabled:opacity-75 disabled:cursor-not-allowed">
                                         </div>
                                         <div class="pl-7 text-sm leading-6">
-                                            <label for="id_category_work" class="font-medium text-gray-900">작품 관련</label>
-                                            <p id="id_category_work_descr" class="text-gray-500">시나리오, 일일촬영계획표, 레퍼런스 등</p>
-                                            <p id="id_category_work_error" class="mt-2 text-flamingo-600" hidden></p>
+                                            <label for="id_category_serv" class="font-medium text-gray-900">서비스 관련</label>
+                                            <p id="id_category_serv_descr" class="text-gray-500">디닷에프 서비스 관련 공지사항</p>
+                                            <p id="id_category_serv_error" class="mt-2 text-flamingo-600" hidden></p>
                                         </div>
                                     </div>
                                     <div class="relative flex items-start">
@@ -128,7 +90,7 @@
                                         </div>
                                         <div class="pl-7 text-sm leading-6">
                                             <label for="id_category_dept" class="font-medium text-gray-900">학과 관련</label>
-                                            <p id="id_category_dept_descr" class="text-gray-500">학생회 및 학과사무실 공지사항 등</p>
+                                            <p id="id_category_dept_descr" class="text-gray-500">학생회 및 학과사무실 공지사항</p>
                                             <p id="id_category_dept_error" class="mt-2 text-flamingo-600" hidden></p>
                                         </div>
                                     </div>
@@ -144,26 +106,13 @@
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                             </fieldset>
                             <div>
-                                <label for="id_expiration_date"
-                                       class="block text-sm font-medium leading-6 text-gray-900">만료일</label>
-                                <div class="mt-2">
-                                    <input type="text"
-                                           id="id_expiration_date"
-                                           class="step-one only-date block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                                           maxlength="10"
-                                           minlength="10"
-                                           placeholder="{% now 'Y' %}-00-00"
-                                           min=""
-                                           max=""
-                                           required>
+                                <label for="id_content"
+                                       class="block text-sm font-medium leading-6 text-gray-900">제목 및 내용</label>
+                                <div class="mt-2" id="id_content_parent">
+                                    <textarea id="id_content"></textarea>
                                 </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_expiration_date_help"></p>
-                                <p class="mt-2 text-sm text-gray-500"
-                                   id="id_expiration_date_descr"
-                                   hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600"
-                                   id="id_expiration_date_error"
-                                   hidden></p>
+                                <p class="mt-2 text-sm text-gray-500" id="id_content_descr" hidden></p>
+                                <p class="mt-2 text-sm text-flamingo-600" id="id_content_error" hidden></p>
                             </div>
                             <div>
                                 <div class="rounded-md bg-flamingo-50 p-4">
@@ -181,11 +130,8 @@
                                             <h3 class="text-sm font-medium text-flamingo-800">공지사항 관련 안내사항</h3>
                                             <div class="mt-2 text-sm text-flamingo-700">
                                                 <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li>공지사항는 'dgufilm.link/example' 형태의 동국대학교 영화영상학과 브랜디드 링크를 생성 및 관리할 수 있는 서비스입니다.</li>
+                                                    <li>공지사항 내에 민감정보를 입력하지 않도록 유의해주세요.</li>
                                                     <li>안전한 서비스 운영을 위해 관리자는 {{ user.metadata.name }}님의 공지사항 생성 및 관리 내역을 조회할 수 있습니다.</li>
-                                                    <li>
-                                                        하단의 '<span class="class-keyword">올리기</span>' 버튼 클릭 시 유해성 검사가 진행되며, 일부 검사 결과는 부정확할 수 있습니다.
-                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -219,7 +165,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span class="class-keyword">올리기</span>
+                            <span class="class-keyword">작성하기</span>
                         </button>
                         <button type="button"
                                 id="id_delete_notice"
@@ -241,3 +187,16 @@
         </div>
     </div>
 </div>
+<script src="{% static 'js/ckeditor.js' %}"></script>
+<script>
+    ClassicEditor
+    .create( document.querySelector( "#id_content" ), {
+        language: "ko"
+    } )
+    .then( editor => {
+        console.log( editor );
+    } )
+    .catch( err => {
+        console.error( err.stack );
+    } );
+</script>

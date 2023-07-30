@@ -42,7 +42,8 @@
     </div>
     <!-- Search -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6"
+             id="id_search_box">
             {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_notice_q"
@@ -70,7 +71,7 @@
                     <span class="font-semibold">{{ notice_count }}개</span>의 공지사항 검색
                 </label>
             {% endif %}
-            <div class="mt-2 flex rounded-md shadow-sm">
+            <div class="mt-2 flex rounded-md shadow-sm" id="id_search_parent">
                 <div class="relative flex flex-grow items-stretch focus-within:z-10">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <svg class="h-5 w-5 text-gray-400"
@@ -85,7 +86,7 @@
                            name="name_notice_q"
                            id="id_notice_q"
                            class="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-500 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                           placeholder="dgufilm.link/example">
+                           placeholder="{% now 'Y' %}년도 1학기 수강신청 안내">
                 </div>
                 <button type="button"
                         id="id_search_notice"
@@ -130,7 +131,7 @@
                     <div class="flex items-center gap-x-4">
                         <div class="flex flex-col items-end">
                             <!-- notice.category -->
-                            {% if notice.category == "작품" %}
+                            {% if notice.category == "서비스" %}
                                 <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
                                     {{ notice.category }}
                                 </p>
@@ -166,9 +167,9 @@
             {% empty %}
                 <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
                     {% if "?q=" in request.get_full_path %}
-                        검색된 공지사항가 없어요.
+                        검색된 공지사항이 없어요.
                     {% else %}
-                        등록된 공지사항가 없어요.
+                        등록된 공지사항이 없어요.
                     {% endif %}
                 </li>
             {% endfor %}
@@ -182,7 +183,7 @@
                          class="w-5 h-5">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
-                    새로 만들기
+                    새로 작성하기
                 </li>
             {% else %}
                 <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
@@ -195,7 +196,7 @@
                          class="w-5 h-5">
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
-                    새로 만들기
+                    새로 작성하기
                 </li>
             {% endif %}
             <li class="mx-auto max-w-7xl">
