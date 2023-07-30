@@ -97,11 +97,11 @@ function displayNoti(bool, notiType, param = null) {
         } else if (notiType == "RRL") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치정보가 부정확한가요?";
-            notiContent = "잠시 문제가 생긴 것 같아요. 새로고침으로 위치정보를 다시 불러올 수 있어요.";
+            notiContent = "잠시 문제가 생긴 것 같아요. 동글뱅이 버튼을 눌러 위치정보를 다시 불러올 수 있어요.";
         } else if (notiType == "CWF") {
             notiIcon = locationIcon;
             notiTitle = "기상정보를 마저 불러올 수 있어요.";
-            notiContent = "불러오기 버튼을 눌러 기상정보를 계속 불러올 수 있어요.";
+            notiContent = "동글뱅이 버튼을 눌러 기상정보를 계속 불러올 수 있어요.";
         } else if (notiType == "RNP") {
             notiIcon = bellIcon;
             notiTitle = "디닷에프 푸시 알림을 받아보세요.";
