@@ -92,16 +92,16 @@ function displayNoti(bool, notiType, param = null) {
         // home
         if (notiType == "RLP") {
             notiIcon = locationIcon;
-            notiTitle = "지금 계신 지역의 기상정보를 받아보세요.";
+            notiTitle = "지금 계신 지역의 날씨를 확인해보세요.";
             notiContent = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         } else if (notiType == "RRL") {
             notiIcon = locationIcon;
-            notiTitle = "혹시 위치정보가 부정확한가요?";
-            notiContent = "잠시 문제가 생긴 것 같아요. 동글뱅이 버튼을 눌러 위치정보를 다시 불러올 수 있어요.";
+            notiTitle = "혹시 위치 정보가 부정확한가요?";
+            notiContent = "날씨 새로고침 버튼을 눌러 위치 정보를 다시 불러올 수 있어요.";
         } else if (notiType == "CWF") {
             notiIcon = locationIcon;
-            notiTitle = "기상정보를 마저 불러올 수 있어요.";
-            notiContent = "동글뱅이 버튼을 눌러 기상정보를 계속 불러올 수 있어요.";
+            notiTitle = "날씨를 마저 불러올 수 있어요.";
+            notiContent = "날씨 새로고침 버튼을 눌러 기상 정보를 계속 불러올 수 있어요.";
         } else if (notiType == "RNP") {
             notiIcon = bellIcon;
             notiTitle = "디닷에프 푸시 알림을 받아보세요.";
@@ -115,15 +115,15 @@ function displayNoti(bool, notiType, param = null) {
         // login
         else if (notiType == "RBG") {
             notiIcon = infoIcon;
-            notiTitle = "Google로 로그인이 잠겼어요. 😢";
-            notiContent = `${param} 인앱 브라우저에서는 Google로 로그인이 불가해요. Chrome이나 Safari를 이용해주세요.`;
+            notiTitle = "Google로 로그인이 잠겨있어요.";
+            notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome이나 Safari를 이용해주세요.`;
         }
 
         // dflink
         else if (notiType == "INL") {
             notiIcon = infoIcon;
             notiTitle = "존재하지 않는 동영링크예요.";
-            notiContent = "주소가 잘못되었거나 삭제된 동영링크 같아요.";
+            notiContent = "주소가 잘못되었거나 삭제된 동영링크예요.";
         };
 
         notiFormat = `

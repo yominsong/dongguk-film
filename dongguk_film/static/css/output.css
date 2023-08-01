@@ -2290,11 +2290,6 @@ select {
     max-width: 32rem;
   }
 
-  .sm\:max-w-max {
-    max-width: -moz-max-content;
-    max-width: max-content;
-  }
-
   .sm\:max-w-md {
     max-width: 28rem;
   }

@@ -208,7 +208,7 @@ async def weather(request):
         POP, SKY = results["pop_sky"] if results["pop_sky"] != None else ("--%", "-")
         TMX, TMN = results["tmx_tmn"] if results["tmx_tmn"] != None else ("--.-℃", "--.-℃")
         SUR, SUS = results["sur_sus"] if results["sur_sus"] != None else ("--:--", "--:--")
-        ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != None else ("위치정보 없음", "--월 --일 --시 발표")
+        ACC, BDT = results["acc_bdt"] if results["acc_bdt"] != None else ("위치 정보 없음", "--월 --일 --시 발표")
 
         response = {
             "id": id,
@@ -395,7 +395,7 @@ async def acc_bdt(acc):
     start_time = time.time()
     acc = float(acc) if acc else None
 
-    ACC = "위치정보 없음" if not acc else f"약 {round(acc / 1000)}km 오차" if acc >= 1000 else f"약 {round(acc)}m 오차"
+    ACC = "위치 정보 없음" if not acc else f"약 {round(acc / 1000)}km 오차" if acc >= 1000 else f"약 {round(acc)}m 오차"
     BDT = f"{(get_base_date_time('UST', 'BDT')['bd'])} {get_base_date_time('UST', 'BDT')['bt']} 발표"
     print(f'acc_bdt execution time: {time.time() - start_time} seconds')
 
