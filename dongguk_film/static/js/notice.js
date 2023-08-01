@@ -1,9 +1,19 @@
 //
+// Global constants and variables
+//
+
+const id_notice_modal = document.getElementById("id_notice_modal");
+const id_category_serv = document.getElementById("id_category_serv");
+const id_category_dept = document.getElementById("id_category_dept");
+const id_category = document.getElementById("id_category");
+
+let ckeditor;
+
+//
 // Sub functions
 //
 
 function initNoticeForm() {
-    // id_title.value = null;
     id_category.value = null;
     id_category_serv.checked = false;
     id_category_dept.checked = false;
@@ -12,6 +22,53 @@ function initNoticeForm() {
     });
     displayButtonMsg(false, id_create_or_update_notice, "error");
     displayButtonMsg(false, id_delete_notice, "error");
+
+    const radioInputs = document.querySelectorAll("input[name='id_category']");
+
+    radioInputs.forEach((input) => {
+        const label = input.closest("label");
+        const svg = label.querySelector("svg");
+        const span = label.querySelector("span[aria-hidden='true']");
+
+        input.addEventListener("focus", () => {
+            svg.classList.remove("invisible");
+            span.classList.add("border-flamingo-600");
+        });
+        input.addEventListener("blur", () => {
+            if (!input.checked) {
+                svg.classList.add("invisible");
+                span.classList.remove("border-flamingo-600");
+            };
+        });
+
+        input.addEventListener("change", () => {
+            if (input.checked) {
+                svg.classList.remove("invisible");
+                span.classList.add("border-flamingo-600");
+            } else {
+                svg.classList.add("invisible");
+            };
+
+            const otherInputs = [...radioInputs].filter(i => i !== input);
+            otherInputs.forEach(i => {
+                const otherSvg = i.closest("label").querySelector("svg");
+                const otherSpan = i.closest("label").querySelector("span[aria-hidden='true']");
+                if (!i.checked) {
+                    otherSvg.classList.add("invisible");
+                    otherSpan.classList.remove("border-flamingo-600");
+                };
+            });
+        });
+
+        if (!input.checked) {
+            svg.classList.add("invisible");
+            span.classList.remove("border-flamingo-600");
+        } else {
+            span.classList.add("border-flamingo-600");
+        };
+    });
+
+    ckeditor.setData("");
 }
 
 function controlNoticeModal() {
@@ -64,6 +121,22 @@ function controlNoticeModal() {
 }
 
 controlNoticeModal();
+
+function initCkeditor() {
+    ClassicEditor
+        .create(document.querySelector("#id_content"), {
+            language: "ko"
+        })
+        .then(editor => {
+            ckeditor = editor;
+            console.log(editor);
+        })
+        .catch(err => {
+            console.error(err.stack);
+        });
+}
+
+initCkeditor();
 
 function adjustWidth() {
     function matchDivWidths() {
