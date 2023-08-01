@@ -71,8 +71,10 @@ function adjustWidth() {
         let id_notice_modal_body = document.getElementById("id_notice_modal_body");
         let id_search_parent = document.getElementById("id_search_parent");
         let id_content_parent = document.getElementById("id_content_parent");
-        id_notice_modal_body.style.setProperty("width", id_search_box.offsetWidth + "px", "important");
-        id_content_parent.style.setProperty("width", id_search_parent.offsetWidth + "px", "important");
+        if (id_notice_modal_body != null) {
+            id_notice_modal_body.style.setProperty("width", id_search_box.offsetWidth + "px", "important");
+            id_content_parent.style.setProperty("width", id_search_parent.offsetWidth + "px", "important");
+        };
     }
     window.addEventListener("resize", matchDivWidths);
     matchDivWidths();

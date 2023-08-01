@@ -84,3 +84,11 @@
     font-size: 1.5rem;
     font-weight: bold;
 }
+
+.ck li {
+    margin-left: 2rem;
+}
+
+.ck a {
+    color: #38A5EE;
+}
