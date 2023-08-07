@@ -22,7 +22,6 @@
                                         <img class="object-cover w-full h-full grayscale"
                                              height=""
                                              width=""
-                                             alt=""
                                              src="{{ image }}" />
                                     </div>
                                 {% endfor %}
@@ -50,7 +49,7 @@
                         <span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
                     </label>
                     <div id="id_search_dflink_init"
-                         class="flex text-gray-500 cursor-pointer hover:text-gray-900"
+                         class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
@@ -84,12 +83,12 @@
                     <input type="text"
                            name="name_dflink_q"
                            id="id_dflink_q"
-                           class="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-500 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                           class="block w-full rounded-none rounded-l-md py-1.5 pl-10 text-gray-900 border-0 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-ring-inset read-only:bg-gray-100 read-only:cursor-not-allowed"
                            placeholder="dgufilm.link/example">
                 </div>
                 <button type="button"
                         id="id_search_dflink"
-                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm font-semibold text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-50 disabled:cursor-not-allowed">
+                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:df-ring-inset disabled:bg-gray-50 disabled:cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          fill="none"
                          viewBox="0 0 24 24"
@@ -107,14 +106,14 @@
     <!-- List -->
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ul role="list"
-            class="divide-y divide-gray-100 overflow-hidden bg-white shadow ring-1 ring-gray-900/5 rounded-md">
+            class="divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
             {% for dflink in page_value %}
                 <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
                     <div class="flex gap-x-4">
                         <div class="min-w-0 flex-auto">
                             <!-- dflink.title -->
                             <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank">
+                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="rounded-md focus:df-ring-offset-white">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ dflink.title }}
                                 </a>
@@ -134,7 +133,7 @@
                                 <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
                                     {{ dflink.category }}
                                 </p>
-                            {% else %}
+                            {% elif dflink.category == "학과" %}
                                 <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
                                     {{ dflink.category }}
                                 </p>
@@ -146,7 +145,7 @@
                             {% if user.username == dflink.user %}
                                 <p class="mt-7 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                     <span id="id_adjust_dflink_{{ dflink.id_string }}"
-                                          class="class-open class-adjust relative truncate cursor-pointer hover:underline"
+                                          class="class-open class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-ring-offset-white"
                                           tabindex="0">수정하기</span>
                                 </p>
                             {% endif %}
@@ -173,7 +172,7 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                <li class="class-open relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
+                <li class="class-open relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-ring-inset"
                     tabindex="0">
                     <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -185,10 +184,9 @@
                     새로 만들기
                 </li>
             {% else %}
-                <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6"
-                    tabindex="0">
+                <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6">
                     <a href="{% url 'account_login' %}"
-                       class="login-button absolute inset-x-0 -top-px bottom-0"></a>
+                       class="login-button absolute inset-x-0 -top-px bottom-0 focus:df-ring-inset"></a>
                     <svg xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20"
                          fill="currentColor"
@@ -203,7 +201,7 @@
                     <div class="-mt-px flex w-0 flex-1">
                         {% if page_value.has_previous %}
                             <a href="?{{ query_param|default_if_none:'' }}page={{ page_value.previous_page_number }}"
-                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6">
+                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-ring-inset">
                                 <svg class="h-5 w-5 text-gray-400"
                                      viewBox="0 0 20 20"
                                      fill="currentColor"
@@ -230,18 +228,18 @@
                         {% for num in page_range %}
                             {% if num == page_value.number %}
                                 <a href="?{{ query_param|default_if_none:'' }}page={{ num }}"
-                                   class="inline-flex items-center border-t-2 border-flamingo-500 px-4 py-4 text-sm font-medium text-flamingo-600"
+                                   class="inline-flex items-center border-t-2 border-flamingo-500 px-4 py-4 text-sm font-medium text-flamingo-600 focus:df-ring-inset"
                                    aria-current="page">{{ num }}</a>
                             {% else %}
                                 <a href="?{{ query_param|default_if_none:'' }}page={{ num }}"
-                                   class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">{{ num }}</a>
+                                   class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:df-ring-inset">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>
                     <div class="-mt-px flex w-0 flex-1 justify-end">
                         {% if page_value.has_next %}
                             <a href="?{{ query_param|default_if_none:'' }}page={{ page_value.next_page_number }}"
-                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6">
+                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-ring-inset">
                                 <span class="sr-only">다음 페이지</span>
                                 <svg class="h-5 w-5 text-gray-400"
                                      viewBox="0 0 20 20"

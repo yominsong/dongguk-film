@@ -14,20 +14,20 @@ function editXDate(notiType, bool) {
 // Main functions
 //
 
+/**
+ * 
+ * @param {boolean} bool Show/hide the notification
+ * @param {string} notiType Notification type
+ * - "RLP": Request Location Permission
+ * - "RRL": Request to Reload Location
+ * - "CWF": Complete Weather Fetch
+ * - "RNP": Request Notification Permission
+ * - "WNU": Welcome New User
+ * - "RBG": Recommend Web Browser for Google Login
+ * - "INL": Inform Nonexistent Link
+ * @param {string|null} param Additional information to add to the notification
+ */
 function displayNoti(bool, notiType, param = null) {
-    /* 
-     * bool: Show/hide the notification
-     * notiType:
-     *     - "RLP": Request Location Permission
-     *     - "RRL": Request to Reload Location
-     *     - "CWF": Complete Weather Fetch
-     *     - "RNP": Request Notification Permission
-     *     - "WNU": Welcome New User
-     *     - "RBG": Recommend Web Browser for Google Login
-     *     - "INL": Inform Nonexistent Link
-     * param: Additional information to add to the notification
-     */
-
     if (bool == true) {
         editXDate(notiType, false);
 
@@ -148,7 +148,7 @@ function displayNoti(bool, notiType, param = null) {
                     <div class="ml-4 flex flex-shrink-0">
                         <button type="button"
                                 @click="${notiType} = false; setTimeout(() => { let body = document.querySelector('#id_${notiType}'); if (body != null) {body.remove()} }, 150)"
-                                class="inline-flex rounded-md text-white hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2">
+                                class="inline-flex rounded-md text-white hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white">
                             <span class="sr-only">알림 닫기</span>
                             <svg class="h-5 w-5"
                                     viewBox="0 0 20 20"

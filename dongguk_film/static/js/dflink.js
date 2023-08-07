@@ -1,5 +1,10 @@
+//
+// Global constants and variables
+//
+
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
+let lastFocusedElement;
 
 //
 // Sub functions
@@ -71,7 +76,13 @@ function controlDflinkModal() {
                     initDflinkForm();
                     id_delete_dflink.classList.replace("inline-flex", "hidden");
                     id_dflink_modal.setAttribute("x-data", "{ open: true }");
-                }
+                    disableFocusOutsideModal(id_dflink_modal);
+                    document.addEventListener("keydown", function (event) {
+                        if (event.key === "Escape" && id_dflink_modal.getAttribute("x-data") == "{ open: true }") {
+                            enableFocus();
+                        };
+                    });
+                };
             });
         });
 

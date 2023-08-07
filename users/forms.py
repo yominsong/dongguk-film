@@ -14,9 +14,9 @@ checkbox_input_focus_state_class = (
 checkbox_input_disabled_state_class = "disabled:opacity-75 disabled:cursor-not-allowed"
 agree_class = "agree-checkbox"
 text_input_class = (
-    "block w-full sm:text-sm placeholder-gray-400 rounded-md border-gray-300"
+    "block w-full sm:text-sm placeholder-gray-400 shadow-sm rounded-md border-0 ring-1 ring-inset ring-gray-300"
 )
-text_input_focus_state_class = "focus:ring-flamingo-500 focus:border-flamingo-500"
+text_input_focus_state_class = "focus:df-ring-inset"
 text_input_read_only_state_class = "read-only:bg-gray-100 read-only:cursor-not-allowed"
 text_input_disabled_state_class = "disabled:bg-gray-100 disabled:cursor-not-allowed"
 step_one_class = "step-one"

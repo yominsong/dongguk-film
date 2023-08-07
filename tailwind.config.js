@@ -9,18 +9,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'flamingo': {
-          DEFAULT: '#F15922',
-          '50': '#FCDBCF',
-          '100': '#FBCCBB',
-          '200': '#F8AF95',
-          '300': '#F6936F',
-          '400': '#F37648',
-          '500': '#F15922',
-          '600': '#CE400D',
-          '700': '#99300A',
-          '800': '#641F06',
-          '900': '#300F03'
+        "flamingo": {
+          DEFAULT: "#F15922",
+          "50": "#FCDBCF",
+          "100": "#FBCCBB",
+          "200": "#F8AF95",
+          "300": "#F6936F",
+          "400": "#F37648",
+          "500": "#F15922",
+          "600": "#CE400D",
+          "700": "#99300A",
+          "800": "#641F06",
+          "900": "#300F03"
         },
       },
       fontFamily: {
@@ -32,9 +32,9 @@ module.exports = {
     aspectRatio: false,
   },
   plugins: [
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/line-clamp'),
-    require('@tailwindcss/aspect-ratio'),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/aspect-ratio"),
   ],
 }

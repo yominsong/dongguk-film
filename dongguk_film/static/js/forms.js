@@ -511,9 +511,9 @@ function displayError(bool, input, errorType) {
                 input.classList.add("border-flamingo-300");
             });
         } else {
-            input.classList.remove("border-gray-300");
+            input.classList.remove("ring-gray-300");
             input.classList.add("bg-flamingo-50");
-            input.classList.add("border-transparent");
+            input.classList.add("ring-transparent");
         };
         if (errorType == "disagree") {
             subject = findLabel(input).replace(" 동의합니다.", "")
@@ -559,9 +559,9 @@ function displayError(bool, input, errorType) {
                 input.classList.remove("border-flamingo-300");
             });
         } else {
-            input.classList.add("border-gray-300");
+            input.classList.add("ring-gray-300");
             input.classList.remove("bg-flamingo-50");
-            input.classList.remove("border-transparent");
+            input.classList.remove("ring-transparent");
         };
         errorMsg.innerText = null;
         errorMsg.hidden = true;
@@ -592,5 +592,46 @@ function displayButtonMsg(bool, button, type, text) {
     } else if (bool == false) {
         msg.innerText = null;
         msg.hidden = true;
+    };
+}
+
+function disableFocusOutsideModal(modal) {
+    lastFocusedElement = document.activeElement;
+
+    const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])");
+    let tabIndexStorage = [];
+
+    focusableElements.forEach((element, index) => {
+        if (!modal.contains(element)) {
+            if (element.getAttribute("tabindex") === "0") {
+                element.dataset.focusIndex = index;
+                tabIndexStorage.push(index);
+            };
+            element.setAttribute("tabindex", "-1");
+        };
+    });
+
+    sessionStorage.setItem("focusableItems", JSON.stringify(tabIndexStorage));
+}
+
+function enableFocus() {
+    const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
+    const storedIndexes = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
+
+    focusableElements.forEach(element => {
+        element.removeAttribute("tabindex");
+    });
+
+    storedIndexes.forEach(index => {
+        const element = document.querySelector(`[data-focus-index='${index}']`);
+        if (element) {
+            element.setAttribute("tabindex", "0");
+        };
+    });
+
+    sessionStorage.removeItem("focusableItems");
+
+    if (lastFocusedElement) {
+        setTimeout(() => { lastFocusedElement.focus() }, 300);
     };
 }

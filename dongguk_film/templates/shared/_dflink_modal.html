@@ -28,8 +28,8 @@
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-4 block">
                     <button type="button"
-                            class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2 disabled:cursor-not-allowed"
-                            @click="open = false">
+                            class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-ring-offset-white disabled:cursor-not-allowed"
+                            @click="open = false; enableFocus()">
                         <span class="sr-only">동영링크 <span class="class-keyword">만들기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -59,7 +59,7 @@
                                     <div class="relative flex flex-grow items-stretch focus-within:z-10">
                                         <input type="url"
                                                id="id_original_url"
-                                               class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="step-one only-url block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:df-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder="https://www.example.com"
                                                required>
                                     </div>
@@ -74,10 +74,10 @@
                                 <label for="id_dflink_slug"
                                        class="block text-sm font-medium leading-6 text-gray-900">동영링크 URL</label>
                                 <div class="mt-2 flex rounded-md shadow-sm">
-                                    <span class="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
+                                    <span class="inline-flex items-center rounded-l-md border-0 ring-1 ring-inset ring-gray-300 px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
                                     <input type="text"
                                            id="id_dflink_slug"
-                                           class="step-one only-slug block w-full min-w-0 flex-1 rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                           class="step-one only-slug block w-full min-w-0 flex-1 -ml-px rounded-none rounded-r-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:df-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                            placeholder="tejavasce"
                                            required>
                                 </div>
@@ -92,7 +92,7 @@
                                 <div class="mt-2">
                                     <input type="text"
                                            id="id_title"
-                                           class="step-one space-allowed block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                           class="step-one space-allowed block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:df-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                            placeholder="&lt;데자와&gt; 시나리오"
                                            required>
                                 </div>
@@ -109,7 +109,7 @@
                                                    value="작품"
                                                    aria-describedby="id_category_work_descr"
                                                    type="radio"
-                                                   class="step-one h-4 w-4 radio border-gray-300 text-flamingo-600 focus:ring-flamingo-600 disabled:opacity-75 disabled:cursor-not-allowed">
+                                                   class="step-one h-4 w-4 radio border-gray-300 text-flamingo-500 focus:df-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
                                         </div>
                                         <div class="pl-7 text-sm leading-6">
                                             <label for="id_category_work" class="font-medium text-gray-900">작품 관련</label>
@@ -124,7 +124,7 @@
                                                    value="학과"
                                                    aria-describedby="id_category_dept_descr"
                                                    type="radio"
-                                                   class="step-one h-4 w-4 radio border-gray-300 text-flamingo-600 focus:ring-flamingo-600 disabled:opacity-75 disabled:cursor-not-allowed">
+                                                   class="step-one h-4 w-4 radio border-gray-300 text-flamingo-500 focus:df-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
                                         </div>
                                         <div class="pl-7 text-sm leading-6">
                                             <label for="id_category_dept" class="font-medium text-gray-900">학과 관련</label>
@@ -149,7 +149,7 @@
                                 <div class="mt-2">
                                     <input type="text"
                                            id="id_expiration_date"
-                                           class="step-one only-date block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-flamingo-600 sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                           class="step-one only-date block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:df-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                            maxlength="10"
                                            minlength="10"
                                            placeholder="{% now 'Y' %}-00-00"
@@ -209,7 +209,7 @@
                     <div class="sm:flex sm:flex-row-reverse">
                         <button type="button"
                                 id="id_create_or_update_dflink"
-                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                             <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
@@ -223,7 +223,7 @@
                         </button>
                         <button type="button"
                                 id="id_delete_dflink"
-                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 disabled:text-gray-900 disabled:bg-white disabled:cursor-not-allowed">
+                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto focus:df-ring-offset-white disabled:opacity-75 disabled:text-gray-900 disabled:bg-white disabled:cursor-not-allowed">
                             <svg class="animate-spin mr-2 h-5 w-5 hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
