@@ -1,4 +1,25 @@
 //
+// Global constants and variables
+//
+
+const id_address = document.getElementById("id_address");
+const id_temperature = document.getElementById("id_temperature");
+const id_temperatureMax = document.getElementById("id_temperatureMax");
+const id_temperatureMin = document.getElementById("id_temperatureMin");
+const id_precipitationProbability = document.getElementById("id_precipitationProbability");
+const id_precipitationType = document.getElementById("id_precipitationType");
+const id_windSpeed = document.getElementById("id_windSpeed");
+const id_windName = document.getElementById("id_windName");
+const id_skyState = document.getElementById("id_skyState");
+const id_sunrise = document.getElementById("id_sunrise");
+const id_sunset = document.getElementById("id_sunset");
+const id_accuracy = document.getElementById("id_accuracy");
+const id_baseDateTime = document.getElementById("id_baseDateTime");
+const id_get_weather = document.getElementById("id_get_weather");
+const pulseOn = document.querySelectorAll(".pulse-on");
+const pulseOff = document.querySelectorAll(".pulse-off");
+
+//
 // Sub functions
 //
 

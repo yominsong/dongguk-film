@@ -18,13 +18,13 @@ function editXDate(notiType, bool) {
  * 
  * @param {boolean} bool Show/hide the notification
  * @param {string} notiType Notification type
- * - "RLP": Request Location Permission
- * - "RRL": Request to Reload Location
- * - "CWF": Complete Weather Fetch
- * - "RNP": Request Notification Permission
- * - "WNU": Welcome New User
- * - "RBG": Recommend Web Browser for Google Login
- * - "INL": Inform Nonexistent Link
+ * - `RLP`: Request Location Permission
+ * - `RRL`: Request to Reload Location
+ * - `CWF`: Complete Weather Fetch
+ * - `RNP`: Request Notification Permission
+ * - `WNU`: Welcome New User
+ * - `RBG`: Recommend Web Browser for Google Login
+ * - `INL`: Inform Nonexistent Link
  * @param {string|null} param Additional information to add to the notification
  */
 function displayNoti(bool, notiType, param = null) {

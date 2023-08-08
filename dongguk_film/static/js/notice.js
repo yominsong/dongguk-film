@@ -123,17 +123,21 @@ function controlNoticeModal() {
 controlNoticeModal();
 
 function initCkeditor() {
-    ClassicEditor
-        .create(document.querySelector("#id_content"), {
-            language: "ko"
-        })
-        .then(editor => {
-            ckeditor = editor;
-            console.log(editor);
-        })
-        .catch(err => {
-            console.error(err.stack);
-        });
+    let userIsAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
+
+    if (userIsAuthenticated) {
+        ClassicEditor
+            .create(document.querySelector("#id_content"), {
+                language: "ko"
+            })
+            .then(editor => {
+                ckeditor = editor;
+                console.log(editor);
+            })
+            .catch(err => {
+                console.error(err.stack);
+            });
+    };
 }
 
 initCkeditor();

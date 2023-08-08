@@ -859,10 +859,6 @@ select {
   margin-right: -0.5rem;
 }
 
-.-mr-px {
-  margin-right: -1px;
-}
-
 .-mt-px {
   margin-top: -1px;
 }
@@ -1956,12 +1952,12 @@ select {
   --tw-ring-color: rgb(17 24 39 / 0.05);
 }
 
-.ring-yellow-600\/20 {
-  --tw-ring-color: rgb(202 138 4 / 0.2);
-}
-
 .ring-transparent {
   --tw-ring-color: transparent;
+}
+
+.ring-yellow-600\/20 {
+  --tw-ring-color: rgb(202 138 4 / 0.2);
 }
 
 .ring-opacity-5 {
@@ -2198,11 +2194,6 @@ select {
   text-decoration-line: underline;
 }
 
-.focus\:border-flamingo-500:focus {
-  --tw-border-opacity: 1;
-  border-color: rgb(241 89 34 / var(--tw-border-opacity));
-}
-
 .focus\:text-gray-500:focus {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
@@ -2226,16 +2217,6 @@ select {
 .focus\:ring-flamingo-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
-}
-
-.focus\:ring-gray-400:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(156 163 175 / var(--tw-ring-opacity));
-}
-
-.focus\:ring-stone-500:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(120 113 108 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-white:focus {

@@ -1,3 +1,7 @@
+//
+// Global contants and variables
+//
+
 const now = new Date();
 const yesterday = new Date(Date.parse(now) - 1 * 1000 * 60 * 60 * 24);
 const beforeYesterday = new Date(Date.parse(yesterday) - 1 * 1000 * 60 * 60 * 24);

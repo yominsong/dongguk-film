@@ -30,8 +30,8 @@
             </div>
             <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
                 <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-                    <span id="introMessage"></span>
-                    <span id="emoji" aria-hidden="true"></span>
+                    <span id="id_intro_message"></span>
+                    <span id="id_emoji" aria-hidden="true"></span>
                 </h1>
                 <p
                     class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
@@ -211,7 +211,6 @@
         </div>
     </div>
 </div>
-<script src="{% static 'js/consts.js' %}"></script>
 <script src="{% static 'js/random-string.js' %}"></script>
 <script src="{% static 'js/home.js' %}"></script>
 {% if user.is_authenticated and is_new_user %}

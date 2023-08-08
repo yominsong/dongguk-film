@@ -1,3 +1,17 @@
+//
+// Global constants and variables
+//
+
+const id_agree = document.getElementById("id_agree");
+const id_student_id = document.getElementById("id_student_id");
+const id_name = document.getElementById("id_name");
+const id_email = document.getElementById("id_email");
+const id_phone = document.getElementById("id_phone");
+const id_create_vcode = document.getElementById("id_create_vcode");
+const id_email_vcode = document.getElementById("id_email_vcode");
+const id_phone_vcode = document.getElementById("id_phone_vcode");
+const id_confirm_vcode = document.getElementById("id_confirm_vcode");
+
 let fullName = id_first_name.value;
 let extraData = id_last_name.value.split("#");
 let pictureUrl = extraData[0];

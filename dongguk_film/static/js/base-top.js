@@ -9,13 +9,12 @@ let request = {}; // for `makeAjaxCall()` function
 // Sub functions
 //
 
+/**
+ * - `String/Number.getLastNumInKor()`: Return the last letter in Hangul
+ * - `Number.toTwoDigits()`: Pad with zero to make a two digit number **(type: string)**
+ * - `Date.getKorDay()`: Return the day of the week of a date
+ */
 function inheritObject() {
-    /* 
-    * String/Number.getLastNumInKor(): Return the last letter in Hangul
-    * Number.toTwoDigits(): Pad with zero to make a two digit number | type: string
-    * Date.getKorDay(): Return the day of the week of a date
-    */
-
     [String, Number].forEach((object) => {
         object.prototype.getLastNumInKor = function getLastNumInKor() {
             let lastNum = Number(String(this).slice(-1));
