@@ -3,7 +3,7 @@
 //
 
 function requestConsentForPushNoti() {
-    displayNoti(true, "requestPushPermission");
+    displayNoti(true, "RNP");
 }
 
 function getOS() {
