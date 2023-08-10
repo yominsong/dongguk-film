@@ -55,7 +55,7 @@
             <h3 class="pulse-off text-lg font-medium leading-6 text-gray-600 hidden" id="id_address">-</h3>
         </div>
         <div id="id_get_weather"
-            class="animate-spin cursor-not-allowed ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-ring-offset-gray"
+            class="animate-spin cursor-not-allowed ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray"
             tabindex="0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6" aria-hidden="true">
@@ -116,7 +116,7 @@
         <!-- DF link -->
         <div>
             <div class="flex">
-                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-ring-offset-gray" href="{% url 'dflink:dflink' %}"
+                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray" href="{% url 'dflink:dflink' %}"
                     target="_self">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
@@ -135,7 +135,7 @@
                         <div class="min-w-0 flex-auto">
                             <!-- dflink.title -->
                             <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="rounded-md focus:df-ring-offset-white">
+                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="rounded-md focus:df-focus-ring-offset-white">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ dflink.title }}
                                 </a>
@@ -191,7 +191,7 @@
         <!-- Notice -->
         <div>
             <div class="flex">
-                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-ring-offset-gray" href="{% url 'notice:notice' %}" target="_self">
+                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray" href="{% url 'notice:notice' %}" target="_self">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                         class="w-6 h-6 text-gray-500 group-hover:text-gray-700" aria-hidden="true">
                         <path fill-rule="evenodd"

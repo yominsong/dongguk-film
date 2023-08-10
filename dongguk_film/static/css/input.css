@@ -4,15 +4,23 @@
 
 
 @layer components {
-    .df-ring-inset {
-        @apply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-flamingo-500
+    .df-ring-inset-gray {
+        @apply border-0 ring-1 ring-inset ring-gray-300
     }
 
-    .df-ring-offset-white {
-        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-flamingo-500
+    .df-ring-inset-flamingo {
+        @apply border-0 ring-1 ring-inset ring-flamingo
     }
 
-    .df-ring-offset-gray {
-        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-flamingo-500
+    .df-focus-ring-inset {
+        @apply outline-none ring-2 ring-inset ring-flamingo
+    }
+
+    .df-focus-ring-offset-white {
+        @apply outline-none ring-2 ring-offset-2 ring-offset-white ring-flamingo
+    }
+
+    .df-focus-ring-offset-gray {
+        @apply outline-none ring-2 ring-offset-2 ring-offset-gray-100 ring-flamingo
     }
 }

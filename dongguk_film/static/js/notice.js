@@ -6,6 +6,8 @@ const id_notice_modal = document.getElementById("id_notice_modal");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
+const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
+const id_delete_notice = document.getElementById("id_delete_notice");
 
 let ckeditor;
 
@@ -32,19 +34,23 @@ function initNoticeForm() {
 
         input.addEventListener("focus", () => {
             svg.classList.remove("invisible");
-            span.classList.add("border-flamingo-600");
+            span.classList.add("df-focus-ring-inset");
         });
+        
         input.addEventListener("blur", () => {
             if (!input.checked) {
                 svg.classList.add("invisible");
-                span.classList.remove("border-flamingo-600");
-            };
+                span.classList.remove("df-ring-inset-flamingo");
+                span.classList.add("df-ring-inset-gray");
+            }
+            span.classList.remove("df-focus-ring-inset");
         });
 
         input.addEventListener("change", () => {
             if (input.checked) {
                 svg.classList.remove("invisible");
-                span.classList.add("border-flamingo-600");
+                span.classList.remove("df-ring-inset-gray");
+                span.classList.add("df-ring-inset-flamingo");
             } else {
                 svg.classList.add("invisible");
             };
@@ -55,16 +61,18 @@ function initNoticeForm() {
                 const otherSpan = i.closest("label").querySelector("span[aria-hidden='true']");
                 if (!i.checked) {
                     otherSvg.classList.add("invisible");
-                    otherSpan.classList.remove("border-flamingo-600");
+                    otherSpan.classList.remove("df-ring-inset-flamingo");
+                    otherSpan.classList.add("df-ring-inset-gray");
                 };
             });
         });
 
         if (!input.checked) {
             svg.classList.add("invisible");
-            span.classList.remove("border-flamingo-600");
+            span.classList.remove("df-ring-inset-flamingo");
+            span.classList.add("df-ring-inset-gray");
         } else {
-            span.classList.add("border-flamingo-600");
+            span.classList.add("df-ring-inset-flamingo");
         };
     });
 
@@ -88,6 +96,12 @@ function controlNoticeModal() {
                     initNoticeForm();
                     id_delete_notice.classList.replace("inline-flex", "hidden");
                     id_notice_modal.setAttribute("x-data", "{ open: true }");
+                    disableFocusOutsideModal(id_notice_modal);
+                    document.addEventListener("keydown", function (event) {
+                        if (event.key === "Escape" && id_notice_modal.getAttribute("x-data") == "{ open: true }") {
+                            enableFocus();
+                        };
+                    });
                 }
             });
         });

@@ -16,7 +16,6 @@ const id_delete_dflink = document.getElementById("id_delete_dflink");
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
-let lastFocusedElement;
 
 //
 // Sub functions
