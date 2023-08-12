@@ -2,9 +2,12 @@ from django.conf import settings
 from django.http import HttpResponse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
+from fake_useragent import UserAgent
 from .img import save_img
 from .msg import send_msg
 import json, re
+
+NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
 
 #
 # Cron functions
@@ -45,6 +48,20 @@ def update_img(request):
 #
 # Main functions
 #
+
+
+def set_headers(type: str):
+    if type == "RANDOM":
+        headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+    elif type == "NOTION":
+        headers = {
+            "Authorization": f"Bearer {NOTION_SECRET}",
+            "Accept": "application/json",
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+        }
+
+    return headers
 
 
 def reg_test(value: str, type: str):

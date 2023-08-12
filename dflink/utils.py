@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test
+from utility.utils import reg_test, set_headers
 from fake_useragent import UserAgent
 import openai, json, requests
 
@@ -85,20 +85,6 @@ def short_io(limit: int = None):
         pass
 
     return dflink_list
-
-
-def set_headers(type: str):
-    if type == "RANDOM":
-        headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
-    elif type == "NOTION":
-        headers = {
-            "Authorization": f"Bearer {NOTION_SECRET}",
-            "Accept": "application/json",
-            "Notion-Version": "2022-06-28",
-            "Content-Type": "application/json",
-        }
-
-    return headers
 
 
 def chap_gpt(prompt: str):

@@ -1,13 +1,18 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from utility.img import get_img
+from .utils import query_notion_db
+
+#
+# Main functions
+#
 
 
 def notice(request):
     image_list = get_img("notice")
 
-    # Short.io
-    notice_list = []
+    # Notion
+    notice_list = query_notion_db("notice-db")
     notice_count = len(notice_list)
 
     # Query

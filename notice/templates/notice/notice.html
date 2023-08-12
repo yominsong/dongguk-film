@@ -110,23 +110,36 @@
         <ul role="list"
             class="divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
             {% for notice in page_value %}
-                <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-                    <div class="flex gap-x-4">
+                <li class="relative flex justify-between gap-x-2 px-4 py-5 hover:bg-gray-50 sm:px-6">
+                    <div class="flex">
                         <div class="min-w-0 flex-auto">
                             <!-- notice.title -->
-                            <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="https://dgufilm.link/{{ dflink.slug }}"
+                            <p class="flex items-center text-sm font-semibold leading-6 text-gray-900">
+                                <a href="#"
                                    target="_blank"
                                    class="rounded-md focus:df-focus-ring-offset-white">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ notice.title }}
                                 </a>
+                                {% if notice.file != null %}
+                                    <!-- notice.file -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor"
+                                         class="w-4 h-4 ml-2 text-gray-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                {% endif %}
                             </p>
-                            <!-- notice.slug -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ notice.slug }}</p>
-                            <!-- notice.expiration_date(<=sm ) -->
+                            <!-- notice.summary(>md) -->
+                            <p class="hidden md:mt-1 md:flex md:text-sm md:leading-5 md:text-gray-500">{{ notice.summary }}</p>
+                            <!-- notice.keywords(<=md) -->
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 md:hidden">{{ notice.keywords }}</p>
+                            <!-- notice.listed_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                <time datetime="{{ notice.expiration_date }}">{{ notice.expiration_date }}</time>&nbsp만료
+                                <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
                         </div>
                     </div>
@@ -142,9 +155,9 @@
                                     {{ notice.category }}
                                 </p>
                             {% endif %}
-                            <!-- notice.expiration_date(>sm) -->
-                            <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                                <time datetime="{{ notice.expiration_date }}">{{ notice.expiration_date }}</time>&nbsp만료
+                            <!-- notice.listed_date(>sm) -->
+                            <p class="hidden whitespace-nowrap sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
                             {% if user.username == notice.user %}
                                 <p class="mt-7 flex text-sm leading-5 text-gray-500 sm:mt-1">
@@ -163,7 +176,7 @@
                         </svg>
                     </div>
                     <input id="id_notice_{{ notice.id_string }}"
-                           value="{{ notice.id_string }},{{ notice.original_url }},{{ notice.slug }},{{ notice.title }},{{ notice.category }},{{ notice.expiration_date }}"
+                           value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.file.name }},{{ notice.listed_date }}"
                            hidden>
                 </li>
             {% empty %}

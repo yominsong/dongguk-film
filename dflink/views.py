@@ -1,8 +1,11 @@
-from django.conf import settings
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from utility.img import get_img
 from .utils import short_io
+
+#
+# Main functions
+#
 
 
 def dflink(request):
