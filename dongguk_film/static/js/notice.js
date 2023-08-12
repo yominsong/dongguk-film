@@ -36,7 +36,7 @@ function initNoticeForm() {
             svg.classList.remove("invisible");
             span.classList.add("df-focus-ring-inset");
         });
-        
+
         input.addEventListener("blur", () => {
             if (!input.checked) {
                 svg.classList.add("invisible");
@@ -102,7 +102,36 @@ function controlNoticeModal() {
                             enableFocus();
                         };
                     });
-                }
+
+                    // Control tabindex of toolbar
+                    const textbox = document.querySelector("div[role='textbox']");
+                    const toolbar = document.querySelector("div[role='toolbar']");
+                    const targetElement = document.querySelector(".ck-toolbar__items").children[0].children[0];
+                    
+                    textbox.addEventListener("focus", () => {
+                        toolbar.tabIndex = 0;
+                    });
+
+                    textbox.addEventListener("blur", () => {
+                        toolbar.tabIndex = -1;
+                    });
+
+                    textbox.addEventListener("keydown", (event) => {
+                        if (event.key === "Tab" && event.shiftKey) {
+                            targetElement.focus();
+                            event.preventDefault();
+                        };
+                    });
+
+                    toolbar.addEventListener("keydown", (event) => {
+                        if (event.key === "Tab" && !event.shiftKey) {
+                            textbox.focus();
+                            event.preventDefault();
+                        };
+                    });
+
+                    toolbar.tabIndex = -1;
+                };
             });
         });
 
