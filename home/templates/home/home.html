@@ -148,7 +148,7 @@
                                 <p class="text-sm font-semibold leading-6 text-gray-900">
                                     <a href="https://dgufilm.link/{{ dflink.slug }}"
                                        target="_blank"
-                                       class="rounded-md focus:df-focus-ring-offset-white">
+                                       class="rounded-md focus:df-focus-ring-offset-gray">
                                         <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                         {{ dflink.title }}
                                     </a>
@@ -208,13 +208,13 @@
                                     <!-- notice.title -->
                                     <p class="text-sm font-semibold leading-6 text-gray-900">
                                         <a href="#"
-                                           class="rounded-md focus:df-focus-ring-offset-white">
+                                           class="rounded-md focus:df-focus-ring-offset-gray">
                                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                             {{ notice.title }}
                                         </a>
                                     </p>
                                     <!-- notice.file -->
-                                    {% if notice.file != null %}
+                                    {% if notice.file %}
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              fill="none"
                                              viewBox="0 0 24 24"

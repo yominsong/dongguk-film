@@ -15,6 +15,40 @@ let ckeditor;
 // Sub functions
 //
 
+function searchNotice() {
+    let urlParams = new URLSearchParams(location.search);
+    if (urlParams.has("q")) {
+        id_notice_q.value = urlParams.get("q");
+        ["click", "keyup"].forEach(type => {
+            id_search_notice_init.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    location.href = `${originLocation}/notice`;
+                    id_notice_q.readOnly = true;
+                    id_search_notice.disabled = true;
+                };
+            });
+        });
+    };
+
+    id_notice_q.addEventListener("keyup", (event) => {
+        if (event.key == "Enter") {
+            id_search_notice.click();
+        };
+    });
+
+    ["click", "keyup"].forEach(type => {
+        id_search_notice.addEventListener(type, (event) => {
+            if (type == "click" || event.key == "Enter") {
+                location.href = `${originLocation}/notice?q=${id_notice_q.value}`;
+                id_notice_q.readOnly = true;
+                id_search_notice.disabled = true;
+            };
+        });
+    });
+}
+
+searchNotice();
+
 function initNoticeForm() {
     id_category.value = null;
     id_category_serv.checked = false;
