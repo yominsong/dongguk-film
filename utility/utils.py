@@ -5,9 +5,10 @@ from requests.adapters import HTTPAdapter
 from fake_useragent import UserAgent
 from .img import save_img
 from .msg import send_msg
-import json, re
+import json, re, requests, pytz, datetime
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
+NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 
 #
 # Cron functions
@@ -105,3 +106,51 @@ def reg_test(value: str, type: str):
     result = True if value == tested_value else False
 
     return result
+
+
+def query_notion_db(notion_db_name, limit: int = None):
+    url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID[notion_db_name]}/query"
+    payload = {"page_size": limit} if limit != None else None
+    response = requests.post(url, json=payload, headers=set_headers("NOTION")).json()
+
+    notices = response["results"]
+    notice_list = []
+
+    if notion_db_name == "notice-db":
+        try:
+            for i in range(len(notices)):
+                listed_time = notices[i]["properties"]["Listed time"]["created_time"]
+                listed_time_utc = datetime.datetime.strptime(
+                    listed_time, "%Y-%m-%dT%H:%M:%S.%fZ"
+                ).replace(tzinfo=pytz.utc)
+                kor_tz = pytz.timezone("Asia/Seoul")
+                listed_time_kor = listed_time_utc.astimezone(kor_tz)
+                notice = {
+                    "id_string": notices[i]["id"],
+                    "title": notices[i]["properties"]["Title"]["title"][0][
+                        "plain_text"
+                    ],
+                    "category": notices[i]["properties"]["Category"]["select"]["name"],
+                    "summary": notices[i]["properties"]["Summary"]["rich_text"][0][
+                        "plain_text"
+                    ],
+                    "keywords": notices[i]["properties"]["Keywords"]["rich_text"][0][
+                        "plain_text"
+                    ],
+                    "user": str(notices[i]["properties"]["User ID"]["number"]),
+                    "listed_date": listed_time_kor.strftime("%Y-%m-%d"),
+                }
+                try:
+                    notice["file"] = {
+                        "name": notices[i]["properties"]["File"]["files"][0]["name"],
+                        "url": notices[i]["properties"]["File"]["files"][0]["file"][
+                            "url"
+                        ],
+                    }
+                except:
+                    notice["file"] = None
+                notice_list.append(notice)
+        except:
+            pass
+
+    return notice_list

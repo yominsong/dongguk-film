@@ -2,221 +2,269 @@
 {% load static %}
 {% load tags %}
 {% block meta %}
-<meta property="og:title" content="디닷에프 | D-dot-f">
-<meta property="og:url" content="{% url 'home:home' %}">
-<meta name="robots" content="index,follow">
+    <meta property="og:title" content="디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'home:home' %}">
+    <meta name="robots" content="index,follow">
 {% endblock %}
 {% block title %}디닷에프{% endblock %}
 {% block body %}
-<!-- Hero -->
-<div class="relative sm:pt-6 lg:pt-8">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
-            <div class="absolute inset-0" aria-hidden="true">
-                <div class="mix-blend-multiply w-full h-full">
-                    <!-- Swiper -->
-                    <div class="swiper mySwiper w-full h-full">
-                        <div class="swiper-wrapper">
-                            {% for image in image_list|shuffle %}
-                            <div class="swiper-slide">
-                                <img class="object-cover w-full h-full grayscale" height="" width="" alt=""
-                                    src="{{ image }}" />
+    <!-- Hero -->
+    <div class="relative sm:pt-6 lg:pt-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
+                <div class="absolute inset-0" aria-hidden="true">
+                    <div class="mix-blend-multiply w-full h-full">
+                        <!-- Swiper -->
+                        <div class="swiper mySwiper w-full h-full">
+                            <div class="swiper-wrapper">
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
+                    <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
                 </div>
-                <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
-            </div>
-            <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
-                <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-                    <span id="id_intro_message"></span>
-                    <span id="id_emoji" aria-hidden="true"></span>
-                </h1>
-                <p
-                    class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
-                    동국대학교 영화영상학과 올인원 플랫폼 <span class="font-semibold">디닷에프</span>
-                </p>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+                        <span id="id_intro_message"></span>
+                        <span id="id_emoji" aria-hidden="true"></span>
+                    </h1>
+                    <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                        동국대학교 영화영상학과 올인원 플랫폼 <span class="font-semibold">디닷에프</span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Weather -->
-<div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between gap-1">
-        <div class="flex gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                class="w-6 h-6 text-gray-500" aria-hidden="true">
-                <path fill-rule="evenodd"
-                    d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-                    clip-rule="evenodd" />
-            </svg>
-            <div class="animate-pulse pulse-on mt-0.5 h-5 w-44 bg-gray-200 rounded"></div>
-            <h3 class="pulse-off text-lg font-medium leading-6 text-gray-600 hidden" id="id_address">-</h3>
+    <!-- Weather -->
+    <div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between gap-1">
+            <div class="flex gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="currentColor"
+                     class="w-6 h-6 text-gray-500"
+                     aria-hidden="true">
+                    <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+                <div class="animate-pulse pulse-on mt-0.5 h-5 w-44 bg-gray-200 rounded"></div>
+                <h3 class="pulse-off text-lg font-medium leading-6 text-gray-600 hidden"
+                    id="id_address">-</h3>
+            </div>
+            <div id="id_get_weather"
+                 class="animate-spin cursor-not-allowed ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray"
+                 tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                     class="w-6 h-6"
+                     aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                <span class="sr-only">날씨 새로고침</span>
+            </div>
         </div>
-        <div id="id_get_weather"
-            class="animate-spin cursor-not-allowed ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray"
-            tabindex="0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
-            <span class="sr-only">날씨 새로고침</span>
+        <dl class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">기온, 하늘상태</dt>
+                <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2"
+                     aria-hidden="ture">
+                    <div class="h-6 bg-gray-200 rounded col-span-5"></div>
+                    <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+                </div>
+                <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
+                    <span id="id_temperature">--.-℃</span><span class="text-sm sm:text-base text-gray-500">(<span id="id_temperatureMax">--.-℃</span>/<span id="id_temperatureMin">--.-℃</span>)</span>,
+                    <span id="id_skyState">-</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">일출시각, 일몰시각</dt>
+                <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2"
+                     aria-hidden="ture">
+                    <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+                    <div class="h-6 bg-gray-200 rounded col-span-3"></div>
+                </div>
+                <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
+                    <span id="id_sunrise">--:--</span>,
+                    <span id="id_sunset">--:--</span>
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">풍속, 강수확률</dt>
+                <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2"
+                     aria-hidden="ture">
+                    <div class="h-6 bg-gray-200 rounded col-span-5"></div>
+                    <div class="h-6 bg-gray-200 rounded col-span-4"></div>
+                </div>
+                <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
+                    <span id="id_windSpeed">-.-m/s</span><span class="text-sm sm:text-base text-gray-500">(<span id="id_windName">-</span>)</span>,
+                    <span id="id_precipitationProbability">--%</span><span class="text-sm sm:text-base text-gray-500">(<span id="id_precipitationType">-</span>)</span>
+                </dd>
+            </div>
+        </dl>
+        <div class="animate-pulse pulse-on mt-[14px] sm:mt-3 flex justify-end">
+            <div class="h-[18px] sm:h-[20px] w-52 justify-self-end bg-gray-200 rounded"></div>
         </div>
+        <p class="pulse-off mt-3 text-sm text-right text-gray-400 hidden">
+            <span id="id_accuracy">약 --m 오차</span> |
+            <span id="id_baseDateTime">--월 --일 --시 발표</span>
+        </p>
     </div>
-    <dl class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
-            <dt class="truncate text-sm font-medium text-gray-500">기온, 하늘상태</dt>
-            <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
-                <div class="h-6 bg-gray-200 rounded col-span-5"></div>
-                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
-            </div>
-            <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
-                <span id="id_temperature">--.-℃</span><span class="text-sm sm:text-base text-gray-500">(<span
-                        id="id_temperatureMax">--.-℃</span>/<span id="id_temperatureMin">--.-℃</span>)</span>,
-                <span id="id_skyState">-</span>
-            </dd>
-        </div>
-        <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
-            <dt class="truncate text-sm font-medium text-gray-500">일출시각, 일몰시각</dt>
-            <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
-                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
-                <div class="h-6 bg-gray-200 rounded col-span-3"></div>
-            </div>
-            <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
-                <span id="id_sunrise">--:--</span>,
-                <span id="id_sunset">--:--</span>
-            </dd>
-        </div>
-        <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
-            <dt class="truncate text-sm font-medium text-gray-500">풍속, 강수확률</dt>
-            <div class="animate-pulse pulse-on mt-3 sm:mt-4 grid grid-cols-10 gap-2" aria-hidden="ture">
-                <div class="h-6 bg-gray-200 rounded col-span-5"></div>
-                <div class="h-6 bg-gray-200 rounded col-span-4"></div>
-            </div>
-            <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate hidden">
-                <span id="id_windSpeed">-.-m/s</span><span class="text-sm sm:text-base text-gray-500">(<span
-                        id="id_windName">-</span>)</span>,
-                <span id="id_precipitationProbability">--%</span><span class="text-sm sm:text-base text-gray-500">(<span
-                        id="id_precipitationType">-</span>)</span>
-            </dd>
-        </div>
-    </dl>
-    <div class="animate-pulse pulse-on mt-[14px] sm:mt-3 flex justify-end">
-        <div class="h-[18px] sm:h-[20px] w-52 justify-self-end bg-gray-200 rounded"></div>
-    </div>
-    <p class="pulse-off mt-3 text-sm text-right text-gray-400 hidden">
-        <span id="id_accuracy">약 --m 오차</span> |
-        <span id="id_baseDateTime">--월 --일 --시 발표</span>
-    </p>
-</div>
-<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
-        <!-- DF link -->
-        <div>
-            <div class="flex">
-                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray" href="{% url 'dflink:dflink' %}"
-                    target="_self">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
-                        aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-                    </svg>
-                    <h3 class="text-lg font-medium leading-6">동영링크</h3>
-                </a>
-            </div>
-            <ul role="list"
-                class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
-                {% for dflink in dflink_list %}
-                <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-                    <div class="flex gap-x-4">
-                        <div class="min-w-0 flex-auto">
-                            <!-- dflink.title -->
-                            <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="rounded-md focus:df-focus-ring-offset-white">
-                                    <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                    {{ dflink.title }}
-                                </a>
-                            </p>
-                            <!-- dflink.slug -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ dflink.slug }}
-                            </p>
-                            <!-- dflink.expiration_date(<=sm ) -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-x-4">
-                        <div class="flex flex-col items-end">
-                            <!-- dflink.category -->
-                            {% if dflink.category == "작품" %}
-                            <p
-                                class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
-                                {{ dflink.category }}
-                            </p>
-                            {% else %}
-                            <p
-                                class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                                {{ dflink.category }}
-                            </p>
-                            {% endif %}
-                            <!-- dflink.expiration_date(>sm) -->
-                            <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                                <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
-                            </p>
-                        </div>
-                        <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-                            aria-hidden="true">
-                            <path fill-rule="evenodd"
-                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                clip-rule="evenodd">
-                            </path>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
+            <!-- DF link -->
+            <div>
+                <div class="flex">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'dflink:dflink' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
+                             aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
                         </svg>
-                    </div>
-                    <input id="id_dflink_{{ dflink.id_string }}"
-                        value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
-                        hidden>
-                </li>
-                {% empty %}
-                <li
-                    class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                    등록된 동영링크가 없어요.
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <!-- Notice -->
-        <div>
-            <div class="flex">
-                <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray" href="{% url 'notice:notice' %}" target="_self">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                        class="w-6 h-6 text-gray-500 group-hover:text-gray-700" aria-hidden="true">
-                        <path fill-rule="evenodd"
-                            d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <h3 class="text-lg font-medium leading-6 text-gray-600">공지사항</h3>
-                </a>
+                        <h3 class="text-lg font-medium leading-6">동영링크</h3>
+                    </a>
+                </div>
+                <ul role="list"
+                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    {% for dflink in dflink_list %}
+                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- dflink.title -->
+                                <p class="text-sm font-semibold leading-6 text-gray-900">
+                                    <a href="https://dgufilm.link/{{ dflink.slug }}"
+                                       target="_blank"
+                                       class="rounded-md focus:df-focus-ring-offset-white">
+                                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                                        {{ dflink.title }}
+                                    </a>
+                                </p>
+                                <!-- dflink.category -->
+                                {% if dflink.category == "작품" %}
+                                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
+                                        {{ dflink.category }}
+                                    </p>
+                                {% elif dflink.category == "학과" %}
+                                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                                        {{ dflink.category }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- dflink.slug -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ dflink.slug }}</p>
+                                <!-- dflink.expiration_date(>sm) -->
+                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                    <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                                </p>
+                            </div>
+                            <input id="id_dflink_{{ dflink.id_string }}"
+                                   value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
+                                   hidden>
+                        </li>
+                    {% empty %}
+                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                            등록된 동영링크가 없어요.
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
-            <ul role="list"
-                class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
-                <li
-                    class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                    등록된 공지사항이 없어요.
-                </li>
-            </ul>
+            <!-- Notice -->
+            <div>
+                <div class="flex">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'notice:notice' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z" clip-rule="evenodd" />
+                        </svg>
+                        <h3 class="text-lg font-medium leading-6 text-gray-600">공지사항</h3>
+                    </a>
+                </div>
+                <ul role="list"
+                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    {% for notice in notice_list %}
+                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
+                            <div class="flex justify-between items-center gap-x-2">
+                                <div class="flex justify-start items-center gap-x-2">
+                                    <!-- notice.title -->
+                                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                                        <a href="#"
+                                           class="rounded-md focus:df-focus-ring-offset-white">
+                                            <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                                            {{ notice.title }}
+                                        </a>
+                                    </p>
+                                    <!-- notice.file -->
+                                    {% if notice.file != null %}
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             class="w-4 h-4 text-gray-500"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                                        </svg>
+                                        <span class="sr-only">첨부파일 있음</span>
+                                    {% endif %}
+                                </div>
+                                <!-- notice.category -->
+                                {% if notice.category == "서비스" %}
+                                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                                        {{ notice.category }}
+                                    </p>
+                                {% elif notice.category == "학과" %}
+                                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                                        {{ notice.category }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- notice.keywords -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">{{ notice.keywords }}</p>
+                                <!-- notice.listed_date(>sm) -->
+                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
+                                </p>
+                            </div>
+                            <input id="id_notice_{{ notice.id_string }}"
+                                   value="{{ notice.id_string }}{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
+                                   hidden>
+                        </li>
+                    {% empty %}
+                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                            등록된 공지사항이 없어요.
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
-<script src="{% static 'js/random-string.js' %}"></script>
-<script src="{% static 'js/home.js' %}"></script>
-{% if user.is_authenticated and is_new_user %}
-<script>
+    <script src="{% static 'js/random-string.js' %}"></script>
+    <script src="{% static 'js/home.js' %}"></script>
+    {% if user.is_authenticated and is_new_user %}
+        <script>
     let name = "{{ user.metadata.name }}"
     alertWelcomeNewUser(name);
-</script>
-{% endif %}
+        </script>
+    {% endif %}
 {% endblock %}

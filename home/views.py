@@ -3,6 +3,7 @@ from django.utils import timezone
 from asgiref.sync import sync_to_async
 from django.shortcuts import render
 from utility.img import get_img
+from utility.utils import query_notion_db
 from dflink.utils import short_io
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
@@ -30,6 +31,7 @@ def home(request):
 
     image_list = get_img("home")
     dflink_list = short_io(5)
+    notice_list = query_notion_db("notice-db", 5)
 
     return render(
         request,
@@ -38,6 +40,7 @@ def home(request):
             "is_new_user": new_user_bool,
             "image_list": image_list,
             "dflink_list": dflink_list,
+            "notice_list": notice_list,
         },
     )
 

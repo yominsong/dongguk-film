@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from utility.img import get_img
-from .utils import query_notion_db
+from utility.utils import query_notion_db
 
 #
 # Main functions
