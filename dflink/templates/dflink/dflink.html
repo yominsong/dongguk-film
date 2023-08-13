@@ -108,56 +108,58 @@
         <ul role="list"
             class="divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
             {% for dflink in page_value %}
-                <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-                    <div class="flex gap-x-4">
-                        <div class="min-w-0 flex-auto">
-                            <!-- dflink.title -->
-                            <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="https://dgufilm.link/{{ dflink.slug }}" target="_blank" class="rounded-md focus:df-focus-ring-offset-white">
-                                    <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                    {{ dflink.title }}
-                                </a>
+                <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
+                    <div class="flex justify-between items-center gap-x-2">
+                        <!-- dflink.title -->
+                        <p class="text-sm font-semibold leading-6 text-gray-900">
+                            <a href="https://dgufilm.link/{{ dflink.slug }}"
+                               target="_blank"
+                               class="rounded-md focus:df-focus-ring-offset-white">
+                                <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                                {{ dflink.title }}
+                            </a>
+                        </p>
+                        <!-- dflink.category -->
+                        {% if dflink.category == "작품" %}
+                            <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
+                                {{ dflink.category }}
                             </p>
-                            <!-- dflink.slug -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ dflink.slug }}</p>
-                            <!-- dflink.expiration_date(<=sm) -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                        {% elif dflink.category == "학과" %}
+                            <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                                {{ dflink.category }}
                             </p>
-                        </div>
+                        {% endif %}
                     </div>
-                    <div class="flex items-center gap-x-4">
-                        <div class="flex flex-col items-end">
-                            <!-- dflink.category -->
-                            {% if dflink.category == "작품" %}
-                                <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
-                                    {{ dflink.category }}
-                                </p>
-                            {% elif dflink.category == "학과" %}
-                                <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                                    {{ dflink.category }}
-                                </p>
-                            {% endif %}
-                            <!-- dflink.expiration_date(>sm) -->
-                            <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                    <div class="flex justify-between items-center gap-x-2">
+                        <!-- dflink.slug -->
+                        <p class="mt-1 flex text-sm leading-5 text-gray-500">https://dgufilm.link/{{ dflink.slug }}</p>
+                        <!-- dflink.expiration_date(>sm) -->
+                        <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                            <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                        </p>
+                    </div>
+                    {% if user.username == dflink.user %}
+                        <div class="flex justify-between items-center gap-x-2">
+                            <!-- dflink.expiration_date(<=sm ) -->
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
                             </p>
                             {% if user.username == dflink.user %}
-                                <p class="mt-7 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                     <span id="id_adjust_dflink_{{ dflink.id_string }}"
                                           class="class-open class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-white"
                                           tabindex="0">수정하기</span>
                                 </p>
                             {% endif %}
                         </div>
-                        <svg class="h-5 w-5 flex-none text-gray-400"
-                             viewBox="0 0 20 20"
-                             fill="currentColor"
-                             aria-hidden="true">
-                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd">
-                            </path>
-                        </svg>
-                    </div>
+                    {% else %}
+                        <div class="flex justify-start">
+                            <!-- dflink.expiration_date(<=sm ) -->
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                            </p>
+                        </div>
+                    {% endif %}
                     <input id="id_dflink_{{ dflink.id_string }}"
                            value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
                            hidden>
