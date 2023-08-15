@@ -78,7 +78,9 @@ function initNoticeForm() {
         input.addEventListener("blur", () => {
             if (!input.checked) {
                 svg.classList.add("invisible");
-            }
+            } else if (input.checked) {
+                label.classList.add("df-ring-inset-flamingo");
+            };
             label.classList.remove("df-focus-ring-inset");
         });
 
@@ -110,8 +112,6 @@ function initNoticeForm() {
     });
 
     ckEditor.setData("");
-
-
 }
 
 function controlNoticeModal() {
@@ -185,9 +185,10 @@ function initCkeditor() {
 
     if (userIsAuthenticated) {
         ClassicEditor
-            .create(document.querySelector("#id_editor"), {
-                removePlugins: ["Title"],
+            .create(document.querySelector("#id_content"), {
+                removePlugins: ["Title", "Markdown"],
                 language: "ko",
+                outputFormat: "html",
                 placeholder: "여기에 내용을 입력하세요. URL을 입력하면 링크나 동영상이 자동으로 삽입됩니다."
             })
             .then(editor => {
@@ -196,23 +197,31 @@ function initCkeditor() {
                 textboxModel = ckEditor.model.document;
                 textboxView = ckEditor.editing.view.document;
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
+                let notiFlag = false;
 
                 textboxModel.on("change:data", () => {
+                    let data = ckEditor.getData();
+                    let regex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
+                    let match = data.match(regex);
+                    
+                    if (match && !notiFlag) {
+                        displayNoti(true, "RSL");
+                        notiFlag = true;
+                    };
+                    
                     id_content.value = ckEditor.getData();
                 });
+                
                 textboxView.on("focus", () => {
                     toolbarView.tabIndex = "0";
                     displayError(false, id_content);
-                    textboxViewRoot.style.backgroundColor = "";
                 });
                 textboxView.on("blur", () => {
                     toolbarView.tabIndex = "-1";
                     if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
                         displayError(true, id_content, "empty");
-                        setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
                     } else {
                         displayError(false, id_content);
-                        textboxViewRoot.style.backgroundColor = "";
                     };
                 });
                 textboxView.on("keydown", (event, data) => {
@@ -223,20 +232,16 @@ function initCkeditor() {
                 });
                 toolbarView.addEventListener("focus", () => {
                     displayError(false, id_content);
-                    setTimeout(() => { textboxViewRoot.style.backgroundColor = "" }, 1);
                 });
                 toolbarView.addEventListener("keydown", () => {
                     displayError(false, id_content);
-                    textboxViewRoot.style.backgroundColor = "";
                 });
                 toolbarView.addEventListener("keydown", (event) => {
                     if (event.shiftKey && event.key === "Tab") {
                         if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
                             displayError(true, id_content, "empty");
-                            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
                         } else {
                             displayError(false, id_content);
-                            textboxViewRoot.style.backgroundColor = "";
                         };
                     };
                 });
@@ -270,20 +275,17 @@ adjustWidth();
 // Main functions
 //
 
-// function requestCreateNotice() {
-//     let rawData = ckEditor.getData();
-//     let title = rawData.match(/^#\s(.+)$/m);
-
-//     request.url = `${originLocation}/notice/utils/notice`;
-//     request.type = "GET";
-//     request.data = { id: "create_notice", title: `${title}`, category: `${id_category.value}`, content: `${id_expiration_date.value}` };
-//     request.async = true;
-//     request.headers = null;
-//     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
-//     freezeForm(true);
-//     makeAjaxCall(request);
-//     request = {};
-// }
+function requestCreateNotice() {
+    request.url = `${originLocation}/notice/utils/notice`;
+    request.type = "GET";
+    request.data = { id: "create_notice", title: `${title}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.async = true;
+    request.headers = null;
+    code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
 
 function setPage() {
     // Init
@@ -312,7 +314,7 @@ function setPage() {
                 });
                 filteredInputs = inputs.filter(isValid);
                 if (filteredInputs.length == inputs.length) {
-                    if (id_create_or_update_notice.innerText == "만들기") {
+                    if (id_create_or_update_notice.innerText == "작성하기") {
                         requestCreateNotice();
                     } else if (id_create_or_update_notice.innerText == "수정하기") {
                         requestUpdateNotice();

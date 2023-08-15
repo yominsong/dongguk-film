@@ -22,3 +22,16 @@ function blockInAppBrowser() {
 }
 
 blockInAppBrowser();
+
+function displayLoginRequestMsg() {
+    let urlParams = new URLSearchParams(window.location.search);
+    let loginRequestMsg = urlParams.get('loginRequestMsg');
+
+    if (loginRequestMsg == "dflink") {
+        id_login_request_msg.innerText = "동영링크를 새로 만들려면";
+    } else if (loginRequestMsg == "notice") {
+        id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
+    };
+}
+
+displayLoginRequestMsg();

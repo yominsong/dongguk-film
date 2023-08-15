@@ -109,7 +109,12 @@ function initValidation(array, button) {
     inputs.push(...array);
     inputs.forEach((input) => {
         input.addEventListener("keypress", (event) => {
-            if (event.key == "Enter") {
+            if (event.key == "Enter" && input.type == "radio") {
+                input.checked = true;
+                if (lowercaseId(input).indexOf("category") != -1) {
+                    code("id_category").value = input.value;
+                };
+            } else if (event.key == "Enter") {
                 button.click();
             };
         });
@@ -485,6 +490,15 @@ function controlError(input) {
         };
     };
 
+    // textarea
+    if (input.type == "textarea") {
+        if (input.value.length == 0) {
+            displayError(true, input, "empty");
+        } else {
+            return false;
+        };
+    };
+
     return true;
 }
 
@@ -497,34 +511,51 @@ function displayError(bool, input, errorType) {
 
     let errorMsg = code(input, "_error");
 
+    // Change input's style and show error
     if (bool == true) {
-        // Change input's style and show error
         let subject;
         let narrativeClause;
+
+        // checkbox
         if (input.type == "checkbox") {
             input.classList.remove("border-gray-300");
             input.classList.add("bg-flamingo-50");
             input.classList.add("border-4");
             input.classList.add("border-flamingo-300");
-        } else if (input.classList.contains("alt-radio")) {
+        }
+
+        // alt-radio
+        else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
+                // For invisible radio button
                 if (input.classList.contains("sr-only")) {
                     let label = input.closest("label");
                     label.classList.replace("df-ring-inset-gray", "bg-flamingo-50");
                     label.classList.add("hover:df-ring-inset-gray");
-                } else {
+                }
+                // For visible radio button
+                else {
                     input.classList.remove("border-gray-300");
                     input.classList.add("bg-flamingo-50");
                     input.classList.add("border-4");
                     input.classList.add("border-flamingo-300");
                 };
             });
-        } else {
+        }
+
+        // textarea (CKEditor)
+        else if (input.type == "textarea" && input.id == "id_content") {
+            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
+        }
+
+        // else
+        else {
             input.classList.remove("ring-gray-300");
             input.classList.add("bg-flamingo-50");
             input.classList.add("ring-transparent");
         };
+
         if (errorType == "disagree") {
             subject = findLabel(input).replace(" 동의합니다.", "")
             narrativeClause = "동의해주세요.";
@@ -548,19 +579,25 @@ function displayError(bool, input, errorType) {
             narrativeClause = "변경해주세요.";
         } else if (errorType == "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
-            narrativeClause = `유효 범위를 벗어났어요.`;
+            narrativeClause = `유효범위를 벗어났어요.`;
         };
+
         errorMsg.innerText = `${subject} ${narrativeClause}`;
         errorMsg.hidden = false;
+    }
 
-    } else if (bool == false) {
-        // Init input's style and hide error
+    // Init input's style and hide error
+    else if (bool == false) {
+        // checkbox
         if (input.type == "checkbox") {
             input.classList.add("border-gray-300");
             input.classList.remove("bg-flamingo-50");
             input.classList.remove("border-4");
             input.classList.remove("border-flamingo-300");
-        } else if (input.classList.contains("alt-radio")) {
+        }
+
+        // alt-radio
+        else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
                 if (input.classList.contains("sr-only")) {
@@ -574,11 +611,20 @@ function displayError(bool, input, errorType) {
                     input.classList.remove("border-flamingo-300");
                 };
             });
-        } else {
+        }
+
+        // textarea (CKEditor)
+        else if (input.type == "textarea" && input.id == "id_content") {
+            setTimeout(() => { textboxViewRoot.style.backgroundColor = "" }, 1);
+        }
+
+        // else
+        else {
             input.classList.add("ring-gray-300");
             input.classList.remove("bg-flamingo-50");
             input.classList.remove("ring-transparent");
         };
+
         errorMsg.innerText = null;
         errorMsg.hidden = true;
     };

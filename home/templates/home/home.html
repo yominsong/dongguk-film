@@ -172,6 +172,12 @@
                                     <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
                                 </p>
                             </div>
+                            <div class="flex justify-start items-center">
+                                <!-- dflink.expiration_date(<=sm ) -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                    <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
+                                </p>
+                            </div>
                             <input id="id_dflink_{{ dflink.id_string }}"
                                    value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
                                    hidden>
@@ -243,6 +249,12 @@
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500">{{ notice.keywords }}</p>
                                 <!-- notice.listed_date(>sm) -->
                                 <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
+                                </p>
+                            </div>
+                            <div class="flex justify-start items-center">
+                                <!-- notice.listed_date(<=sm ) -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
                                     <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                                 </p>
                             </div>

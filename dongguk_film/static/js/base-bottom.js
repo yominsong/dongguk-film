@@ -16,9 +16,14 @@ hideNavbarAndFooter();
 
 function redirectAfterLoginLogout() {
     let loginsLogouts = document.querySelectorAll(".login-button, .logout-button");
+    let params = {};
 
     loginsLogouts.forEach((loginLogout) => {
-        loginLogout.href = loginLogout.href + "?next=" + location.pathname;
+        if (loginLogout.dataset.loginRequestMsg != undefined) {
+            params.loginRequestMsg = loginLogout.dataset.loginRequestMsg;
+        };
+        params.next = location.pathname;
+        loginLogout.href += "?" + new URLSearchParams(params).toString();
     });
 }
 
