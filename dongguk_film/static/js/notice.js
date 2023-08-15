@@ -3,13 +3,17 @@
 //
 
 const id_notice_modal = document.getElementById("id_notice_modal");
+const id_string_id = document.getElementById("id_string_id");
+const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
 
-let ckeditor;
+let stepOnes = document.querySelectorAll(".step-one");
+let filteredInputs = [];
+let ckEditor, toolbarView, textboxModel, textboxView, textboxViewRoot;
 
 //
 // Sub functions
@@ -50,6 +54,7 @@ function searchNotice() {
 searchNotice();
 
 function initNoticeForm() {
+    id_title.value = null;
     id_category.value = null;
     id_category_serv.checked = false;
     id_category_dept.checked = false;
@@ -64,53 +69,49 @@ function initNoticeForm() {
     radioInputs.forEach((input) => {
         const label = input.closest("label");
         const svg = label.querySelector("svg");
-        const span = label.querySelector("span[aria-hidden='true']");
 
         input.addEventListener("focus", () => {
+            label.classList.add("df-focus-ring-inset");
             svg.classList.remove("invisible");
-            span.classList.add("df-focus-ring-inset");
         });
 
         input.addEventListener("blur", () => {
             if (!input.checked) {
                 svg.classList.add("invisible");
-                span.classList.remove("df-ring-inset-flamingo");
-                span.classList.add("df-ring-inset-gray");
             }
-            span.classList.remove("df-focus-ring-inset");
+            label.classList.remove("df-focus-ring-inset");
         });
 
         input.addEventListener("change", () => {
             if (input.checked) {
+                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
                 svg.classList.remove("invisible");
-                span.classList.remove("df-ring-inset-gray");
-                span.classList.add("df-ring-inset-flamingo");
             } else {
                 svg.classList.add("invisible");
             };
 
             const otherInputs = [...radioInputs].filter(i => i !== input);
             otherInputs.forEach(i => {
-                const otherSvg = i.closest("label").querySelector("svg");
-                const otherSpan = i.closest("label").querySelector("span[aria-hidden='true']");
+                const otherLabel = i.closest("label")
+                const otherSvg = otherLabel.querySelector("svg");
                 if (!i.checked) {
+                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
                     otherSvg.classList.add("invisible");
-                    otherSpan.classList.remove("df-ring-inset-flamingo");
-                    otherSpan.classList.add("df-ring-inset-gray");
                 };
             });
         });
 
         if (!input.checked) {
+            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
             svg.classList.add("invisible");
-            span.classList.remove("df-ring-inset-flamingo");
-            span.classList.add("df-ring-inset-gray");
         } else {
-            span.classList.add("df-ring-inset-flamingo");
+            label.classList.add("df-ring-inset-flamingo");
         };
     });
 
-    ckeditor.setData("");
+    ckEditor.setData("");
+
+
 }
 
 function controlNoticeModal() {
@@ -136,35 +137,8 @@ function controlNoticeModal() {
                             enableFocus();
                         };
                     });
-
-                    // Control tabindex of toolbar
-                    const textbox = document.querySelector("div[role='textbox']");
-                    const toolbar = document.querySelector("div[role='toolbar']");
-                    const targetElement = document.querySelector(".ck-toolbar__items").children[0].children[0];
-                    
-                    textbox.addEventListener("focus", () => {
-                        toolbar.tabIndex = 0;
-                    });
-
-                    textbox.addEventListener("blur", () => {
-                        toolbar.tabIndex = -1;
-                    });
-
-                    textbox.addEventListener("keydown", (event) => {
-                        if (event.key === "Tab" && event.shiftKey) {
-                            targetElement.focus();
-                            event.preventDefault();
-                        };
-                    });
-
-                    toolbar.addEventListener("keydown", (event) => {
-                        if (event.key === "Tab" && !event.shiftKey) {
-                            textbox.focus();
-                            event.preventDefault();
-                        };
-                    });
-
-                    toolbar.tabIndex = -1;
+                    ckEditor.destroy();
+                    initCkeditor();
                 };
             });
         });
@@ -177,17 +151,24 @@ function controlNoticeModal() {
                         if (type == "click" || event.key == "Enter") {
                             let notice_id = adjust.id.replace("id_adjust_notice_", "");
                             let notice = code("id_notice_", notice_id).value.split(",");
+                            let label, svg;
                             class_keywords.forEach(keyword => {
                                 keyword.innerText = "수정하기";
                             });
-                            // id_title.value = notice[3];
-                            if (notice[4] == "서비스") {
+                            id_title.value = notice[1];
+                            if (notice[2] == "서비스") {
                                 id_category.value = "서비스";
                                 id_category_serv.checked = true;
-                            } else if (notice[4] == "학과") {
+                                label = id_category_serv.closest("label");
+                            } else if (notice[2] == "학과") {
                                 id_category.value = "학과";
                                 id_category_dept.checked = true;
+                                label = id_category_dept.closest("label");
                             };
+                            label.classList.remove("df-ring-inset-gray");
+                            label.classList.add("df-ring-inset-flamingo");
+                            svg = label.querySelector("svg");
+                            svg.classList.remove("invisible");
                             id_delete_notice.classList.replace("hidden", "inline-flex");
                         };
                     });
@@ -204,12 +185,61 @@ function initCkeditor() {
 
     if (userIsAuthenticated) {
         ClassicEditor
-            .create(document.querySelector("#id_content"), {
-                language: "ko"
+            .create(document.querySelector("#id_editor"), {
+                removePlugins: ["Title"],
+                language: "ko",
+                placeholder: "여기에 내용을 입력하세요. URL을 입력하면 링크나 동영상이 자동으로 삽입됩니다."
             })
             .then(editor => {
-                ckeditor = editor;
-                console.log(editor);
+                ckEditor = editor;
+                toolbarView = ckEditor.ui.view.toolbar.element;
+                textboxModel = ckEditor.model.document;
+                textboxView = ckEditor.editing.view.document;
+                textboxViewRoot = ckEditor.editing.view.getDomRoot();
+
+                textboxModel.on("change:data", () => {
+                    id_content.value = ckEditor.getData();
+                });
+                textboxView.on("focus", () => {
+                    toolbarView.tabIndex = "0";
+                    displayError(false, id_content);
+                    textboxViewRoot.style.backgroundColor = "";
+                });
+                textboxView.on("blur", () => {
+                    toolbarView.tabIndex = "-1";
+                    if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
+                        displayError(true, id_content, "empty");
+                        setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
+                    } else {
+                        displayError(false, id_content);
+                        textboxViewRoot.style.backgroundColor = "";
+                    };
+                });
+                textboxView.on("keydown", (event, data) => {
+                    if (data.shiftKey && data.keyCode == 9) {
+                        setTimeout(() => { toolbarView.querySelector(".ck-font-size-dropdown").querySelector("button").focus() }, 1);
+                        event.stop();
+                    };
+                });
+                toolbarView.addEventListener("focus", () => {
+                    displayError(false, id_content);
+                    setTimeout(() => { textboxViewRoot.style.backgroundColor = "" }, 1);
+                });
+                toolbarView.addEventListener("keydown", () => {
+                    displayError(false, id_content);
+                    textboxViewRoot.style.backgroundColor = "";
+                });
+                toolbarView.addEventListener("keydown", (event) => {
+                    if (event.shiftKey && event.key === "Tab") {
+                        if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
+                            displayError(true, id_content, "empty");
+                            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
+                        } else {
+                            displayError(false, id_content);
+                            textboxViewRoot.style.backgroundColor = "";
+                        };
+                    };
+                });
             })
             .catch(err => {
                 console.error(err.stack);
@@ -240,4 +270,76 @@ adjustWidth();
 // Main functions
 //
 
-// None
+// function requestCreateNotice() {
+//     let rawData = ckEditor.getData();
+//     let title = rawData.match(/^#\s(.+)$/m);
+
+//     request.url = `${originLocation}/notice/utils/notice`;
+//     request.type = "GET";
+//     request.data = { id: "create_notice", title: `${title}`, category: `${id_category.value}`, content: `${id_expiration_date.value}` };
+//     request.async = true;
+//     request.headers = null;
+//     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+//     freezeForm(true);
+//     makeAjaxCall(request);
+//     request = {};
+// }
+
+function setPage() {
+    // Init
+    let categoryInputs = document.querySelectorAll("input[name='id_category']");
+    categoryInputs.forEach((input) => {
+        input.addEventListener("click", () => {
+            if (input == id_category_serv) {
+                id_category.value = input.value;
+            } else if (input == id_category_dept) {
+                id_category.value = input.value;
+            };
+        });
+    });
+
+    // Step one (first and last)
+    initValidation(stepOnes, id_create_or_update_notice);
+    ["click", "keyup"].forEach(type => {
+        id_create_or_update_notice.addEventListener(type, (event) => {
+            if (type == "click" || event.key == "Enter") {
+                Array.from(radios).forEach((radio) => {
+                    let idx = inputs.indexOf(radio);
+                    while (idx > -1) {
+                        inputs.splice(idx, 1);
+                        idx = inputs.indexOf(radio);
+                    };
+                });
+                filteredInputs = inputs.filter(isValid);
+                if (filteredInputs.length == inputs.length) {
+                    if (id_create_or_update_notice.innerText == "만들기") {
+                        requestCreateNotice();
+                    } else if (id_create_or_update_notice.innerText == "수정하기") {
+                        requestUpdateNotice();
+                    };
+                    displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
+                    displayButtonMsg(false, id_create_or_update_notice, "error");
+                } else {
+                    inputs.forEach((input) => {
+                        controlError(input);
+                    });
+                };
+            };
+            ["keydown", "focusin"].forEach((type) => {
+                inputs.forEach((input) => {
+                    input.addEventListener(type, () => {
+                        displayButtonMsg(false, id_create_or_update_notice, "error");
+                    });
+                });
+            });
+        });
+        id_delete_notice.addEventListener(type, (event) => {
+            if (type == "click" || event.key == "Enter") {
+                requestDeleteNotice();
+                displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+            };
+        });
+    });
+}
+
+if (id_notice_modal != null) { setPage() };

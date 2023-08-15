@@ -177,7 +177,7 @@
                         </div>
                     {% endif %}
                     <input id="id_notice_{{ notice.id_string }}"
-                           value="{{ notice.id_string }}{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
+                           value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
                            hidden>
                 </li>
             {% empty %}

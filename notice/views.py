@@ -23,12 +23,19 @@ def notice(request):
         query_result_list = []
         for notice in notice_list:
             for k, v in notice.items():
-                if v is not None and k != "user" and q in str(v) and notice not in query_result_list:
-                    if k == "file":
-                        if q in v["name"]:    
-                            query_result_list.append(notice)
-                    else:
-                        query_result_list.append(notice)
+                if (
+                    k != "user"
+                    and (
+                        (k != "file" and q.lower() in v.lower())
+                        or (
+                            k == "file"
+                            and v is not None
+                            and q.lower() in v["name"].lower()
+                        )
+                    )
+                    and notice not in query_result_list
+                ):
+                    query_result_list.append(notice)
         notice_list = query_result_list
         query_result_count = len(query_result_list)
         query_param = f"q={q}&"

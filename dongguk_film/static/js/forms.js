@@ -138,6 +138,8 @@ function code(one, two) {
         result = one + two;
     };
 
+    result = document.querySelector(`#${result}`);
+
     return eval(result);
 }
 
@@ -507,10 +509,16 @@ function displayError(bool, input, errorType) {
         } else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
-                input.classList.remove("border-gray-300");
-                input.classList.add("bg-flamingo-50");
-                input.classList.add("border-4");
-                input.classList.add("border-flamingo-300");
+                if (input.classList.contains("sr-only")) {
+                    let label = input.closest("label");
+                    label.classList.replace("df-ring-inset-gray", "bg-flamingo-50");
+                    label.classList.add("hover:df-ring-inset-gray");
+                } else {
+                    input.classList.remove("border-gray-300");
+                    input.classList.add("bg-flamingo-50");
+                    input.classList.add("border-4");
+                    input.classList.add("border-flamingo-300");
+                };
             });
         } else {
             input.classList.remove("ring-gray-300");
@@ -555,10 +563,16 @@ function displayError(bool, input, errorType) {
         } else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
-                input.classList.add("border-gray-300");
-                input.classList.remove("bg-flamingo-50");
-                input.classList.remove("border-4");
-                input.classList.remove("border-flamingo-300");
+                if (input.classList.contains("sr-only")) {
+                    let label = input.closest("label");
+                    label.classList.replace("bg-flamingo-50", "df-ring-inset-gray");
+                    label.classList.remove("hover:df-ring-inset-gray");
+                } else {
+                    input.classList.add("border-gray-300");
+                    input.classList.remove("bg-flamingo-50");
+                    input.classList.remove("border-4");
+                    input.classList.remove("border-flamingo-300");
+                };
             });
         } else {
             input.classList.add("ring-gray-300");
