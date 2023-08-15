@@ -140,8 +140,8 @@ function displayNoti(bool, notiType, param = null) {
         // notice
         else if (notiType == "RSL") {
             notiIcon = infoIcon;
-            notiTitle = "YouTube 공유 링크를 붙여넣기 해보세요.";
-            notiContent = "YouTube에서 '공유' 버튼을 누르면 공유 전용 링크가 생성돼요. 해당 링크를 복사해서 이곳에 붙여넣으면 자동으로 동영상이 삽입돼요.";
+            notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
+            notiContent = "YouTube에서 '공유' 버튼을 클릭해 링크를 복사하세요. 그리고 이곳에 붙여넣으면 자동으로 동영상이 삽입돼요.";
         };
 
         notiFormat = `
