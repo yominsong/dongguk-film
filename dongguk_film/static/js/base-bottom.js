@@ -19,9 +19,6 @@ function redirectAfterLoginLogout() {
     let params = {};
 
     loginsLogouts.forEach((loginLogout) => {
-        if (loginLogout.dataset.loginRequestMsg != undefined) {
-            params.loginRequestMsg = loginLogout.dataset.loginRequestMsg;
-        };
         params.next = location.pathname;
         loginLogout.href += "?" + new URLSearchParams(params).toString();
     });

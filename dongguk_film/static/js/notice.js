@@ -8,6 +8,7 @@ const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
+const id_content = document.getElementById("id_content");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
 
@@ -278,7 +279,7 @@ adjustWidth();
 function requestCreateNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "GET";
-    request.data = { id: "create_notice", title: `${title}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.data = { id: "create_notice", title: `${id_title}`, category: `${id_category.value}`, content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");

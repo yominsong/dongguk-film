@@ -25,11 +25,11 @@ blockInAppBrowser();
 
 function displayLoginRequestMsg() {
     let urlParams = new URLSearchParams(window.location.search);
-    let loginRequestMsg = urlParams.get('loginRequestMsg');
+    let next = urlParams.get("next");
 
-    if (loginRequestMsg == "dflink") {
+    if (next.includes("dflink")) {
         id_login_request_msg.innerText = "동영링크를 새로 만들려면";
-    } else if (loginRequestMsg == "notice") {
+    } else if (next.includes("notice")) {
         id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
     };
 }
