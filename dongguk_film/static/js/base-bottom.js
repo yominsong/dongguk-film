@@ -25,3 +25,20 @@ function redirectAfterLoginLogout() {
 }
 
 redirectAfterLoginLogout();
+
+function announceConstruction() {
+    let allUc = document.querySelectorAll(".under-construction");
+
+    allUc.forEach(uc => {
+        ["click", "keyup"].forEach(type => {
+            uc.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    displayNoti(true, "NUC");
+                    console.log("asdf");
+                };
+            });
+        });
+    });
+}
+
+announceConstruction();

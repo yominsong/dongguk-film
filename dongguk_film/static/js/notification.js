@@ -25,6 +25,7 @@ function editXDate(notiType, bool) {
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
  * - `RSL`: Request YouTube Share Link
+ * - `NUC`: Notify Under Construction
  * @param {string|null} param Additional information to add to the notification
  */
 function displayNoti(bool, notiType, param = null) {
@@ -88,6 +89,7 @@ function displayNoti(bool, notiType, param = null) {
             <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
         </svg>
         `;
+
         let refreshIconInline = `
         <svg xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -136,12 +138,19 @@ function displayNoti(bool, notiType, param = null) {
             notiTitle = "존재하지 않는 동영링크예요.";
             notiContent = "주소가 잘못되었거나 삭제된 동영링크예요.";
         }
-        
+
         // notice
         else if (notiType == "RSL") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
             notiContent = "YouTube에서 '공유' 버튼을 클릭해 링크를 복사하세요. 그리고 이곳에 붙여넣으면 자동으로 동영상이 삽입돼요.";
+        }
+
+        // everywhere
+        else if (notiType == "NUC") {
+            notiIcon = infoIcon;
+            notiTitle = "아직 준비 중인 기능이에요."
+            notiContent = "언젠가 출시될 기능이에요! 그 언젠가는...";
         };
 
         notiFormat = `
