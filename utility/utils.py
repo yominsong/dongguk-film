@@ -5,10 +5,16 @@ from requests.adapters import HTTPAdapter
 from fake_useragent import UserAgent
 from .img import save_img
 from .msg import send_msg
-import json, re, requests, pytz, datetime
+import json, re, requests, pytz, datetime, openai
+
+#
+# Global constants and variables
+#
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
 NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
+OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
+OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 
 #
 # Cron functions
@@ -108,6 +114,33 @@ def reg_test(value: str, type: str):
     return result
 
 
+def chap_gpt(prompt: str):
+    openai.organization = OPENAI_ORG
+    openai.api_key = OPENAI_API_KEY
+    openai.Model.list()
+
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+    }
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        "temperature": 0,
+    }
+    openai_response = requests.post(url, headers=headers, data=json.dumps(data)).json()[
+        "choices"
+    ][0]["message"]["content"]
+
+    return openai_response
+
+
 def query_notion_db(notion_db_name, limit: int = None):
     url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID[notion_db_name]}/query"
     payload = {"page_size": limit} if limit != None else None
@@ -131,13 +164,10 @@ def query_notion_db(notion_db_name, limit: int = None):
                         "plain_text"
                     ],
                     "category": notices[i]["properties"]["Category"]["select"]["name"],
-                    "summary": notices[i]["properties"]["Summary"]["rich_text"][0][
+                    "keyword": notices[i]["properties"]["Keyword"]["rich_text"][0][
                         "plain_text"
                     ],
-                    "keywords": notices[i]["properties"]["Keywords"]["rich_text"][0][
-                        "plain_text"
-                    ],
-                    "user": str(notices[i]["properties"]["User ID"]["number"]),
+                    "user": str(notices[i]["properties"]["User"]["number"]),
                     "listed_date": listed_time_kor.strftime("%Y-%m-%d"),
                 }
                 try:

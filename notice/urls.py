@@ -1,8 +1,11 @@
 from django.urls import path
-from .views import *
+from . import views, utils
 
 
 app_name = "notice"
 urlpatterns = [
-    path("", notice, name="notice"),
+    # views.py
+    path("", views.notice, name="notice"),
+    # utils.py
+    path("utils/notice", utils.notice),
 ]

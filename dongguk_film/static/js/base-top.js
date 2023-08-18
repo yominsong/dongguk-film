@@ -102,8 +102,8 @@ function handleAjaxCallback(response) {
     let resID = response.id
     let resResult = response.result;
 
+    // requestWeather()
     if (resID == "weather") {
-        // requestWeather()
         let notified = false;
 
         pulseOn.forEach((item) => {
@@ -147,8 +147,10 @@ function handleAjaxCallback(response) {
         id_get_weather.classList.add("cursor-pointer");
         id_get_weather.classList.add("hover:cursor-pointer");
 
-    } else if (resID == "create_vcode_for_SNP") {
-        // requestCreateVcodeForSNP()
+    }
+
+    // requestCreateVcodeForSNP()
+    else if (resID == "create_vcode_for_SNP") {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_vcode, "descr", resResult.msg);
             displayButtonMsg(false, id_create_vcode, "error");
@@ -170,8 +172,10 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (resID == "confirm_vcode_for_SNP") {
-        // requestConfirmVcodeForSNP()
+    }
+    
+    // requestConfirmVcodeForSNP()
+    else if (resID == "confirm_vcode_for_SNP") {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_confirm_vcode, "descr", resResult.msg);
             displayButtonMsg(false, id_confirm_vcode, "error");
@@ -191,8 +195,10 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (resID == "create_dflink") {
-        // requestCreateDflink()
+    }
+    
+    // requestCreateDflink()
+    else if (resID == "create_dflink") {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
@@ -210,8 +216,10 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (resID == "update_dflink") {
-        // requestUpdateDflink()
+    }
+    
+    // requestUpdateDflink()
+    else if (resID == "update_dflink") {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
@@ -229,8 +237,10 @@ function handleAjaxCallback(response) {
             spin.classList.add("hidden");
         });
 
-    } else if (resID == "delete_dflink") {
-        // requestDeleteDflink()
+    }
+    
+    // requestDeleteDflink()
+    else if (resID == "delete_dflink") {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_delete_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_dflink, "error");
@@ -246,5 +256,26 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+    }
+
+    // requestCreateNotice()
+    else if (resID == "create_notice") {
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
+            displayButtonMsg(false, id_create_or_update_notice, "error");
+            location.href = originLocation + "/notice";
+        } else if (resResult.status == "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+            displayButtonMsg(false, id_create_or_update_notice, "descr");
+            displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+
     };
 }

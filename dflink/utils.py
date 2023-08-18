@@ -4,17 +4,21 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test, set_headers
-from fake_useragent import UserAgent
-import openai, json, requests
+from utility.utils import reg_test, set_headers, chap_gpt
+import requests
+
+#
+# Global constants and variables
+#
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
 NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
-OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+
+global need_www
+need_www = False
 
 #
 # Cron functions
@@ -55,10 +59,6 @@ def delete_expired_dflinks(request):
 #
 
 
-global need_www
-need_www = False
-
-
 def short_io(limit: int = None):
     url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
     url = url if limit == None else url + f"&limit={limit}"
@@ -85,33 +85,6 @@ def short_io(limit: int = None):
         pass
 
     return dflink_list
-
-
-def chap_gpt(prompt: str):
-    openai.organization = OPENAI_ORG
-    openai.api_key = OPENAI_API_KEY
-    openai.Model.list()
-
-    url = "https://api.openai.com/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-    }
-    data = {
-        "model": "gpt-3.5-turbo",
-        "messages": [
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        "temperature": 0,
-    }
-    openai_response = requests.post(url, headers=headers, data=json.dumps(data)).json()[
-        "choices"
-    ][0]["message"]["content"]
-
-    return openai_response
 
 
 def has_www(original_url: str):

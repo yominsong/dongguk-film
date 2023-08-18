@@ -278,8 +278,8 @@ adjustWidth();
 
 function requestCreateNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
-    request.type = "GET";
-    request.data = { id: "create_notice", title: `${id_title}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.type = "POST";
+    request.data = { id: "create_notice", title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");

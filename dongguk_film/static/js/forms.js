@@ -89,7 +89,23 @@ function freezeForm(bool) {
         if (input.type == "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
         } else if (input.classList.contains("alt-radio")) {
-            bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false })
+            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+            originalInputs.forEach((input) => {
+                // invisible radio button
+                if (input.classList.contains("sr-only")) {
+                    let label = input.closest("label");
+                    if (bool) {
+                        label.classList.replace("hover:bg-gray-50", "bg-gray-100");
+                        label.classList.replace("cursor-pointer", "cursor-not-allowed");
+                    } else {
+                        label.classList.replace("bg-gray-100", "hover:bg-gray-50");
+                        label.classList.replace("cursor-not-allowed", "cursor-pointer");
+                    };
+                };
+                bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false });
+            });
+        } else if (input.type == "textarea" && ckEditor) {
+            ckEditor.enableReadOnlyMode(input.id);
         } else {
             bool ? input.readOnly = true : input.readOnly = false;
         };
@@ -528,13 +544,13 @@ function displayError(bool, input, errorType) {
         else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
-                // For invisible radio button
+                // invisible radio button
                 if (input.classList.contains("sr-only")) {
                     let label = input.closest("label");
                     label.classList.replace("df-ring-inset-gray", "bg-flamingo-50");
                     label.classList.add("hover:df-ring-inset-gray");
                 }
-                // For visible radio button
+                // visible radio button
                 else {
                     input.classList.remove("border-gray-300");
                     input.classList.add("bg-flamingo-50");
@@ -546,7 +562,7 @@ function displayError(bool, input, errorType) {
 
         // textarea (CKEditor)
         else if (input.type == "textarea" && input.id == "id_content") {
-            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF" }, 1);
+            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF"; textboxViewRoot.style.boxShadow = "none" }, 1);
         }
 
         // else
@@ -600,11 +616,14 @@ function displayError(bool, input, errorType) {
         else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
             originalInputs.forEach((input) => {
+                // invisible radio button
                 if (input.classList.contains("sr-only")) {
                     let label = input.closest("label");
                     label.classList.replace("bg-flamingo-50", "df-ring-inset-gray");
                     label.classList.remove("hover:df-ring-inset-gray");
-                } else {
+                }
+                // visible radio button
+                else {
                     input.classList.add("border-gray-300");
                     input.classList.remove("bg-flamingo-50");
                     input.classList.remove("border-4");
@@ -614,9 +633,7 @@ function displayError(bool, input, errorType) {
         }
 
         // textarea (CKEditor)
-        else if (input.type == "textarea" && input.id == "id_content") {
-            setTimeout(() => { textboxViewRoot.style.backgroundColor = "" }, 1);
-        }
+        // Don't need to do anything because CKEditor will initialize it.
 
         // else
         else {
