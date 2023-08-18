@@ -1,4 +1,11 @@
 //
+// Global constants and variables
+//
+
+let timer;
+let clickCount = 0;
+
+//
 // Sub functions
 //
 
@@ -27,14 +34,35 @@ function redirectAfterLoginLogout() {
 redirectAfterLoginLogout();
 
 function announceConstruction() {
-    let allUc = document.querySelectorAll(".under-construction");
+    let ucs = document.querySelectorAll(".under-construction");
 
-    allUc.forEach(uc => {
+    ucs.forEach(uc => {
         ["click", "keyup"].forEach(type => {
             uc.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
-                    displayNoti(true, "NUC");
-                    console.log("asdf");
+                    if (timer) { clearTimeout(timer) };
+                    clickCount++;
+                    if (clickCount > 5) { clickCount = 1 };
+                    let message = "";
+                    switch (clickCount) {
+                        case 1:
+                            message = "분명 언젠가는...";
+                            break;
+                        case 2:
+                            message = "장담할 순 없지만...";
+                            break;
+                        case 3:
+                            message = "학우 여러분을 위해...";
+                            break;
+                        case 4:
+                            message = "늦더라도 제대로 만들어서...";
+                            break;
+                        case 5:
+                            message = "제 몸을 갈아서라도...";
+                            break;
+                    };
+                    displayNoti(true, "NUC", message);
+                    timer = setTimeout(() => { displayNoti(false, "NUC") }, 3000);
                 };
             });
         });

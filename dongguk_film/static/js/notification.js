@@ -150,7 +150,7 @@ function displayNoti(bool, notiType, param = null) {
         else if (notiType == "NUC") {
             notiIcon = infoIcon;
             notiTitle = "아직 준비 중인 기능이에요."
-            notiContent = "언젠가 출시될 기능이에요! 그 언젠가는...";
+            notiContent = `언젠가 출시될 거예요! ${param}`;
         };
 
         notiFormat = `
