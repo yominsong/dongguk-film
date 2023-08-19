@@ -15,6 +15,8 @@ NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
 NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
+SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
+SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 #
 # Cron functions
@@ -60,6 +62,17 @@ def update_img(request):
 def set_headers(type: str):
     if type == "RANDOM":
         headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+    elif type == "OPEN_AI":
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+        }
+    elif type == "SHORT_IO":
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": SHORT_IO_API_KEY,
+        }
     elif type == "NOTION":
         headers = {
             "Authorization": f"Bearer {NOTION_SECRET}",
@@ -120,10 +133,6 @@ def chap_gpt(prompt: str):
     openai.Model.list()
 
     url = "https://api.openai.com/v1/chat/completions"
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-    }
     data = {
         "model": "gpt-3.5-turbo",
         "messages": [
@@ -134,11 +143,112 @@ def chap_gpt(prompt: str):
         ],
         "temperature": 0,
     }
-    openai_response = requests.post(url, headers=headers, data=json.dumps(data)).json()[
-        "choices"
-    ][0]["message"]["content"]
+    openai_response = requests.post(
+        url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
+    ).json()["choices"][0]["message"]["content"]
 
     return openai_response
+
+
+def short_io(endpoint: str, request=None, limit: int = None):
+    """
+    - endpoint | `str`:
+        - retrieve
+        - create
+        - update
+        - delete
+    - request | `HttpRequest`
+    - limit | `int`
+    """
+
+    # endpoint: retrieve
+    if endpoint == "retrieve":
+        url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
+        url = url if limit == None else url + f"&limit={limit}"
+        response = requests.get(url, headers=set_headers("SHORT_IO")).json()
+
+        dflink_count = int(response["count"]) - 1 if limit == None else limit
+        dflinks = response["links"]
+        dflink_list = []
+
+        try:
+            for i in range(dflink_count):
+                dflink = {
+                    "id_string": dflinks[i]["idString"],
+                    "original_url": dflinks[i]["originalURL"],
+                    "slug": dflinks[i]["path"],
+                    "title": dflinks[i]["title"],
+                    "category": dflinks[i]["tags"][0],
+                    "user": dflinks[i]["tags"][1],
+                    "expiration_date": dflinks[i]["tags"][2],
+                }
+                dflink_list.append(dflink)
+        except:
+            pass
+
+        result = dflink_list
+
+    # endpoint: create
+    elif endpoint == "create":
+        original_url = request.GET["original_url"]
+        dflink_slug = request.GET["dflink_slug"]
+        title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
+
+        url = "https://api.short.io/links"
+        payload = {
+            "tags": [category, f"{request.user}", expiration_date],
+            "domain": "dgufilm.link",
+            "allowDuplicates": True,
+            "originalURL": original_url,
+            "path": dflink_slug,
+            "title": title,
+        }
+        response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
+
+        result = response
+
+    # endpoint: update
+    elif endpoint == "update":
+        string_id = request.GET["string_id"]
+        original_url = request.GET["original_url"]
+        dflink_slug = request.GET["dflink_slug"]
+        title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
+
+        url = f"https://api.short.io/links/{string_id}"
+        payload = {
+            "tags": [category, f"{request.user}", expiration_date],
+            "originalURL": original_url,
+            "path": dflink_slug,
+            "title": title,
+        }
+        response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
+
+        result = response
+
+    # endpoint: delete
+    elif endpoint == "delete":
+        string_id = request.GET["string_id"]
+        dflink_slug = request.GET["dflink_slug"]
+
+        url = (
+            f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
+        )
+        response = requests.get(url, headers=set_headers("SHORT_IO")).json()
+        original_url = response["originalURL"]
+        title = response["title"]
+        category = response["tags"][0]
+        expiration_date = response["tags"][2]
+
+        url = f"https://api.short.io/links/{string_id}"
+        response = requests.delete(url, headers=set_headers("SHORT_IO"))
+
+        result = response
+
+    return result
 
 
 def query_notion_db(notion_db_name, limit: int = None):

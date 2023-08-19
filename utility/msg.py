@@ -277,7 +277,7 @@ def send_msg(request, type: str, channel: str, extra=None):
     elif type == "DLA":
         sub_content = ""
         for i in range(len(extra)):
-            new_line = f"\nㆍ[{extra[i]['category']}] {extra[i]['dflink']} {extra[i]['title']}"
+            new_line = f"\nㆍ[{extra[i]['category']}] https://dgufilm.link/{extra[i]['slug']} {extra[i]['title']}"
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
         main_content = {
