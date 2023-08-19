@@ -116,6 +116,24 @@ def notice(request):
         if status == None:
             url = "https://api.notion.com/v1/pages"
             keyword = create_hashtag(title, content)
+            content_chunks = [
+                content[i : i + 2000] for i in range(0, len(content), 2000)
+            ]
+            paragraph_list = [
+                {
+                    "object": "block",
+                    "type": "paragraph",
+                    "paragraph": {
+                        "rich_text": [
+                            {
+                                "type": "text",
+                                "text": {"content": chunk},
+                            }
+                        ]
+                    },
+                }
+                for chunk in content_chunks
+            ]
             payload = {
                 "parent": {"database_id": NOTION_DB_ID["notice-db"]},
                 "properties": {
@@ -128,20 +146,7 @@ def notice(request):
                     "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
                     "User": {"number": int(f"{request.user}")},
                 },
-                "children": [
-                    {
-                        "object": "block",
-                        "type": "paragraph",
-                        "paragraph": {
-                            "rich_text": [
-                                {
-                                    "type": "text",
-                                    "text": {"content": content},
-                                }
-                            ]
-                        },
-                    }
-                ],
+                "children": paragraph_list,
             }
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
@@ -158,7 +163,7 @@ def notice(request):
             else:
                 status = "FAIL"
                 reason = "알 수 없는 오류"
-                msg = "앗, 알 수 없는 문제가 생겼어요!"
+                msg = response
                 element = None
 
         response = {
@@ -167,7 +172,7 @@ def notice(request):
                 "status": status,
                 "reason": reason,
                 "msg": msg,
-                "notion_url": response["url"],
+                "notion_url": response["url"] if status == "DONE" else None,
                 "title": title,
                 "category": category,
                 "keyword": keyword,
@@ -175,7 +180,7 @@ def notice(request):
             },
         }
         if status == "FAIL":
-            response["result"].update({"element": element})
+            response["result"].update({"notion_url": None, "element": element})
         send_msg(request, "NTC", "MGT", response)
 
     return JsonResponse(response)

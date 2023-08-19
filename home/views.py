@@ -30,7 +30,7 @@ def home(request):
     )
 
     image_list = get_img("home")
-    dflink_list = short_io(5)
+    dflink_list = short_io("retrieve", limit=5)
     notice_list = query_notion_db("notice-db", 5)
 
     return render(

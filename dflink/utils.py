@@ -59,32 +59,114 @@ def delete_expired_dflinks(request):
 #
 
 
-def short_io(limit: int = None):
-    url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
-    url = url if limit == None else url + f"&limit={limit}"
-    headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-    response = requests.get(url, headers=headers).json()
+def short_io(endpoint: str, request=None, limit: int = None):
+    """
+    - endpoint | `str`:
+        - retrieve
+        - create
+        - update
+        - delete
+    - request | `HttpRequest`
+    - limit | `int`
+    """
 
-    dflink_count = int(response["count"]) - 1 if limit == None else limit
-    dflinks = response["links"]
-    dflink_list = []
+    if endpoint == "retrieve":
+        url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
+        url = url if limit == None else url + f"&limit={limit}"
+        headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
+        response = requests.get(url, headers=headers).json()
 
-    try:
-        for i in range(dflink_count):
-            dflink = {
-                "id_string": dflinks[i]["idString"],
-                "original_url": dflinks[i]["originalURL"],
-                "slug": dflinks[i]["path"],
-                "title": dflinks[i]["title"],
-                "category": dflinks[i]["tags"][0],
-                "user": dflinks[i]["tags"][1],
-                "expiration_date": dflinks[i]["tags"][2],
-            }
-            dflink_list.append(dflink)
-    except:
-        pass
+        dflink_count = int(response["count"]) - 1 if limit == None else limit
+        dflinks = response["links"]
+        dflink_list = []
 
-    return dflink_list
+        try:
+            for i in range(dflink_count):
+                dflink = {
+                    "id_string": dflinks[i]["idString"],
+                    "original_url": dflinks[i]["originalURL"],
+                    "slug": dflinks[i]["path"],
+                    "title": dflinks[i]["title"],
+                    "category": dflinks[i]["tags"][0],
+                    "user": dflinks[i]["tags"][1],
+                    "expiration_date": dflinks[i]["tags"][2],
+                }
+                dflink_list.append(dflink)
+        except:
+            pass
+
+        result = dflink_list
+
+    elif endpoint == "create":
+        original_url = request.GET["original_url"]
+        dflink_slug = request.GET["dflink_slug"]
+        title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
+
+        url = "https://api.short.io/links"
+        payload = {
+            "tags": [category, f"{request.user}", expiration_date],
+            "domain": "dgufilm.link",
+            "allowDuplicates": True,
+            "originalURL": original_url,
+            "path": dflink_slug,
+            "title": title,
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": SHORT_IO_API_KEY,
+        }
+        response = requests.post(url, json=payload, headers=headers)
+
+        result = response
+
+    elif endpoint == "update":
+        string_id = request.GET["string_id"]
+        original_url = request.GET["original_url"]
+        dflink_slug = request.GET["dflink_slug"]
+        title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
+
+        url = f"https://api.short.io/links/{string_id}"
+        payload = {
+            "tags": [category, f"{request.user}", expiration_date],
+            "originalURL": original_url,
+            "path": dflink_slug,
+            "title": title,
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": SHORT_IO_API_KEY,
+        }
+        response = requests.post(url, json=payload, headers=headers)
+
+        result = response
+
+    elif endpoint == "delete":
+        string_id = request.GET["string_id"]
+        dflink_slug = request.GET["dflink_slug"]
+
+        url = (
+            f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
+        )
+        headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
+        response = requests.get(url, headers=headers).json()
+        original_url = response["originalURL"]
+        title = response["title"]
+        category = response["tags"][0]
+        expiration_date = response["tags"][2]
+
+        url = f"https://api.short.io/links/{string_id}"
+        headers = {"Authorization": SHORT_IO_API_KEY}
+        response = requests.delete(url, headers=headers)
+
+        result = response
+
+    return result
 
 
 def has_www(original_url: str):
@@ -264,21 +346,26 @@ def is_valid(request):
     return result
 
 
-def validation(data: dict):
+def validation(request):
     """
-    - data | `dict`:
+    - request | `HttpRequest`:
         - id
+            - create_dflink
+            - update_dflink
+            - delete_dflink
+        - string_id
         - original_url
         - dflink_slug
         - title
+        - category
+        - expiration_date
         - request
     """
 
-    id = data["id"]
-    original_url = data["original_url"]
-    dflink_slug = data["dflink_slug"]
-    title = data["title"]
-    request = data["request"]
+    id = request.GET["id"]
+    original_url = request.GET["original_url"]
+    dflink_slug = request.GET["dflink_slug"]
+    title = request.GET["title"]
 
     if not is_right_url(original_url):
         status = "FAIL"
@@ -353,25 +440,18 @@ def dflink(request):
     """
 
     global need_www
-    id = request.GET["id"]
+    id = request.GET.get("id")
+    string_id = request.GET.get("string_id")
+    original_url = request.GET.get("original_url")
+    dflink_slug = request.GET.get("dflink_slug")
+    title = request.GET.get("title")
+    category = request.GET.get("category")
+    expiration_date = request.GET.get("expiration_date")
 
     # id: create_dflink
     if id == "create_dflink":
-        original_url = request.GET["original_url"]
-        dflink_slug = request.GET["dflink_slug"]
-        title = request.GET["title"]
-        category = request.GET["category"]
-        expiration_date = request.GET["expiration_date"]
-
-        data = {
-            "id": id,
-            "original_url": original_url,
-            "dflink_slug": dflink_slug,
-            "title": title,
-            "request": request,
-        }
         try:
-            status, reason, msg, element = validation(data)
+            status, reason, msg, element = validation(request)
         except:
             status = "FAIL"
             reason = "유효성 검사 실패"
@@ -383,21 +463,7 @@ def dflink(request):
                 original_url = original_url.replace("://", "://www.")
                 need_www = False
 
-            url = "https://api.short.io/links"
-            payload = {
-                "tags": [category, f"{request.user}", expiration_date],
-                "domain": "dgufilm.link",
-                "allowDuplicates": True,
-                "originalURL": original_url,
-                "path": dflink_slug,
-                "title": title,
-            }
-            headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "Authorization": SHORT_IO_API_KEY,
-            }
-            response = requests.post(url, json=payload, headers=headers)
+            response = short_io("create", request)
             if response.status_code == 200:
                 status = "DONE"
                 reason = "유효성 검사 통과"
@@ -423,48 +489,27 @@ def dflink(request):
                 "category": category,
                 "user": f"{request.user}",
                 "expiration_date": expiration_date,
+                "element": element if status == "FAIL" else None,
             },
         }
-        if status == "FAIL":
-            response["result"].update({"element": element})
         send_msg(request, "DLC", "MGT", response)
 
     # id: update_dflink
     elif id == "update_dflink":
-        string_id = request.GET["string_id"]
-        original_url = request.GET["original_url"]
-        dflink_slug = request.GET["dflink_slug"]
-        title = request.GET["title"]
-        category = request.GET["category"]
-        expiration_date = request.GET["expiration_date"]
-
-        data = {
-            "id": id,
-            "original_url": original_url,
-            "dflink_slug": dflink_slug,
-            "title": title,
-            "request": request,
-        }
-        status, reason, msg, element = validation(data)
+        try:
+            status, reason, msg, element = validation(request)
+        except:
+            status = "FAIL"
+            reason = "유효성 검사 실패"
+            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+            element = None
 
         if status == None:
             if need_www:
                 original_url = original_url.replace("://", "://www.")
                 need_www = False
 
-            url = f"https://api.short.io/links/{string_id}"
-            payload = {
-                "tags": [category, f"{request.user}", expiration_date],
-                "originalURL": original_url,
-                "path": dflink_slug,
-                "title": title,
-            }
-            headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "Authorization": SHORT_IO_API_KEY,
-            }
-            response = requests.post(url, json=payload, headers=headers)
+            response = short_io("update", request)
             if response.status_code == 200:
                 status = "DONE"
                 reason = "유효성 검사 통과"
@@ -491,30 +536,14 @@ def dflink(request):
                 "category": category,
                 "user": f"{request.user}",
                 "expiration_date": expiration_date,
+                "element": element if status == "FAIL" else None,
             },
         }
-        if status == "FAIL":
-            response["result"].update({"element": element})
         send_msg(request, "DLU", "MGT", response)
 
     # id: delete_dflink
     elif id == "delete_dflink":
-        string_id = request.GET["string_id"]
-        dflink_slug = request.GET["dflink_slug"]
-
-        url = (
-            f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
-        )
-        headers = {"accept": "application/json", "Authorization": SHORT_IO_API_KEY}
-        response = requests.get(url, headers=headers).json()
-        original_url = response["originalURL"]
-        title = response["title"]
-        category = response["tags"][0]
-        expiration_date = response["tags"][2]
-
-        url = f"https://api.short.io/links/{string_id}"
-        headers = {"Authorization": SHORT_IO_API_KEY}
-        response = requests.delete(url, headers=headers)
+        response = short_io("delete", request)
         if response.status_code == 200:
             status = "DONE"
             msg = "동영링크가 삭제되었어요! 🗑️"

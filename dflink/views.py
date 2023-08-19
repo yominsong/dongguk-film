@@ -12,7 +12,7 @@ def dflink(request):
     image_list = get_img("dflink")
 
     # Short.io
-    dflink_list = short_io()
+    dflink_list = short_io("retrieve")
     dflink_count = len(dflink_list)
 
     # Query
