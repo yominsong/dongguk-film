@@ -9,6 +9,7 @@ const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
+const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
 
@@ -156,6 +157,7 @@ function controlNoticeModal() {
                             class_keywords.forEach(keyword => {
                                 keyword.innerText = "수정하기";
                             });
+                            id_string_id.value = notice[0];
                             id_title.value = notice[1];
                             if (notice[2] == "서비스") {
                                 id_category.value = "서비스";
@@ -166,11 +168,14 @@ function controlNoticeModal() {
                                 id_category_dept.checked = true;
                                 label = id_category_dept.closest("label");
                             };
+                            id_keyword.value = notice[3];
                             label.classList.remove("df-ring-inset-gray");
                             label.classList.add("df-ring-inset-flamingo");
                             svg = label.querySelector("svg");
                             svg.classList.remove("invisible");
                             id_delete_notice.classList.replace("hidden", "inline-flex");
+                            ckEditor.enableReadOnlyMode("id_content");
+                            requestReadNotice();
                         };
                     });
                 });
@@ -204,15 +209,15 @@ function initCkeditor() {
                     let data = ckEditor.getData();
                     let regex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
                     let match = data.match(regex);
-                    
+
                     if (match && !notiFlag) {
                         displayNoti(true, "RSL");
                         notiFlag = true;
                     };
-                    
+
                     id_content.value = ckEditor.getData();
                 });
-                
+
                 textboxView.on("focus", () => {
                     toolbarView.tabIndex = "0";
                     displayError(false, id_content);
@@ -283,6 +288,28 @@ function requestCreateNotice() {
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestReadNotice() {
+    request.url = `${originLocation}/notice/utils/notice`;
+    request.type = "POST";
+    request.data = { id: "read_notice", string_id: `${id_string_id.value}` };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestDeleteNotice() {
+    request.url = `${originLocation}/notice/utils/notice`;
+    request.type = "POST";
+    request.data = { id: "delete_notice", string_id: `${id_string_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
+    request.async = true;
+    request.headers = null;
+    code(id_delete_notice, "_spin").classList.remove("hidden");
     freezeForm(true);
     makeAjaxCall(request);
     request = {};

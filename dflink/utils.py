@@ -321,7 +321,6 @@ def dflink(request):
 
     global need_www
     id = request.GET.get("id")
-    string_id = request.GET.get("string_id")
     original_url = request.GET.get("original_url")
     dflink_slug = request.GET.get("dflink_slug")
     title = request.GET.get("title")

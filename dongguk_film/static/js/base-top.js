@@ -173,7 +173,7 @@ function handleAjaxCallback(response) {
         });
 
     }
-    
+
     // requestConfirmVcodeForSNP()
     else if (resID == "confirm_vcode_for_SNP") {
         if (resResult.status == "DONE") {
@@ -196,7 +196,7 @@ function handleAjaxCallback(response) {
         });
 
     }
-    
+
     // requestCreateDflink()
     else if (resID == "create_dflink") {
         if (resResult.status == "DONE") {
@@ -217,7 +217,7 @@ function handleAjaxCallback(response) {
         });
 
     }
-    
+
     // requestUpdateDflink()
     else if (resID == "update_dflink") {
         if (resResult.status == "DONE") {
@@ -238,7 +238,7 @@ function handleAjaxCallback(response) {
         });
 
     }
-    
+
     // requestDeleteDflink()
     else if (resID == "delete_dflink") {
         if (resResult.status == "DONE") {
@@ -276,6 +276,32 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+    }
 
+    // requestReadNotice()
+    else if (resID == "read_notice") {
+        if (resResult.status == "DONE") {
+            ckEditor.setData(resResult.content);
+            ckEditor.disableReadOnlyMode("id_content");
+        };
+    }
+
+    // requestDeleteNotice()
+    else if (resID == "delete_notice") {
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_delete_notice, "descr", resResult.msg);
+            displayButtonMsg(false, id_delete_notice, "error");
+            location.href = originLocation + "/notice";
+        } else if (resResult.status == "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            displayButtonMsg(false, id_delete_notice, "descr");
+            displayButtonMsg(true, id_delete_notice, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     };
 }

@@ -105,7 +105,7 @@ function freezeForm(bool) {
                 bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false });
             });
         } else if (input.type == "textarea" && ckEditor) {
-            ckEditor.enableReadOnlyMode(input.id);
+            bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
         } else {
             bool ? input.readOnly = true : input.readOnly = false;
         };

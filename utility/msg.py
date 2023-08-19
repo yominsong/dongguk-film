@@ -308,6 +308,23 @@ def send_msg(request, type: str, channel: str, extra=None):
             "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
 
+    # type: "NTD"
+    elif type == "NTD":
+        status = extra["result"]["status"]
+        notion_url = extra["result"]["notion_url"]
+        title = extra["result"]["title"]
+        category = extra["result"]["category"]
+        keyword = extra["result"]["keyword"]
+        main_content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "author_url": "",
+            "title": "공지사항 삭제 요청이 처리됨",
+            "url": "https://dongguk.film/notice",
+            "thumbnail_url": "",
+            "description": f"ㆍ상태: {status}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+        }
+
     # channel: "DEV"
     if channel == "DEV":
         try:

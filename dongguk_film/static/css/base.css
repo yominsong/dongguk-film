@@ -77,6 +77,7 @@
     --ck-color-switch-button-on-hover-background: #99300A !important;
     --ck-color-focus-outer-shadow: #fff3ef !important;
     --ck-color-focus-disabled-shadow: rgba(255, 243, 239, .3) !important;
+    --ck-color-engine-placeholder-text: #9ca3af !important;
 }
 
 /* CKEditor toolbar */

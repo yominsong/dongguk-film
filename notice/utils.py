@@ -1,12 +1,9 @@
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
-from django.utils import timezone
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test, set_headers, chap_gpt
-from fake_useragent import UserAgent
-import openai, json, requests
+from utility.utils import set_headers, chap_gpt, notion
+import requests
 
 #
 # Global constants and variables
@@ -22,7 +19,7 @@ NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 
 def is_not_swearing(title_or_content: str):
     openai_response = chap_gpt(
-        f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 표현이 있는지 'True' 또는 'False'로만 답해줘."
+        f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘."
     )
 
     if "False" in openai_response:
@@ -35,15 +32,15 @@ def is_not_swearing(title_or_content: str):
     return result
 
 
-def validation(data: dict):
+def validation(request):
     """
-    - data | `dict`:
+    - request | `HttpRequest`:
         - title
         - content
     """
 
-    title = data["title"]
-    content = data["content"]
+    title = request.POST["title"]
+    content = request.POST["content"]
 
     if not is_not_swearing(title):
         status = "FAIL"
@@ -68,7 +65,7 @@ def validation(data: dict):
 
 def create_hashtag(title, content):
     openai_response = chap_gpt(
-        f"{content}\n위 글에서 가장 중요한 핵심단어 세 가지를 해시태그로 작성해줘. 이때, '동국대학교', '영화영상학과', '디닷에프'는 포함하지 마. {title}에 있는 단어도 절대 포함하지 마. 중복을 방지하기 위함이야. 해시태그 구분은 띄어쓰기로만 해. ',' 기호를 사용하지 마."
+        f"{content}\n위 글에서 가장 핵심적인 단어를 3개 골라서 해시태그로 만들어줘. 그리고 3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
     )
 
     return openai_response
@@ -91,22 +88,20 @@ def notice(request):
         - title
         - category
         - content
+        - keyword
     """
 
-    id = request.POST["id"]
+    id = request.POST.get("id")
+    string_id = request.POST.get("string_id")
+    title = request.POST.get("title")
+    category = request.POST.get("category")
+    content = request.POST.get("content")
+    keyword = request.POST.get("keyword")
 
     # id: create_notice
     if id == "create_notice":
-        title = request.POST["title"]
-        category = request.POST["category"]
-        content = request.POST["content"]
-
-        data = {
-            "title": title,
-            "content": content,
-        }
         try:
-            status, reason, msg, element = validation(data)
+            status, reason, msg, element = validation(request)
         except:
             status = "FAIL"
             reason = "유효성 검사 실패"
@@ -114,56 +109,26 @@ def notice(request):
             element = None
 
         if status == None:
-            url = "https://api.notion.com/v1/pages"
-            keyword = create_hashtag(title, content)
-            content_chunks = [
-                content[i : i + 2000] for i in range(0, len(content), 2000)
-            ]
-            paragraph_list = [
-                {
-                    "object": "block",
-                    "type": "paragraph",
-                    "paragraph": {
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {"content": chunk},
-                            }
-                        ]
-                    },
-                }
-                for chunk in content_chunks
-            ]
-            payload = {
-                "parent": {"database_id": NOTION_DB_ID["notice-db"]},
-                "properties": {
-                    "Category": {
-                        "select": {
-                            "name": category,
-                        },
-                    },
-                    "Title": {"title": [{"text": {"content": title}}]},
-                    "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
-                    "User": {"number": int(f"{request.user}")},
-                },
-                "children": paragraph_list,
-            }
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            if response["object"] == "page":
+            data = {"db_name": "notice-db", "keyword": create_hashtag(title, content)}
+            response = notion("create", "page", data, request)
+            if response.status_code == 200:
                 status = "DONE"
                 reason = "유효성 검사 통과"
                 msg = "공지사항이 등록되었어요! 👍"
-            elif response["status"] == 429:
+            elif response.status_code == 400:
+                status == "FAIL"
+                reason = response.json()
+                msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
+                element = None
+            elif response.status_code == 429:
                 status == "FAIL"
                 reason = "Notion API rate limit 초과"
                 msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
                 element = None
             else:
                 status = "FAIL"
-                reason = "알 수 없는 오류"
-                msg = response
+                reason = response.json()
+                msg = "앗, 알 수 없는 오류가 발생했어요!"
                 element = None
 
         response = {
@@ -172,15 +137,49 @@ def notice(request):
                 "status": status,
                 "reason": reason,
                 "msg": msg,
-                "notion_url": response["url"] if status == "DONE" else None,
+                "notion_url": response.json()["url"] if status == "DONE" else None,
+                "title": title,
+                "category": category,
+                "keyword": data["keyword"],
+                "user": f"{request.user}",
+                "element": element if status == "FAIL" else None,
+            },
+        }
+        send_msg(request, "NTC", "MGT", response)
+
+    # id: read_notice
+    elif id == "read_notice":
+        content = notion("retrieve", "block_children", {"page_id": string_id})
+
+        response = {
+            "id": id,
+            "result": {"status": "DONE", "content": content},
+        }
+    
+    # id: delete_notice
+    elif id == "delete_notice":
+        response = notion("delete", "page", {"page_id": string_id})
+        if response.status_code == 200:
+            status = "DONE"
+            msg = "공지사항이 삭제되었어요! 🗑️"
+        elif response.status_code != 200:
+            status = "FAIL"
+            reason = response.json()
+            msg = "앗, 삭제할 수 없는 공지사항이에요!"
+        
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "reason": reason if status == "FAIL" else None,
+                "msg": msg,
+                "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
                 "category": category,
                 "keyword": keyword,
                 "user": f"{request.user}",
             },
         }
-        if status == "FAIL":
-            response["result"].update({"notion_url": None, "element": element})
-        send_msg(request, "NTC", "MGT", response)
+        send_msg(request, "NTD", "MGT", response)
 
     return JsonResponse(response)

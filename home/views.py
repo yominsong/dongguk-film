@@ -1,10 +1,8 @@
 from django.conf import settings
 from django.utils import timezone
-from asgiref.sync import sync_to_async
 from django.shortcuts import render
 from utility.img import get_img
-from utility.utils import query_notion_db
-from dflink.utils import short_io
+from utility.utils import short_io, notion
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
@@ -31,7 +29,7 @@ def home(request):
 
     image_list = get_img("home")
     dflink_list = short_io("retrieve", limit=5)
-    notice_list = query_notion_db("notice-db", 5)
+    notice_list = notion("query", "db", {"db_name": "notice-db"}, limit=5)
 
     return render(
         request,

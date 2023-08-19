@@ -150,19 +150,40 @@ def chap_gpt(prompt: str):
     return openai_response
 
 
-def short_io(endpoint: str, request=None, limit: int = None):
+def short_io(action: str, request=None, limit: int = None):
     """
-    - endpoint | `str`:
-        - retrieve
+    - action | `str`:
         - create
+        - retrieve
         - update
         - delete
     - request | `HttpRequest`
     - limit | `int`
     """
 
-    # endpoint: retrieve
-    if endpoint == "retrieve":
+    # action: create
+    if action == "create":
+        original_url = request.GET["original_url"]
+        dflink_slug = request.GET["dflink_slug"]
+        title = request.GET["title"]
+        category = request.GET["category"]
+        expiration_date = request.GET["expiration_date"]
+
+        url = "https://api.short.io/links"
+        payload = {
+            "tags": [category, f"{request.user}", expiration_date],
+            "domain": "dgufilm.link",
+            "allowDuplicates": True,
+            "originalURL": original_url,
+            "path": dflink_slug,
+            "title": title,
+        }
+        response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
+
+        result = response
+
+    # action: retrieve
+    elif action == "retrieve":
         url = f"https://api.short.io/api/links?domain_id={SHORT_IO_DOMAIN_ID}&dateSortOrder=desc"
         url = url if limit == None else url + f"&limit={limit}"
         response = requests.get(url, headers=set_headers("SHORT_IO")).json()
@@ -188,29 +209,8 @@ def short_io(endpoint: str, request=None, limit: int = None):
 
         result = dflink_list
 
-    # endpoint: create
-    elif endpoint == "create":
-        original_url = request.GET["original_url"]
-        dflink_slug = request.GET["dflink_slug"]
-        title = request.GET["title"]
-        category = request.GET["category"]
-        expiration_date = request.GET["expiration_date"]
-
-        url = "https://api.short.io/links"
-        payload = {
-            "tags": [category, f"{request.user}", expiration_date],
-            "domain": "dgufilm.link",
-            "allowDuplicates": True,
-            "originalURL": original_url,
-            "path": dflink_slug,
-            "title": title,
-        }
-        response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
-
-        result = response
-
-    # endpoint: update
-    elif endpoint == "update":
+    # action: update
+    elif action == "update":
         string_id = request.GET["string_id"]
         original_url = request.GET["original_url"]
         dflink_slug = request.GET["dflink_slug"]
@@ -229,8 +229,8 @@ def short_io(endpoint: str, request=None, limit: int = None):
 
         result = response
 
-    # endpoint: delete
-    elif endpoint == "delete":
+    # action: delete
+    elif action == "delete":
         string_id = request.GET["string_id"]
         dflink_slug = request.GET["dflink_slug"]
 
@@ -251,46 +251,151 @@ def short_io(endpoint: str, request=None, limit: int = None):
     return result
 
 
-def query_notion_db(notion_db_name, limit: int = None):
-    url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID[notion_db_name]}/query"
-    payload = {"page_size": limit} if limit != None else None
-    response = requests.post(url, json=payload, headers=set_headers("NOTION")).json()
+def notion(
+    action: str, target: str, data: dict = None, request=None, limit: int = None
+):
+    """
+    - action | `str`:
+        - query
+        - create
+        - retrieve
+        - update
+        - delete
+    - target | `str`:
+        - block
+        - block_children
+        - page
+        - db
+    - data | `dict`
+        - db_name
+        - page_id
+        - keyword
+    - request | `HttpRequest`
+    - limit | `int`
+    """
 
-    notices = response["results"]
-    notice_list = []
+    # action: query / target: db
+    if action == "query" and target == "db":
+        url = (
+            f"https://api.notion.com/v1/databases/{NOTION_DB_ID[data['db_name']]}/query"
+        )
+        payload = {"page_size": limit} if limit != None else None
+        response = requests.post(
+            url, json=payload, headers=set_headers("NOTION")
+        ).json()
 
-    if notion_db_name == "notice-db":
-        try:
-            for i in range(len(notices)):
-                listed_time = notices[i]["properties"]["Listed time"]["created_time"]
-                listed_time_utc = datetime.datetime.strptime(
-                    listed_time, "%Y-%m-%dT%H:%M:%S.%fZ"
-                ).replace(tzinfo=pytz.utc)
-                kor_tz = pytz.timezone("Asia/Seoul")
-                listed_time_kor = listed_time_utc.astimezone(kor_tz)
-                notice = {
-                    "id_string": notices[i]["id"],
-                    "title": notices[i]["properties"]["Title"]["title"][0][
-                        "plain_text"
-                    ],
-                    "category": notices[i]["properties"]["Category"]["select"]["name"],
-                    "keyword": notices[i]["properties"]["Keyword"]["rich_text"][0][
-                        "plain_text"
-                    ],
-                    "user": str(notices[i]["properties"]["User"]["number"]),
-                    "listed_date": listed_time_kor.strftime("%Y-%m-%d"),
-                }
-                try:
-                    notice["file"] = {
-                        "name": notices[i]["properties"]["File"]["files"][0]["name"],
-                        "url": notices[i]["properties"]["File"]["files"][0]["file"][
-                            "url"
+        items = response["results"]
+        item_list = []
+
+        if data["db_name"] == "notice-db":
+            try:
+                for i in range(len(items)):
+                    listed_time = items[i]["properties"]["Listed time"]["created_time"]
+                    listed_time_utc = datetime.datetime.strptime(
+                        listed_time, "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ).replace(tzinfo=pytz.utc)
+                    kor_tz = pytz.timezone("Asia/Seoul")
+                    listed_time_kor = listed_time_utc.astimezone(kor_tz)
+                    notice = {
+                        "id_string": items[i]["id"],
+                        "title": items[i]["properties"]["Title"]["title"][0][
+                            "plain_text"
                         ],
+                        "category": items[i]["properties"]["Category"]["select"][
+                            "name"
+                        ],
+                        "keyword": items[i]["properties"]["Keyword"]["rich_text"][0][
+                            "plain_text"
+                        ],
+                        "user": str(items[i]["properties"]["User"]["number"]),
+                        "listed_date": listed_time_kor.strftime("%Y-%m-%d"),
                     }
-                except:
-                    notice["file"] = None
-                notice_list.append(notice)
-        except:
-            pass
+                    try:
+                        notice["file"] = {
+                            "name": items[i]["properties"]["File"]["files"][0]["name"],
+                            "url": items[i]["properties"]["File"]["files"][0]["file"][
+                                "url"
+                            ],
+                        }
+                    except:
+                        notice["file"] = None
+                    item_list.append(notice)
+            except:
+                pass
 
-    return notice_list
+        result = item_list
+
+    # action: create / target: page
+    elif action == "create" and target == "page":
+        url = "https://api.notion.com/v1/pages"
+
+        if data["db_name"] == "notice-db":
+            title = request.POST["title"]
+            category = request.POST["category"]
+            content = request.POST["content"]
+            keyword = data["keyword"]
+
+            content_chunks = [
+                content[i : i + 2000] for i in range(0, len(content), 2000)
+            ]
+
+            paragraph_list = [
+                {
+                    "object": "block",
+                    "type": "paragraph",
+                    "paragraph": {
+                        "rich_text": [
+                            {
+                                "type": "text",
+                                "text": {"content": chunk},
+                            }
+                        ]
+                    },
+                }
+                for chunk in content_chunks
+            ]
+
+            payload = {
+                "parent": {"database_id": NOTION_DB_ID[data["db_name"]]},
+                "properties": {
+                    "Category": {
+                        "select": {
+                            "name": category,
+                        },
+                    },
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
+                    "User": {"number": int(f"{request.user}")},
+                },
+                "children": paragraph_list,
+            }
+            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
+
+            result = response
+
+    # action: delete / target: page
+    elif action == "delete" and target == "page":
+        url = f"https://api.notion.com/v1/pages/{data['page_id']}"
+        payload = {"archived": True}
+        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+
+        result = response
+
+    # action: retrieve / target: block_children
+    elif action == "retrieve" and target == "block_children":
+        url = f"https://api.notion.com/v1/blocks/{data['page_id']}/children"
+        response = requests.get(url, headers=set_headers("NOTION")).json()
+
+        blocks = response["results"]
+        content = ""
+
+        for i in range(len(blocks)):
+            type = blocks[i]["type"]
+            block = {
+                "content_chunk": blocks[i][type]["rich_text"][0]["plain_text"],
+            }
+            content += block["content_chunk"]
+
+        result = content
+
+    return result

@@ -6,6 +6,7 @@ const id_dflink_modal = document.getElementById("id_dflink_modal");
 const id_string_id = document.getElementById("id_string_id");
 const id_original_url = document.getElementById("id_original_url");
 const id_dflink_slug = document.getElementById("id_dflink_slug");
+const id_dflink_slug_original = document.getElementById("id_dflink_slug_original");
 const id_title = document.getElementById("id_title");
 const id_category_work = document.getElementById("id_category_work");
 const id_category_dept = document.getElementById("id_category_dept");
