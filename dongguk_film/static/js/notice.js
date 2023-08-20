@@ -3,6 +3,7 @@
 //
 
 const id_notice_modal = document.getElementById("id_notice_modal");
+const id_notice_modal_close = document.getElementById("id_notice_modal_close");
 const id_string_id = document.getElementById("id_string_id");
 const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
@@ -16,6 +17,8 @@ const id_delete_notice = document.getElementById("id_delete_notice");
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let ckEditor, toolbarView, textboxModel, textboxView, textboxViewRoot;
+let currentHistoryLength = history.length;
+let modalOpen = false;
 
 //
 // Sub functions
@@ -141,6 +144,7 @@ function controlNoticeModal() {
                     });
                     ckEditor.destroy();
                     initCkeditor();
+                    modalOpen = true;
                 };
             });
         });
@@ -174,6 +178,7 @@ function controlNoticeModal() {
                             svg = label.querySelector("svg");
                             svg.classList.remove("invisible");
                             id_delete_notice.classList.replace("hidden", "inline-flex");
+                            ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
                             ckEditor.enableReadOnlyMode("id_content");
                             requestReadNotice();
                         };
@@ -276,6 +281,24 @@ function adjustWidth() {
 }
 
 adjustWidth();
+
+function preventGoBack() {
+    if (currentHistoryLength == history.length) {
+        history.pushState(null, null, location.href);
+    };
+    window.onpopstate = function () {
+        if (modalOpen) {
+            history.pushState(null, null, location.href);
+            id_notice_modal.setAttribute("x-data", "{ open: false }");
+            enableFocus();
+            modalOpen = false;
+        } else if (!modalOpen) {
+            history.go(-1);
+        };
+    };
+}
+
+preventGoBack();
 
 //
 // Main functions

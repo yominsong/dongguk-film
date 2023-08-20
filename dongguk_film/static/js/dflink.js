@@ -17,6 +17,8 @@ const id_delete_dflink = document.getElementById("id_delete_dflink");
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
+let currentHistoryLength = history.length;
+let modalOpen = false;
 
 //
 // Sub functions
@@ -94,6 +96,7 @@ function controlDflinkModal() {
                             enableFocus();
                         };
                     });
+                    modalOpen = true;
                 };
             });
         });
@@ -132,6 +135,24 @@ function controlDflinkModal() {
 }
 
 controlDflinkModal();
+
+function preventGoBack() {
+    if (currentHistoryLength == history.length) {
+        history.pushState(null, null, location.href);
+    };
+    window.onpopstate = function () {
+        if (modalOpen) {
+            history.pushState(null, null, location.href);
+            id_dflink_modal.setAttribute("x-data", "{ open: false }");
+            enableFocus();
+            modalOpen = false;
+        } else if (!modalOpen) {
+            history.go(-1);
+        };
+    };
+}
+
+preventGoBack();
 
 function alertNonexistentLink() {
     if (window.location.search.indexOf("nonexistent-link") != -1) { displayNoti(true, "INL") };
