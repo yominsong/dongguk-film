@@ -1,7 +1,7 @@
 {% load static %}
 <div id="id_notice_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="open = false"
+     @keydown.window.escape="if (id_create_or_update_notice_descr.hidden && id_delete_notice_descr.hidden && id_delete_notice_error.hidden) { open = false }"
      x-show="open"
      class="relative z-20"
      aria-labelledby="modal-title"
@@ -55,6 +55,7 @@
                     <div class="flex flex-1 flex-col justify-between">
                         <div class="space-y-5">
                             <input id="id_string_id" value="" hidden>
+                            <input id="id_block_string_id" value="" hidden>
                             <div>
                                 <label for="id_title"
                                        class="block text-sm font-medium leading-6 text-gray-900">제목</label>

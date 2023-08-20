@@ -194,7 +194,6 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-
     }
 
     // requestCreateDflink()
@@ -215,7 +214,6 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-
     }
 
     // requestUpdateDflink()
@@ -236,7 +234,6 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-
     }
 
     // requestDeleteDflink()
@@ -283,7 +280,28 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             ckEditor.setData(resResult.content);
             ckEditor.disableReadOnlyMode("id_content");
+            id_block_string_id.value = resResult.block_string_id_list;
         };
+    }
+
+    // requestUpdateNotice()
+    else if (resID == "update_notice") {
+        if (resResult.status == "DONE") {
+            displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
+            displayButtonMsg(false, id_create_or_update_notice, "error");
+            location.href = originLocation + "/notice";
+        } else if (resResult.status == "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+            displayButtonMsg(false, id_create_or_update_notice, "descr");
+            displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     }
 
     // requestDeleteNotice()

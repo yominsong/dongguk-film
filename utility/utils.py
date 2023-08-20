@@ -143,9 +143,13 @@ def chap_gpt(prompt: str):
         ],
         "temperature": 0,
     }
-    openai_response = requests.post(
-        url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
-    ).json()["choices"][0]["message"]["content"]
+
+    try:
+        openai_response = requests.post(
+            url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
+        ).json()["choices"][0]["message"]["content"]
+    except:
+        openai_response = ""
 
     return openai_response
 
@@ -260,10 +264,12 @@ def notion(
         - create
         - retrieve
         - update
+        - append
         - delete
     - target | `str`:
         - block
         - block_children
+        - page_properties
         - page
         - db
     - data | `dict`
@@ -273,6 +279,13 @@ def notion(
     - request | `HttpRequest`
     - limit | `int`
     """
+
+    if request != None:
+        string_id = request.POST.get("string_id")
+        block_string_id = request.POST.get("block_string_id")
+        title = request.POST.get("title")
+        category = request.POST.get("category")
+        content = request.POST.get("content")
 
     # action: query / target: db
     if action == "query" and target == "db":
@@ -330,9 +343,6 @@ def notion(
         url = "https://api.notion.com/v1/pages"
 
         if data["db_name"] == "notice-db":
-            title = request.POST["title"]
-            category = request.POST["category"]
-            content = request.POST["content"]
             keyword = data["keyword"]
 
             content_chunks = [
@@ -373,29 +383,93 @@ def notion(
 
             result = response
 
-    # action: delete / target: page
-    elif action == "delete" and target == "page":
-        url = f"https://api.notion.com/v1/pages/{data['page_id']}"
-        payload = {"archived": True}
-        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
-
-        result = response
-
     # action: retrieve / target: block_children
     elif action == "retrieve" and target == "block_children":
-        url = f"https://api.notion.com/v1/blocks/{data['page_id']}/children"
+        url = f"https://api.notion.com/v1/blocks/{string_id}/children"
         response = requests.get(url, headers=set_headers("NOTION")).json()
 
         blocks = response["results"]
+        block_string_id_list = []
         content = ""
 
         for i in range(len(blocks)):
+            block_string_id = blocks[i]["id"]
             type = blocks[i]["type"]
             block = {
                 "content_chunk": blocks[i][type]["rich_text"][0]["plain_text"],
             }
+            block_string_id_list.append(block_string_id)
             content += block["content_chunk"]
 
-        result = content
+        result = block_string_id_list, content
+
+    # action: update / target: page_properties
+    elif action == "update" and target == "page_properties":
+        keyword = data["keyword"]
+
+        url = f"https://api.notion.com/v1/pages/{string_id}"
+        payload = {
+            "properties": {
+                "Category": {
+                    "select": {
+                        "name": category,
+                    },
+                },
+                "Title": {"title": [{"text": {"content": title}}]},
+                "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
+            },
+        }
+        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+
+        result = response
+
+    # action: append / target: block_children
+    elif action == "append" and target == "block_children":
+        url = f"https://api.notion.com/v1/blocks/{string_id}/children"
+
+        content = content
+
+        content_chunks = [content[i : i + 2000] for i in range(0, len(content), 2000)]
+
+        paragraph_list = [
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {"content": chunk},
+                        }
+                    ]
+                },
+            }
+            for chunk in content_chunks
+        ]
+
+        payload = {"children": paragraph_list}
+        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+
+        result = response
+
+    # action: delete / target: block
+    elif action == "delete" and target == "block":
+        block_string_id_list = block_string_id.split(",")
+        response_list = []
+
+        for block_string_id in block_string_id_list:
+            url = f"https://api.notion.com/v1/blocks/{block_string_id}"
+            response = requests.delete(url, headers=set_headers("NOTION"))
+            response_list.append(response)
+
+        result = response_list
+
+    # action: delete / target: page
+    elif action == "delete" and target == "page":
+        url = f"https://api.notion.com/v1/pages/{string_id}"
+        payload = {"archived": True}
+        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+
+        result = response
 
     return result

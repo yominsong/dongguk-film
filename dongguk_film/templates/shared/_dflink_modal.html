@@ -1,6 +1,6 @@
 <div id="id_dflink_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="open = false"
+     @keydown.window.escape="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false }"
      x-show="open"
      class="relative z-20"
      aria-labelledby="modal-title"

@@ -144,9 +144,11 @@ function preventGoBack() {
     window.onpopstate = function () {
         if (modalOpen) {
             history.pushState(null, null, location.href);
-            id_dflink_modal.setAttribute("x-data", "{ open: false }");
-            enableFocus();
-            modalOpen = false;
+            if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) {
+                id_dflink_modal.setAttribute("x-data", "{ open: false }");
+                enableFocus();
+                modalOpen = false;
+            }
         } else if (!modalOpen) {
             history.go(-1);
         };

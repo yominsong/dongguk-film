@@ -5,6 +5,7 @@
 const id_notice_modal = document.getElementById("id_notice_modal");
 const id_notice_modal_close = document.getElementById("id_notice_modal_close");
 const id_string_id = document.getElementById("id_string_id");
+const id_block_string_id = document.getElementById("id_block_string_id");
 const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
@@ -290,9 +291,11 @@ function preventGoBack() {
     window.onpopstate = function () {
         if (modalOpen) {
             history.pushState(null, null, location.href);
-            id_notice_modal.setAttribute("x-data", "{ open: false }");
-            enableFocus();
-            modalOpen = false;
+            if (id_create_or_update_notice_descr.hidden && id_delete_notice_descr.hidden && id_delete_notice_error.hidden) {
+                id_notice_modal.setAttribute("x-data", "{ open: false }");
+                enableFocus();
+                modalOpen = false;
+            };
         } else if (!modalOpen) {
             history.go(-1);
         };
@@ -323,6 +326,18 @@ function requestReadNotice() {
     request.data = { id: "read_notice", string_id: `${id_string_id.value}` };
     request.async = true;
     request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestUpdateNotice() {
+    request.url = `${originLocation}/notice/utils/notice`;
+    request.type = "POST";
+    request.data = { id: "update_notice", string_id: `${id_string_id.value}`, block_string_id: `${id_block_string_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.async = true;
+    request.headers = null;
+    code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }

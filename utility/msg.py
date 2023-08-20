@@ -19,7 +19,6 @@ DISCORD_DEV_WEBHOOK_URL = getattr(
 
 
 def format_msg(content: dict):
-
     target = content["target"]
     important = content["important"]
 
@@ -32,7 +31,7 @@ def format_msg(content: dict):
         description=content["description"],
         color=color,
     )
-    
+
     embed.set_author(
         name=content["name"],
         url=content["author_url"],
@@ -44,10 +43,16 @@ def format_msg(content: dict):
     if target == "DEV":
         try:
             embed.add_field(
-                name="Sec-Ch-Ua-Platform", value=content["sec-ch-ua-platform"], inline=True
+                name="Sec-Ch-Ua-Platform",
+                value=content["sec-ch-ua-platform"],
+                inline=True,
             )
-            embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
-            embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
+            embed.add_field(
+                name="Content-Type", value=content["content_type"], inline=True
+            )
+            embed.add_field(
+                name="User-Agent", value=content["user_agent"], inline=False
+            )
             embed.add_field(name="Method", value=content["method"], inline=True)
             embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         except:
@@ -175,7 +180,7 @@ def send_msg(request, type: str, channel: str, extra=None):
             "thumbnail_url": "",
             "description": "사용자가 비정상적인 방법으로 서비스를 이용하는 것일 수 있습니다.",
         }
-    
+
     # type: "SUP"
     elif type == "SUP":
         main_content = {
@@ -228,7 +233,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         expiration_date = extra["result"]["expiration_date"]
         main_content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
             "author_url": "",
             "title": "동영링크 생성 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
@@ -247,7 +254,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         expiration_date = extra["result"]["expiration_date"]
         main_content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
             "author_url": "",
             "title": "동영링크 수정 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
@@ -265,7 +274,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         expiration_date = extra["result"]["expiration_date"]
         main_content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
             "author_url": "",
             "title": "동영링크 삭제 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
@@ -300,9 +311,31 @@ def send_msg(request, type: str, channel: str, extra=None):
         keyword = extra["result"]["keyword"]
         main_content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
             "author_url": "",
             "title": "공지사항 등록 요청이 처리됨",
+            "url": "https://dongguk.film/notice",
+            "thumbnail_url": "",
+            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+        }
+
+    # type: "NTU"
+    elif type == "NTU":
+        status = extra["result"]["status"]
+        reason = extra["result"]["reason"]
+        notion_url = extra["result"]["notion_url"]
+        title = extra["result"]["title"]
+        category = extra["result"]["category"]
+        keyword = extra["result"]["keyword"]
+        main_content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
+            "author_url": "",
+            "title": "공지사항 수정 요청이 처리됨",
             "url": "https://dongguk.film/notice",
             "thumbnail_url": "",
             "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
@@ -317,7 +350,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         keyword = extra["result"]["keyword"]
         main_content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url() if request.user.is_authenticated else default_picture_url,
+            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
+            if request.user.is_authenticated
+            else default_picture_url,
             "author_url": "",
             "title": "공지사항 삭제 요청이 처리됨",
             "url": "https://dongguk.film/notice",
@@ -330,7 +365,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         try:
             content = {
                 "target": "DEV",
-                "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
+                "name": request.user
+                if request.user.is_authenticated
+                else "D-dot-f Bot",
                 "content_type": request.content_type,
                 "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
                 "user_agent": request.headers["user-agent"],
@@ -343,12 +380,13 @@ def send_msg(request, type: str, channel: str, extra=None):
         except:
             content = {
                 "target": "DEV",
-                "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
+                "name": request.user
+                if request.user.is_authenticated
+                else "D-dot-f Bot",
                 "method": request.method,
                 "full_path": request.get_full_path(),
                 "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
             }
-
 
     # channel: "MGT"
     elif channel == "MGT":
