@@ -712,6 +712,6 @@ function enableFocus() {
 
     if (lastFocusedElement) {
         setTimeout(() => { lastFocusedElement.focus() }, 300);
-        setTimeout(() => { document.activeElement.scrollIntoView({ behavior: "smooth", block: "center" }) }, 300);
+        setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
     };
 }

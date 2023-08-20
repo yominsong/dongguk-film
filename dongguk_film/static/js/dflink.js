@@ -97,6 +97,7 @@ function controlDflinkModal() {
                         };
                     });
                     modalOpen = true;
+                    sessionStorage.setItem("scrollPosition", window.scrollY);
                 };
             });
         });

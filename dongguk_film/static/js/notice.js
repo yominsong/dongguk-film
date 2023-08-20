@@ -145,6 +145,7 @@ function controlNoticeModal() {
                     ckEditor.destroy();
                     initCkeditor();
                     modalOpen = true;
+                    sessionStorage.setItem("scrollPosition", window.scrollY);
                 };
             });
         });
