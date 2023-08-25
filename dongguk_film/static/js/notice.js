@@ -17,7 +17,7 @@ const id_delete_notice = document.getElementById("id_delete_notice");
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
-let ckEditor, toolbarView, textboxModel, textboxView, textboxViewRoot;
+let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let currentHistoryLength = history.length;
 let modalOpen = false;
 
@@ -206,9 +206,9 @@ function initCkeditor() {
             })
             .then(editor => {
                 ckEditor = editor;
-                toolbarView = ckEditor.ui.view.toolbar.element;
+                ckElements = document.querySelectorAll(".ck");
+                toolbarViewRoot = ckEditor.ui.view.toolbar.element;
                 textboxModel = ckEditor.model.document;
-                textboxView = ckEditor.editing.view.document;
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
                 let notiFlag = false;
 
@@ -225,47 +225,34 @@ function initCkeditor() {
                     id_content.value = ckEditor.getData();
                 });
 
-                textboxView.on("focus", () => {
-                    toolbarView.tabIndex = "0";
-                    displayError(false, id_content);
-                    console.log("텍스트 박스 포커스되었고, 에러 해제함.");
-                });
-                textboxView.on("blur", () => {
-                    toolbarView.tabIndex = "-1";
-                    console.log(document.activeElement.tagName);
-                    if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
-                        displayError(true, id_content, "empty");
-                        console.log("텍스트 박스 포커스 아웃 되었고, 내용이 없으며, 에러 설정함.");
-                    } else {
-                        displayError(false, id_content);
-                        console.log("텍스트 박스 포커스 아웃 되었고, 내용이 있으며, 에러 해제함.")
+                ckElements.forEach((ck) => {
+                    if (ck.tagName == "svg") {
+                        ck.tabIndex = -1;
                     };
-                });
-                textboxView.on("keydown", (event, data) => {
-                    if (data.shiftKey && data.keyCode == 9) {
-                        setTimeout(() => { toolbarView.querySelector(".ck-font-size-dropdown").querySelector("button").focus() }, 1);
-                        event.stop();
-                        console.log("텍스트 박스에서 키가 눌렸고, 툴바 내 버튼에 포커스됨.")
-                    };
-                });
-                toolbarView.addEventListener("focus", () => {
-                    displayError(false, id_content);
-                    console.log("툴바에 포커스되었고, 에러 해제함.");
-                });
-                toolbarView.addEventListener("keydown", (event) => {
-                    if (event.shiftKey && event.key === "Tab") {
-                        if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
-                            displayError(true, id_content, "empty");
-                            console.log("툴바에서 키가 눌렸고, 내용이 없으며, 에러 설정함.");
-                        } else {
+                    ck.addEventListener("focus", () => { displayError(false, id_content) });
+                    ck.addEventListener("blur", (event) => {
+                        if (event.relatedTarget !== null && event.relatedTarget == ck) {
                             displayError(false, id_content);
-                            console.log("툴바에서 키가 눌렸고, 내용이 있으며, 에러 해제함.");
+                        } else {
+                            if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
+                                displayError(true, id_content, "empty");
+                            } else {
+                                displayError(false, id_content);
+                            };
                         };
-                    };
-                });
-                toolbarView.addEventListener("click", () => {
-                    displayError(false, id_content);
-                    console.log("툴바가 클릭되었고, 에러 해제함.")
+                    });
+                    ck.addEventListener("keydown", (event) => {
+                        if (ck == textboxViewRoot && event.shiftKey && event.key === "Tab") {
+                            setTimeout(() => { toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus() }, 0.00001);
+                        } else if (event.shiftKey && event.key === "Tab") {
+                            if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
+                                displayError(true, id_content, "empty");
+                            } else {
+                                displayError(false, id_content);
+                            };
+                        };
+                    });
+                    ck.addEventListener("click", () => { displayError(false, id_content) });
                 });
             })
             .catch(err => {
