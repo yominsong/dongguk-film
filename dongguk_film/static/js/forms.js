@@ -634,6 +634,9 @@ function displayError(bool, input, errorType) {
 
         // textarea (CKEditor)
         // Don't need to do anything because CKEditor will initialize it.
+        else if (input.type == "textarea" && input.id == "id_content") {
+            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FFFFFF"; textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)" }, 1);
+        }
 
         // else
         else {

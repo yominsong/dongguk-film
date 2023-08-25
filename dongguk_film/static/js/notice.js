@@ -228,35 +228,44 @@ function initCkeditor() {
                 textboxView.on("focus", () => {
                     toolbarView.tabIndex = "0";
                     displayError(false, id_content);
+                    console.log("텍스트 박스 포커스되었고, 에러 해제함.");
                 });
                 textboxView.on("blur", () => {
                     toolbarView.tabIndex = "-1";
-                    if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
+                    console.log(document.activeElement.tagName);
+                    if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
                         displayError(true, id_content, "empty");
+                        console.log("텍스트 박스 포커스 아웃 되었고, 내용이 없으며, 에러 설정함.");
                     } else {
                         displayError(false, id_content);
+                        console.log("텍스트 박스 포커스 아웃 되었고, 내용이 있으며, 에러 해제함.")
                     };
                 });
                 textboxView.on("keydown", (event, data) => {
                     if (data.shiftKey && data.keyCode == 9) {
                         setTimeout(() => { toolbarView.querySelector(".ck-font-size-dropdown").querySelector("button").focus() }, 1);
                         event.stop();
+                        console.log("텍스트 박스에서 키가 눌렸고, 툴바 내 버튼에 포커스됨.")
                     };
                 });
                 toolbarView.addEventListener("focus", () => {
                     displayError(false, id_content);
-                });
-                toolbarView.addEventListener("keydown", () => {
-                    displayError(false, id_content);
+                    console.log("툴바에 포커스되었고, 에러 해제함.");
                 });
                 toolbarView.addEventListener("keydown", (event) => {
                     if (event.shiftKey && event.key === "Tab") {
                         if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
                             displayError(true, id_content, "empty");
+                            console.log("툴바에서 키가 눌렸고, 내용이 없으며, 에러 설정함.");
                         } else {
                             displayError(false, id_content);
+                            console.log("툴바에서 키가 눌렸고, 내용이 있으며, 에러 해제함.");
                         };
                     };
+                });
+                toolbarView.addEventListener("click", () => {
+                    displayError(false, id_content);
+                    console.log("툴바가 클릭되었고, 에러 해제함.")
                 });
             })
             .catch(err => {
