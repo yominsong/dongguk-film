@@ -206,7 +206,7 @@ function initCkeditor() {
             })
             .then(editor => {
                 ckEditor = editor;
-                ckElements = document.querySelectorAll(".ck");
+                ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
                 toolbarViewRoot = ckEditor.ui.view.toolbar.element;
                 textboxModel = ckEditor.model.document;
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
@@ -226,14 +226,9 @@ function initCkeditor() {
                 });
 
                 ckElements.forEach((ck) => {
-                    if (ck.tagName == "svg") {
-                        ck.tabIndex = -1;
-                    };
                     ck.addEventListener("focus", () => { displayError(false, id_content) });
                     ck.addEventListener("blur", (event) => {
-                        if (event.relatedTarget !== null && event.relatedTarget == ck) {
-                            displayError(false, id_content);
-                        } else {
+                        if (!ckElements.includes(event.relatedTarget)) {
                             if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
                                 displayError(true, id_content, "empty");
                             } else {
@@ -243,12 +238,15 @@ function initCkeditor() {
                     });
                     ck.addEventListener("keydown", (event) => {
                         if (ck == textboxViewRoot && event.shiftKey && event.key === "Tab") {
-                            setTimeout(() => { toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus() }, 0.00001);
-                        } else if (event.shiftKey && event.key === "Tab") {
-                            if (!ckEditor.getData() || ckEditor.getData().trim() === "") {
-                                displayError(true, id_content, "empty");
+                            if (id_category_error.innerText.length == 0) {
+                                setTimeout(() => {
+                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+                                    displayError(false, id_category);
+                                });
                             } else {
-                                displayError(false, id_content);
+                                setTimeout(() => {
+                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+                                });
                             };
                         };
                     });
