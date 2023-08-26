@@ -6,6 +6,7 @@ app_name = "notice"
 urlpatterns = [
     # views.py
     path("", views.notice, name="notice"),
+    path("<str:page_id>", views.notice_detail, name="notice_detail"),
     # utils.py
     path("utils/notice", utils.notice),
 ]

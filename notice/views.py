@@ -61,3 +61,16 @@ def notice(request):
             "page_range": page_range,
         },
     )
+
+
+def notice_detail(request, page_id):
+    image_list = get_img("notice")
+
+    # Notion
+    notice_detail = notion("retrieve", "block_children", data={"page_id": page_id})[1]
+
+    return render(
+        request,
+        "notice/notice_detail.html",
+        {"image_list": image_list, "content": notice_detail},
+    )

@@ -385,6 +385,8 @@ def notion(
 
     # action: retrieve / target: block_children
     elif action == "retrieve" and target == "block_children":
+        string_id = data["page_id"] if request == None else string_id
+
         url = f"https://api.notion.com/v1/blocks/{string_id}/children"
         response = requests.get(url, headers=set_headers("NOTION")).json()
 

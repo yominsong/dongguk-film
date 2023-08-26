@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% load tags %}
+{% block meta %}
+    <meta property="og:title" content="공지사항 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'notice:notice' %}">
+    <meta name="robots" content="index,follow">
+{% endblock %}
+{% block title %}공지사항 - 디닷에프{% endblock %}
+{% block body %}
+    <!-- Hero -->
+    <div class="relative sm:pt-6 lg:pt-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
+                <div class="absolute inset-0" aria-hidden="true">
+                    <div class="mix-blend-multiply w-full h-full">
+                        <!-- Swiper -->
+                        <div class="swiper mySwiper w-full h-full">
+                            <div class="swiper-wrapper">
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
+                </div>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">공지사항</h1>
+                    <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                        디닷에프 서비스 및 학과 관련 공지사항
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
+            <div>타이틀</div>
+            <div class="ck ck-content">{{ content|safe }}</div>
+        </div>
+    </div>
+    <script src="{% static 'js/ckeditor.js' %}"></script>
+{% endblock %}

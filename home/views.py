@@ -29,7 +29,7 @@ def home(request):
 
     image_list = get_img("home")
     dflink_list = short_io("retrieve", limit=5)
-    notice_list = notion("query", "db", {"db_name": "notice-db"}, limit=5)
+    notice_list = notion("query", "db", data={"db_name": "notice-db"}, limit=5)
 
     return render(
         request,
