@@ -15,7 +15,8 @@ const id_expiration_date = document.getElementById("id_expiration_date");
 const id_create_or_update_dflink = document.getElementById("id_create_or_update_dflink");
 const id_delete_dflink = document.getElementById("id_delete_dflink");
 const url_placeholder = new Array("https://docs.google.com/document/d/...", "https://docs.google.com/spreadsheets/d/...", "https://docs.google.com/presentation/d/...", "https://docs.google.com/forms/d/...", "https://drive.google.com/drive/folders/...", "https://drive.google.com/file/d/...", "https://www.dropbox.com/s/...", "https://www.youtube.com/playlist?list=...", "https://www.youtube.com/watch?v=...", "https://vimeo.com/...", "https://www.dailymotion.com/video/...", "https://www.notion.so/...", "https://example.notion.site/...", "https://www.evernote.com/shard/...", "https://zoom.us/j/...", "https://www.filmmakers.co.kr/actorsAudition/...", "https://www.dongguk.edu/article/HAKSANOTICE/detail/...");
-const slug_placeholder = new Array("scenario", "scriptbreakdown", "storyboard", "survey", "crewdrive", "crewdirectory", "crewdrive", "filmography", "reference", "cuteditedcopy", "colorgradedcopy", "workspace", "crewwebsite", "filmnote", "meeting", "audition", "notice");
+const slug_placeholder = new Array("scenario", "scriptbreakdown", "storyboard", "survey", "crewdrive", "crewdirectory", "crewdrive", "kdgfilmography", "reference", "cuteditedcopy", "colorgradedcopy", "notionworkspace", "crewwebsite", "filmnote", "meeting", "audition", "notice");
+const title_placeholder = new Array("<영화> 시나리오", "<영화> 일촬표", "<영화> 스토리보드", "설문조사", "<영화>팀 드라이브", "<영화>팀 연락처", "<영화>팀 드라이브", "김동국 필모그래피", "<영화> 촬영 레퍼런스", "<영화> 컷편집본", "<영화> 색보정본", "<영화>팀 노션 워크스페이스", "<영화>팀 웹사이트", "필름 노트", "<영화>팀 화상회의", "<영화> 배우 오디션", "학사 공지사항");
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
@@ -61,7 +62,7 @@ function searchDflink() {
 searchDflink();
 
 function initDflinkForm() {
-    let [id_original_url_placeholder, id_dflink_slug_placeholder] = randomItem(url_placeholder, slug_placeholder);
+    let [id_original_url_placeholder, id_dflink_slug_placeholder, id_title_placeholder] = randomItem(url_placeholder, slug_placeholder, title_placeholder);
 
     id_original_url.value = null;
     id_dflink_slug.value = null;
@@ -72,6 +73,7 @@ function initDflinkForm() {
     id_expiration_date.value = null;
     id_original_url.placeholder = id_original_url_placeholder;
     id_dflink_slug.placeholder = id_dflink_slug_placeholder;
+    id_title.placeholder = id_title_placeholder;
     inputs.forEach((input) => {
         displayError(false, input);
     });

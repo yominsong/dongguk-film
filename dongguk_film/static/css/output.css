@@ -898,20 +898,12 @@ select {
   margin-top: -1px;
 }
 
-.mb-3 {
-  margin-bottom: 0.75rem;
-}
-
 .mb-5 {
   margin-bottom: 1.25rem;
 }
 
 .mb-6 {
   margin-bottom: 1.5rem;
-}
-
-.mb-7 {
-  margin-bottom: 1.75rem;
 }
 
 .mb-auto {
@@ -1750,10 +1742,6 @@ select {
   line-height: 1rem;
 }
 
-.font-bold {
-  font-weight: 700;
-}
-
 .font-extrabold {
   font-weight: 800;
 }
@@ -2119,11 +2107,6 @@ select {
   --tw-ring-offset-color: #f3f4f6;
 }
 
-.first-letter\:text-sm::first-letter {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
 .placeholder\:text-gray-400::-moz-placeholder {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
@@ -2345,10 +2328,6 @@ select {
 
   .sm\:mb-4 {
     margin-bottom: 1rem;
-  }
-
-  .sm\:mb-8 {
-    margin-bottom: 2rem;
   }
 
   .sm\:ml-3 {
@@ -2597,6 +2576,10 @@ select {
     order: 2;
   }
 
+  .md\:-mt-px {
+    margin-top: -1px;
+  }
+
   .md\:ml-12 {
     margin-left: 3rem;
   }
@@ -2694,11 +2677,6 @@ select {
 
   .lg\:pt-8 {
     padding-top: 2rem;
-  }
-
-  .lg\:text-4xl {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
   }
 
   .lg\:text-5xl {
