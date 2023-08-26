@@ -14,6 +14,8 @@ const id_category = document.getElementById("id_category");
 const id_expiration_date = document.getElementById("id_expiration_date");
 const id_create_or_update_dflink = document.getElementById("id_create_or_update_dflink");
 const id_delete_dflink = document.getElementById("id_delete_dflink");
+const url_placeholder = new Array("https://docs.google.com/document/d/...", "https://docs.google.com/spreadsheets/d/...", "https://docs.google.com/presentation/d/...", "https://docs.google.com/forms/d/...", "https://drive.google.com/drive/folders/...", "https://drive.google.com/file/d/...", "https://www.dropbox.com/s/...", "https://www.youtube.com/playlist?list=...", "https://www.youtube.com/watch?v=...", "https://vimeo.com/...", "https://www.dailymotion.com/video/...", "https://www.notion.so/...", "https://example.notion.site/...", "https://www.evernote.com/shard/...", "https://zoom.us/j/...", "https://www.filmmakers.co.kr/actorsAudition/...", "https://www.dongguk.edu/article/HAKSANOTICE/detail/...");
+const slug_placeholder = new Array("scenario", "scriptbreakdown", "storyboard", "survey", "crewdrive", "crewdirectory", "crewdrive", "filmography", "reference", "cuteditedcopy", "colorgradedcopy", "workspace", "crewwebsite", "filmnote", "meeting", "audition", "notice");
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
@@ -59,6 +61,8 @@ function searchDflink() {
 searchDflink();
 
 function initDflinkForm() {
+    let [id_original_url_placeholder, id_dflink_slug_placeholder] = randomItem(url_placeholder, slug_placeholder);
+
     id_original_url.value = null;
     id_dflink_slug.value = null;
     id_title.value = null;
@@ -66,6 +70,8 @@ function initDflinkForm() {
     id_category_work.checked = false;
     id_category_dept.checked = false;
     id_expiration_date.value = null;
+    id_original_url.placeholder = id_original_url_placeholder;
+    id_dflink_slug.placeholder = id_dflink_slug_placeholder;
     inputs.forEach((input) => {
         displayError(false, input);
     });
