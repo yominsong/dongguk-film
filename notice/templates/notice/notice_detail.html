@@ -42,10 +42,45 @@
     </div>
     <!-- Detail -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
-            <div>타이틀</div>
-            <div class="ck ck-content">{{ content|safe }}</div>
+        <div class="bg-white shadow rounded-md px-4 py-5 sm:px-6">
+            <h2 class="text-gray-600 text-xl sm:text-2xl font-bold mt-2">{{ notice.title }}</h2>
+            <div class="flex justify-between items-center mt-1.5">
+                <div class="text-gray-600">
+                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time> |
+                    <span>{{ notice.user }}</span>
+                </div>
+                {% if notice.category == "서비스" %}
+                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                        {{ notice.category }}
+                    </p>
+                {% elif notice.category == "학과" %}
+                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                        {{ notice.category }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="ck ck-content mt-4 pt-4 break-words border-t border-gray-900/10">{{ notice.content|safe }}</div>
+        </div>
+        <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
+            <div class="flex mt-2 text-sm sm:mt-0">
+                <p class="text-gray-500 sm:mt-0"
+                   id="id_create_or_update_notice_descr"
+                   hidden>잠시만 기다려주세요.</p>
+                <p class="text-gray-500 sm:mt-0" id="id_delete_notice_descr" hidden></p>
+                <p class="text-flamingo-600 sm:mt-0"
+                   id="id_create_or_update_notice_error"
+                   hidden></p>
+                <p class="text-flamingo-600 sm:mt-0" id="id_delete_notice_error" hidden></p>
+            </div>
+            <div class="sm:flex sm:flex-row-reverse">
+                <button type="button"
+                        id="id_go_to_list"
+                        class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:cursor-not-allowed">
+                    <span class="class-keyword">목록 보기</span>
+                </button>
+            </div>
         </div>
     </div>
     <script src="{% static 'js/ckeditor.js' %}"></script>
+    <script src="{% static 'js/notice-detail.js' %}"></script>
 {% endblock %}

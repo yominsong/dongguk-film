@@ -55,6 +55,21 @@ def update_img(request):
 
 
 #
+# Sub functions
+#
+
+
+def convert_datetime(notion_datetime):
+    datetime_utc = datetime.datetime.strptime(
+        notion_datetime, "%Y-%m-%dT%H:%M:%S.%fZ"
+    ).replace(tzinfo=pytz.utc)
+    kor_tz = pytz.timezone("Asia/Seoul")
+    datetime_kor = datetime_utc.astimezone(kor_tz)
+
+    return datetime_kor
+
+
+#
 # Main functions
 #
 
@@ -304,11 +319,7 @@ def notion(
             try:
                 for i in range(len(items)):
                     listed_time = items[i]["properties"]["Listed time"]["created_time"]
-                    listed_time_utc = datetime.datetime.strptime(
-                        listed_time, "%Y-%m-%dT%H:%M:%S.%fZ"
-                    ).replace(tzinfo=pytz.utc)
-                    kor_tz = pytz.timezone("Asia/Seoul")
-                    listed_time_kor = listed_time_utc.astimezone(kor_tz)
+                    listed_time = convert_datetime(listed_time)
                     notice = {
                         "id_string": items[i]["id"],
                         "title": items[i]["properties"]["Title"]["title"][0][
@@ -321,7 +332,7 @@ def notion(
                             "plain_text"
                         ],
                         "user": str(items[i]["properties"]["User"]["number"]),
-                        "listed_date": listed_time_kor.strftime("%Y-%m-%d"),
+                        "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
                     try:
                         notice["file"] = {
@@ -404,6 +415,15 @@ def notion(
             content += block["content_chunk"]
 
         result = block_string_id_list, content
+
+    # action: retrieve / target: page
+    elif action == "retrieve" and target == "page":
+        string_id = data["page_id"] if request == None else string_id
+
+        url = f"https://api.notion.com/v1/pages/{string_id}"
+        response = requests.get(url, headers=set_headers("NOTION"))
+
+        result = response
 
     # action: update / target: page_properties
     elif action == "update" and target == "page_properties":

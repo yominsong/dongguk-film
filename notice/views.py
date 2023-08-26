@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from utility.img import get_img
-from utility.utils import notion
+from utility.utils import notion, convert_datetime
 
 #
 # Main functions
@@ -67,10 +68,21 @@ def notice_detail(request, page_id):
     image_list = get_img("notice")
 
     # Notion
-    notice_detail = notion("retrieve", "block_children", data={"page_id": page_id})[1]
+    notice = notion("retrieve", "page", data={"page_id": page_id}).json()
+    listed_time = notice["properties"]["Listed time"]["created_time"]
+    listed_time = convert_datetime(listed_time)
+    user = notice["properties"]["User"]["number"]
+    user = User.objects.get(username=user).metadata.name
+    notice = {
+        "title": notice["properties"]["Title"]["title"][0]["plain_text"],
+        "category": notice["properties"]["Category"]["select"]["name"],
+        "user": user,
+        "listed_date": listed_time.strftime("%Y-%m-%d")
+    }
+    notice["content"] = notion("retrieve", "block_children", data={"page_id": page_id})[1]
 
     return render(
         request,
         "notice/notice_detail.html",
-        {"image_list": image_list, "content": notice_detail},
+        {"image_list": image_list, "notice": notice},
     )
