@@ -2576,10 +2576,6 @@ select {
     order: 2;
   }
 
-  .md\:-mt-px {
-    margin-top: -1px;
-  }
-
   .md\:ml-12 {
     margin-left: 3rem;
   }
