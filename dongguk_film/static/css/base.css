@@ -131,11 +131,11 @@
 }
 
 .ck li {
-    margin-left: 2rem;
+    margin-left: 2rem !important;
 }
 
 .ck a {
-    color: #38A5EE;
+    color: #38A5EE !important;
 }
 
 .ck-read-only {

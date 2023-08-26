@@ -38,26 +38,6 @@ function inheritObject() {
 
 inheritObject();
 
-/**
- * @param {Array} array1 An array of strings
- * @param {Array} array2 An array consisting of strings paired with array1
- * @returns {String|Array} A randomly selected string or an array of two pairs of strings
- * - If array2 is null: A string in randomly selected array1
- * - If array2 is not null: An array consisting of strings in randomly selected array1 and array2
- */
-function randomItem(array1, array2 = null) {
-    let randomIndex = Math.floor(Math.random() * array1.length);
-    let result;
-
-    if (array2) {
-        result = [array1[randomIndex], array2[randomIndex]];
-    } else {
-        result = array1[randomIndex];
-    };
-
-    return result;
-}
-
 function writeWeather(oldValue, newValue) {
     let result;
 
