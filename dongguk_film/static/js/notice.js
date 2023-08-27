@@ -64,7 +64,10 @@ let modalOpen = false;
 //
 
 function searchNotice() {
+    let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let urlParams = new URLSearchParams(location.search);
+    
+    id_notice_q.placeholder = id_notice_q_placeholder;
     if (urlParams.has("q")) {
         id_notice_q.value = urlParams.get("q");
         ["click", "keyup"].forEach(type => {
@@ -395,10 +398,8 @@ function requestDeleteNotice() {
 
 function setPage() {
     // Init
-    let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let categoryInputs = document.querySelectorAll("input[name='id_category']");
 
-    id_notice_q.placeholder = id_notice_q_placeholder;
     categoryInputs.forEach((input) => {
         input.addEventListener("click", () => {
             if (input == id_category_serv) {
