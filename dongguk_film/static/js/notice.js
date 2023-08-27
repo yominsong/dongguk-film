@@ -66,7 +66,7 @@ let modalOpen = false;
 function searchNotice() {
     let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let urlParams = new URLSearchParams(location.search);
-    
+
     id_notice_q.placeholder = id_notice_q_placeholder;
     if (urlParams.has("q")) {
         id_notice_q.value = urlParams.get("q");
@@ -246,7 +246,10 @@ function initCkeditor() {
                 removePlugins: ["Title", "Markdown"],
                 language: "ko",
                 outputFormat: "html",
-                placeholder: "여기에 내용을 입력하세요. URL을 입력하면 링크나 동영상이 자동으로 삽입됩니다."
+                placeholder: "여기에 내용을 입력하세요.",
+                mediaEmbed: {
+                    previewsInData: true
+                }
             })
             .then(editor => {
                 ckEditor = editor;
