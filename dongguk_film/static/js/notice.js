@@ -2,6 +2,7 @@
 // Global constants and variables
 //
 
+const id_notice_q = document.getElementById("id_notice_q");
 const id_notice_modal = document.getElementById("id_notice_modal");
 const id_notice_modal_close = document.getElementById("id_notice_modal_close");
 const id_string_id = document.getElementById("id_string_id");
@@ -14,6 +15,43 @@ const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
+const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문 발급", "학위수여식 졸업가운 및 학사모 대여", "수강신청 확인 및 정정", "학과 제작지원비", "학교현장실습", "캡스톤디자인 운영계획", "전주국제영화제 참가 관련 협조공문", "교직과정 이수예정자 선발", "계절학기 시행", "졸업논문 제출", "성적처리 일정 및 유의사항", "캡스톤디자인 최종보고서 제출", "부산국제영화제 시네필 발급", "부산국제영화제 참가 관련 협조공문 발급");
+const title_placeholder = [
+    { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
+    { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },
+    { s: "0101", e: "0225", t: `${now.getFullYear()}학년도 1학기 수강신청 안내` },
+    { s: "0125", e: "0205", t: `${now.getFullYear()}학년도 1학기 등록금 납부 안내` },
+    { s: "0120", e: "0210", t: `${now.getFullYear()}학년도 봄 학위수여식 안내` },
+    { s: "0201", e: "0215", t: `${now.getFullYear()}학년도 촬영 협조공문 발급 안내` },
+    { s: "0210", e: "0220", t: `${now.getFullYear()}학년도 봄 학위수여식 졸업가운 및 학사모 대여 안내` },
+    { s: "0225", e: "0310", t: `${now.getFullYear()}학년도 1학기 수강신청 확인 및 정정 기간 안내` },
+    { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학과 제작지원비 안내` },
+    { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학교현장실습 시행 안내` },
+    { s: "0301", e: "0531", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 운영계획` },
+    { s: "0325", e: "0425", t: `제${now.getFullYear() - 2000 + 1}회 전주국제영화제 참가 관련 협조공문 발급 안내` },
+    { s: "0401", e: "0430", t: `${now.getFullYear()}학년도 교직과정 이수예정자 선발 안내` },
+    { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 여름계절학기 시행 안내` },
+    { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 가을 졸업대상자 졸업논문 제출 안내` },
+    { s: "0501", e: "0531", t: `${now.getFullYear()}학년도 1학기 성적처리 일정 및 유의사항 안내` },
+    { s: "0601", e: "0630", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 최종보고서 제출 안내` },
+    { s: "0625", e: "0725", t: `${now.getFullYear()}학년도 2학기 복학 신청 안내` },
+    { s: "0701", e: "0731", t: `${now.getFullYear()}학년도 2학기 희망강의 신청 안내` },
+    { s: "0701", e: "0825", t: `${now.getFullYear()}학년도 2학기 수강신청 안내` },
+    { s: "0720", e: "0810", t: `${now.getFullYear()}학년도 가을 학위수여식 안내` },
+    { s: "0725", e: "0805", t: `${now.getFullYear()}학년도 2학기 등록금 납부 안내` },
+    { s: "0810", e: "0820", t: `${now.getFullYear()}학년도 가을 학위수여식 졸업가운 및 학사모 대여 안내` },
+    { s: "0825", e: "0910", t: `${now.getFullYear()}학년도 2학기 수강신청 확인 및 정정 기간 안내` },
+    { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학과 제작지원비 안내` },
+    { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학교현장실습 시행 안내` },
+    { s: "0901", e: "1130", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 운영계획` },
+    { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 시네필 발급 안내` },
+    { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 참가 관련 협조공문 발급 안내` },
+    { s: "1101", e: "1120", t: `${now.getFullYear()}학년도 겨울계절학기 시행 안내` },
+    { s: "1101", e: "1120", t: `${now.getFullYear() + 1}학년도 봄 졸업대상자 졸업논문 제출 안내` },
+    { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 성적처리 일정 및 유의사항` },
+    { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 최종보고서 제출 안내` }
+];
+const filtered_title_placeholder = title_placeholder.filter(item => isCurrentDateInRange(String(now.getFullYear()) + item.s, String(now.getFullYear()) + item.e));
 
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
@@ -60,10 +98,13 @@ function searchNotice() {
 searchNotice();
 
 function initNoticeForm() {
+    let id_title_placeholder = randomItem(filtered_title_placeholder);
+
     id_title.value = null;
     id_category.value = null;
     id_category_serv.checked = false;
     id_category_dept.checked = false;
+    id_title.placeholder = id_title_placeholder.t;
     inputs.forEach((input) => {
         displayError(false, input);
     });
@@ -278,6 +319,10 @@ function adjustWidth() {
 
 adjustWidth();
 
+function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
+    return currentDate >= start && currentDate <= end;
+}
+
 function preventGoBack() {
     if (currentHistoryLength == history.length) {
         history.pushState(null, null, location.href);
@@ -350,7 +395,10 @@ function requestDeleteNotice() {
 
 function setPage() {
     // Init
+    let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let categoryInputs = document.querySelectorAll("input[name='id_category']");
+
+    id_notice_q.placeholder = id_notice_q_placeholder;
     categoryInputs.forEach((input) => {
         input.addEventListener("click", () => {
             if (input == id_category_serv) {

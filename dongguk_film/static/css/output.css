@@ -2302,11 +2302,6 @@ select {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
-.disabled\:bg-white:disabled {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
 .disabled\:bg-red-100:disabled {
   --tw-bg-opacity: 1;
   background-color: rgb(254 226 226 / var(--tw-bg-opacity));
@@ -2324,11 +2319,6 @@ select {
 .disabled\:hover\:bg-flamingo-600:hover:disabled {
   --tw-bg-opacity: 1;
   background-color: rgb(206 64 13 / var(--tw-bg-opacity));
-}
-
-.disabled\:hover\:bg-gray-100:hover:disabled {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
 .disabled\:hover\:bg-stone-600:hover:disabled {
