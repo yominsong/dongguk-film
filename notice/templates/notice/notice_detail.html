@@ -42,10 +42,10 @@
     </div>
     <!-- Detail -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded-md px-4 py-5 sm:px-6">
-            <h2 class="text-gray-600 text-xl sm:text-2xl font-bold">{{ notice.title }}</h2>
-            <div class="flex justify-between items-center mt-1.5">
-                <div class="text-gray-600">
+        <div class="bg-white shadow rounded-md px-4 py-7 sm:px-6">
+            <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words">{{ notice.title }}</h2>
+            <div class="flex justify-between items-center mt-2">
+                <div class="text-sm text-gray-500">
                     <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time> |
                     <span>{{ notice.user }}</span>
                 </div>
@@ -59,7 +59,7 @@
                     </p>
                 {% endif %}
             </div>
-            <div class="ck ck-content mt-4 pt-4 break-words border-t border-gray-900/10">{{ notice.content|safe }}</div>
+            <div class="ck ck-content mt-7 pt-7 break-words border-t border-gray-900/10">{{ notice.content|safe }}</div>
         </div>
         <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
             <div class="flex mt-2 text-sm sm:mt-0">

@@ -143,3 +143,7 @@
     background-color: rgb(243 244 246 / var(--tw-bg-opacity)) !important;
     cursor: not-allowed !important;
 }
+
+.ck .ck-widget {
+    outline-style: none !important;
+}
