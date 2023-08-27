@@ -38,6 +38,32 @@ function inheritObject() {
 
 inheritObject();
 
+function code(one, two) {
+    /*
+     * one: Something to concatenate with two
+     * two: Something to concatenate with one
+     */
+    let result;
+
+    if (two == null) {
+        two = "";
+    };
+
+    if (typeof (one) == "object" && typeof (two) == "string") {
+        result = one.id + two;
+    } else if (typeof (one) == "string" && typeof (two) == "object") {
+        result = one + two.id;
+    } else if (typeof (one) == "object" && typeof (two) == "object") {
+        result = one.id + two.id;
+    } else if (typeof (one) == "string" && typeof (two) == "string") {
+        result = one + two;
+    };
+
+    result = document.querySelector(`#${result}`);
+
+    return eval(result);
+}
+
 /**
  * @param {Array} array1 An array of strings
  * @param {Array} array2 An array consisting of strings paired with array1

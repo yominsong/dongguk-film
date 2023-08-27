@@ -84,6 +84,7 @@ function goToList() {
             if (type == "click" || event.key == "Enter") {
                 location.href = `${originLocation}/notice`;
                 id_go_to_list.disabled = true;
+                code(id_go_to_list, "_spin").classList.remove("hidden");
             };
         });
     });

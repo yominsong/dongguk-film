@@ -15,7 +15,7 @@ const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
-const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문 발급", "학위수여식 졸업가운 및 학사모 대여", "수강신청 확인 및 정정", "학과 제작지원비", "학교현장실습", "캡스톤디자인 운영계획", "전주국제영화제 참가 관련 협조공문", "교직과정 이수예정자 선발", "계절학기 시행", "졸업논문 제출", "성적처리 일정 및 유의사항", "캡스톤디자인 최종보고서 제출", "부산국제영화제 시네필 발급", "부산국제영화제 참가 관련 협조공문 발급");
+const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부시네필", "부산국제영화제");
 const title_placeholder = [
     { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
     { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },

@@ -71,15 +71,17 @@ def notice_detail(request, page_id):
     notice = notion("retrieve", "page", data={"page_id": page_id}).json()
     listed_time = notice["properties"]["Listed time"]["created_time"]
     listed_time = convert_datetime(listed_time)
-    user = notice["properties"]["User"]["number"]
-    user = User.objects.get(username=user).metadata.name
+    student_id = str(notice["properties"]["User"]["number"])
+    name = User.objects.get(username=student_id).metadata.name
     notice = {
         "title": notice["properties"]["Title"]["title"][0]["plain_text"],
         "category": notice["properties"]["Category"]["select"]["name"],
-        "user": user,
-        "listed_date": listed_time.strftime("%Y-%m-%d")
+        "user": {"student_id": student_id, "name": name},
+        "listed_date": listed_time.strftime("%Y-%m-%d"),
     }
-    notice["content"] = notion("retrieve", "block_children", data={"page_id": page_id})[1]
+    notice["content"] = notion("retrieve", "block_children", data={"page_id": page_id})[
+        1
+    ]
 
     return render(
         request,
