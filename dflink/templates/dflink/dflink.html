@@ -165,12 +165,14 @@
                            hidden>
                 </li>
             {% empty %}
-                <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                    {% if "?q=" in request.get_full_path %}
-                        검색된 동영링크가 없어요.
-                    {% else %}
-                        등록된 동영링크가 없어요.
-                    {% endif %}
+                <li class="relative flex flex-col justify-between px-4 py-4 sm:px-6">
+                    <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
+                        {% if "?q=" in request.get_full_path %}
+                            검색된 동영링크가 없어요.
+                        {% else %}
+                            등록된 동영링크가 없어요.
+                        {% endif %}
+                    </div>
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}

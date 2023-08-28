@@ -135,8 +135,21 @@
 }
 
 .ck a {
-    color: #38A5EE !important;
-    text-decoration: underline !important;
+    color: rgb(37 99 235) !important;
+    background-color: rgba(37, 99, 235, 0.055) !important;
+    border-radius: 0.375rem !important;
+    padding-left: 0.3rem !important;
+    padding-right: 0.3rem !important;
+}
+
+.ck a:hover {
+    color: rgb(30 64 175) !important;
+    background-color: rgba(30, 64, 175, 0.055) !important;
+}
+
+.ck a:focus {
+    color: rgb(30 64 175) !important;
+    background-color: rgba(30, 64, 175, 0.055) !important;
 }
 
 .ck-read-only {

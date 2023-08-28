@@ -75,7 +75,7 @@ function code(one, two) {
 function randomItem(array1, array2 = null, array3 = null) {
     let randomIndex = Math.floor(Math.random() * array1.length);
     let result;
-    
+
     if (array2 && array3) {
         result = [array1[randomIndex], array2[randomIndex], array3[randomIndex]];
     } else if (array2) {
@@ -250,7 +250,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
-            location.href = originLocation + "/dflink";
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -270,7 +270,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
-            location.href = originLocation + "/dflink";
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -290,7 +290,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_delete_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_dflink, "error");
-            location.href = originLocation + "/dflink";
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -309,7 +309,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_notice, "error");
-            location.href = originLocation + "/notice";
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -338,7 +338,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_notice, "error");
-            location.href = originLocation + "/notice";
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -356,9 +356,16 @@ function handleAjaxCallback(response) {
     // requestDeleteNotice()
     else if (resID == "delete_notice") {
         if (resResult.status == "DONE") {
+            let search = location.search;
+
             displayButtonMsg(true, id_delete_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_notice, "error");
-            location.href = originLocation + "/notice";
+            if (search.includes("previousSearch")) {
+                let previousSearch = new URLSearchParams(search).get("previousSearch");
+                location.href = `${originLocation}/notice${previousSearch}`;
+            } else {
+                location.href = location.href;
+            };
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {

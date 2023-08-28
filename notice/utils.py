@@ -82,6 +82,7 @@ def notice(request):
     - request | `HttpRequest`:
         - id:
             - create_notice
+            - read_notice
             - update_notice
             - delete_notice
         - string_id

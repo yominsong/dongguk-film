@@ -2,24 +2,23 @@
 // Global constants and variables
 //
 
-const id_search_box = document.getElementById("id_search_box");
-const id_search_parent = document.getElementById("id_search_parent");
+const id_search_notice = document.getElementById("id_search_notice");
+const id_search_notice_init = document.getElementById("id_search_notice_init");
 const id_notice_q = document.getElementById("id_notice_q");
-const id_notice_modal_body = document.getElementById("id_notice_modal_body");
+const id_notice_list = document.getElementById("id_notice_list");
+const id_notice_detail = document.getElementById("id_notice_detail");
 const id_notice_modal = document.getElementById("id_notice_modal");
-const id_notice_modal_close = document.getElementById("id_notice_modal_close");
 const id_string_id = document.getElementById("id_string_id");
 const id_block_string_id = document.getElementById("id_block_string_id");
 const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
-const id_content_parent = document.getElementById("id_content_parent");
 const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
-const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부시네필", "부산국제영화제");
+const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부산국제영화제 시네필", "부산국제영화제");
 const title_placeholder = [
     { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
     { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },
@@ -86,13 +85,13 @@ function searchNotice() {
                 });
             });
         };
-    
+
         id_notice_q.addEventListener("keyup", (event) => {
             if (event.key == "Enter") {
                 id_search_notice.click();
             };
         });
-    
+
         ["click", "keyup"].forEach(type => {
             id_search_notice.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
@@ -317,9 +316,19 @@ initCkeditor();
 
 function adjustWidth() {
     function matchDivWidths() {
-        if (id_notice_modal_body !== null && id_search_box !== null) {
-            id_notice_modal_body.style.setProperty("width", id_search_box.offsetWidth + "px", "important");
-            id_content_parent.style.setProperty("width", id_search_parent.offsetWidth + "px", "important");
+        let id_notice_modal_body = document.getElementById("id_notice_modal_body");
+        let id_content_parent = document.getElementById("id_content_parent");
+        let widthBase;
+
+        if (id_notice_list !== null) {
+            widthBase = id_notice_list;
+        } else if (id_notice_detail !== null) {
+            widthBase = id_notice_detail;
+        };
+
+        if (id_notice_modal_body != null) {
+            id_notice_modal_body.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+            id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
         };
     }
     window.addEventListener("resize", matchDivWidths);
@@ -412,36 +421,30 @@ function embedMedia() {
 
 embedMedia();
 
-// function resizeMedia() {
-//     let mediaElements = document.querySelectorAll("figure.media");
-
-//     if (mediaElements) {
-//         mediaElements.forEach(media => {
-//             let div = media.querySelector("div");
-
-//             if (div) {
-//                 let url = div.dataset.oembedUrl
-
-//                 if (url.includes("dailymotion.com")) {
-//                     let targetDiv = div.querySelector("div");
-
-//                     targetDiv.style = "position: relative; padding-bottom: 100%; height: 0; padding-bottom: 56.2493%;";
-//                 } else if (url.includes("spotify.com")) {
-//                     media.style = "height: 352px !important; overflow: hidden;";
-//                 };
-//             };
-//         });
-//     };
-// }
-
-// resizeMedia();
-
 function goToList() {
+    let details = document.querySelectorAll(".class-detail");
+    let params = {};
+
+    if (details !== null) {
+        details.forEach((detail) => {
+            if (location.search !== "") {
+                params.previousSearch = location.search;
+                detail.href += "?" + new URLSearchParams(params).toString();
+            };
+        });
+    };
+
     if (id_go_to_list !== null) {
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
-                    location.href = `${originLocation}/notice`;
+                    let previousSearch = new URLSearchParams(location.search).get("previousSearch");
+
+                    if (previousSearch !== null) {
+                        location.href = `${originLocation}/notice${previousSearch}`;
+                    } else {
+                        location.href = `${originLocation}/notice`;
+                    };
                     id_go_to_list.disabled = true;
                     code(id_go_to_list, "_spin").classList.remove("hidden");
                 };

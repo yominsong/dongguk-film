@@ -74,8 +74,10 @@ def notice_detail(request, page_id):
     student_id = str(notice["properties"]["User"]["number"])
     name = User.objects.get(username=student_id).metadata.name
     notice = {
+        "id_string": page_id,
         "title": notice["properties"]["Title"]["title"][0]["plain_text"],
         "category": notice["properties"]["Category"]["select"]["name"],
+        "keyword": notice["properties"]["Keyword"]["rich_text"][0]["plain_text"],
         "user": {"student_id": student_id, "name": name},
         "listed_date": listed_time.strftime("%Y-%m-%d"),
     }

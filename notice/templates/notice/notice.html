@@ -42,8 +42,7 @@
     </div>
     <!-- Search -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6"
-             id="id_search_box">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
             {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_notice_q"
@@ -71,7 +70,7 @@
                     총&nbsp<span class="font-semibold">{{ notice_count }}개</span>의 공지사항 검색
                 </label>
             {% endif %}
-            <div class="mt-2 flex rounded-md shadow-sm" id="id_search_parent">
+            <div class="mt-2 flex rounded-md shadow-sm">
                 <div class="relative flex flex-grow items-stretch focus-within:z-10">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +106,8 @@
     </div>
     <!-- List -->
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <ul role="list"
+        <ul id="id_notice_list"
+            role="list"
             class="divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
             {% for notice in page_value %}
                 <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
@@ -116,7 +116,7 @@
                             <!-- notice.title -->
                             <p class="text-sm font-semibold leading-6 text-gray-900">
                                 <a href="{% url 'notice:notice_detail' notice.id_string %}"
-                                   class="rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
+                                   class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ notice.title }}
                                 </a>
@@ -181,12 +181,14 @@
                            hidden>
                 </li>
             {% empty %}
-                <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                    {% if "?q=" in request.get_full_path %}
-                        검색된 공지사항이 없어요.
-                    {% else %}
-                        등록된 공지사항이 없어요.
-                    {% endif %}
+                <li class="relative flex flex-col justify-between px-4 py-4 sm:px-6">
+                    <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
+                        {% if "?q=" in request.get_full_path %}
+                            검색된 공지사항이 없어요.
+                        {% else %}
+                            등록된 공지사항이 없어요.
+                        {% endif %}
+                    </div>
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
