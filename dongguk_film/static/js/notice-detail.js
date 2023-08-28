@@ -52,7 +52,6 @@ function embedMedia() {
     if (mediaElements) {
         mediaElements.forEach(media => {
             let oembed = media.querySelector("oembed");
-            let div = media.querySelector("div");
 
             if (oembed) {
                 let url = oembed.getAttribute("url");
@@ -60,7 +59,19 @@ function embedMedia() {
 
                 media.outerHTML = newStructure;
             };
+        });
+    };
+}
 
+embedMedia();
+
+function resizeMedia() {
+    let mediaElements = document.querySelectorAll("figure.media");
+
+    if (mediaElements) {
+        mediaElements.forEach(media => {
+            let div = media.querySelector("div");
+            
             if (div) {
                 let url = div.dataset.oembedUrl
 
@@ -69,25 +80,35 @@ function embedMedia() {
 
                     targetDiv.style = "position: relative; padding-bottom: 100%; height: 0; padding-bottom: 56.2493%;";
                 } else if (url.includes("spotify.com")) {
-                    media.style = "height: 352px !important";
+                    media.style = "height: 352px !important; overflow: hidden;";
                 };
             };
         });
     };
 }
 
-embedMedia();
+resizeMedia();
 
 function goToList() {
-    ["click", "keyup"].forEach(type => {
-        id_go_to_list.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
-                location.href = `${originLocation}/notice`;
-                id_go_to_list.disabled = true;
-                code(id_go_to_list, "_spin").classList.remove("hidden");
-            };
+    if (typeof id_go_to_list == "undefined") {
+        ["click", "keyup"].forEach(type => {
+            id_go_to_list.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    location.href = `${originLocation}/notice`;
+                    id_go_to_list.disabled = true;
+                    code(id_go_to_list, "_spin").classList.remove("hidden");
+                };
+            });
         });
-    });
+    };
 }
 
 goToList();
+
+function setPage() {
+    if (typeof id_create_or_update_notice == "undefined") {
+        id_go_to_list.classList.remove("mt-3");
+    };
+}
+
+setPage();

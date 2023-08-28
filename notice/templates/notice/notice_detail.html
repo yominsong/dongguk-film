@@ -131,6 +131,7 @@
     {% if user.is_authenticated %}
         {% include "shared/_notice_modal.html" %}
     {% endif %}
+    <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
-    <script src="{% static 'js/notice-detail.js' %}"></script>
+    <script src="{% static 'js/notice.js' %}"></script>
 {% endblock %}

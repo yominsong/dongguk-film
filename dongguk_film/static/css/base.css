@@ -136,6 +136,7 @@
 
 .ck a {
     color: #38A5EE !important;
+    text-decoration: underline !important;
 }
 
 .ck-read-only {
@@ -146,4 +147,16 @@
 
 .ck .ck-widget {
     outline-style: none !important;
+}
+
+.ck-media__wrapper[data-oembed-url*="open.spotify.com"] {
+    max-height: 352px !important;
+    max-width: none !important;
+    overflow: hidden !important;
+}
+
+.ck-media__wrapper[data-oembed-url*="www.dailymotion.com"] div {
+    position: relative !important;
+    height: 0 !important;
+    padding-bottom: 56.2493% !important;
 }
