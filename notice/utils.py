@@ -32,7 +32,7 @@ def is_not_swearing(title_or_content: str):
     return result
 
 
-def validation(request):
+def moderation(request):
     """
     - request | `HttpRequest`:
         - title
@@ -101,10 +101,10 @@ def notice(request):
     # id: create_notice
     if id == "create_notice":
         try:
-            status, reason, msg, element = validation(request)
+            status, reason, msg, element = moderation(request)
         except:
             status = "FAIL"
-            reason = "유효성 검사 실패"
+            reason = "유해성 검사 실패"
             msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
             element = None
 
@@ -113,7 +113,7 @@ def notice(request):
             response = notion("create", "page", data=data, request=request)
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효성 검사 통과"
+                reason = "유해성 검사 통과"
                 msg = "공지사항이 등록되었어요! 👍"
             elif response.status_code == 400:
                 status == "FAIL"
@@ -166,10 +166,10 @@ def notice(request):
     # id: update_notice
     elif id == "update_notice":
         try:
-            status, reason, msg, element = validation(request)
+            status, reason, msg, element = moderation(request)
         except:
             status = "FAIL"
-            reason = "유효성 검사 실패"
+            reason = "유해성 검사 실패"
             msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
             element = None
 
@@ -182,7 +182,7 @@ def notice(request):
                     response = notion("append", "block_children", request=request)
                     if response.status_code == 200:
                         status = "DONE"
-                        reason = "유효성 검사 통과"
+                        reason = "유해성 검사 통과"
                         msg = "공지사항이 수정되었어요! 👍"
                     elif response.status_code == 400:
                         status == "FAIL"

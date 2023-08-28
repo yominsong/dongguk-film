@@ -239,13 +239,11 @@ def validation(request):
         - title
         - category
         - expiration_date
-        - request
     """
 
     id = request.GET["id"]
     original_url = request.GET["original_url"]
     dflink_slug = request.GET["dflink_slug"]
-    title = request.GET["title"]
 
     if not is_right_url(original_url):
         status = "FAIL"
@@ -253,7 +251,47 @@ def validation(request):
         msg = "원본 URL이 잘못 입력된 것 같아요."
         element = "id_original_url"
 
-    elif not is_listed(original_url) and not is_well_known(original_url):
+    elif not is_new_slug(id, dflink_slug):
+        status = "FAIL"
+        reason = "이미 존재하는 동영링크 URL"
+        msg = "앗, 이미 존재하는 동영링크 URL이에요!"
+        element = "id_dflink_slug"
+
+    elif not is_valid(request):
+        status = "FAIL"
+        reason = "허용되지 않은 입력값"
+        msg = "뭔가 잘못 입력된 것 같아요."
+        element = None
+
+    else:
+        status = None
+        reason = None
+        msg = None
+        element = None
+
+    return status, reason, msg, element
+
+
+def moderation(request):
+    """
+    - request | `HttpRequest`:
+        - id
+            - create_dflink
+            - update_dflink
+            - delete_dflink
+        - string_id
+        - original_url
+        - dflink_slug
+        - title
+        - category
+        - expiration_date
+    """
+
+    original_url = request.GET["original_url"]
+    dflink_slug = request.GET["dflink_slug"]
+    title = request.GET["title"]
+
+    if not is_listed(original_url) and not is_well_known(original_url):
         status = "FAIL"
         reason = "allowlist 등재 필요"
         msg = "이 원본 URL은 현재 사용할 수 없어요."
@@ -264,12 +302,6 @@ def validation(request):
         reason = "유해 사이트"
         msg = "이 원본 URL은 사용할 수 없어요."
         element = "id_original_url"
-
-    elif not is_new_slug(id, dflink_slug):
-        status = "FAIL"
-        reason = "이미 존재하는 동영링크 URL"
-        msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-        element = "id_dflink_slug"
 
     elif not is_not_swearing(dflink_slug):
         status = "FAIL"
@@ -282,12 +314,6 @@ def validation(request):
         reason = "비속어 또는 욕설로 해석될 수 있는 제목"
         msg = "이 제목은 사용할 수 없어요."
         element = "id_title"
-
-    elif not is_valid(request):
-        status = "FAIL"
-        reason = "알 수 없는 오류"
-        msg = "뭔가 잘못 입력된 것 같아요."
-        element = None
 
     else:
         status = None
@@ -336,6 +362,14 @@ def dflink(request):
             reason = "유효성 검사 실패"
             msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
             element = None
+        
+        try:
+            status, reason, msg, element = moderation(request)
+        except:
+            status = "FAIL"
+            reason = "유해성 검사 실패"
+            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+            element = None
 
         if status == None:
             if need_www:
@@ -345,7 +379,7 @@ def dflink(request):
             response = short_io("create", request)
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효성 검사 통과"
+                reason = "유효성 및 유해성 검사 통과"
                 msg = "동영링크가 생성되었어요! 👍"
             elif (
                 response.status_code == 409
@@ -382,6 +416,14 @@ def dflink(request):
             reason = "유효성 검사 실패"
             msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
             element = None
+        
+        try:
+            status, reason, msg, element = moderation(request)
+        except:
+            status = "FAIL"
+            reason = "유해성 검사 실패"
+            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+            element = None
 
         if status == None:
             if need_www:
@@ -391,7 +433,7 @@ def dflink(request):
             response = short_io("update", request)
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효성 검사 통과"
+                reason = "유효성 및 유해성 검사 통과"
                 msg = "동영링크가 수정되었어요! 👍"
             elif (
                 response.status_code == 400
