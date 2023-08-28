@@ -26,7 +26,7 @@ function redirectAfterLoginLogout() {
     let params = {};
 
     loginsLogouts.forEach((loginLogout) => {
-        params.next = location.pathname;
+        params.next = `${location.pathname}${location.search}`;
         if (typeof loginLogout.dataset.loginRequestMsg !== "undefined") {
             params.loginRequestMsg = location.pathname;
         };
