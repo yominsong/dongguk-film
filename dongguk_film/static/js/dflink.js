@@ -22,6 +22,8 @@ let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let currentHistoryLength = history.length;
 let modalOpen = false;
+let askedTwice = false;
+let askedTwiceTimer;
 
 //
 // Sub functions
@@ -264,8 +266,19 @@ function setPage() {
         });
         id_delete_dflink.addEventListener(type, (event) => {
             if (type == "click" || event.key == "Enter") {
-                requestDeleteDflink();
-                displayButtonMsg(true, id_delete_dflink, "descr", "잠시만 기다려주세요.");
+                if (!askedTwice) {
+                    id_delete_dflink_inner_text.innerText = "정말 삭제하기";
+                    askedTwice = true;
+                    askedTwiceTimer = setTimeout(() => {
+                        id_delete_dflink_inner_text.innerText = "삭제하기";
+                        askedTwice = false;
+                    }, 5000);
+                } else if (askedTwice) {
+                    clearTimeout(askedTwiceTimer);
+                    requestDeleteDflink();
+                    displayButtonMsg(true, id_delete_dflink, "descr", "잠시만 기다려주세요.");
+                    askedTwice = false;
+                };
             };
         });
     });

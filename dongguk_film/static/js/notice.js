@@ -62,6 +62,8 @@ let filteredInputs = [];
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let currentHistoryLength = history.length;
 let modalOpen = false;
+let askedTwice = false;
+let askedTwiceTimer;
 
 //
 // Sub functions
@@ -435,6 +437,10 @@ function goToList() {
     };
 
     if (id_go_to_list !== null) {
+        if (id_create_or_update_notice == null) {
+            id_go_to_list.classList.remove("mt-3");
+        };
+
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
@@ -446,7 +452,6 @@ function goToList() {
                         location.href = `${originLocation}/notice`;
                     };
                     id_go_to_list.disabled = true;
-                    code(id_go_to_list, "_spin").classList.remove("hidden");
                 };
             });
         });
@@ -519,10 +524,6 @@ function setPage() {
         });
     });
 
-    if (typeof id_create_or_update_notice == "undefined") {
-        id_go_to_list.classList.remove("mt-3");
-    };
-
     // Step one (first and last)
     initValidation(stepOnes, id_create_or_update_notice);
     ["click", "keyup"].forEach(type => {
@@ -560,11 +561,22 @@ function setPage() {
         });
         id_delete_notice.addEventListener(type, (event) => {
             if (type == "click" || event.key == "Enter") {
-                requestDeleteNotice();
-                displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                if (!askedTwice) {
+                    id_delete_notice_inner_text.innerText = "정말 삭제하기";
+                    askedTwice = true;
+                    askedTwiceTimer = setTimeout(() => {
+                        id_delete_notice_inner_text.innerText = "삭제하기";
+                        askedTwice = false;
+                    }, 5000);
+                } else if (askedTwice) {
+                    clearTimeout(askedTwiceTimer);
+                    requestDeleteNotice();
+                    displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                    askedTwice = false;
+                };
             };
         });
     });
 }
 
-if (id_notice_modal != null) { setPage() };
+if (id_notice_modal !== null) { setPage() };
