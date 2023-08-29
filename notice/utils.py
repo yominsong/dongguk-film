@@ -50,8 +50,8 @@ def moderation(request):
 
     elif not is_not_swearing(content):
         status = "FAIL"
-        reason = "내용에 비속어 또는 욕설로 해석될 수 있는 표현이 있음"
-        msg = "내용에 비속어 또는 욕설로 해석될 수 있는 표현이 있는 것 같아요."
+        reason = "비속어 또는 욕설로 해석될 수 있는 표현이 포함된 내용"
+        msg = "내용에 적절치 않은 표현이 포함된 것 같아요."
         element = "id_content"
 
     else:
@@ -141,7 +141,7 @@ def notice(request):
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
                 "category": category,
-                "keyword": data["keyword"],
+                "keyword": data["keyword"] if status == "DONE" else None,
                 "user": f"{request.user}",
                 "element": element if status == "FAIL" else None,
             },
