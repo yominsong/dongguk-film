@@ -21,6 +21,7 @@ const title_placeholder = new Array("<영화> 시나리오", "<영화> 일촬표
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let currentHistoryLength = history.length;
+let lastClickedWasHash = false;
 let modalOpen = false;
 let askedTwice = false;
 let askedTwiceTimer;
@@ -147,6 +148,18 @@ function controlDflinkModal() {
 
 controlDflinkModal();
 
+function detectHashLinkClick() {
+    document.addEventListener("click", function(event) {
+        let closestAnchor = event.target.closest("a");
+
+        if (closestAnchor) {
+            lastClickedWasHash = closestAnchor.getAttribute("href").startsWith("#");
+        };
+    });
+}
+
+detectHashLinkClick();
+
 function preventGoBack() {
     if (currentHistoryLength == history.length) {
         history.pushState(null, null, location.href);
@@ -158,9 +171,11 @@ function preventGoBack() {
                 id_dflink_modal.setAttribute("x-data", "{ open: false }");
                 enableFocus();
                 modalOpen = false;
-            }
+            };
         } else if (!modalOpen) {
-            history.go(-1);
+            if (!lastClickedWasHash) {
+                history.go(-1);
+            };
         };
     };
 }

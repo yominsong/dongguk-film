@@ -38,11 +38,12 @@ function inheritObject() {
 
 inheritObject();
 
+/**
+ * @param {*} one Something to concatenate with two
+ * @param {*} two Something to concatenate with one
+ * @returns 
+ */
 function code(one, two) {
-    /*
-     * one: Something to concatenate with two
-     * two: Something to concatenate with one
-     */
     let result;
 
     if (two == null) {
@@ -101,6 +102,32 @@ function writeWeather(oldValue, newValue) {
 
     return result;
 }
+
+function skipNavbar() {
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Tab") {
+            document.getElementById("id_top_banner").classList.replace("hidden", "flex");
+        } else if (event.key === "Enter" && document.activeElement.id === "id_skip_navbar") {
+            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+        };
+    });
+
+    document.addEventListener("click", function (event) {
+        if (event.target.id !== "id_skip_navbar") {
+            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+        } else if (!document.getElementById("id_top_banner").contains(event.target)) {
+            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+        };
+    });
+
+    document.addEventListener("focusin", function () {
+        if (document.activeElement.id !== "id_skip_navbar") {
+            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+        };
+    });
+}
+
+skipNavbar();
 
 //
 // Main functions

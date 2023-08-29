@@ -1,4 +1,12 @@
 <nav id="navbar">
+    <div id="id_top_banner"
+         class="hidden items-center justify-center bg-flamingo-900 px-6 py-2.5">
+        <p class="text-sm leading-6 text-white">
+            <a id="id_skip_navbar" href="#id_main_content">
+                <strong class="font-semibold">주요 콘텐츠로 이동</strong>
+            </a>
+        </p>
+    </div>
     <div class="relative bg-white"
          x-data="Components.popover({ open: false, focus: false })"
          @keydown.escape="onEscape"
@@ -77,7 +85,7 @@
                                  x-transition:leave-start="opacity-100 translate-y-0"
                                  x-transition:leave-end="opacity-0 -translate-y-1"
                                  class="absolute inset-x-0 top-full z-10 transform bg-white shadow-lg"
-                                 style="display: none;"
+                                 style="display: none"
                                  x-ref="panel"
                                  @click.away="open = false">
                                 <div class="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-4 lg:px-8 lg:py-12 xl:py-16">
@@ -285,7 +293,7 @@
                                  @keydown.tab="open = false"
                                  @keydown.enter.prevent="open = false; focusButton()"
                                  @keyup.space.prevent="open = false; focusButton()"
-                                 style="display: none;">
+                                 style="display: none">
                                 <a href="#"
                                    class="block px-4 py-2 text-sm text-gray-700 under-construction"
                                    x-state:on="Active"
@@ -327,7 +335,7 @@
              class="absolute inset-x-0 top-0 z-30 origin-top-right transform p-2 transition md:hidden"
              x-ref="panel"
              @click.away="open = false"
-             style="display: none;">
+             style="display: none">
             <div class="divide-y-2 divide-gray-50 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                 <div class="px-5 pt-5 pb-6 sm:pb-8">
                     <div class="flex items-center justify-between">

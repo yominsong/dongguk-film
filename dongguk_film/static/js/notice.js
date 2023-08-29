@@ -61,6 +61,7 @@ let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let currentHistoryLength = history.length;
+let lastClickedWasHash = false;
 let modalOpen = false;
 let askedTwice = false;
 let askedTwiceTimer;
@@ -343,6 +344,18 @@ function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
     return currentDate >= start && currentDate <= end;
 }
 
+function detectHashLinkClick() {
+    document.addEventListener("click", function(event) {
+        let closestAnchor = event.target.closest("a");
+
+        if (closestAnchor) {
+            lastClickedWasHash = closestAnchor.getAttribute("href").startsWith("#");
+        };
+    });
+}
+
+detectHashLinkClick();
+
 function preventGoBack() {
     if (currentHistoryLength == history.length) {
         history.pushState(null, null, location.href);
@@ -356,7 +369,9 @@ function preventGoBack() {
                 modalOpen = false;
             };
         } else if (!modalOpen) {
-            history.go(-1);
+            if (!lastClickedWasHash) {
+                history.go(-1);
+            };
         };
     };
 }
@@ -389,10 +404,11 @@ function generateNewStructure(url) {
                     </svg>
                 </div>
                 <a class="ck-media__placeholder__url"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="${url}"
-                data-cke-tooltip-text="새 탭에서 ${mediaName} 열기"><span class="ck-media__placeholder__url__text">${url}</span></a>
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="${url}"
+                    title="새 탭에서 ${mediaName} 열기"><span class="ck-media__placeholder__url__text">${url}</span>
+                </a>
             </div>
         </div>
     </figure>
