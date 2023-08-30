@@ -210,7 +210,7 @@ function controlNoticeModal() {
                 ["click", "keyup"].forEach(type => {
                     adjust.addEventListener(type, (event) => {
                         if (type == "click" || event.key == "Enter") {
-                            let notice_id = adjust.id.replace("id_adjust_notice_", "");
+                            let notice_id = adjust.dataset.pageId;
                             let notice = code("id_notice_", notice_id).value.split(",");
                             let label, svg;
                             class_keywords.forEach(keyword => {

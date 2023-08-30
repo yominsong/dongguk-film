@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.contrib.auth.models import User
 from utility.img import get_img
 from utility.utils import notion, convert_datetime
+import re
 
 #
 # Main functions
@@ -68,22 +70,34 @@ def notice_detail(request, page_id):
     image_list = get_img("notice")
 
     # Notion
-    notice = notion("retrieve", "page", data={"page_id": page_id}).json()
-    listed_time = notice["properties"]["Listed time"]["created_time"]
-    listed_time = convert_datetime(listed_time)
-    student_id = str(notice["properties"]["User"]["number"])
-    name = User.objects.get(username=student_id).metadata.name
-    notice = {
-        "id_string": page_id,
-        "title": notice["properties"]["Title"]["title"][0]["plain_text"],
-        "category": notice["properties"]["Category"]["select"]["name"],
-        "keyword": notice["properties"]["Keyword"]["rich_text"][0]["plain_text"],
-        "user": {"student_id": student_id, "name": name},
-        "listed_date": listed_time.strftime("%Y-%m-%d"),
-    }
-    notice["content"] = notion("retrieve", "block_children", data={"page_id": page_id})[
-        1
-    ]
+    response = notion("retrieve", "page", data={"page_id": page_id})
+    if response.status_code != 200:
+        raise Http404
+    elif response.status_code == 200:
+        notice = response.json()
+        student_id = str(notice["properties"]["User"]["number"])
+        user = User.objects.get(username=student_id)
+        name = user.metadata.name
+        profile_img = user.socialaccount_set.all()[0].get_avatar_url()
+        keyword_string = notice["properties"]["Keyword"]["rich_text"][0]["plain_text"]
+        keyword_list = re.findall(r"#\w+", keyword_string)
+        listed_time = notice["properties"]["Listed time"]["created_time"]
+        listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
+        notice = {
+            "id_string": page_id,
+            "title": notice["properties"]["Title"]["title"][0]["plain_text"],
+            "category": notice["properties"]["Category"]["select"]["name"],
+            "keyword": {"string": keyword_string, "list": keyword_list},
+            "user": {
+                "student_id": student_id,
+                "name": name,
+                "profile_img": profile_img,
+            },
+            "listed_date": listed_time,
+        }
+        notice["content"] = notion(
+            "retrieve", "block_children", data={"page_id": page_id}
+        )[1]
 
     return render(
         request,

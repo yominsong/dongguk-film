@@ -106,23 +106,23 @@ function writeWeather(oldValue, newValue) {
 function skipNavbar() {
     document.addEventListener("keydown", function (event) {
         if (event.key === "Tab") {
-            document.getElementById("id_top_banner").classList.replace("hidden", "flex");
+            id_top_banner.classList.replace("hidden", "flex");
         } else if (event.key === "Enter" && document.activeElement.id === "id_skip_navbar") {
-            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+            id_top_banner.classList.replace("flex", "hidden");
         };
     });
 
     document.addEventListener("click", function (event) {
         if (event.target.id !== "id_skip_navbar") {
-            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
-        } else if (!document.getElementById("id_top_banner").contains(event.target)) {
-            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+            id_top_banner.classList.replace("flex", "hidden");
+        } else if (!id_top_banner.contains(event.target)) {
+            id_top_banner.classList.replace("flex", "hidden");
         };
     });
 
     document.addEventListener("focusin", function () {
         if (document.activeElement.id !== "id_skip_navbar") {
-            document.getElementById("id_top_banner").classList.replace("flex", "hidden");
+            id_top_banner.classList.replace("flex", "hidden");
         };
     });
 }

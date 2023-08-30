@@ -281,7 +281,7 @@
                                  x-transition:leave="transition ease-in duration-75"
                                  x-transition:leave-start="transform opacity-100 scale-100"
                                  x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
+                                 class="origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg py-1 bg-white ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
                                  x-ref="menu-items"
                                  x-bind:aria-activedescendant="activeDescendant"
                                  role="menu"
@@ -307,11 +307,11 @@
                                    @click="open = false; focusButton()">내 프로필</a>
                                 <a href="{% url 'account_logout' %}"
                                    class="logout-button block px-4 py-2 text-sm text-gray-700"
-                                   :class="{ 'bg-gray-100': activeIndex === 2 }"
+                                   :class="{ 'bg-gray-100': activeIndex === 1 }"
                                    role="menuitem"
                                    tabindex="-1"
-                                   id="user-menu-item-2"
-                                   @mouseenter="activeIndex = 2"
+                                   id="user-menu-item-1"
+                                   @mouseenter="activeIndex = 1"
                                    @mouseleave="activeIndex = -1"
                                    @click="open = false; focusButton()">로그아웃</a>
                             </div>

@@ -44,22 +44,98 @@
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Detail body -->
         <div id="id_notice_detail"
-             class="bg-white shadow rounded-md px-4 py-7 sm:px-6">
-            <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words">{{ notice.title }}</h2>
-            <div class="flex justify-between items-center mt-2">
-                <div class="text-sm text-gray-500">
-                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time> |
-                    <span>{{ notice.user.name }}</span>
+             class="bg-white shadow rounded-md px-4 py-5 sm:px-6">
+            {% if notice.category == "서비스" %}
+                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                    {{ notice.category }}
+                </p>
+            {% elif notice.category == "학과" %}
+                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                    {{ notice.category }}
+                </p>
+            {% endif %}
+            <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ notice.title }}</h2>
+            <div class="flex justify-between items-center mt-3">
+                <div class="flex items-center text-sm text-gray-500 gap-x-2">
+                    <img src="{{ notice.user.profile_img }}"
+                         class="h-6 w-6 rounded-full bg-gray-800">
+                    <span class="font-semibold">{{ notice.user.name }}</span>
+                    <span>·</span>
+                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                 </div>
-                {% if notice.category == "서비스" %}
-                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        {{ notice.category }}
-                    </p>
-                {% elif notice.category == "학과" %}
-                    <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                        {{ notice.category }}
-                    </p>
-                {% endif %}
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                </svg> -->
+                <div x-data="Components.menu({ open: false })"
+                     x-init="init()"
+                     @keydown.escape.stop="open = false; focusButton()"
+                     @click.away="onClickAway($event)"
+                     class="relative ml-auto">
+                    <button type="button"
+                            class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
+                            id="options-menu-0-button"
+                            x-ref="button"
+                            @click="onButtonClick()"
+                            @keyup.space.prevent="onButtonEnter()"
+                            @keydown.enter.prevent="onButtonEnter()"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            x-bind:aria-expanded="open.toString()"
+                            @keydown.arrow-up.prevent="onArrowUp()"
+                            @keydown.arrow-down.prevent="onArrowDown()">
+                        <span class="sr-only">옵션 열기</span>
+                        <svg class="h-5 w-5"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             aria-hidden="true">
+                            <path d="M3 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
+                            </path>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-1 shadow-md ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
+                         x-ref="menu-items"
+                         x-description="Dropdown menu, show/hide based on menu state."
+                         x-bind:aria-activedescendant="activeDescendant"
+                         role="menu"
+                         aria-orientation="vertical"
+                         aria-labelledby="options-menu-0-button"
+                         tabindex="-1"
+                         @keydown.arrow-up.prevent="onArrowUp()"
+                         @keydown.arrow-down.prevent="onArrowDown()"
+                         @keydown.tab="open = false"
+                         @keydown.enter.prevent="open = false; focusButton()"
+                         @keyup.space.prevent="open = false; focusButton()"
+                         style="display: none">
+                        <div class="block px-4 py-2 text-sm text-gray-700"
+                             x-state:on="Active"
+                             x-state:off="Not Active"
+                             :class="{ 'bg-gray-100': activeIndex === 0 }"
+                             role="menuitem"
+                             tabindex="-1"
+                             id="options-menu-0-item-0"
+                             @mouseenter="onMouseEnter($event)"
+                             @mousemove="onMouseMove($event, 0)"
+                             @mouseleave="onMouseLeave($event)"
+                             @click="open = false; focusButton()">공유하기</div>
+                        <div class="class-open class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                             :class="{ 'bg-gray-100': activeIndex === 1 }"
+                             role="menuitem"
+                             tabindex="-1"
+                             id="options-menu-0-item-1"
+                             @mouseenter="onMouseEnter($event)"
+                             @mousemove="onMouseMove($event, 1)"
+                             @mouseleave="onMouseLeave($event)"
+                             @click="open = false; focusButton()"
+                             data-page-id="{{ notice.id_string }}">수정하기</div>
+                    </div>
+                </div>
             </div>
             <div class="relative mt-2">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -83,15 +159,22 @@
                 </div>
             </div>
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
+            <div class="mt-5 mb-3">
+                {% for keyword in notice.keyword.list %}
+                    <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
+                        {{ keyword }}
+                    </p>
+                {% endfor %}
+            </div>
         </div>
         <input id="id_notice_{{ notice.id_string }}"
-               value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.keyword }},{{ notice.listed_date }}"
+               value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.keyword.string }},{{ notice.listed_date }}"
                hidden>
         <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}
-                    <button id="id_adjust_notice_{{ notice.id_string }}"
+                    <button data-page-id="{{ notice.id_string }}"
                             type="button"
                             class="class-open class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                         수정하기
