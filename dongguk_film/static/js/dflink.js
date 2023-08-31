@@ -30,7 +30,7 @@ let askedTwiceTimer;
 // Sub functions
 //
 
-function searchDflink() {
+function search() {
     let urlParams = new URLSearchParams(location.search);
     if (urlParams.has("q")) {
         id_dflink_q.value = urlParams.get("q");
@@ -62,9 +62,9 @@ function searchDflink() {
     });
 }
 
-searchDflink();
+search();
 
-function initDflinkForm() {
+function initForm() {
     let [id_original_url_placeholder, id_dflink_slug_placeholder, id_title_placeholder] = randomItem(url_placeholder, slug_placeholder, title_placeholder);
 
     id_original_url.value = null;
@@ -84,7 +84,7 @@ function initDflinkForm() {
     displayButtonMsg(false, id_delete_dflink, "error");
 }
 
-function controlDflinkModal() {
+function initModal() {
     let class_opens = document.querySelectorAll(".class-open");
     let class_keywords = document.querySelectorAll(".class-keyword");
     let class_adjusts = document.querySelectorAll(".class-adjust");
@@ -98,7 +98,7 @@ function controlDflinkModal() {
                     class_keywords.forEach(keyword => {
                         keyword.innerText = "만들기";
                     });
-                    initDflinkForm();
+                    initForm();
                     id_delete_dflink.classList.replace("inline-flex", "hidden");
                     id_dflink_modal.setAttribute("x-data", "{ open: true }");
                     disableFocusOutsideModal(id_dflink_modal);
@@ -138,6 +138,9 @@ function controlDflinkModal() {
                             };
                             id_expiration_date.value = dflink[5];
                             id_delete_dflink.classList.replace("hidden", "inline-flex");
+                            id_delete_dflink_inner_text.innerText = "삭제하기";
+                            askedTwice = false;
+                            clearTimeout(askedTwiceTimer);
                         };
                     });
                 });
@@ -146,10 +149,10 @@ function controlDflinkModal() {
     });
 }
 
-controlDflinkModal();
+initModal();
 
 function detectHashLinkClick() {
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", function (event) {
         let closestAnchor = event.target.closest("a");
 
         if (closestAnchor) {
@@ -248,7 +251,11 @@ function setPage() {
     initValidation(stepOnes, id_create_or_update_dflink);
     ["click", "keyup"].forEach(type => {
         id_create_or_update_dflink.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            let target = event.target;
+
+            if ((type === "click" && target.tagName === "SPAN") ||
+                (type === "click" && target.tagName === "BUTTON") ||
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
                 Array.from(radios).forEach((radio) => {
                     let idx = inputs.indexOf(radio);
                     while (idx > -1) {
@@ -280,7 +287,11 @@ function setPage() {
             });
         });
         id_delete_dflink.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            let target = event.target;
+
+            if ((type === "click" && target.tagName === "SPAN") ||
+                (type === "click" && target.tagName === "BUTTON") ||
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
                 if (!askedTwice) {
                     id_delete_dflink_inner_text.innerText = "정말 삭제하기";
                     askedTwice = true;

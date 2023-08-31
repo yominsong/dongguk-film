@@ -26,9 +26,9 @@
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
-                 id="id_notice_modal_body"
+                 id="id_notice_modal_land"
                  @click.away="open = true">
-                <div class="absolute right-0 top-0 pr-4 pt-4 block">
+                <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button type="button"
                             id="id_notice_modal_close"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
-                        <div class="space-y-5">
+                        <div id="id_notice_modal_form" class="space-y-5">
                             <input id="id_string_id" value="" hidden>
                             <input id="id_block_string_id" value="" hidden>
                             <div>
@@ -169,6 +169,143 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div id="id_notice_modal_share" class="-mb-5" hidden>
+                            <ul role="list"
+                                class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <a href=""
+                                       class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 flex-shrink-0 items-center justify-center bg-[#FEE500] rounded-l-md text-sm font-medium text-black group-hover:bg-[#F0D800]">
+                                            <svg class="h-5"
+                                                 fill="currentColor"
+                                                 viewBox="0 0 386.1 354.68"
+                                                 aria-hidden="true">
+                                                <g id="a" />
+                                                <g id="b">
+                                                <g id="c">
+                                                <path d="M193,0C86.4,0,0,68.3,0,152.6c0,54.9,36.6,102.9,91.6,129.8-4,15.1-14.6,54.6-16.7,63.1-2.6,10.5,3.9,10.4,8.1,7.5,3.3-2.2,52.9-35.9,74.3-50.5,11.6,1.7,23.6,2.6,35.8,2.6,106.6,0,193-68.3,193-152.6,0-84.2-86.5-152.5-193.1-152.5" />
+                                                </g>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">카카오톡으로 공유하기</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <a href=""
+                                       class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 flex-shrink-0 items-center justify-center bg-black rounded-l-md text-sm font-medium text-white">
+                                            <svg class="h-5"
+                                                 fill="currentColor"
+                                                 width="1200"
+                                                 height="1227"
+                                                 viewBox="0 0 1200 1227"
+                                                 aria-hidden="true">
+                                                <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">X로 공유하기</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <a href=""
+                                       class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 flex-shrink-0 items-center justify-center bg-[#1877F2] rounded-l-md text-sm font-medium text-white group-hover:bg-[#1567d3]">
+                                            <svg class="h-5"
+                                                 x="0px"
+                                                 y="0px"
+                                                 viewBox="0 0 1024 1024"
+                                                 style="enable-background:new 0 0 1024 1024"
+                                                 xml:space="preserve"
+                                                 aria-hidden="true">
+                                                <style type="text/css">
+                                                .fb0{fill:#FFFFFF;}
+                                                .fb1{fill:transparent;}
+                                                </style>
+                                                <g>
+                                                <path class="fb0" d="M1024,512C1024,229.23,794.77,0,512,0S0,229.23,0,512c0,255.55,187.23,467.37,432,505.78V660H302V512h130   V399.2C432,270.88,508.44,200,625.39,200C681.41,200,740,210,740,210v126h-64.56c-63.6,0-83.44,39.47-83.44,79.96V512h142   l-22.7,148H592v357.78C836.77,979.37,1024,767.55,1024,512z" />
+                                                <path class="fb1" d="M711.3,660L734,512H592v-96.04c0-40.49,19.84-79.96,83.44-79.96H740V210c0,0-58.59-10-114.61-10   C508.44,200,432,270.88,432,399.2V512H302v148h130v357.78c26.07,4.09,52.78,6.22,80,6.22s53.93-2.13,80-6.22V660H711.3z" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">
+                                                Facebook으로 공유하기
+                                            </span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <a href=""
+                                       class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 flex-shrink-0 items-center justify-center bg-[#06C755] rounded-l-md text-sm font-medium text-white group-hover:bg-[#05b34d]">
+                                            <svg class="h-5" viewBox="0 0 213.38 203.32" aria-hidden="true">
+                                                <defs>
+                                                <style>
+                                                .cls-1 {fill: #fff;}
+                                                .cls-2 {fill: transparent;}
+                                                </style>
+                                                </defs>
+                                                <g>
+                                                <g>
+                                                <path class="cls-1" d="m213.38,86.58C213.38,38.84,165.52,0,106.69,0S0,38.84,0,86.58c0,42.8,38,78.65,89.22,85.42,3.48.75,8.21,2.29,9.4,5.26,1.08,2.7.71,6.93.35,9.65,0,0-1.25,7.53-1.52,9.13-.47,2.7-2.15,10.55,9.24,5.76s61.44-36.18,83.82-61.95h0c15.46-16.95,22.87-34.19,22.87-53.27Z" />
+                                                <path class="cls-2" d="m177.88,114.15h-30c-1.1,0-2-.9-2-2h0v-46.55h0c0-1.1.9-2,2-2h30c1.1,0,2,.9,2,2v7.57c0,1.1-.9,2-2,2h-20.37v7.85h20.37c1.1,0,2,.9,2,2v7.64c0,1.1-.9,2-2,2h-20.37v7.86h20.37c1.1,0,2,.9,2,2v7.56c.04,1.1-.82,2.03-1.93,2.07-.02,0-.05,0-.07,0Z" />
+                                                <path class="cls-2" d="m67.01,114.15c1.1,0,2-.9,2-2v-7.56c0-1.1-.9-2-2-2h-20.37v-37c0-1.1-.9-2-2-2h-7.6c-1.1,0-2,.9-2,2v46.53h0c0,1.1.9,2,2,2h30l-.03.03Z" />
+                                                <rect class="cls-2" x="75.45" y="63.51" width="11.64" height="50.64" rx="2.04" ry="2.04" />
+                                                <path class="cls-2" d="m136.56,63.51h-7.56c-1.1,0-2,.9-2,2v27.66l-21.3-28.77c-.05-.08-.11-.15-.17-.21h0l-.12-.12h0l-.11-.09h-.06l-.11-.08h-.06l-.11-.06h-8.47c-1.1,0-2,.9-2,2v46.56c0,1.1.9,2,2,2h7.57c1.1,0,2-.9,2-2v-27.93l21.33,28.8c.14.2.32.38.52.52h0l.12.08h.06l.1.05h.31c.18.04.36.07.54.07h7.52c1.1,0,2-.9,2-2v-46.44c.02-1.1-.86-2.02-1.96-2.04-.01,0-.03,0-.04,0Z" />
+                                                </g>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">라인으로 공유하기</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="flex relative mt-5 sm:mt-6">
+                                <label for="id_url"
+                                       class="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900 z-20">
+                                    URL
+                                </label>
+                                <div class="relative flex flex-grow items-stretch">
+                                    <input type="text"
+                                           id="id_url"
+                                           class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset focus:z-10"
+                                           placeholder="https://dongguk.film/notice/..."
+                                           value="https://dongguk.film/notice/{{ notice.id_string }}"
+                                           readonly>
+                                </div>
+                                <button type="button"
+                                        id="id_copy_url"
+                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-50 disabled:cursor-not-allowed">
+                                    <svg id="id_copy_url_ready"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor"
+                                         class="w-5 h-5"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
+                                    </svg>
+                                    <svg id="id_copy_url_done"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor"
+                                         class="hidden w-5 h-5"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+                                    </svg>
+                                    <span class="sr-only">복사</span>
+                                </button>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500" id="id_copy_url_descr" hidden>URL이 클립보드에 복사되었어요.</p>
                         </div>
                     </div>
                 </div>

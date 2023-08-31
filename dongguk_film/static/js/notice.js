@@ -8,6 +8,9 @@ const id_notice_q = document.getElementById("id_notice_q");
 const id_notice_list = document.getElementById("id_notice_list");
 const id_notice_detail = document.getElementById("id_notice_detail");
 const id_notice_modal = document.getElementById("id_notice_modal");
+const id_notice_modal_land = document.getElementById("id_notice_modal_land");
+const id_notice_modal_form = document.getElementById("id_notice_modal_form");
+const id_notice_modal_share = document.getElementById("id_notice_modal_share");
 const id_string_id = document.getElementById("id_string_id");
 const id_block_string_id = document.getElementById("id_block_string_id");
 const id_title = document.getElementById("id_title");
@@ -16,6 +19,10 @@ const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
+const id_url = document.querySelector("#id_url").value;
+const id_copy_url = document.getElementById("id_copy_url");
+const id_copy_url_ready = document.getElementById("id_copy_url_ready");
+const id_copy_url_done = document.getElementById("id_copy_url_done");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
 const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부산국제영화제 시네필", "부산국제영화제");
@@ -70,7 +77,7 @@ let askedTwiceTimer;
 // Sub functions
 //
 
-function searchNotice() {
+function search() {
     let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let urlParams = new URLSearchParams(location.search);
 
@@ -107,9 +114,9 @@ function searchNotice() {
     };
 }
 
-searchNotice();
+search();
 
-function initNoticeForm() {
+function initForm() {
     let id_title_placeholder = randomItem(filtered_title_placeholder);
 
     id_title.value = null;
@@ -173,21 +180,31 @@ function initNoticeForm() {
     ckEditor.setData("");
 }
 
-function controlNoticeModal() {
+function initModal() {
     let class_opens = document.querySelectorAll(".class-open");
     let class_keywords = document.querySelectorAll(".class-keyword");
     let class_adjusts = document.querySelectorAll(".class-adjust");
+    let class_shares = document.querySelectorAll(".class-share");
 
     class_opens.forEach(open => {
         // All users
         ["click", "keyup"].forEach(type => {
             open.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter") {
+                let target = event.target;
+
+                if ((type === "click" && target.tagName === "SPAN") ||
+                    (type === "click" && target.tagName === "DIV") ||
+                    (type === "click" && target.tagName === "BUTTON") ||
+                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                    resizeModalWidth(true);
                     id_notice_modal.hidden = false;
+                    id_notice_modal_form.hidden = false;
+                    id_notice_modal_share.hidden = true;
                     class_keywords.forEach(keyword => {
                         keyword.innerText = "작성하기";
                     });
-                    initNoticeForm();
+                    initForm();
+                    id_create_or_update_notice.classList.replace("hidden", "inline-flex");
                     id_delete_notice.classList.replace("inline-flex", "hidden");
                     id_notice_modal.setAttribute("x-data", "{ open: true }");
                     disableFocusOutsideModal(id_notice_modal);
@@ -197,7 +214,7 @@ function controlNoticeModal() {
                         };
                     });
                     ckEditor.destroy();
-                    initCkeditor();
+                    initCkEditor();
                     modalOpen = true;
                     sessionStorage.setItem("scrollPosition", window.scrollY);
                 };
@@ -209,10 +226,16 @@ function controlNoticeModal() {
             if (open == adjust) {
                 ["click", "keyup"].forEach(type => {
                     adjust.addEventListener(type, (event) => {
-                        if (type == "click" || event.key == "Enter") {
+                        let target = event.target;
+
+                        if ((type === "click" && target.tagName === "SPAN") ||
+                            (type === "click" && target.tagName === "DIV") ||
+                            (type === "click" && target.tagName === "BUTTON") ||
+                            (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
                             let notice_id = adjust.dataset.pageId;
                             let notice = code("id_notice_", notice_id).value.split(",");
                             let label, svg;
+
                             class_keywords.forEach(keyword => {
                                 keyword.innerText = "수정하기";
                             });
@@ -233,9 +256,33 @@ function controlNoticeModal() {
                             svg = label.querySelector("svg");
                             svg.classList.remove("invisible");
                             id_delete_notice.classList.replace("hidden", "inline-flex");
-                            ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
-                            ckEditor.enableReadOnlyMode("id_content");
+                            id_delete_notice_inner_text.innerText = "삭제하기";
+                            askedTwice = false;
+                            clearTimeout(askedTwiceTimer);
+                            freezeCkEditor();
                             requestReadNotice();
+                        };
+                    });
+                });
+            };
+        });
+
+        // Users who want to share on social media
+        class_shares.forEach(share => {
+            if (open == share) {
+                ["click", "keyup"].forEach(type => {
+                    share.addEventListener(type, (event) => {
+                        if (type === "click" || event.key === "Enter") {
+                            resizeModalWidth(false);
+                            id_notice_modal_form.hidden = true;
+                            id_notice_modal_share.hidden = false;
+                            id_copy_url_ready.classList.remove("hidden");
+                            id_copy_url_done.classList.add("hidden");
+                            id_copy_url_descr.hidden = true;
+                            class_keywords.forEach(keyword => {
+                                keyword.innerText = "공유하기";
+                            });
+                            id_create_or_update_notice.classList.replace("inline-flex", "hidden");
                         };
                     });
                 });
@@ -244,9 +291,9 @@ function controlNoticeModal() {
     });
 }
 
-controlNoticeModal();
+initModal();
 
-function initCkeditor() {
+function initCkEditor() {
     let userIsAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
 
     if (userIsAuthenticated) {
@@ -315,37 +362,46 @@ function initCkeditor() {
     };
 }
 
-initCkeditor();
+initCkEditor();
 
-function adjustWidth() {
-    function matchDivWidths() {
-        let id_notice_modal_body = document.getElementById("id_notice_modal_body");
-        let id_content_parent = document.getElementById("id_content_parent");
-        let widthBase;
-
-        if (id_notice_list !== null) {
-            widthBase = id_notice_list;
-        } else if (id_notice_detail !== null) {
-            widthBase = id_notice_detail;
-        };
-
-        if (id_notice_modal_body != null) {
-            id_notice_modal_body.style.setProperty("width", widthBase.offsetWidth + "px", "important");
-            id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
-        };
-    }
-    window.addEventListener("resize", matchDivWidths);
-    matchDivWidths();
+function freezeCkEditor() {
+    ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
+    ckEditor.enableReadOnlyMode("id_content");
 }
 
-adjustWidth()
+function matchDivWidth() {
+    let id_notice_modal_land = document.getElementById("id_notice_modal_land");
+    let id_content_parent = document.getElementById("id_content_parent");
+    let widthBase;
+
+    if (id_notice_list !== null) {
+        widthBase = id_notice_list;
+    } else if (id_notice_detail !== null) {
+        widthBase = id_notice_detail;
+    };
+
+    if (id_notice_modal_land !== null) {
+        id_notice_modal_land.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+        id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
+    };
+}
+
+function resizeModalWidth(bool) {
+    if (bool) {
+        matchDivWidth();
+        window.addEventListener("resize", matchDivWidth);
+    } else if (!bool) {
+        id_notice_modal_land.style = null;
+        window.removeEventListener("resize", matchDivWidth);
+    };
+}
 
 function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
     return currentDate >= start && currentDate <= end;
 }
 
 function detectHashLinkClick() {
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", function (event) {
         let closestAnchor = event.target.closest("a");
 
         if (closestAnchor) {
@@ -378,45 +434,6 @@ function preventGoBack() {
 
 preventGoBack();
 
-function generateNewStructure(url) {
-    let mediaName, newStructure;
-
-    if (url.includes("instagram.com")) {
-        mediaName = "인스타그램";
-    } else if (url.includes("facebook.com") || url.includes("fb.watch")) {
-        mediaName = "페이스북";
-    } else if (url.includes("twitter.com")) {
-        mediaName = "트위터";
-    } else if (url.includes("goo.gl")) {
-        mediaName = "구글 지도";
-    };
-
-    newStructure = `
-    <figure class="media ck-widget" contenteditable="false">
-        <div class="ck-media__wrapper"
-            data-oembed-url="${url}">
-            <div class="ck ck-reset_all ck-media__placeholder">
-                <div class="ck-media__placeholder__icon">
-                    <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
-                        viewBox="0 0 64 42">
-                        <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
-                        </path>
-                    </svg>
-                </div>
-                <a class="ck-media__placeholder__url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="${url}"
-                    title="새 탭에서 ${mediaName} 열기"><span class="ck-media__placeholder__url__text">${url}</span>
-                </a>
-            </div>
-        </div>
-    </figure>
-    `;
-
-    return newStructure;
-}
-
 function embedMedia() {
     let mediaElements = document.querySelectorAll("figure.media");
 
@@ -428,6 +445,47 @@ function embedMedia() {
             if (oembed) {
                 let url = oembed.getAttribute("url");
                 let newStructure = generateNewStructure(url);
+
+                function generateNewStructure(url) {
+                    let mediaName, newStructure;
+
+                    if (url.includes("instagram.com")) {
+                        mediaName = "인스타그램";
+                    } else if (url.includes("facebook.com") || url.includes("fb.watch")) {
+                        mediaName = "페이스북";
+                    } else if (url.includes("twitter.com")) {
+                        mediaName = "트위터";
+                    } else if (url.includes("goo.gl")) {
+                        mediaName = "구글 지도";
+                    };
+
+                    newStructure = `
+                    <figure class="media ck-widget" contenteditable="false">
+                        <div class="ck-media__wrapper"
+                            data-oembed-url="${url}">
+                            <div class="ck ck-reset_all ck-media__placeholder">
+                                <div class="ck-media__placeholder__icon">
+                                    <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
+                                        viewBox="0 0 64 42">
+                                        <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <a class="ck-media__placeholder__url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    href="${url}"
+                                    title="새 탭에서 ${mediaName} 열기">
+                                    <span class="ck-media__placeholder__url__text">${url}</span>
+                                    <span class="!sr-only">새 탭에서 ${mediaName} 열기</span>
+                                </a>
+                            </div>
+                        </div>
+                    </figure>
+                    `;
+
+                    return newStructure;
+                }
 
                 media.outerHTML = newStructure;
             } else if (div) {
@@ -475,6 +533,17 @@ function goToList() {
 }
 
 goToList();
+
+function copyUrl() {
+    id_copy_url.addEventListener("click", () => {
+        navigator.clipboard.writeText(id_url);
+        id_copy_url_ready.classList.add("hidden");
+        id_copy_url_done.classList.remove("hidden");
+        id_copy_url_descr.hidden = false;
+    });
+}
+
+copyUrl();
 
 //
 // Main functions
@@ -544,7 +613,11 @@ function setPage() {
     initValidation(stepOnes, id_create_or_update_notice);
     ["click", "keyup"].forEach(type => {
         id_create_or_update_notice.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            let target = event.target;
+
+            if ((type === "click" && target.tagName === "SPAN") ||
+                (type === "click" && target.tagName === "BUTTON") ||
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
                 Array.from(radios).forEach((radio) => {
                     let idx = inputs.indexOf(radio);
                     while (idx > -1) {
@@ -576,7 +649,11 @@ function setPage() {
             });
         });
         id_delete_notice.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            let target = event.target;
+
+            if ((type === "click" && target.tagName === "SPAN") ||
+                (type === "click" && target.tagName === "BUTTON") ||
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
                 if (!askedTwice) {
                     id_delete_notice_inner_text.innerText = "정말 삭제하기";
                     askedTwice = true;

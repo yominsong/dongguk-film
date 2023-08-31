@@ -277,7 +277,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
-            location.href = location.href;
+            location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -297,7 +297,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
-            location.href = location.href;
+            location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -317,7 +317,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_delete_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_dflink, "error");
-            location.href = location.href;
+            location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -336,7 +336,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_notice, "error");
-            location.href = location.href;
+            location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -365,7 +365,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_notice, "error");
-            location.href = location.href;
+            location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -391,9 +391,9 @@ function handleAjaxCallback(response) {
                 let previousSearch = new URLSearchParams(search).get("previousSearch");
                 location.href = `${originLocation}/notice${previousSearch}`;
             } else if (location.pathname !== "/notice/") {
-                location.href = `${originLocation}/notice`;
+                location.href = `${originLocation}${location.pathname}`;
             } else {
-                location.href = location.href;
+                location.href = `${originLocation}${location.pathname}`;
             };
         } else if (resResult.status == "FAIL") {
             freezeForm(false);

@@ -673,6 +673,8 @@ function disableFocusOutsideModal(modal) {
 function enableFocus() {
     const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
     const storedIndexes = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
+    let id_notice_detail_option_menu = document.getElementById("id_notice_detail_option_menu");
+    let id_notice_detail_option_button = document.getElementById("id_notice_detail_option_button");
 
     focusableElements.forEach(element => {
         element.removeAttribute("tabindex");
@@ -688,6 +690,7 @@ function enableFocus() {
     sessionStorage.removeItem("focusableItems");
 
     if (lastFocusedElement) {
+        if (lastFocusedElement == id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
         setTimeout(() => { lastFocusedElement.focus() }, 300);
         setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
     };

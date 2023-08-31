@@ -162,6 +162,10 @@
     outline-style: none !important;
 }
 
+.ck-media__placeholder {
+    border-radius: 0.375rem !important;
+}
+
 .ck-media__wrapper[data-oembed-url*="open.spotify.com"] {
     max-height: 352px !important;
     max-width: none !important;
