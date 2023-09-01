@@ -19,7 +19,7 @@ const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
-const id_url = document.getElementById("#id_url");
+const id_url = document.getElementById("id_url");
 const id_copy_url = document.getElementById("id_copy_url");
 const id_copy_url_ready = document.getElementById("id_copy_url_ready");
 const id_copy_url_done = document.getElementById("id_copy_url_done");
@@ -559,6 +559,8 @@ function copyUrl() {
             id_copy_url_ready.classList.add("hidden");
             id_copy_url_done.classList.remove("hidden");
             id_copy_url_descr.hidden = false;
+            id_copy_url_done.classList.add("blink");
+            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
         });
     };
 }
