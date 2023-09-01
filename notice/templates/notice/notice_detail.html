@@ -114,7 +114,7 @@
                          @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 0) { console.log(id_notice_modal_land) } else if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
                          @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 0) { console.log(id_notice_modal_land) } else if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
                          style="display: none">
-                        <div class="class-open class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                        <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                              x-state:on="Active"
                              x-state:off="Not Active"
                              :class="{ 'bg-gray-100': activeIndex === 0 }"
@@ -126,7 +126,7 @@
                              @mouseleave="onMouseLeave($event); activeIndex = -1"
                              @click="open = false">공유하기</div>
                         {% if user.username == notice.user.student_id %}
-                            <div class="class-open class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                            <div class="class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                                  :class="{ 'bg-gray-100': activeIndex === 1 }"
                                  role="menuitem"
                                  tabindex="-1"
@@ -179,7 +179,7 @@
                 {% if user.username == notice.user.student_id %}
                     <button data-page-id="{{ notice.id_string }}"
                             type="button"
-                            class="class-open class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                         수정하기
                     </button>
                 {% endif %}
@@ -192,9 +192,7 @@
         </div>
     </div>
     <!-- Modal -->
-    {% if user.is_authenticated %}
-        {% include "shared/_notice_modal.html" %}
-    {% endif %}
+    {% include "shared/_notice_modal.html" %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>

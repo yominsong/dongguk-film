@@ -19,10 +19,11 @@ const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
 const id_keyword = document.getElementById("id_keyword");
-const id_url = document.querySelector("#id_url").value;
+const id_url = document.getElementById("#id_url");
 const id_copy_url = document.getElementById("id_copy_url");
 const id_copy_url_ready = document.getElementById("id_copy_url_ready");
 const id_copy_url_done = document.getElementById("id_copy_url_done");
+const id_copy_url_descr = document.getElementById("id_copy_url_descr");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
 const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부산국제영화제 시네필", "부산국제영화제");
@@ -181,112 +182,129 @@ function initForm() {
 }
 
 function initModal() {
-    let class_opens = document.querySelectorAll(".class-open");
     let class_keywords = document.querySelectorAll(".class-keyword");
+    let class_creates = document.querySelectorAll(".class-create");
     let class_adjusts = document.querySelectorAll(".class-adjust");
     let class_shares = document.querySelectorAll(".class-share");
 
-    class_opens.forEach(open => {
-        // All users
+    function openModal(type, element = null) {
+        // type: all
+        id_notice_modal.hidden = false;
+        id_notice_modal.setAttribute("x-data", "{ open: true }");
+        disableFocusOutsideModal(id_notice_modal);
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && id_notice_modal.getAttribute("x-data") == "{ open: true }") {
+                enableFocus();
+            };
+        });
+        sessionStorage.setItem("scrollPosition", window.scrollY);
+        modalOpen = true;
+
+        // type: create
+        if (type == "create") {
+            resizeModalWidth(true);
+            id_notice_modal_form.hidden = false;
+            id_notice_modal_share.hidden = true;
+            class_keywords.forEach(keyword => {
+                keyword.innerText = "작성하기";
+            });
+            initForm();
+            ckEditor.destroy();
+            initCkEditor();
+            id_create_or_update_notice.classList.replace("hidden", "inline-flex");
+            id_delete_notice.classList.replace("inline-flex", "hidden");
+        }
+
+        // type: adjust
+        else if (type == "adjust") {
+            let notice_id = element.dataset.pageId;
+            let notice = code("id_notice_", notice_id).value.split(",");
+            let label, svg;
+
+            openModal("create");
+            class_keywords.forEach(keyword => {
+                keyword.innerText = "수정하기";
+            });
+            id_string_id.value = notice[0];
+            id_title.value = notice[1];
+            if (notice[2] == "서비스") {
+                id_category.value = "서비스";
+                id_category_serv.checked = true;
+                label = id_category_serv.closest("label");
+            } else if (notice[2] == "학과") {
+                id_category.value = "학과";
+                id_category_dept.checked = true;
+                label = id_category_dept.closest("label");
+            };
+            id_keyword.value = notice[3];
+            label.classList.remove("df-ring-inset-gray");
+            label.classList.add("df-ring-inset-flamingo");
+            svg = label.querySelector("svg");
+            svg.classList.remove("invisible");
+            id_delete_notice.classList.replace("hidden", "inline-flex");
+            id_delete_notice_inner_text.innerText = "삭제하기";
+            askedTwice = false;
+            clearTimeout(askedTwiceTimer);
+            setTimeout(() => { freezeCkEditor() }, 0.00001);
+            requestReadNotice();
+        }
+
+        // type: share
+        else if (type == "share") {
+            resizeModalWidth(false);
+            if (id_notice_modal_form !== null) { id_notice_modal_form.hidden = true };
+            id_notice_modal_share.hidden = false;
+            class_keywords.forEach(keyword => {
+                keyword.innerText = "공유하기";
+            });
+            id_copy_url_ready.classList.remove("hidden");
+            id_copy_url_done.classList.add("hidden");
+            id_copy_url_descr.hidden = true;
+            id_create_or_update_notice.classList.replace("inline-flex", "hidden");
+            id_delete_notice.classList.replace("inline-flex", "hidden");
+        };
+    }
+
+    // Users who want to create
+    class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
-            open.addEventListener(type, (event) => {
+            create.addEventListener(type, (event) => {
                 let target = event.target;
 
                 if ((type === "click" && target.tagName === "SPAN") ||
                     (type === "click" && target.tagName === "DIV") ||
                     (type === "click" && target.tagName === "BUTTON") ||
                     (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
-                    resizeModalWidth(true);
-                    id_notice_modal.hidden = false;
-                    id_notice_modal_form.hidden = false;
-                    id_notice_modal_share.hidden = true;
-                    class_keywords.forEach(keyword => {
-                        keyword.innerText = "작성하기";
-                    });
-                    initForm();
-                    id_create_or_update_notice.classList.replace("hidden", "inline-flex");
-                    id_delete_notice.classList.replace("inline-flex", "hidden");
-                    id_notice_modal.setAttribute("x-data", "{ open: true }");
-                    disableFocusOutsideModal(id_notice_modal);
-                    document.addEventListener("keydown", function (event) {
-                        if (event.key === "Escape" && id_notice_modal.getAttribute("x-data") == "{ open: true }") {
-                            enableFocus();
-                        };
-                    });
-                    ckEditor.destroy();
-                    initCkEditor();
-                    modalOpen = true;
-                    sessionStorage.setItem("scrollPosition", window.scrollY);
+                    openModal("create");
                 };
             });
         });
+    });
 
-        // Authenticated users
-        class_adjusts.forEach(adjust => {
-            if (open == adjust) {
-                ["click", "keyup"].forEach(type => {
-                    adjust.addEventListener(type, (event) => {
-                        let target = event.target;
+    // Users who want to update or delete
+    class_adjusts.forEach(adjust => {
+        ["click", "keyup"].forEach(type => {
+            adjust.addEventListener(type, (event) => {
+                let target = event.target;
 
-                        if ((type === "click" && target.tagName === "SPAN") ||
-                            (type === "click" && target.tagName === "DIV") ||
-                            (type === "click" && target.tagName === "BUTTON") ||
-                            (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
-                            let notice_id = adjust.dataset.pageId;
-                            let notice = code("id_notice_", notice_id).value.split(",");
-                            let label, svg;
-
-                            class_keywords.forEach(keyword => {
-                                keyword.innerText = "수정하기";
-                            });
-                            id_string_id.value = notice[0];
-                            id_title.value = notice[1];
-                            if (notice[2] == "서비스") {
-                                id_category.value = "서비스";
-                                id_category_serv.checked = true;
-                                label = id_category_serv.closest("label");
-                            } else if (notice[2] == "학과") {
-                                id_category.value = "학과";
-                                id_category_dept.checked = true;
-                                label = id_category_dept.closest("label");
-                            };
-                            id_keyword.value = notice[3];
-                            label.classList.remove("df-ring-inset-gray");
-                            label.classList.add("df-ring-inset-flamingo");
-                            svg = label.querySelector("svg");
-                            svg.classList.remove("invisible");
-                            id_delete_notice.classList.replace("hidden", "inline-flex");
-                            id_delete_notice_inner_text.innerText = "삭제하기";
-                            askedTwice = false;
-                            clearTimeout(askedTwiceTimer);
-                            freezeCkEditor();
-                            requestReadNotice();
-                        };
-                    });
-                });
-            };
+                if ((type === "click" && target.tagName === "SPAN") ||
+                    (type === "click" && target.tagName === "DIV") ||
+                    (type === "click" && target.tagName === "BUTTON") ||
+                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                    openModal("adjust", adjust);
+                };
+            });
         });
+    });
 
-        // Users who want to share on social media
-        class_shares.forEach(share => {
-            if (open == share) {
-                ["click", "keyup"].forEach(type => {
-                    share.addEventListener(type, (event) => {
-                        if (type === "click" || event.key === "Enter") {
-                            resizeModalWidth(false);
-                            id_notice_modal_form.hidden = true;
-                            id_notice_modal_share.hidden = false;
-                            id_copy_url_ready.classList.remove("hidden");
-                            id_copy_url_done.classList.add("hidden");
-                            id_copy_url_descr.hidden = true;
-                            class_keywords.forEach(keyword => {
-                                keyword.innerText = "공유하기";
-                            });
-                            id_create_or_update_notice.classList.replace("inline-flex", "hidden");
-                        };
-                    });
-                });
-            };
+    // Users who want to share
+    class_shares.forEach(share => {
+        ["click", "keyup"].forEach(type => {
+            share.addEventListener(type, (event) => {
+                if (type === "click" || event.key === "Enter") {
+                    openModal("share");
+                };
+            });
         });
     });
 }
@@ -535,12 +553,14 @@ function goToList() {
 goToList();
 
 function copyUrl() {
-    id_copy_url.addEventListener("click", () => {
-        navigator.clipboard.writeText(id_url);
-        id_copy_url_ready.classList.add("hidden");
-        id_copy_url_done.classList.remove("hidden");
-        id_copy_url_descr.hidden = false;
-    });
+    if (id_copy_url !== null) {
+        id_copy_url.addEventListener("click", () => {
+            navigator.clipboard.writeText(id_url.value);
+            id_copy_url_ready.classList.add("hidden");
+            id_copy_url_done.classList.remove("hidden");
+            id_copy_url_descr.hidden = false;
+        });
+    };
 }
 
 copyUrl();

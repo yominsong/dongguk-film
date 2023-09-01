@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from utility.msg import send_msg
 from utility.utils import set_headers, chap_gpt, notion
-import requests
 
 #
 # Global constants and variables
