@@ -529,7 +529,7 @@ function goToList() {
     };
 
     if (id_go_to_list !== null) {
-        if (id_create_or_update_notice == null) {
+        if (id_go_to_list.previousElementSibling == null) {
             id_go_to_list.classList.remove("mt-3");
         };
 
