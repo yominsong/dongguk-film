@@ -147,7 +147,7 @@
                             {% if user.username == dflink.user %}
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                     <span id="id_adjust_dflink_{{ dflink.id_string }}"
-                                          class="class-open class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                          class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>
                                 </p>
                             {% endif %}
@@ -176,7 +176,7 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                <li class="class-open relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                <li class="class-create relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                     tabindex="0">
                     <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <svg xmlns="http://www.w3.org/2000/svg"

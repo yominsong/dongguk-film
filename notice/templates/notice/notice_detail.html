@@ -135,7 +135,11 @@
                                  @mousemove="onMouseMove($event, 1)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
                                  @click="open = false"
-                                 data-page-id="{{ notice.id_string }}">수정하기</div>
+                                 data-notice-id="{{ notice.id_string }}"
+                                 data-notice-title="{{ notice.title }}"
+                                 data-notice-category="{{ notice.category }}"
+                                 data-notice-keyword="{{ notice.keyword.string }}"
+                                 data-notice-listed-date="{{ notice.listed_date }}">수정하기</div>
                         {% endif %}
                     </div>
                 </div>
@@ -170,14 +174,24 @@
                 {% endfor %}
             </div>
         </div>
-        <input id="id_notice_{{ notice.id_string }}"
-               value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.keyword.string }},{{ notice.listed_date }}"
-               hidden>
+        <span id="id_notice_data"
+              data-notice-id="{{ notice.id_string }}"
+              data-notice-title="{{ notice.title }}"
+              data-notice-category="{{ notice.category }}"
+              data-notice-keyword="{{ notice.keyword.string }}"
+              data-notice-user-name="{{ notice.user.name }}"
+              data-notice-user-profile-img="{{ notice.user.profile_img }}"
+              data-notice-listed-date="{{ notice.listed_date }}"
+              hidden></span>
         <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}
-                    <button data-page-id="{{ notice.id_string }}"
+                    <button data-notice-id="{{ notice.id_string }}"
+                            data-notice-title="{{ notice.title }}"
+                            data-notice-category="{{ notice.category }}"
+                            data-notice-keyword="{{ notice.keyword.string }}"
+                            data-notice-listed-date="{{ notice.listed_date }}"
                             type="button"
                             class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                         수정하기

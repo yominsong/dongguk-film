@@ -162,7 +162,11 @@
                             </p>
                             {% if user.username == notice.user %}
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-page-id="{{ notice.id_string }}"
+                                    <span data-notice-id="{{ notice.id_string }}"
+                                          data-notice-title="{{ notice.title }}"
+                                          data-notice-category="{{ notice.category }}"
+                                          data-notice-keyword="{{ notice.keyword }}"
+                                          data-notice-listed-date="{{ notice.listed_date }}"
                                           class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>
                                 </p>
@@ -176,9 +180,6 @@
                             </p>
                         </div>
                     {% endif %}
-                    <input id="id_notice_{{ notice.id_string }}"
-                           value="{{ notice.id_string }},{{ notice.title }},{{ notice.category }},{{ notice.keyword }},{{ notice.listed_date }}"
-                           hidden>
                 </li>
             {% empty %}
                 <li class="relative flex flex-col justify-between px-4 py-4 sm:px-6">

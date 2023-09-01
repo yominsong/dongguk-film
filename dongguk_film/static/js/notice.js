@@ -11,6 +11,7 @@ const id_notice_modal = document.getElementById("id_notice_modal");
 const id_notice_modal_land = document.getElementById("id_notice_modal_land");
 const id_notice_modal_form = document.getElementById("id_notice_modal_form");
 const id_notice_modal_share = document.getElementById("id_notice_modal_share");
+const id_notice_data = document.getElementById("id_notice_data");
 const id_string_id = document.getElementById("id_string_id");
 const id_block_string_id = document.getElementById("id_block_string_id");
 const id_title = document.getElementById("id_title");
@@ -217,26 +218,29 @@ function initModal() {
 
         // type: adjust
         else if (type == "adjust") {
-            let notice_id = element.dataset.pageId;
-            let notice = code("id_notice_", notice_id).value.split(",");
+            let data = element.dataset;
+            let noticeId = data.noticeId;
+            let noticeTitle = data.noticeTitle;
+            let noticeCategory = data.noticeCategory;
+            let noticeKeyword = data.noticeKeyword;
             let label, svg;
 
             openModal("create");
             class_keywords.forEach(keyword => {
                 keyword.innerText = "수정하기";
             });
-            id_string_id.value = notice[0];
-            id_title.value = notice[1];
-            if (notice[2] == "서비스") {
+            id_string_id.value = noticeId;
+            id_title.value = noticeTitle;
+            if (noticeCategory == "서비스") {
                 id_category.value = "서비스";
                 id_category_serv.checked = true;
                 label = id_category_serv.closest("label");
-            } else if (notice[2] == "학과") {
+            } else if (noticeCategory == "학과") {
                 id_category.value = "학과";
                 id_category_dept.checked = true;
                 label = id_category_dept.closest("label");
             };
-            id_keyword.value = notice[3];
+            id_keyword.value = noticeKeyword;
             label.classList.remove("df-ring-inset-gray");
             label.classList.add("df-ring-inset-flamingo");
             svg = label.querySelector("svg");
@@ -566,6 +570,66 @@ function copyUrl() {
 }
 
 copyUrl();
+
+function share() {
+    let data = id_notice_data.dataset;
+    let [
+        noticeTitle, noticeCategory, noticeKeyword, noticeUserName, noticeUserProfileImg, noticeListedDate
+    ] = [
+            data.noticeTitle, data.noticeCategory, data.noticeKeyword, data.noticeUserName, data.noticeUserProfileImg, data.noticeListedDate
+        ];
+
+    Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+    id_kakaotalk.addEventListener("click", () => {
+        Kakao.Share.sendDefault({
+            objectType: "feed",
+            itemContent: {
+                profileText: noticeUserName,
+                profileImageUrl: noticeUserProfileImg,
+            },
+            content: {
+                title: noticeTitle,
+                description: `${noticeListedDate} · ${noticeCategory}\n${noticeKeyword}`,
+                imageUrl:
+                    "https://dongguk.film/static/images/d_dot_f_logo.jpg",
+                link: {
+                    mobileWebUrl: `${originLocation}${location.pathname}`,
+                    webUrl: `${originLocation}${location.pathname}`,
+                },
+            },
+            buttons: [
+                {
+                    title: "디닷에프에서 보기",
+                    link: {
+                        mobileWebUrl: `${originLocation}${location.pathname}`,
+                        webUrl: `${originLocation}${location.pathname}`,
+                    },
+                },
+            ],
+        });
+    });
+
+    id_x.addEventListener("click", () => {
+        let hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
+        let xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+
+        window.open(xUrl);
+    });
+
+    id_facebook.addEventListener("click", () => {
+        let facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+
+        window.open(facebookUrl);
+    });
+
+    id_line.addEventListener("click", () => {
+        let lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+
+        window.open(lineUrl);
+    });
+}
+
+share();
 
 //
 // Main functions
