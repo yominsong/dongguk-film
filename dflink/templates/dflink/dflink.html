@@ -146,7 +146,13 @@
                             </p>
                             {% if user.username == dflink.user %}
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span id="id_adjust_dflink_{{ dflink.id_string }}"
+                                    <span data-dflink-id="{{ dflink.id_string }}"
+                                          data-dflink-original-url="{{ dflink.original_url }}"
+                                          data-dflink-slug="{{ dflink.slug }}"
+                                          data-dflink-slug-original="{{ dflink.slug }}"
+                                          data-dflink-title="{{ dflink.title }}"
+                                          data-dflink-category="{{ dflink.category }}"
+                                          data-dflink-expiration-date="{{ dflink.expiration_date }}"
                                           class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>
                                 </p>
@@ -160,9 +166,6 @@
                             </p>
                         </div>
                     {% endif %}
-                    <input id="id_dflink_{{ dflink.id_string }}"
-                           value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
-                           hidden>
                 </li>
             {% empty %}
                 <li class="relative flex flex-col justify-between px-4 py-4 sm:px-6">

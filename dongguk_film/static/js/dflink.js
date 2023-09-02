@@ -85,66 +85,84 @@ function initForm() {
 }
 
 function initModal() {
-    let class_opens = document.querySelectorAll(".class-open");
     let class_keywords = document.querySelectorAll(".class-keyword");
+    let class_creates = document.querySelectorAll(".class-create");
     let class_adjusts = document.querySelectorAll(".class-adjust");
 
-    class_opens.forEach(open => {
-        // All users
+    function openModal(action, datasetObj = null) {
+        // action: all
+        id_dflink_modal.hidden = false;
+        id_dflink_modal.setAttribute("x-data", "{ open: true }");
+        disableFocusOutsideModal(id_dflink_modal);
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && id_dflink_modal.getAttribute("x-data") == "{ open: true }") {
+                enableFocus();
+            };
+        });
+        sessionStorage.setItem("scrollPosition", window.scrollY);
+        modalOpen = true;
+
+        // action: create
+        if (action == "create") {
+            class_keywords.forEach(keyword => {
+                keyword.innerText = "만들기";
+            });
+            initForm();
+            id_delete_dflink.classList.replace("inline-flex", "hidden");
+        }
+
+        // action: adjust
+        else if (action == "adjust") {
+            let data = datasetObj.dataset;
+            let [
+                dflinkId, dflinkOriginalUrl, dflinkSlug, dflinkSlugOriginal, dflinkTitle, dflinkCategory, dflinkExpirationDate
+            ] = [
+                    data.dflinkId, data.dflinkOriginalUrl, data.dflinkSlug, data.dflinkSlugOriginal, data.dflinkTitle, data.dflinkCategory, data.dflinkExpirationDate
+                ]
+
+            openModal("create");
+            class_keywords.forEach(keyword => {
+                keyword.innerText = "수정하기";
+            });
+            id_string_id.value = dflinkId;
+            id_original_url.value = dflinkOriginalUrl;
+            id_dflink_slug.value = dflinkSlug;
+            id_dflink_slug_original.value = dflinkSlug;
+            id_title.value = dflinkTitle;
+            if (dflinkCategory == "작품") {
+                id_category.value = "작품";
+                id_category_work.checked = true;
+            } else if (dflinkCategory == "학과") {
+                id_category.value = "학과";
+                id_category_dept.checked = true;
+            };
+            id_expiration_date.value = dflinkExpirationDate;
+            id_delete_dflink.classList.replace("hidden", "inline-flex");
+            id_delete_dflink_inner_text.innerText = "삭제하기";
+            askedTwice = false;
+            clearTimeout(askedTwiceTimer);
+        };
+    };
+
+    // Users who want to create
+    class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
-            open.addEventListener(type, (event) => {
+            create.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
-                    id_dflink_modal.hidden = false;
-                    class_keywords.forEach(keyword => {
-                        keyword.innerText = "만들기";
-                    });
-                    initForm();
-                    id_delete_dflink.classList.replace("inline-flex", "hidden");
-                    id_dflink_modal.setAttribute("x-data", "{ open: true }");
-                    disableFocusOutsideModal(id_dflink_modal);
-                    document.addEventListener("keydown", function (event) {
-                        if (event.key === "Escape" && id_dflink_modal.getAttribute("x-data") == "{ open: true }") {
-                            enableFocus();
-                        };
-                    });
-                    modalOpen = true;
-                    sessionStorage.setItem("scrollPosition", window.scrollY);
+                    openModal("create");
                 };
             });
         });
+    });
 
-        // Authenticated users
-        class_adjusts.forEach(adjust => {
-            if (open == adjust) {
-                ["click", "keyup"].forEach(type => {
-                    adjust.addEventListener(type, (event) => {
-                        if (type == "click" || event.key == "Enter") {
-                            let dflink_id = adjust.id.replace("id_adjust_dflink_", "");
-                            let dflink = code("id_dflink_", dflink_id).value.split(",");
-                            class_keywords.forEach(keyword => {
-                                keyword.innerText = "수정하기";
-                            });
-                            id_string_id.value = dflink[0];
-                            id_original_url.value = dflink[1];
-                            id_dflink_slug_original.value = dflink[2];
-                            id_dflink_slug.value = dflink[2];
-                            id_title.value = dflink[3];
-                            if (dflink[4] == "작품") {
-                                id_category.value = "작품";
-                                id_category_work.checked = true;
-                            } else if (dflink[4] == "학과") {
-                                id_category.value = "학과";
-                                id_category_dept.checked = true;
-                            };
-                            id_expiration_date.value = dflink[5];
-                            id_delete_dflink.classList.replace("hidden", "inline-flex");
-                            id_delete_dflink_inner_text.innerText = "삭제하기";
-                            askedTwice = false;
-                            clearTimeout(askedTwiceTimer);
-                        };
-                    });
-                });
-            };
+    // Users who want to update or delete
+    class_adjusts.forEach(adjust => {
+        ["click", "keyup"].forEach(type => {
+            adjust.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    openModal("adjust", adjust);
+                };
+            });
         });
     });
 }

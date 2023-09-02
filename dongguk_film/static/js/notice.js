@@ -188,8 +188,8 @@ function initModal() {
     let class_adjusts = document.querySelectorAll(".class-adjust");
     let class_shares = document.querySelectorAll(".class-share");
 
-    function openModal(type, element = null) {
-        // type: all
+    function openModal(action, datasetObj = null) {
+        // action: all
         id_notice_modal.hidden = false;
         id_notice_modal.setAttribute("x-data", "{ open: true }");
         disableFocusOutsideModal(id_notice_modal);
@@ -201,8 +201,8 @@ function initModal() {
         sessionStorage.setItem("scrollPosition", window.scrollY);
         modalOpen = true;
 
-        // type: create
-        if (type == "create") {
+        // action: create
+        if (action == "create") {
             resizeModalWidth(true);
             id_notice_modal_form.hidden = false;
             id_notice_modal_share.hidden = true;
@@ -216,13 +216,14 @@ function initModal() {
             id_delete_notice.classList.replace("inline-flex", "hidden");
         }
 
-        // type: adjust
-        else if (type == "adjust") {
-            let data = element.dataset;
-            let noticeId = data.noticeId;
-            let noticeTitle = data.noticeTitle;
-            let noticeCategory = data.noticeCategory;
-            let noticeKeyword = data.noticeKeyword;
+        // action: adjust / datasetObj: adjust
+        else if (action == "adjust") {
+            let data = datasetObj.dataset;
+            let [
+                noticeId, noticeTitle, noticeCategory, noticeKeyword
+            ] = [
+                    data.noticeId, data.noticeTitle, data.noticeCategory, data.noticeKeyword
+                ];
             let label, svg;
 
             openModal("create");
@@ -253,8 +254,8 @@ function initModal() {
             requestReadNotice();
         }
 
-        // type: share
-        else if (type == "share") {
+        // action: share
+        else if (action == "share") {
             resizeModalWidth(false);
             if (id_notice_modal_form !== null) { id_notice_modal_form.hidden = true };
             id_notice_modal_share.hidden = false;
