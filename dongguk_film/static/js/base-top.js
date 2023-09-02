@@ -391,7 +391,7 @@ function handleAjaxCallback(response) {
                 let previousSearch = new URLSearchParams(search).get("previousSearch");
                 location.href = `${originLocation}/notice${previousSearch}`;
             } else if (location.pathname !== "/notice/") {
-                location.href = `${originLocation}${location.pathname}`;
+                location.href = `${originLocation}/${location.pathname.split("/")[1]}/`;
             } else {
                 location.href = `${originLocation}${location.pathname}`;
             };
