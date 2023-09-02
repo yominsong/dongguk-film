@@ -72,10 +72,14 @@ SHORT_IO_DOMAIN_ID = get_secret("SHORT_IO_DOMAIN_ID")
 
 SHORT_IO_API_KEY = get_secret("SHORT_IO_API_KEY")
 
+GOOGLE_SA_CREDS = get_secret("GOOGLE_SA_CREDS")
+
+GOOGLE_SA_EMAIL = get_secret("GOOGLE_SA_EMAIL")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["dongguk.film"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

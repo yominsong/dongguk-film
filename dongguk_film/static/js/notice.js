@@ -629,7 +629,7 @@ function share() {
     });
 }
 
-share();
+if (id_notice_data) { share() };
 
 //
 // Main functions

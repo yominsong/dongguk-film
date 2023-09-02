@@ -5,6 +5,8 @@ from requests.adapters import HTTPAdapter
 from fake_useragent import UserAgent
 from .img import save_img
 from .msg import send_msg
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 import json, re, requests, pytz, datetime, openai
 
 #
@@ -17,6 +19,11 @@ OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
+    getattr(settings, "GOOGLE_SA_CREDS", "GOOGLE_SA_CREDS"),
+    scopes=["https://www.googleapis.com/auth/drive"],
+)
+GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
 
 #
 # Cron functions
