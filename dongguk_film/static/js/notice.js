@@ -558,19 +558,17 @@ function goToList() {
 goToList();
 
 function copyUrl() {
-    if (id_copy_url !== null) {
-        id_copy_url.addEventListener("click", () => {
-            navigator.clipboard.writeText(id_url.value);
-            id_copy_url_ready.classList.add("hidden");
-            id_copy_url_done.classList.remove("hidden");
-            id_copy_url_descr.hidden = false;
-            id_copy_url_done.classList.add("blink");
-            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
-        });
-    };
+    id_copy_url.addEventListener("click", () => {
+        navigator.clipboard.writeText(id_url.value);
+        id_copy_url_ready.classList.add("hidden");
+        id_copy_url_done.classList.remove("hidden");
+        id_copy_url_descr.hidden = false;
+        id_copy_url_done.classList.add("blink");
+        setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
+    });
 }
 
-copyUrl();
+if (id_copy_url !== null) { copyUrl() };
 
 function share() {
     let data = id_notice_data.dataset;

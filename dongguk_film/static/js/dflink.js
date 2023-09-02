@@ -203,6 +203,39 @@ function preventGoBack() {
 
 preventGoBack();
 
+function copyUrl() {
+    let class_urls = document.querySelectorAll(".class-url");
+
+    class_urls.forEach(url => {
+        ["click", "keyup"].forEach(type => {
+            url.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    let srOnlySpan = document.createElement("span");
+                    let originalUrlValue;
+
+                    srOnlySpan.className = "sr-only";
+                    srOnlySpan.textContent = "\u00A0URL\u00A0복사하기";
+
+                    url.removeChild(url.querySelector(".sr-only"));
+                    navigator.clipboard.writeText(url.innerText);
+                    originalUrlValue = url.innerText;
+
+                    url.innerText = "URL이 클립보드에 복사되었어요.";
+                    url.classList.add("blink");
+                    
+                    setTimeout(() => {
+                        url.classList.remove("blink");
+                        url.innerText = originalUrlValue;
+                        url.appendChild(srOnlySpan);
+                    }, 3000);
+                };
+            });
+        });
+    });
+}
+
+copyUrl();
+
 function alertNonexistentLink() {
     if (window.location.search.indexOf("nonexistent-link") != -1) { displayNoti(true, "INL") };
 }

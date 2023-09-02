@@ -39,6 +39,26 @@
     animation: pulseBg 2s infinite;
 }
 
+/* fade in and out */
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    10%,
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fade {
+    animation: fade 3s ease;
+}
+
 /* blink once */
 @keyframes blink {
     0% {
