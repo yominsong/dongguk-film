@@ -26,7 +26,7 @@ if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "00:00":
 #
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "23:00":
-    requests.get("https://dongguk.film/utility/utils/update-img")
+    requests.get("https://dongguk.film/utility/utils/update-hero-img")
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "23:30":
     requests.get("https://dongguk.film/utility/utils/update-dmd-cookie")

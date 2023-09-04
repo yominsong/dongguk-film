@@ -12,6 +12,10 @@
         @apply border-0 ring-1 ring-inset ring-flamingo
     }
 
+    .df-ring-inset-flamingo-2 {
+        @apply border-0 ring-2 ring-inset ring-flamingo
+    }
+
     .df-focus-ring-inset {
         @apply outline-none ring-2 ring-inset ring-flamingo
     }

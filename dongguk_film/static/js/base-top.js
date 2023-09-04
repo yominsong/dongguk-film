@@ -356,7 +356,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             ckEditor.setData(resResult.content);
             ckEditor.disableReadOnlyMode("id_content");
-            id_block_string_id.value = resResult.block_string_id_list;
+            id_block_id.value = resResult.block_id_list;
         };
     }
 

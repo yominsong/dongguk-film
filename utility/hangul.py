@@ -1,3 +1,6 @@
+from urllib.parse import quote
+
+
 def pronounce_last_digit(str_number):
     num = str_number
     last_digit = num[-1]
@@ -47,3 +50,7 @@ def handle_hangul(str_word, str_handling_type, boolean_merge):
     result = word + element if merge else element
     str_result = result
     return str_result
+
+
+def encode_hangul_to_url(str_hangul):
+    return quote(str_hangul)

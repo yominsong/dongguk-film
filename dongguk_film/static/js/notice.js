@@ -12,13 +12,15 @@ const id_notice_modal_land = document.getElementById("id_notice_modal_land");
 const id_notice_modal_form = document.getElementById("id_notice_modal_form");
 const id_notice_modal_share = document.getElementById("id_notice_modal_share");
 const id_notice_data = document.getElementById("id_notice_data");
-const id_string_id = document.getElementById("id_string_id");
-const id_block_string_id = document.getElementById("id_block_string_id");
+const id_page_id = document.getElementById("id_page_id");
+const id_block_id = document.getElementById("id_block_id");
 const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
+const id_file_drop = document.getElementById("id_file_drop");
+const id_file = document.getElementById("id_file");
 const id_keyword = document.getElementById("id_keyword");
 const id_url = document.getElementById("id_url");
 const id_copy_url = document.getElementById("id_copy_url");
@@ -230,7 +232,7 @@ function initModal() {
             class_keywords.forEach(keyword => {
                 keyword.innerText = "수정하기";
             });
-            id_string_id.value = noticeId;
+            id_page_id.value = noticeId;
             id_title.value = noticeTitle;
             if (noticeCategory == "서비스") {
                 id_category.value = "서비스";
@@ -520,6 +522,68 @@ function embedMedia() {
 
 embedMedia();
 
+function selectFile() {
+    id_file_drop.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        id_file_drop.classList.add("bg-gray-50");
+    });
+
+    id_file_drop.addEventListener("dragleave", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        id_file_drop.classList.remove("bg-gray-50");
+    });
+
+    id_file_drop.addEventListener("mouseover", () => {
+        id_file_drop.classList.add("bg-gray-50");
+    });
+
+    id_file_drop.addEventListener("mouseout", () => {
+        id_file_drop.classList.remove("bg-gray-50");
+    });
+
+    id_file_drop.addEventListener("drop", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        let files = event.dataTransfer.files;
+
+        id_file_drop.classList.remove("bg-gray-50");
+        if (files.length > 0) {
+            id_file.files = files;
+            console.log(id_file.files);
+        };
+    });
+
+    id_file_drop.addEventListener("click", () => {
+        id_file.click();
+        id_file.focus();
+    });
+
+    id_file.addEventListener("focus", () => {
+        id_file_drop.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo-2");
+    });
+
+    id_file.addEventListener("blur", () => {
+        id_file_drop.classList.replace("df-ring-inset-flamingo-2", "df-ring-inset-gray");
+    });
+
+    id_file.addEventListener("change", () => {
+        let file = id_file.files[0];
+        let reader = new FileReader();
+
+        reader.addEventListener("load", () => {
+            console.log(reader.result);
+        })
+
+        reader.readAsDataURL(file);
+        console.log(file.name, "파일이 업로드됨.");
+    });
+}
+
+if (id_file_drop !== null) { selectFile() };
+
 function goToList() {
     let details = document.querySelectorAll(".class-detail");
     let params = {};
@@ -558,6 +622,10 @@ function goToList() {
 goToList();
 
 function copyUrl() {
+    id_url.addEventListener("click", () => {
+        id_url.select();
+    });
+
     id_copy_url.addEventListener("click", () => {
         navigator.clipboard.writeText(id_url.value);
         id_copy_url_ready.classList.add("hidden");
@@ -649,7 +717,7 @@ function requestCreateNotice() {
 function requestReadNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "read_notice", string_id: `${id_string_id.value}` };
+    request.data = { id: "read_notice", page_id: `${id_page_id.value}` };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);
@@ -659,7 +727,7 @@ function requestReadNotice() {
 function requestUpdateNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "update_notice", string_id: `${id_string_id.value}`, block_string_id: `${id_block_string_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.data = { id: "update_notice", page_id: `${id_page_id.value}`, block_id: `${id_block_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
@@ -671,7 +739,7 @@ function requestUpdateNotice() {
 function requestDeleteNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "delete_notice", string_id: `${id_string_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
+    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
     request.async = true;
     request.headers = null;
     code(id_delete_notice, "_spin").classList.remove("hidden");

@@ -14,7 +14,7 @@ json_path = (
 #
 
 
-def save_img(query: str, app_name: str):
+def save_hero_img(query: str, app_name: str):
     """
     - query | `str`: Random image search term
     - app_name | `str`: The name of the app the image will be used for
@@ -42,7 +42,7 @@ def save_img(query: str, app_name: str):
     return image_list_for_msg
 
 
-def get_img(app_name: str):
+def get_hero_img(app_name: str):
     """
     - app_name | `str`: The name of the app the image will be used for
     """

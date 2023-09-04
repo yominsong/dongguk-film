@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from utility.img import get_img
+from utility.img import get_hero_img
 from utility.utils import short_io
 
 #
@@ -9,7 +9,7 @@ from utility.utils import short_io
 
 
 def dflink(request):
-    image_list = get_img("dflink")
+    image_list = get_hero_img("dflink")
 
     # Short.io
     dflink_list = short_io("retrieve")

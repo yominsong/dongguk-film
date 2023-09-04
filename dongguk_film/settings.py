@@ -76,10 +76,16 @@ GOOGLE_SA_CREDS = get_secret("GOOGLE_SA_CREDS")
 
 GOOGLE_SA_EMAIL = get_secret("GOOGLE_SA_EMAIL")
 
+GOOGLE_DRIVE_FOLDER_ID = get_secret("GOOGLE_DRIVE_FOLDER_ID")
+
+AWS_ACCESS_KEY = get_secret("AWS_ACCESS_KEY")
+
+AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["dongguk.film"]
 
 
 # Application definition

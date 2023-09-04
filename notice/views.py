@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.contrib.auth.models import User
-from utility.img import get_img
+from utility.img import get_hero_img
 from utility.utils import notion, convert_datetime
 import re
 
@@ -12,10 +12,10 @@ import re
 
 
 def notice(request):
-    image_list = get_img("notice")
+    image_list = get_hero_img("notice")
 
     # Notion
-    notice_list = notion("query", "db", {"db_name": "notice-db"})
+    notice_list = notion("query", "db", data={"db_name": "notice-db"})
     notice_count = len(notice_list)
 
     # Query
@@ -67,7 +67,7 @@ def notice(request):
 
 
 def notice_detail(request, page_id):
-    image_list = get_img("notice")
+    image_list = get_hero_img("notice")
 
     # Notion
     response = notion("retrieve", "page", data={"page_id": page_id})
@@ -84,7 +84,7 @@ def notice_detail(request, page_id):
         listed_time = notice["properties"]["Listed time"]["created_time"]
         listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
         notice = {
-            "id_string": page_id,
+            "page_id": page_id,
             "title": notice["properties"]["Title"]["title"][0]["plain_text"],
             "category": notice["properties"]["Category"]["select"]["name"],
             "keyword": {"string": keyword_string, "list": keyword_list},

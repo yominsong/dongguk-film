@@ -213,7 +213,7 @@
                                 <div class="flex justify-start items-center gap-x-2">
                                     <!-- notice.title -->
                                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                                        <a href="{% url 'notice:notice_detail' notice.id_string %}"
+                                        <a href="{% url 'notice:notice_detail' notice.page_id %}"
                                            class="rounded-md focus:df-focus-ring-offset-gray">
                                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                             {{ notice.title }}
@@ -258,8 +258,8 @@
                                     <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                                 </p>
                             </div>
-                            <input id="id_notice_{{ notice.id_string }}"
-                                   value="{{ notice.id_string }}{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
+                            <input id="id_notice_{{ notice.page_id }}"
+                                   value="{{ notice.page_id }}{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
                                    hidden>
                         </li>
                     {% empty %}

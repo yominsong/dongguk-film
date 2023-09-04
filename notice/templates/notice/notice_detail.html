@@ -135,7 +135,7 @@
                                  @mousemove="onMouseMove($event, 1)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
                                  @click="open = false"
-                                 data-notice-id="{{ notice.id_string }}"
+                                 data-notice-id="{{ notice.page_id }}"
                                  data-notice-title="{{ notice.title }}"
                                  data-notice-category="{{ notice.category }}"
                                  data-notice-keyword="{{ notice.keyword.string }}"
@@ -146,7 +146,7 @@
             </div>
             <div class="relative mt-2">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-gray-300"></div>
+                    <div class="w-full border-t border-gray-100"></div>
                 </div>
                 <div class="relative flex justify-end min-h-[36px]">
                     <!-- <span class="isolate inline-flex -space-x-px rounded-md shadow-sm">
@@ -175,7 +175,7 @@
             </div>
         </div>
         <span id="id_notice_data"
-              data-notice-id="{{ notice.id_string }}"
+              data-notice-id="{{ notice.page_id }}"
               data-notice-title="{{ notice.title }}"
               data-notice-category="{{ notice.category }}"
               data-notice-keyword="{{ notice.keyword.string }}"
@@ -187,7 +187,7 @@
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}
-                    <button data-notice-id="{{ notice.id_string }}"
+                    <button data-notice-id="{{ notice.page_id }}"
                             data-notice-title="{{ notice.title }}"
                             data-notice-category="{{ notice.category }}"
                             data-notice-keyword="{{ notice.keyword.string }}"

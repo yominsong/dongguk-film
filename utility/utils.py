@@ -3,16 +3,18 @@ from django.http import HttpResponse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from fake_useragent import UserAgent
-from .img import save_img
+from .img import save_hero_img
 from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import json, re, requests, pytz, datetime, openai
+from googleapiclient.http import MediaIoBaseUpload
+import json, re, requests, pytz, datetime, openai, io, boto3, random, string
 
 #
 # Global constants and variables
 #
 
+EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", "EMAIL_HOST_USER")
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
 NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
@@ -24,6 +26,16 @@ GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
     scopes=["https://www.googleapis.com/auth/drive"],
 )
 GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
+AWS_ACCESS_KEY = getattr(settings, "AWS_ACCESS_KEY", "AWS_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY = getattr(
+    settings, "AWS_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"
+)
+AWS_S3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name="ap-northeast-2",
+)
 
 #
 # Cron functions
@@ -49,10 +61,10 @@ def update_dmd_cookie(request):
     return HttpResponse(f"dmd-cookie: {cookie}")
 
 
-def update_img(request):
-    home_img = save_img("video-camera", "home")
-    dflink_img = save_img("keyboard", "dflink")
-    notice_img = save_img("office", "notice")
+def update_hero_img(request):
+    home_img = save_hero_img("video-camera", "home")
+    dflink_img = save_hero_img("keyboard", "dflink")
+    notice_img = save_hero_img("office", "notice")
 
     image_list_for_msg = home_img + dflink_img + notice_img
 
@@ -74,6 +86,12 @@ def convert_datetime(notion_datetime):
     datetime_kor = datetime_utc.astimezone(kor_tz)
 
     return datetime_kor
+
+
+def generate_random_string(int):
+    random_string = "".join(random.choices(string.ascii_letters, k=int))
+
+    return random_string
 
 
 #
@@ -277,9 +295,7 @@ def short_io(action: str, request=None, limit: int = None):
     return result
 
 
-def notion(
-    action: str, target: str, data: dict = None, request=None, limit: int = None
-):
+def notion(action: str, target: str, data: dict = None, limit: int = None):
     """
     - action | `str`:
         - query
@@ -297,23 +313,35 @@ def notion(
     - data | `dict`
         - db_name
         - page_id
+        - block_id
+        - property_id
+        - title
+        - category
+        - content
         - keyword
+        - image_name_list
+        - file_id_list
+        - user
     - request | `HttpRequest`
     - limit | `int`
     """
 
-    if request != None:
-        string_id = request.POST.get("string_id")
-        block_string_id = request.POST.get("block_string_id")
-        title = request.POST.get("title")
-        category = request.POST.get("category")
-        content = request.POST.get("content")
+    if data != None:
+        db_name = data.get("db_name", None)
+        page_id = data.get("page_id", None)
+        block_id = data.get("block_id", None)
+        property_id = data.get("property_id", None)
+        title = data.get("title", None)
+        category = data.get("category", None)
+        content = data.get("content", None)
+        keyword = data.get("keyword", None)
+        image_name_list = data.get("image_name_list", None)
+        file_id_list = data.get("file_id_list", None)
+        user = data.get("user", None)
 
     # action: query / target: db
     if action == "query" and target == "db":
-        url = (
-            f"https://api.notion.com/v1/databases/{NOTION_DB_ID[data['db_name']]}/query"
-        )
+        url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID[db_name]}/query"
         payload = {"page_size": limit} if limit != None else None
         response = requests.post(
             url, json=payload, headers=set_headers("NOTION")
@@ -322,13 +350,13 @@ def notion(
         items = response["results"]
         item_list = []
 
-        if data["db_name"] == "notice-db":
+        if db_name == "notice-db":
             try:
                 for i in range(len(items)):
                     listed_time = items[i]["properties"]["Listed time"]["created_time"]
                     listed_time = convert_datetime(listed_time)
                     notice = {
-                        "id_string": items[i]["id"],
+                        "page_id": items[i]["id"],
                         "title": items[i]["properties"]["Title"]["title"][0][
                             "plain_text"
                         ],
@@ -360,9 +388,7 @@ def notion(
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if data["db_name"] == "notice-db":
-            keyword = data["keyword"]
-
+        if db_name == "notice-db":
             content_chunks = [
                 content[i : i + 2000] for i in range(0, len(content), 2000)
             ]
@@ -384,7 +410,7 @@ def notion(
             ]
 
             payload = {
-                "parent": {"database_id": NOTION_DB_ID[data["db_name"]]},
+                "parent": {"database_id": NOTION_DB_ID[db_name]},
                 "properties": {
                     "Category": {
                         "select": {
@@ -393,7 +419,10 @@ def notion(
                     },
                     "Title": {"title": [{"text": {"content": title}}]},
                     "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
-                    "User": {"number": int(f"{request.user}")},
+                    "Image name list": {
+                        "rich_text": [{"text": {"content": str(image_name_list)}}]
+                    },
+                    "User": {"number": int(str(user))},
                 },
                 "children": paragraph_list,
             }
@@ -403,40 +432,41 @@ def notion(
 
     # action: retrieve / target: block_children
     elif action == "retrieve" and target == "block_children":
-        string_id = data["page_id"] if request == None else string_id
-
-        url = f"https://api.notion.com/v1/blocks/{string_id}/children"
+        url = f"https://api.notion.com/v1/blocks/{page_id}/children"
         response = requests.get(url, headers=set_headers("NOTION")).json()
 
         blocks = response["results"]
-        block_string_id_list = []
+        block_id_list = []
         content = ""
 
         for i in range(len(blocks)):
-            block_string_id = blocks[i]["id"]
+            block_id = blocks[i]["id"]
             type = blocks[i]["type"]
             block = {
                 "content_chunk": blocks[i][type]["rich_text"][0]["plain_text"],
             }
-            block_string_id_list.append(block_string_id)
+            block_id_list.append(block_id)
             content += block["content_chunk"]
 
-        result = block_string_id_list, content
+        result = block_id_list, content
+
+    # action: retrieve / target: page_properties
+    elif action == "retrieve" and target == "page_properties":
+        url = f"https://api.notion.com/v1/pages/{page_id}/properties/{property_id}"
+        response = requests.get(url, headers=set_headers("NOTION"))
+
+        result = response
 
     # action: retrieve / target: page
     elif action == "retrieve" and target == "page":
-        string_id = data["page_id"] if request == None else string_id
-
-        url = f"https://api.notion.com/v1/pages/{string_id}"
+        url = f"https://api.notion.com/v1/pages/{page_id}"
         response = requests.get(url, headers=set_headers("NOTION"))
 
         result = response
 
     # action: update / target: page_properties
     elif action == "update" and target == "page_properties":
-        keyword = data["keyword"]
-
-        url = f"https://api.notion.com/v1/pages/{string_id}"
+        url = f"https://api.notion.com/v1/pages/{page_id}"
         payload = {
             "properties": {
                 "Category": {
@@ -446,6 +476,9 @@ def notion(
                 },
                 "Title": {"title": [{"text": {"content": title}}]},
                 "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
+                "Image name list": {
+                    "rich_text": [{"text": {"content": str(image_name_list)}}]
+                },
             },
         }
         response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
@@ -454,9 +487,7 @@ def notion(
 
     # action: append / target: block_children
     elif action == "append" and target == "block_children":
-        url = f"https://api.notion.com/v1/blocks/{string_id}/children"
-
-        content = content
+        url = f"https://api.notion.com/v1/blocks/{page_id}/children"
 
         content_chunks = [content[i : i + 2000] for i in range(0, len(content), 2000)]
 
@@ -483,11 +514,11 @@ def notion(
 
     # action: delete / target: block
     elif action == "delete" and target == "block":
-        block_string_id_list = block_string_id.split(",")
+        block_id_list = block_id.split(",")
         response_list = []
 
-        for block_string_id in block_string_id_list:
-            url = f"https://api.notion.com/v1/blocks/{block_string_id}"
+        for block_id in block_id_list:
+            url = f"https://api.notion.com/v1/blocks/{block_id}"
             response = requests.delete(url, headers=set_headers("NOTION"))
             response_list.append(response)
 
@@ -495,9 +526,31 @@ def notion(
 
     # action: delete / target: page
     elif action == "delete" and target == "page":
-        url = f"https://api.notion.com/v1/pages/{string_id}"
+        url = f"https://api.notion.com/v1/pages/{page_id}"
         payload = {"archived": True}
         response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+
+        result = response
+
+    return result
+
+
+def aws_s3(action: str, target: str, data: dict = None):
+    if data != None:
+        bin = data.get("bin", None)
+        name = data.get("name", None)
+
+    # action: put / target: object
+    if action == "put" and target == "object":
+        response = AWS_S3.put_object(
+            Body=bin, Bucket="dongguk-film", Key=name, ACL="public-read"
+        )
+
+        result = response
+
+    # action: delete / target: object
+    elif action == "delete" and target == "object":
+        response = AWS_S3.delete_object(Bucket="dongguk-film", Key=name)
 
         result = response
 

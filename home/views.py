@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
-from utility.img import get_img
+from utility.img import get_hero_img
 from utility.utils import short_io, notion
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
@@ -27,7 +27,7 @@ def home(request):
         is_new_user(request.user) if request.user.is_authenticated else False
     )
 
-    image_list = get_img("home")
+    image_list = get_hero_img("home")
     dflink_list = short_io("retrieve", limit=5)
     notice_list = notion("query", "db", data={"db_name": "notice-db"}, limit=5)
 

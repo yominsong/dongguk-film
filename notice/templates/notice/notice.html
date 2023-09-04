@@ -115,7 +115,7 @@
                         <div class="flex justify-start items-center gap-x-2">
                             <!-- notice.title -->
                             <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="{% url 'notice:notice_detail' notice.id_string %}"
+                                <a href="{% url 'notice:notice_detail' notice.page_id %}"
                                    class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ notice.title }}
@@ -162,7 +162,7 @@
                             </p>
                             {% if user.username == notice.user %}
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-notice-id="{{ notice.id_string }}"
+                                    <span data-notice-id="{{ notice.page_id }}"
                                           data-notice-title="{{ notice.title }}"
                                           data-notice-category="{{ notice.category }}"
                                           data-notice-keyword="{{ notice.keyword }}"

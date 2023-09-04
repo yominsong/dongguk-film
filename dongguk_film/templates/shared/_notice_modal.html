@@ -55,8 +55,8 @@
                     <div class="flex flex-1 flex-col justify-between">
                         {% if user.is_authenticated %}
                             <div id="id_notice_modal_form" class="space-y-5">
-                                <input id="id_string_id" value="" hidden>
-                                <input id="id_block_string_id" value="" hidden>
+                                <input id="id_page_id" value="" hidden>
+                                <input id="id_block_id" value="" hidden>
                                 <div>
                                     <label for="id_title"
                                            class="block text-sm font-medium leading-6 text-gray-900">제목</label>
@@ -145,6 +145,32 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_content_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_content_error" hidden></p>
                                 </div>
+                                <div>
+                                    <label for="id_file"
+                                           class="block text-sm font-medium leading-6 text-gray-900">파일</label>
+                                    <div id="id_file_drop" class="mt-2 flex justify-center rounded-md df-ring-inset-gray px-6 py-8 cursor-pointer">
+                                        <div class="text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-300"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24"
+                                                 stroke-width="1.5"
+                                                 stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                            </svg>
+                                            <div class="mt-4 flex justify-center text-sm leading-6 text-gray-600">
+                                                <label for="id_file"
+                                                       class="relative font-medium text-gray-900">
+                                                    <span class="hidden sm:block">파일을 직접 업로드하거나 끌어다 놓으세요.</span>
+                                                    <span class="block sm:hidden">파일을 업로드하세요.</span>
+                                                    <input id="id_file" type="file" class="sr-only">
+                                                </label>
+                                            </div>
+                                            <p class="text-xs leading-5 text-gray-600">5MB 미만의 파일만 업로드할 수 있어요.</p>
+                                        </div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_file_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_file_error" hidden></p>
+                                </div>
                                 <input id="id_keyword" value="" hidden>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">
@@ -183,7 +209,7 @@
                                            id="id_url"
                                            class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset focus:z-10"
                                            placeholder="https://dongguk.film/notice/..."
-                                           value="https://dongguk.film/notice/{{ notice.id_string }}"
+                                           value="https://dongguk.film/notice/{{ notice.page_id }}"
                                            readonly>
                                 </div>
                                 <button type="button"
