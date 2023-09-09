@@ -135,7 +135,7 @@
                                  @mousemove="onMouseMove($event, 1)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
                                  @click="open = false"
-                                 data-notice-id="{{ notice.page_id }}"
+                                 data-notice-page-id="{{ notice.page_id }}"
                                  data-notice-title="{{ notice.title }}"
                                  data-notice-category="{{ notice.category }}"
                                  data-notice-keyword="{{ notice.keyword.string }}"
@@ -148,22 +148,7 @@
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="w-full border-t border-gray-100"></div>
                 </div>
-                <div class="relative flex justify-end min-h-[36px]">
-                    <!-- <span class="isolate inline-flex -space-x-px rounded-md shadow-sm">
-                        <button type="button" class="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:z-10 focus:df-focus-ring-inset">
-                            <span class="sr-only">Edit</span>
-                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
-                            </svg>
-                        </button>
-                        <button type="button" class="relative inline-flex items-center rounded-r-md bg-white px-3 py-2 text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:z-10 focus:df-focus-ring-inset">
-                            <span class="sr-only">Delete</span>
-                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </span> -->
-                </div>
+                <div class="relative flex justify-end min-h-[36px]"></div>
             </div>
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
             <div class="mt-5 mb-3">
@@ -175,7 +160,7 @@
             </div>
         </div>
         <span id="id_notice_data"
-              data-notice-id="{{ notice.page_id }}"
+              data-notice-page-id="{{ notice.page_id }}"
               data-notice-title="{{ notice.title }}"
               data-notice-category="{{ notice.category }}"
               data-notice-keyword="{{ notice.keyword.string }}"
@@ -187,7 +172,7 @@
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}
-                    <button data-notice-id="{{ notice.page_id }}"
+                    <button data-notice-page-id="{{ notice.page_id }}"
                             data-notice-title="{{ notice.title }}"
                             data-notice-category="{{ notice.category }}"
                             data-notice-keyword="{{ notice.keyword.string }}"

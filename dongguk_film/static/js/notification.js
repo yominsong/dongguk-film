@@ -24,7 +24,11 @@ function editXDate(notiType, bool) {
  * - `WNU`: Welcome New User
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
- * - `RSL`: Request YouTube Share Link
+ * - `RYS`: Request YouTube Share Link
+ * - `RAT`: Request Alternative Text
+ * - `RDI`: Request Description of Image
+ * - `EIS`: Extracting text from an Image Succeeded
+ * - `EIF`: Extracting text from an Image Failed
  * - `NUC`: Notify Under Construction
  * @param {string|null} param Additional information to add to the notification
  */
@@ -33,9 +37,11 @@ function displayNoti(bool, notiType, param = null) {
         editXDate(notiType, false);
 
         let notiIcon, notiTitle, notiContent, notiFormat;
+        let notiAction = "";
+
+        // title icon
         let infoIcon = `
         <svg class="h-6 w-6 text-white"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -46,7 +52,6 @@ function displayNoti(bool, notiType, param = null) {
         `;
         let locationIcon = `
         <svg class="h-6 w-6 text-white"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -58,7 +63,6 @@ function displayNoti(bool, notiType, param = null) {
         `;
         let bellIcon = `
         <svg class="h-6 w-6 text-white"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -69,7 +73,6 @@ function displayNoti(bool, notiType, param = null) {
         `;
         let smileIcon = `
         <svg class="h-6 w-6 text-white"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -80,7 +83,6 @@ function displayNoti(bool, notiType, param = null) {
         `;
         let clipboardIcon = `
         <svg class="w-6 h-6 text-white"
-            xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -90,15 +92,23 @@ function displayNoti(bool, notiType, param = null) {
         </svg>
         `;
 
+        // inline icon
         let refreshIconInline = `
-        <svg xmlns="http://www.w3.org/2000/svg"
+        <svg class="w-4 h-4 inline align-base"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-4 h-4 inline align-base"
             aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        `;
+        let visualImpairmentIcon = `
+        <svg class="w-4 h-4 inline align-base"
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path d="M5.085 6.22 2.943 4.078a.75.75 0 1 1 1.06-1.06l2.592 2.59A11.094 11.094 0 0 1 10 5.068c4.738 0 8.578 3.101 8.578 5.083 0 1.197-1.401 2.803-3.555 3.887l1.714 1.713a.75.75 0 0 1-.09 1.138.488.488 0 0 1-.15.084.75.75 0 0 1-.821-.16L6.17 7.304c-.258.11-.51.233-.757.365l6.239 6.24-.006.005.78.78c-.388.094-.78.166-1.174.215l-1.11-1.11h.011L4.55 8.197a7.2 7.2 0 0 0-.665.514l-.112.098 4.897 4.897-.005.006 1.276 1.276a10.164 10.164 0 0 1-1.477-.117l-.479-.479-.009.009-4.863-4.863-.022.031a2.563 2.563 0 0 0-.124.2c-.043.077-.08.158-.108.241a.534.534 0 0 0-.028.133.29.29 0 0 0 .008.072.927.927 0 0 0 .082.226c.067.133.145.26.234.379l3.242 3.365.025.01.59.623c-3.265-.918-5.59-3.155-5.59-4.668 0-1.194 1.448-2.838 3.663-3.93zm7.07.531a4.632 4.632 0 0 1 1.108 5.992l.345.344.046-.018a9.313 9.313 0 0 0 2-1.112c.256-.187.5-.392.727-.613.137-.134.27-.277.392-.431.072-.091.141-.185.203-.286.057-.093.107-.19.148-.292a.72.72 0 0 0 .036-.12.29.29 0 0 0 .008-.072.492.492 0 0 0-.028-.133.999.999 0 0 0-.036-.096 2.165 2.165 0 0 0-.071-.145 2.917 2.917 0 0 0-.125-.2 3.592 3.592 0 0 0-.263-.335 5.444 5.444 0 0 0-.53-.523 7.955 7.955 0 0 0-1.054-.768 9.766 9.766 0 0 0-1.879-.891c-.337-.118-.68-.219-1.027-.301zm-2.85.21-.069.002a.508.508 0 0 0-.254.097.496.496 0 0 0-.104.679.498.498 0 0 0 .326.199l.045.005c.091.003.181.003.272.012a2.45 2.45 0 0 1 2.017 1.513c.024.061.043.125.069.185a.494.494 0 0 0 .45.287h.008a.496.496 0 0 0 .35-.158.482.482 0 0 0 .13-.335.638.638 0 0 0-.048-.219 3.379 3.379 0 0 0-.36-.723 3.438 3.438 0 0 0-2.791-1.543l-.028-.001h-.013z">
+            </path>
         </svg>
         `;
 
@@ -140,16 +150,34 @@ function displayNoti(bool, notiType, param = null) {
         }
 
         // notice
-        else if (notiType == "RSL") {
+        else if (notiType == "RYS") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
-            notiContent = "YouTube에서 '공유' 버튼을 클릭해 링크를 복사하세요. 그리고 이곳에 붙여넣으면 자동으로 동영상이 삽입돼요.";
+            notiContent = "YouTube 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
+        } else if (notiType == "RAT") {
+            notiIcon = infoIcon;
+            notiTitle = "이미지 대체 텍스트를 입력해주세요.";
+            notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://blog.naver.com/mofakr/222059815030', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
+        } else if (notiType == "RDI") {
+            notiIcon = infoIcon;
+            notiTitle = "이미지에 대한 설명을 추가해주세요.";
+            notiContent = "스크린 리더 사용자를 위해 이미지에 대한 설명을 추가해주세요. 디닷에프가 이미지 내 텍스트 추출을 도와드릴게요.";
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
+        } else if (notiType == "EIS") {
+            notiIcon = infoIcon;
+            notiTitle = "이미지 내 텍스트가 추출되었어요.";
+            notiContent = "일부 추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
+        } else if (notiType == "EIF") {
+            notiIcon = infoIcon;
+            notiTitle = "이미지 내 텍스트 추출에 실패했어요.";
+            notiContent = "문자를 인식할 수 없는 이미지인 것 같아요. 직접 이미지에 대한 설명을 추가해주세요.";
         }
 
         // everywhere
         else if (notiType == "NUC") {
             notiIcon = infoIcon;
-            notiTitle = "아직 준비 중인 기능이에요."
+            notiTitle = "아직 준비 중인 기능이에요.";
             notiContent = `언젠가 출시될 거예요! ${param}`;
         };
 
@@ -171,6 +199,7 @@ function displayNoti(bool, notiType, param = null) {
                     <div class="ml-3 w-0 flex-1 pt-0.5">
                         <p class="text-sm font-medium text-white">${notiTitle}</p>
                         <p class="mt-1 text-sm text-flamingo-50">${notiContent}</p>
+                        ${notiAction}
                     </div>
                     <div class="ml-4 flex flex-shrink-0">
                         <button type="button"

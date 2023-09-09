@@ -111,7 +111,7 @@ function freezeForm(bool) {
         };
     });
     buttons.forEach((button) => {
-        button.disabled = true;
+        bool ? button.disabled = true : button.disabled = false;
     });
 }
 
@@ -492,13 +492,20 @@ function controlError(input) {
     return true;
 }
 
-function displayError(bool, input, errorType) {
-    /* 
-     * bool: Show/hide error
-     * input: Target input
-     * descrType: "disagree", "unchecked", "unselected", "empty", "insufficient", "invalid", "inappropriate", "out of range"
-     */
-
+/**
+ * @param {boolean} bool Show/hide error
+ * @param {object} input Target input
+ * @param {string} errorType Type of error
+ * - "disagree"
+ * - "unchecked"
+ * - "unselected"
+ * - "empty"
+ * - "insufficient"
+ * - "invalid"
+ * - "inappropriate"
+ * - "out of range"
+ */
+function displayError(bool, input, errorType = null) {
     let errorMsg = code(input, "_error");
 
     // Change input's style and show error
@@ -566,7 +573,7 @@ function displayError(bool, input, errorType) {
             narrativeClause = "잘못 입력된 것 같아요.";
         } else if (errorType == "inappropriate") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
-            narrativeClause = "변경해주세요.";
+            narrativeClause = "수정해주세요.";
         } else if (errorType == "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효범위를 벗어났어요.`;

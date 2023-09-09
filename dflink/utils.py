@@ -62,7 +62,7 @@ def has_www(original_url: str):
     return result
 
 
-def is_right_url(original_url: str):
+def is_correct_url(original_url: str):
     global need_www
 
     try:
@@ -83,7 +83,12 @@ def is_right_url(original_url: str):
             )
 
     try:
-        result = True if int(response.status_code) < 400 else False
+        result = (
+            True
+            if int(response.status_code) < 400
+            and not "565 Proxy Handshake Failed" in response.content
+            else False
+        )
     except:
         result = False
 
@@ -140,7 +145,7 @@ def is_well_known(original_url: str):
     return result
 
 
-def is_harmfulness(original_url: str):
+def is_harmless(original_url: str):
     if "://" in original_url:
         original_url = urlparse(original_url).netloc
 
@@ -226,7 +231,7 @@ def is_valid(request):
     return result
 
 
-def validation(request):
+def validate_input_data(request):
     """
     - request | `HttpRequest`:
         - id
@@ -245,7 +250,7 @@ def validation(request):
     original_url = request.GET["original_url"]
     dflink_slug = request.GET["dflink_slug"]
 
-    if not is_right_url(original_url):
+    if not is_correct_url(original_url):
         status = "FAIL"
         reason = "원본 URL 접속 불가"
         msg = "원본 URL이 잘못 입력된 것 같아요."
@@ -272,7 +277,7 @@ def validation(request):
     return status, reason, msg, element
 
 
-def moderation(request):
+def moderate_input_data(request):
     """
     - request | `HttpRequest`:
         - id
@@ -297,7 +302,7 @@ def moderation(request):
         msg = "이 원본 URL은 현재 사용할 수 없어요."
         element = "id_original_url"
 
-    elif not is_listed(original_url) and not is_harmfulness(original_url):
+    elif not is_listed(original_url) and not is_harmless(original_url):
         status = "FAIL"
         reason = "유해 사이트"
         msg = "이 원본 URL은 사용할 수 없어요."
@@ -353,23 +358,27 @@ def dflink(request):
     category = request.GET.get("category")
     expiration_date = request.GET.get("expiration_date")
 
+    status = None
+
     # id: create_dflink
     if id == "create_dflink":
-        try:
-            status, reason, msg, element = validation(request)
-        except:
-            status = "FAIL"
-            reason = "유효성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
-        
-        try:
-            status, reason, msg, element = moderation(request)
-        except:
-            status = "FAIL"
-            reason = "유해성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
+        if status == None:
+            try:
+                status, reason, msg, element = validate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유효성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
+
+        if status == None:
+            try:
+                status, reason, msg, element = moderate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유해성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
 
         if status == None:
             if need_www:
@@ -409,21 +418,23 @@ def dflink(request):
 
     # id: update_dflink
     elif id == "update_dflink":
-        try:
-            status, reason, msg, element = validation(request)
-        except:
-            status = "FAIL"
-            reason = "유효성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
-        
-        try:
-            status, reason, msg, element = moderation(request)
-        except:
-            status = "FAIL"
-            reason = "유해성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
+        if status == None:
+            try:
+                status, reason, msg, element = validate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유효성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
+
+        if status == None:
+            try:
+                status, reason, msg, element = moderate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유해성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
 
         if status == None:
             if need_www:

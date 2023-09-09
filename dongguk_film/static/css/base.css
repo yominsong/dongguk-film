@@ -197,3 +197,7 @@
     height: 0 !important;
     padding-bottom: 56.2493% !important;
 }
+
+.ck-content .image img {
+    border-radius: 0.375rem !important;
+}

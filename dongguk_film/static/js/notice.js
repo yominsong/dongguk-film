@@ -13,7 +13,7 @@ const id_notice_modal_form = document.getElementById("id_notice_modal_form");
 const id_notice_modal_share = document.getElementById("id_notice_modal_share");
 const id_notice_data = document.getElementById("id_notice_data");
 const id_page_id = document.getElementById("id_page_id");
-const id_block_id = document.getElementById("id_block_id");
+const id_block_id_list = document.getElementById("id_block_id_list");
 const id_title = document.getElementById("id_title");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
@@ -222,9 +222,9 @@ function initModal() {
         else if (action == "adjust") {
             let data = datasetObj.dataset;
             let [
-                noticeId, noticeTitle, noticeCategory, noticeKeyword
+                noticePageId, noticeTitle, noticeCategory, noticeKeyword
             ] = [
-                    data.noticeId, data.noticeTitle, data.noticeCategory, data.noticeKeyword
+                    data.noticePageId, data.noticeTitle, data.noticeCategory, data.noticeKeyword
                 ];
             let label, svg;
 
@@ -232,7 +232,7 @@ function initModal() {
             class_keywords.forEach(keyword => {
                 keyword.innerText = "수정하기";
             });
-            id_page_id.value = noticeId;
+            id_page_id.value = noticePageId;
             id_title.value = noticeTitle;
             if (noticeCategory == "서비스") {
                 id_category.value = "서비스";
@@ -338,16 +338,16 @@ function initCkEditor() {
                 toolbarViewRoot = ckEditor.ui.view.toolbar.element;
                 textboxModel = ckEditor.model.document;
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
-                let notiFlag = false;
+                let rysFlag = false;
 
                 textboxModel.on("change:data", () => {
                     let data = ckEditor.getData();
-                    let regex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
-                    let match = data.match(regex);
+                    let rysRegex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
+                    let rysMatch = data.match(rysRegex);
 
-                    if (match && !notiFlag) {
-                        displayNoti(true, "RSL");
-                        notiFlag = true;
+                    if (!rysFlag && rysMatch) {
+                        rysFlag = true;
+                        displayNoti(true, "RYS");
                     };
 
                     id_content.value = ckEditor.getData();
@@ -522,7 +522,9 @@ function embedMedia() {
 
 embedMedia();
 
-function selectFile() {
+function attachFile() {
+    let accumulatedFiles = [];
+
     id_file_drop.addEventListener("dragover", (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -544,16 +546,21 @@ function selectFile() {
     });
 
     id_file_drop.addEventListener("drop", (event) => {
+        let newDroppedFiles = Array.from(event.dataTransfer.files);
+
         event.preventDefault();
         event.stopPropagation();
 
-        let files = event.dataTransfer.files;
+        newDroppedFiles.forEach(file => {
+            if (file.size <= 5 * 1024 * 1024) {
+                accumulatedFiles.push(file);
+                console.log(accumulatedFiles);
+            } else {
+                console.warn(`${file.name} is too large.`);
+            };
+        });
 
         id_file_drop.classList.remove("bg-gray-50");
-        if (files.length > 0) {
-            id_file.files = files;
-            console.log(id_file.files);
-        };
     });
 
     id_file_drop.addEventListener("click", () => {
@@ -570,19 +577,20 @@ function selectFile() {
     });
 
     id_file.addEventListener("change", () => {
-        let file = id_file.files[0];
-        let reader = new FileReader();
+        let newSelectedFiles = Array.from(id_file.files);
 
-        reader.addEventListener("load", () => {
-            console.log(reader.result);
-        })
-
-        reader.readAsDataURL(file);
-        console.log(file.name, "파일이 업로드됨.");
+        newSelectedFiles.forEach(file => {
+            if (file.size <= 5 * 1024 * 1024) {
+                accumulatedFiles.push(file);
+                console.log(accumulatedFiles);
+            } else {
+                console.warn(`${file.name} is too large.`);
+            };
+        });
     });
 }
 
-if (id_file_drop !== null) { selectFile() };
+if (id_file_drop !== null) { attachFile() };
 
 function goToList() {
     let details = document.querySelectorAll(".class-detail");
@@ -702,6 +710,20 @@ if (id_notice_data) { share() };
 // Main functions
 //
 
+function requestOcrNotice() {
+    request.url = `${originLocation}/notice/utils/notice`;
+    request.type = "POST";
+    request.data = { id: "ocr_notice", content: `${id_content.value}` };
+    request.async = true;
+    request.headers = null;
+    displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
+    displayButtonMsg(false, id_create_or_update_notice, "error");
+    displayNoti(false, "RDI");
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestCreateNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
@@ -727,7 +749,7 @@ function requestReadNotice() {
 function requestUpdateNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "update_notice", page_id: `${id_page_id.value}`, block_id: `${id_block_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.data = { id: "update_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, block_id_list: `${id_block_id_list.value}`, content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
@@ -785,8 +807,11 @@ function setPage() {
                     } else if (id_create_or_update_notice.innerText == "수정하기") {
                         requestUpdateNotice();
                     };
+                    id_file_drop.classList.add("bg-gray-100");
+                    id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
                     displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
                     displayButtonMsg(false, id_create_or_update_notice, "error");
+                    displayNoti(false, "RAT");
                 } else {
                     inputs.forEach((input) => {
                         controlError(input);
@@ -817,7 +842,10 @@ function setPage() {
                 } else if (askedTwice) {
                     clearTimeout(askedTwiceTimer);
                     requestDeleteNotice();
+                    id_file_drop.classList.add("bg-gray-100");
+                    id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
                     displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                    displayNoti(false, "RAT");
                     askedTwice = false;
                 };
             };

@@ -8,28 +8,29 @@ from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
-import json, re, requests, pytz, datetime, openai, io, boto3, random, string
+import json, re, requests, pytz, datetime, openai, io, boto3, random, string, uuid, time, base64
 
 #
 # Global constants and variables
 #
 
-EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", "EMAIL_HOST_USER")
-NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
-NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
-OPENAI_ORG = getattr(settings, "OPENAI_ORG", "OPENAI_ORG")
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", "OPENAI_API_KEY")
-SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
-SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
+NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
+    settings, "NCP_CLOVA_OCR_APIGW_INVOKE_URL", None
+)
+NOTION_SECRET = getattr(settings, "NOTION_SECRET", None)
+NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", None)
+OPENAI_ORG = getattr(settings, "OPENAI_ORG", None)
+OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
+SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", None)
+SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", None)
 GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
     getattr(settings, "GOOGLE_SA_CREDS", "GOOGLE_SA_CREDS"),
     scopes=["https://www.googleapis.com/auth/drive"],
 )
 GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
-AWS_ACCESS_KEY = getattr(settings, "AWS_ACCESS_KEY", "AWS_ACCESS_KEY")
-AWS_SECRET_ACCESS_KEY = getattr(
-    settings, "AWS_SECRET_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"
-)
+AWS_ACCESS_KEY = getattr(settings, "AWS_ACCESS_KEY", None)
+AWS_SECRET_ACCESS_KEY = getattr(settings, "AWS_SECRET_ACCESS_KEY", None)
 AWS_S3 = boto3.client(
     "s3",
     aws_access_key_id=AWS_ACCESS_KEY,
@@ -313,7 +314,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
     - data | `dict`
         - db_name
         - page_id
-        - block_id
+        - block_id_list
         - property_id
         - title
         - category
@@ -322,14 +323,13 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - image_name_list
         - file_id_list
         - user
-    - request | `HttpRequest`
     - limit | `int`
     """
 
     if data != None:
         db_name = data.get("db_name", None)
         page_id = data.get("page_id", None)
-        block_id = data.get("block_id", None)
+        block_id_list = data.get("block_id_list", None)
         property_id = data.get("property_id", None)
         title = data.get("title", None)
         category = data.get("category", None)
@@ -439,7 +439,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         block_id_list = []
         content = ""
 
-        for i in range(len(blocks)):
+        for i, block in enumerate(blocks):
             block_id = blocks[i]["id"]
             type = blocks[i]["type"]
             block = {
@@ -514,7 +514,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
     # action: delete / target: block
     elif action == "delete" and target == "block":
-        block_id_list = block_id.split(",")
+        block_id_list = block_id_list.split(",")
         response_list = []
 
         for block_id in block_id_list:
@@ -551,6 +551,61 @@ def aws_s3(action: str, target: str, data: dict = None):
     # action: delete / target: object
     elif action == "delete" and target == "object":
         response = AWS_S3.delete_object(Bucket="dongguk-film", Key=name)
+
+        result = response
+
+    return result
+
+
+def ncp_clova(action: str, target: str, data: dict = None):
+    if data != None:
+        img_src = data.get("img_src", None)
+
+    # action: ocr / target: b64_img
+    if action == "ocr" and target == "b64_img":
+        img_mime_type = img_src.split(";")[0].split(":")[1]
+        img_format = img_mime_type.split("/")[-1]
+        img_data = img_src.split(",")[1]
+        img_url = None
+        img_name = img_data[-5:]
+
+    # action: ocr / target: bin_img
+    if action == "ocr" and target == "bin_img":
+        img_format = img_src.rsplit(".", 1)[-1]
+        img_data = None
+        img_url = img_src
+        img_name = img_url.rsplit(".", 1)[0][-5:]
+
+    # all
+    if img_format in ["jpg", "jpeg", "png", "pdf", "tiff"]:
+        request_json = {
+            "version": "V2",
+            "requestId": str(uuid.uuid4()),
+            "timestamp": int(round(time.time() * 1000)),
+            "images": [
+                {
+                    "format": img_format,
+                    "data": img_data,
+                    "url": img_url,
+                    "name": img_name,
+                }
+            ],
+            "enableTableDetection": True,
+        }
+        payload = json.dumps(request_json).encode("UTF-8")
+        headers = {
+            "X-OCR-SECRET": NCP_CLOVA_OCR_SECRET_KEY,
+            "Content-Type": "application/json",
+        }
+        response = requests.request(
+            "POST", NCP_CLOVA_OCR_APIGW_INVOKE_URL, data=payload, headers=headers
+        )
+
+        result = response
+
+    else:
+        response = requests.models.Response()
+        response.status_code = 400
 
         result = response
 

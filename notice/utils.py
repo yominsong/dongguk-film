@@ -3,7 +3,13 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from utility.msg import send_msg
 from utility.hangul import encode_hangul_to_url
-from utility.utils import generate_random_string, chap_gpt, notion, aws_s3
+from utility.utils import (
+    generate_random_string,
+    chap_gpt,
+    notion,
+    aws_s3,
+    ncp_clova,
+)
 from bs4 import BeautifulSoup
 import base64, ast
 
@@ -22,6 +28,30 @@ GOOGLE_DRIVE_FOLDER_ID = getattr(
 #
 
 
+def is_readable(content: str):
+    img_list = find_in_content("img_list", content)
+    img_alt_list = find_in_content("img_alt_list", content)
+
+    if len(img_list) == len(img_alt_list):
+        result = True
+    else:
+        result = False
+
+    return result
+
+
+def is_description_text_included(content: str):
+    img_list = find_in_content("img_list", content)
+    str_list = find_in_content("str_list", content)
+
+    if len(img_list) != 0 and len(str_list) == 0:
+        result = False
+    else:
+        result = True
+
+    return result
+
+
 def is_not_swearing(title_or_content: str):
     openai_response = chap_gpt(
         f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘."
@@ -37,7 +67,36 @@ def is_not_swearing(title_or_content: str):
     return result
 
 
-def moderation(request):
+def evaluate_accessibility(request):
+    """
+    - request | `HttpRequest`:
+        - content
+    """
+
+    content = request.POST["content"]
+
+    if not is_readable(content):
+        status = "FAIL"
+        reason = "이미지 대체 텍스트 미입력"
+        msg = "이미지 대체 텍스트를 입력해주세요."
+        element = "id_content"
+
+    elif not is_description_text_included(content):
+        status = "FAIL"
+        reason = "이미지 설명 텍스트 미입력"
+        msg = "이미지에 대한 설명을 추가해주세요."
+        element = "id_content"
+
+    else:
+        status = None
+        reason = None
+        msg = None
+        element = None
+
+    return status, reason, msg, element
+
+
+def moderate_input_data(request):
     """
     - request | `HttpRequest`:
         - title
@@ -76,35 +135,66 @@ def create_hashtag(content):
     return openai_response
 
 
-def detect_img_src(type, content):
-    img_src_list = parse_img_src(type, content)
-    result = False
+def find_in_content(target: str, content: str):
+    """
+    - target | `str`:
+        - str
+        - str_list
+        - img_list
+        - b64_img_src_list
+        - bin_img_src_list
+        - img_alt_list
+    - content | `str`
+    """
 
-    if len(img_src_list) != 0:
-        result = True
+    soup = BeautifulSoup(content, "html.parser")
+
+    # action: str
+    if target == "str":
+        str_generator = " ".join(soup.stripped_strings)
+
+        result = str_generator
+
+    # target: str_list
+    elif target == "str_list":
+        str_generator = find_in_content("str", content)
+
+        str_list = [str for str in str_generator if str and str.strip()]
+
+        result = str_list
+
+    # target: img_list
+    elif target == "img_list":
+        img_list = soup.find_all("img")
+
+        result = img_list
+
+    # target: b64_img_src_list OR bin_img_src_list
+    elif "img_src_list" in target:
+        prefix = "data:image/" if "b64" in target else "http" if "bin" in target else ""
+        img_list = find_in_content("img_list", content)
+
+        img_src_list = [
+            img["src"]
+            for img in img_list
+            if img.has_attr("src") and img["src"].startswith(prefix)
+        ]
+
+        result = img_src_list
+
+    # target: img_alt_list
+    elif target == "img_alt_list":
+        img_list = find_in_content("img_list", content)
+
+        img_alt_list = [
+            img["alt"]
+            for img in img_list
+            if img.has_attr("alt") and img["alt"].strip() != ""
+        ]
+
+        result = img_alt_list
 
     return result
-
-
-def parse_img_src(type, content):
-    soup = BeautifulSoup(content, "html.parser")
-    img_tag_list = soup.find_all("img")
-    prefix = None
-
-    if type == "b64":
-        prefix = "data:image/"
-    elif type == "bin":
-        prefix = "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/"
-    elif type == "all":
-        prefix = ""
-
-    img_src_list = [
-        img_tag["src"]
-        for img_tag in img_tag_list
-        if img_tag.has_attr("src") and img_tag["src"].startswith(prefix)
-    ]
-
-    return img_src_list
 
 
 def decode_b64_to_bin(b64_str_list):
@@ -121,17 +211,80 @@ def decode_b64_to_bin(b64_str_list):
 
 def replace_img_src_from_b64_to_bin(content, image_name_list):
     soup = BeautifulSoup(content, "html.parser")
-    img_src_list = parse_img_src("b64", content)
+    img_src_list = find_in_content("b64_img_src_list", content)
 
     for old_src, image_name in zip(img_src_list, image_name_list):
         image_name = encode_hangul_to_url(image_name)
         new_src = f"https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{image_name}"
-        for img_tag in soup.find_all("img", src=old_src):
-            img_tag["src"] = new_src
+        for img in soup.find_all("img", src=old_src):
+            img["src"] = new_src
 
     new_content = str(soup)
 
     return new_content
+
+
+def extract_text_from_img(type, img_src):
+    data = {"img_src": img_src}
+    extracted_text = ""
+
+    if type == "b64":
+        response = ncp_clova("ocr", "b64_img", data=data)
+    elif type == "bin":
+        response = ncp_clova("ocr", "bin_img", data=data)
+
+    if response.status_code == 200:
+        ocr_passed = True
+        fields = response.json()["images"][0]["fields"]
+        current_paragraph = "<p>"
+
+        for field in fields:
+            infer_text = field.get("inferText", "")
+            line_break = field.get("lineBreak", False)
+            current_paragraph += infer_text
+
+            if line_break:
+                current_paragraph += "</p>"
+                extracted_text += current_paragraph
+                current_paragraph = "<p>"
+            else:
+                current_paragraph += " "
+
+        if current_paragraph != "<p>":
+            current_paragraph += "</p>"
+            extracted_text += current_paragraph
+    else:
+        ocr_passed = False
+
+    return ocr_passed, extracted_text
+
+
+def update_content_with_b64_img(content):
+    b64_img_src_list = find_in_content("b64_img_src_list", content)
+    bin_img_src_list = find_in_content("bin_img_src_list", content)
+
+    if len(b64_img_src_list) != 0:
+        bin_img_list = decode_b64_to_bin(b64_img_src_list)
+        image_name_list = []
+
+        for image in bin_img_list:
+            image_name = f"dongguk-film-{generate_random_string(5)}.{image[1]}".replace(
+                " ", "+"
+            )
+            data = {"bin": image[0], "name": image_name}
+            aws_s3("put", "object", data=data)
+            image_name_list.append(image_name)
+
+        content = replace_img_src_from_b64_to_bin(content, image_name_list)
+    elif len(bin_img_src_list) != 0:
+        image_name_list = [
+            src.replace("https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", "")
+            for src in bin_img_src_list
+        ]
+    else:
+        image_name_list = ""
+
+    return content, image_name_list
 
 
 #
@@ -144,6 +297,7 @@ def notice(request):
     """
     - request | `HttpRequest`:
         - id:
+            - ocr_notice
             - create_notice
             - read_notice
             - update_notice
@@ -151,56 +305,90 @@ def notice(request):
         - page_id
         - title
         - category
+        - block_id_list
         - content
         - keyword
     """
 
     id = request.POST.get("id")
     page_id = request.POST.get("page_id")
-    block_id = request.POST.get("block_id")
     title = request.POST.get("title")
     category = request.POST.get("category")
+    block_id_list = request.POST.get("block_id_list")
     content = request.POST.get("content")
     keyword = request.POST.get("keyword")
 
-    def handle_image(content):
-        if detect_img_src("b64", content):
-            b64_image_list = decode_b64_to_bin(parse_img_src("b64", content))
-            image_name_list = []
+    status = None
 
-            for image in b64_image_list:
-                image_name = f"dongguk-film-{generate_random_string(5)}.{image[1]}".replace(
-                    " ", "+"
+    # id: ocr_notice
+    if id == "ocr_notice":
+        b64_img_src_list = find_in_content("b64_img_src_list", content)
+        bin_img_src_list = find_in_content("bin_img_src_list", content)
+
+        total_num_of_img_src = len(b64_img_src_list) + len(bin_img_src_list)
+        pass_count = 0
+
+        if len(b64_img_src_list) != 0:
+            for b64_img_src in b64_img_src_list:
+                ocr_passed, extracted_b64_img_text = extract_text_from_img(
+                    "b64", b64_img_src
                 )
-                data = {"bin": image[0], "name": image_name}
-                aws_s3("put", "object", data=data)
-                image_name_list.append(image_name)
+                if ocr_passed:
+                    pass_count += 1
+                    content = f"{content}<p></p>{extracted_b64_img_text}"
 
-            content = replace_img_src_from_b64_to_bin(content, image_name_list)
-        elif detect_img_src("bin", content):
-            image_src_list = parse_img_src("bin", content)
-            image_name_list = [
-                src.replace("https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", "")
-                for src in image_src_list
-            ]
-        else:
-            image_name_list = ""
-        
-        return content, image_name_list
+        if len(bin_img_src_list) != 0:
+            for bin_img_src in bin_img_src_list:
+                ocr_passed, extracted_bin_img_text = extract_text_from_img(
+                    "bin", bin_img_src
+                )
+                if ocr_passed:
+                    pass_count += 1
+                    content = f"{content}<p></p>{extracted_bin_img_text}"
+
+        if pass_count != 0:
+            if total_num_of_img_src != pass_count:
+                status = "DONE"
+                reason = f"총 {total_num_of_img_src}개 중 {pass_count}개 이미지 내 텍스트 추출 성공"
+            elif total_num_of_img_src == pass_count:
+                status = "DONE"
+                reason = f"총 {pass_count}개 이미지 내 텍스트 추출 성공"
+        elif pass_count == 0:
+            status = "FAIL"
+            reason = "이미지 내 텍스트 추출 실패"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "reason": reason,
+                "content": content,
+            },
+        }
 
     # id: create_notice
-    if id == "create_notice":
-        content, image_name_list = handle_image(content)
-
-        try:
-            status, reason, msg, element = moderation(request)
-        except:
-            status = "FAIL"
-            reason = "유해성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
+    elif id == "create_notice":
+        if status == None:
+            try:
+                status, reason, msg, element = evaluate_accessibility(request)
+            except:
+                status = "FAIL"
+                reason = "접근성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
 
         if status == None:
+            try:
+                status, reason, msg, element = moderate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유해성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
+
+        if status == None:
+            content, image_name_list = update_content_with_b64_img(content)
+
             data = {
                 "db_name": "notice-db",
                 "title": title,
@@ -214,7 +402,7 @@ def notice(request):
 
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유해성 검사 통과"
+                reason = "접근성 및 유해성 검사 통과"
                 msg = "공지사항이 등록되었어요! 👍"
             elif response.status_code == 400:
                 status = "FAIL"
@@ -265,41 +453,53 @@ def notice(request):
 
     # id: update_notice
     elif id == "update_notice":
-        content, image_name_list = handle_image(content)
-
-        if image_name_list != "":
-            data = {"page_id": page_id, "property_id": "yquB"}
-            old_image_name_list = ast.literal_eval(
-                notion("retrieve", "page_properties", data=data).json()["results"][0][
-                    "rich_text"
-                ]["text"]["content"]
-            )
-
-            bin_image_src_list = parse_img_src("bin", content)
-            bin_image_name_list = [
-                src.replace("https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", "")
-                for src in bin_image_src_list
-            ]
-
-            for old_image_name in old_image_name_list:
-                if encode_hangul_to_url(old_image_name) not in bin_image_name_list:
-                    data = {"name": old_image_name}
-                    aws_s3("delete", "object", data=data)
-
-            image_name_list = list(set(image_name_list + bin_image_name_list))
-
-        try:
-            status, reason, msg, element = moderation(request)
-        except:
-            status = "FAIL"
-            reason = "유해성 검사 실패"
-            msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            element = None
+        if status == None:
+            try:
+                status, reason, msg, element = evaluate_accessibility(request)
+            except:
+                status = "FAIL"
+                reason = "접근성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
 
         if status == None:
+            try:
+                status, reason, msg, element = moderate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유해성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
+
+        if status == None:
+            content, image_name_list = update_content_with_b64_img(content)
+
+            if image_name_list != "":
+                data = {"page_id": page_id, "property_id": "yquB"}
+                old_image_name_list = ast.literal_eval(
+                    notion("retrieve", "page_properties", data=data).json()["results"][
+                        0
+                    ]["rich_text"]["text"]["content"]
+                )
+
+                bin_image_src_list = find_in_content("bin_img_src_list", content)
+                bin_image_name_list = [
+                    src.replace(
+                        "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", ""
+                    )
+                    for src in bin_image_src_list
+                ]
+
+                for old_image_name in old_image_name_list:
+                    if encode_hangul_to_url(old_image_name) not in bin_image_name_list:
+                        data = {"name": old_image_name}
+                        aws_s3("delete", "object", data=data)
+
+                image_name_list = list(set(image_name_list + bin_image_name_list))
+
             data = {
                 "page_id": page_id,
-                "block_id": block_id,
+                "block_id_list": block_id_list,
                 "title": title,
                 "category": category,
                 "content": content,
@@ -314,7 +514,7 @@ def notice(request):
                     response = notion("append", "block_children", data=data)
                     if response.status_code == 200:
                         status = "DONE"
-                        reason = "유해성 검사 통과"
+                        reason = "접근성 및 유해성 검사 통과"
                         msg = "공지사항이 수정되었어요! 👍"
                     elif response.status_code == 400:
                         status = "FAIL"
@@ -343,7 +543,7 @@ def notice(request):
                 else None,
                 "title": title,
                 "category": category,
-                "keyword": data["keyword"],
+                "keyword": data["keyword"] if status == "DONE" else None,
                 "user": f"{request.user}",
                 "element": element if status == "FAIL" else None,
             },
@@ -352,16 +552,19 @@ def notice(request):
 
     # id: delete_notice
     elif id == "delete_notice":
-        data = {"page_id": page_id, "property_id": "yquB"}
-        old_image_name_list = ast.literal_eval(
-            notion("retrieve", "page_properties", data=data).json()["results"][0][
-                "rich_text"
-            ]["text"]["content"]
-        )
+        try:
+            data = {"page_id": page_id, "property_id": "yquB"}
+            old_image_name_list = ast.literal_eval(
+                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                    "rich_text"
+                ]["text"]["content"]
+            )
 
-        for old_image_name in old_image_name_list:
-            data = {"name": old_image_name}
-            aws_s3("delete", "object", data=data)
+            for old_image_name in old_image_name_list:
+                data = {"name": old_image_name}
+                aws_s3("delete", "object", data=data)
+        except:
+            None
 
         data = {"page_id": page_id}
         response = notion("delete", "page", data=data)

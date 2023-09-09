@@ -39,9 +39,9 @@ function inheritObject() {
 inheritObject();
 
 /**
- * @param {*} one Something to concatenate with two
- * @param {*} two Something to concatenate with one
- * @returns 
+ * @param {object|string} one Something to concatenate with two
+ * @param {object|string} two Something to concatenate with one
+ * @returns {object} 
  */
 function code(one, two) {
     let result;
@@ -222,7 +222,6 @@ function handleAjaxCallback(response) {
         id_get_weather.classList.remove("hover:cursor-not-allowed");
         id_get_weather.classList.add("cursor-pointer");
         id_get_weather.classList.add("hover:cursor-pointer");
-
     }
 
     // requestCreateVcodeForSNP()
@@ -247,7 +246,6 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-
     }
 
     // requestConfirmVcodeForSNP()
@@ -331,6 +329,24 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestOcrNotice()
+    else if (resID == "ocr_notice") {
+        freezeForm(false);
+        displayButtonMsg(false, id_create_or_update_notice, "descr");
+
+        if (resResult.status == "DONE") {
+            ckEditor.setData(resResult.content);
+            ckEditor.disableReadOnlyMode("id_content");
+            displayNoti(true, "EIS");
+        } else if (resResult.status == "FAIL") {
+            displayNoti(true, "EIF");
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestCreateNotice()
     else if (resID == "create_notice") {
         if (resResult.status == "DONE") {
@@ -342,9 +358,16 @@ function handleAjaxCallback(response) {
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+            id_file_drop.classList.remove("bg-gray-100");
+            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_notice, "descr");
             displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
+            if (resResult.reason.includes("대체 텍스트")) {
+                displayNoti(true, "RAT");
+            } else if (resResult.reason.includes("설명 텍스트")) {
+                displayNoti(true, "RDI");
+            };
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
@@ -356,7 +379,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             ckEditor.setData(resResult.content);
             ckEditor.disableReadOnlyMode("id_content");
-            id_block_id.value = resResult.block_id_list;
+            id_block_id_list.value = resResult.block_id_list;
         };
     }
 
@@ -365,15 +388,22 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_notice, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_notice, "error");
-            location.href = `${originLocation}${location.pathname}`;
+            location.href = location.href;
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+            id_file_drop.classList.remove("bg-gray-100");
+            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_notice, "descr");
             displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
+            if (resResult.reason.includes("대체 텍스트")) {
+                displayNoti(true, "RAT");
+            } else if (resResult.reason.includes("설명 텍스트")) {
+                displayNoti(true, "RDI");
+            };
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
@@ -400,6 +430,8 @@ function handleAjaxCallback(response) {
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+            id_file_drop.classList.remove("bg-gray-100");
+            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             displayButtonMsg(false, id_delete_notice, "descr");
             displayButtonMsg(true, id_delete_notice, "error", resResult.msg);
         };
