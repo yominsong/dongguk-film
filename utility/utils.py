@@ -67,11 +67,11 @@ def update_hero_img(request):
     dflink_img = save_hero_img("keyboard", "dflink")
     notice_img = save_hero_img("office", "notice")
 
-    image_list_for_msg = home_img + dflink_img + notice_img
+    img_list_for_msg = home_img + dflink_img + notice_img
 
-    send_msg(request, "UIG", "DEV", image_list_for_msg)
+    send_msg(request, "UIG", "DEV", img_list_for_msg)
 
-    return HttpResponse(f"Updated images URL: {image_list_for_msg}")
+    return HttpResponse(f"Updated images URL: {img_list_for_msg}")
 
 
 #
@@ -320,7 +320,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - category
         - content
         - keyword
-        - image_name_list
+        - img_name_list
         - file_id_list
         - user
     - limit | `int`
@@ -335,7 +335,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         category = data.get("category", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
-        image_name_list = data.get("image_name_list", None)
+        img_name_list = data.get("img_name_list", None)
         file_id_list = data.get("file_id_list", None)
         user = data.get("user", None)
 
@@ -420,7 +420,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     "Title": {"title": [{"text": {"content": title}}]},
                     "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
                     "Image name list": {
-                        "rich_text": [{"text": {"content": str(image_name_list)}}]
+                        "rich_text": [{"text": {"content": str(img_name_list)}}]
                     },
                     "User": {"number": int(str(user))},
                 },
@@ -477,7 +477,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 "Title": {"title": [{"text": {"content": title}}]},
                 "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
                 "Image name list": {
-                    "rich_text": [{"text": {"content": str(image_name_list)}}]
+                    "rich_text": [{"text": {"content": str(img_name_list)}}]
                 },
             },
         }
