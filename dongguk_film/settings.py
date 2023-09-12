@@ -89,7 +89,7 @@ AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["dongguk.edu"]
+ALLOWED_HOSTS = ["dongguk.film"]
 
 
 # Application definition
