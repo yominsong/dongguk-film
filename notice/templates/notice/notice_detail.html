@@ -58,7 +58,10 @@
             <div class="flex justify-between items-center mt-3">
                 <div class="flex items-center text-sm text-gray-500 gap-x-2">
                     <img src="{{ notice.user.profile_img }}"
-                         class="h-6 w-6 rounded-full bg-gray-800">
+                         class="h-6 w-6 rounded-full bg-gray-800"
+                         alt="{{ notice.user.name }}님의 프로필 사진"
+                         height=""
+                         width="">
                     <span class="font-semibold">{{ notice.user.name }}</span>
                     <span>·</span>
                     <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>

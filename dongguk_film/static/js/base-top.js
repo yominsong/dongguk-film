@@ -88,6 +88,18 @@ function randomItem(array1, array2 = null, array3 = null) {
     return result;
 }
 
+function generateUUID() {
+    let array = new Uint8Array(16);
+    let uuid;
+
+    crypto.getRandomValues(array);
+    array[6] = (array[6] & 0x0f) | 0x40;
+    array[8] = (array[8] & 0x3f) | 0x80;
+    uuid = [...array].map(b => b.toString(16).padStart(2, "0")).join("").match(/.{1,4}/g).join("-");
+
+    return uuid;
+}
+
 function writeWeather(oldValue, newValue) {
     let result;
 
@@ -331,6 +343,7 @@ function handleAjaxCallback(response) {
 
     // requestOcrNotice()
     else if (resID == "ocr_notice") {
+        freezeFileForm(false);
         freezeForm(false);
         displayButtonMsg(false, id_create_or_update_notice, "descr");
 
@@ -354,12 +367,11 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update_notice, "error");
             location.href = `${originLocation}${location.pathname}`;
         } else if (resResult.status == "FAIL") {
+            freezeFileForm(false);
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            id_file_drop.classList.remove("bg-gray-100");
-            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_notice, "descr");
             displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
@@ -390,12 +402,11 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update_notice, "error");
             location.href = location.href;
         } else if (resResult.status == "FAIL") {
+            freezeFileForm(false);
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            id_file_drop.classList.remove("bg-gray-100");
-            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update_notice, "descr");
             displayButtonMsg(true, id_create_or_update_notice, "error", resResult.msg);
@@ -426,12 +437,11 @@ function handleAjaxCallback(response) {
                 location.href = `${originLocation}${location.pathname}`;
             };
         } else if (resResult.status == "FAIL") {
+            freezeFileForm(false);
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            id_file_drop.classList.remove("bg-gray-100");
-            id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
             displayButtonMsg(false, id_delete_notice, "descr");
             displayButtonMsg(true, id_delete_notice, "error", resResult.msg);
         };

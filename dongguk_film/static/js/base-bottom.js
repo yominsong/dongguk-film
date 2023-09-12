@@ -4,6 +4,7 @@
 
 let timer;
 let clickCount = 0;
+let class_urls = document.querySelectorAll(".class-url");
 
 //
 // Sub functions
@@ -73,3 +74,34 @@ function announceConstruction() {
 }
 
 announceConstruction();
+
+function copyUrl() {
+    class_urls.forEach(url => {
+        ["click", "keyup"].forEach(type => {
+            url.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter") {
+                    let srOnlySpan = document.createElement("span");
+                    let originalUrlValue;
+
+                    srOnlySpan.className = "sr-only";
+                    srOnlySpan.textContent = "\u00A0URL\u00A0복사하기";
+
+                    url.removeChild(url.querySelector(".sr-only"));
+                    navigator.clipboard.writeText(url.innerText);
+                    originalUrlValue = url.innerText;
+
+                    url.innerText = "URL이 클립보드에 복사되었어요.";
+                    url.classList.add("blink");
+
+                    setTimeout(() => {
+                        url.classList.remove("blink");
+                        url.innerText = originalUrlValue;
+                        url.appendChild(srOnlySpan);
+                    }, 3000);
+                };
+            });
+        });
+    });
+}
+
+if (class_urls) { copyUrl() };

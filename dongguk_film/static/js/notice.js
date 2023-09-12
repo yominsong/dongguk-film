@@ -21,6 +21,7 @@ const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
 const id_file_drop = document.getElementById("id_file_drop");
 const id_file = document.getElementById("id_file");
+const id_attach_file = document.getElementById("id_attach_file")
 const id_keyword = document.getElementById("id_keyword");
 const id_url = document.getElementById("id_url");
 const id_copy_url = document.getElementById("id_copy_url");
@@ -71,6 +72,7 @@ const id_go_to_list = document.getElementById("id_go_to_list");
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
+let attachedFiles = [];
 let currentHistoryLength = history.length;
 let lastClickedWasHash = false;
 let modalOpen = false;
@@ -522,75 +524,132 @@ function embedMedia() {
 
 embedMedia();
 
-function attachFile() {
-    let accumulatedFiles = [];
+function attachFile(event = null) {
+    let selectedFiles, fileId, fileName, fileSize, fileListItem, fileListItemHTML;
 
-    id_file_drop.addEventListener("dragover", (event) => {
+    if (event instanceof DragEvent) {
         event.preventDefault();
-        event.stopPropagation();
-        id_file_drop.classList.add("bg-gray-50");
-    });
+        selectedFiles = Array.from(event.dataTransfer.files);
+    } else {
+        selectedFiles = Array.from(id_file.files);
+    };
 
-    id_file_drop.addEventListener("dragleave", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        id_file_drop.classList.remove("bg-gray-50");
-    });
+    selectedFiles.forEach(file => {
+        if (file.size <= 5 * 1024 * 1024) {
+            fileId = generateUUID();
+            fileName = file.name;
+            fileSize = (file.size / (1024 * 1024)).toFixed(2);
 
-    id_file_drop.addEventListener("mouseover", () => {
-        id_file_drop.classList.add("bg-gray-50");
-    });
-
-    id_file_drop.addEventListener("mouseout", () => {
-        id_file_drop.classList.remove("bg-gray-50");
-    });
-
-    id_file_drop.addEventListener("drop", (event) => {
-        let newDroppedFiles = Array.from(event.dataTransfer.files);
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        newDroppedFiles.forEach(file => {
-            if (file.size <= 5 * 1024 * 1024) {
-                accumulatedFiles.push(file);
-                console.log(accumulatedFiles);
+            if (file.size < 1024 * 1024) {
+                fileSize = (file.size / 1024).toFixed(2) + "KB";
             } else {
-                console.warn(`${file.name} is too large.`);
+                fileSize = (file.size / (1024 * 1024)).toFixed(2) + "MB";
             };
-        });
 
-        id_file_drop.classList.remove("bg-gray-50");
+            file = { fileId: fileId, fileName: fileName, fileSize: fileSize }
+            fileListItem = document.createElement("li");
+            fileListItem.id = fileId;
+            fileListItem.classList.add("relative", "flex", "p-4");
+            fileListItemHTML = `
+                <span class="flex flex-1">
+                    <span class="flex flex-col">
+                        <span class="radio-title block text-sm font-medium text-gray-900">${fileName}</span>
+                        <span class="radio-descr mt-1 flex items-center text-sm text-gray-500">${fileSize}</span>
+                    </span>
+                </span>
+                <svg class="h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    onclick="detachFile('${fileId}')"
+                    onkeydown="if (event.key === 'Enter') { detachFile('${fileId}') }"
+                    tabindex="0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span class="pointer-events-none absolute -inset-px" aria-hidden="true"></span>
+            `;
+            fileListItem.innerHTML = fileListItemHTML;
+            attachedFiles.push(file);
+            id_attach_file.parentNode.insertBefore(fileListItem, id_attach_file);
+        } else {
+            console.warn(`${file.name} is too large.`);
+        };
     });
 
-    id_file_drop.addEventListener("click", () => {
-        id_file.click();
-        id_file.focus();
-    });
+    id_file.value = "";
 
-    id_file.addEventListener("focus", () => {
-        id_file_drop.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo-2");
-    });
+    if (attachedFiles.length > 0) {
+        id_attach_file.classList.replace("rounded-md", "rounded-b-md");
+    };
 
-    id_file.addEventListener("blur", () => {
-        id_file_drop.classList.replace("df-ring-inset-flamingo-2", "df-ring-inset-gray");
-    });
-
-    id_file.addEventListener("change", () => {
-        let newSelectedFiles = Array.from(id_file.files);
-
-        newSelectedFiles.forEach(file => {
-            if (file.size <= 5 * 1024 * 1024) {
-                accumulatedFiles.push(file);
-                console.log(accumulatedFiles);
-            } else {
-                console.warn(`${file.name} is too large.`);
-            };
-        });
-    });
+    console.log(attachedFiles);
 }
 
-if (id_file_drop !== null) { attachFile() };
+function detachFile(fileUUID) {
+    let fileName, fileSize, fileListItem, fileId;
+
+    attachedFiles.forEach(function (file, i) {
+        fileName = file.fileName;
+        fileSize = file.fileSize;
+        fileId = file.fileId;
+
+        if (fileId == fileUUID) {
+            attachedFiles.splice(i, 1);
+            fileListItem = document.getElementById(fileId);
+            fileListItem.remove();
+        };
+    });
+
+    if (attachedFiles.length == 0) {
+        id_attach_file.classList.replace("rounded-b-md", "rounded-md");
+    };
+
+    console.log(attachedFiles);
+}
+
+function clickFileForm(event) {
+    if (event.type == "keyup") {
+        if (event.key != "Enter") { return };
+    };
+
+    id_file.focus();
+    id_file.click();
+}
+
+function enterFileForm(event) {
+    if (event.key == "Enter") {
+        clickFileForm();
+    };
+}
+
+function dragoverFileForm(event) {
+    event.preventDefault();
+}
+
+function freezeFileForm(boolean) {
+    if (boolean) {
+        id_file.disabled = true;
+        id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
+
+        id_attach_file.removeEventListener("click", clickFileForm);
+        id_attach_file.removeEventListener("keyup", clickFileForm);
+        id_file.removeEventListener("change", attachFile);
+        id_file_drop.removeEventListener("dragover", dragoverFileForm);
+        id_file_drop.removeEventListener("drop", attachFile);
+    } else if (!boolean) {
+        id_file.disabled = false;
+        id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
+
+        id_attach_file.addEventListener("click", clickFileForm);
+        id_attach_file.addEventListener("keyup", clickFileForm);
+        id_file.addEventListener("change", attachFile);
+        id_file_drop.addEventListener("dragover", dragoverFileForm);
+        id_file_drop.addEventListener("drop", attachFile);
+    };
+}
+
+if (id_file_drop !== null) { freezeFileForm(false) };
 
 function goToList() {
     let details = document.querySelectorAll(".class-detail");
@@ -716,10 +775,11 @@ function requestOcrNotice() {
     request.data = { id: "ocr_notice", content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
+    freezeForm(true);
+    freezeFileForm(true);
     displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
     displayButtonMsg(false, id_create_or_update_notice, "error");
     displayNoti(false, "RDI");
-    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -732,6 +792,7 @@ function requestCreateNotice() {
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
     freezeForm(true);
+    freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -754,6 +815,7 @@ function requestUpdateNotice() {
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
     freezeForm(true);
+    freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -766,6 +828,7 @@ function requestDeleteNotice() {
     request.headers = null;
     code(id_delete_notice, "_spin").classList.remove("hidden");
     freezeForm(true);
+    freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -807,11 +870,10 @@ function setPage() {
                     } else if (id_create_or_update_notice.innerText == "수정하기") {
                         requestUpdateNotice();
                     };
-                    id_file_drop.classList.add("bg-gray-100");
-                    id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
                     displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
                     displayButtonMsg(false, id_create_or_update_notice, "error");
                     displayNoti(false, "RAT");
+                    displayNoti(false, "RDI");
                 } else {
                     inputs.forEach((input) => {
                         controlError(input);
@@ -842,10 +904,9 @@ function setPage() {
                 } else if (askedTwice) {
                     clearTimeout(askedTwiceTimer);
                     requestDeleteNotice();
-                    id_file_drop.classList.add("bg-gray-100");
-                    id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
                     displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
                     displayNoti(false, "RAT");
+                    displayNoti(false, "RDI");
                     askedTwice = false;
                 };
             };

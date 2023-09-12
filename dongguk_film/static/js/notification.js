@@ -120,11 +120,13 @@ function displayNoti(bool, notiType, param = null) {
         } else if (notiType == "RRL") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치 정보가 부정확한가요?";
-            notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 위치 정보를 다시 불러올 수 있어요.`;
+            notiContent = `날씨 새로고침 버튼(${refreshIconInline}) 또는 아래 버튼을 눌러 위치 정보를 다시 불러올 수 있어요.`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RRL'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "CWF") {
             notiIcon = locationIcon;
             notiTitle = "날씨를 마저 불러올 수 있어요.";
-            notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 기상 정보를 계속 불러올 수 있어요.`;
+            notiContent = `날씨 새로고침 버튼(${refreshIconInline}) 또는 아래 버튼을 눌러 기상 정보를 계속 불러올 수 있어요.`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'CWF'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "RNP") {
             notiIcon = bellIcon;
             notiTitle = "디닷에프 푸시 알림을 받아보세요.";
