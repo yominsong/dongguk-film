@@ -1146,6 +1146,10 @@ select {
   width: 100%;
 }
 
+.w-40 {
+  width: 10rem;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -1164,6 +1168,10 @@ select {
 
 .max-w-sm {
   max-width: 24rem;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .flex-1 {

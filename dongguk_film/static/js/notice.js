@@ -296,7 +296,7 @@ function initModal() {
 
         // action: create
         if (action == "create") {
-            resizeModalWidth(true);
+            resizeModalAndFormWidth(true);
             id_notice_modal_form.hidden = false;
             id_notice_modal_share.hidden = true;
             keywords.forEach(keyword => {
@@ -349,7 +349,7 @@ function initModal() {
 
         // action: share
         else if (action == "share") {
-            resizeModalWidth(false);
+            resizeModalAndFormWidth(false);
             if (id_notice_modal_form !== null) { id_notice_modal_form.hidden = true };
             id_notice_modal_share.hidden = false;
             keywords.forEach(keyword => {
@@ -499,10 +499,11 @@ function matchDivWidth() {
     if (id_notice_modal_land !== null) {
         id_notice_modal_land.style.setProperty("width", widthBase.offsetWidth + "px", "important");
         id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
+        id_drop_file.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
     };
 }
 
-function resizeModalWidth(bool) {
+function resizeModalAndFormWidth(bool) {
     if (bool) {
         matchDivWidth();
         window.addEventListener("resize", matchDivWidth);
@@ -648,7 +649,7 @@ function attachFile(event = null) {
             fileListItemHTML = `
                 <span class="flex flex-1">
                     <span class="flex flex-col">
-                        <span class="block text-sm font-medium text-gray-900">${fileName}</span>
+                        <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${fileName}</span>
                         <span class="mt-1 flex items-center text-sm text-gray-500">${fileSize}</span>
                     </span>
                 </span>
