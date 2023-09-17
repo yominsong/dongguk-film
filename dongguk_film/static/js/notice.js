@@ -773,22 +773,30 @@ function goToList() {
 
 goToList();
 
-function copyUrl() {
+function copyNoticeUrl() {
     id_url.addEventListener("click", () => {
         id_url.select();
     });
 
-    id_copy_url.addEventListener("click", () => {
-        navigator.clipboard.writeText(id_url.value);
+    id_copy_url.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(id_url.value);
+        } catch (e) {
+            id_url.select();
+            document.execCommand("copy"); // deprecated, but used for KakaoTalk in-app browser
+        };
+
         id_copy_url_ready.classList.add("hidden");
         id_copy_url_done.classList.remove("hidden");
         id_copy_url_descr.hidden = false;
         id_copy_url_done.classList.add("blink");
+
         setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
     });
 }
 
-if (id_copy_url !== null) { copyUrl() };
+if (id_copy_url !== null) { copyNoticeUrl() };
+
 
 function share() {
     let data = id_notice_data.dataset;
