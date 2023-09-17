@@ -19,7 +19,7 @@ const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
-const id_file_drop = document.getElementById("id_file_drop");
+const id_drop_file = document.getElementById("id_drop_file");
 const id_file = document.getElementById("id_file");
 const id_attach_file = document.getElementById("id_attach_file")
 const id_keyword = document.getElementById("id_keyword");
@@ -73,6 +73,10 @@ let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let attachedFiles = [];
+let totalSize = 0;
+let counts = document.querySelectorAll(".class-count");
+let measures = document.querySelectorAll(".class-measure");
+let isAdded = false;
 let currentHistoryLength = history.length;
 let lastClickedWasHash = false;
 let modalOpen = false;
@@ -123,20 +127,19 @@ function search() {
 search();
 
 function initForm() {
+    // title, category
     let id_title_placeholder = randomItem(filtered_title_placeholder);
+    let radioInputs = document.querySelectorAll("input[name='id_category']");
 
     id_title.value = null;
+    id_title.placeholder = id_title_placeholder.t;
     id_category.value = null;
     id_category_serv.checked = false;
     id_category_dept.checked = false;
-    id_title.placeholder = id_title_placeholder.t;
+
     inputs.forEach((input) => {
         displayError(false, input);
     });
-    displayButtonMsg(false, id_create_or_update_notice, "error");
-    displayButtonMsg(false, id_delete_notice, "error");
-
-    const radioInputs = document.querySelectorAll("input[name='id_category']");
 
     radioInputs.forEach((input) => {
         const label = input.closest("label");
@@ -183,14 +186,100 @@ function initForm() {
         };
     });
 
+    // content
     ckEditor.setData("");
+
+    // file
+    let lists = document.querySelectorAll(".class-list");
+    let isFocused = false;
+    let isHovered = false;
+    let isDragging = false;
+
+    id_file.value = null;
+    attachedFiles.length = 0;
+    totalSize = 0;
+    lists.forEach(list => {
+        list.remove()
+    });
+    updateStyle();
+
+    function updateStyle() {
+        let outline = "none";
+        let boxShadow = "none";
+        let attachBackgroundColor = "transparent";
+        let dropBackGroundColor = "transparent";
+
+        counts.forEach(count => {
+            if (attachedFiles.length == 0) {
+                if (count.classList.contains("class-desktop")) {
+                    count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+                } else if (count.classList.contains("class-mobile")) {
+                    count.innerText = "파일을 첨부하세요.";
+                };
+            } else {
+                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+            };
+        });
+
+        measures.forEach(measure => {
+            measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
+        });
+
+        if (isFocused && isHovered) {
+            boxShadow = "inset 0 0 0 2px #F15922";
+            attachBackgroundColor = "rgb(249 250 251)";
+        } else if (isFocused) {
+            boxShadow = "inset 0 0 0 2px #F15922";
+        } else if (isHovered) {
+            boxShadow = "inset 0px -1px 0px 0px rgb(209 213 219), inset -1px 0px 0px 0px rgb(209 213 219), inset 1px 0px 0px 0px rgb(209 213 219)";
+            attachBackgroundColor = "rgb(249 250 251)";
+        } else if (isDragging) {
+            dropBackGroundColor = "rgb(249 250 251)";
+            counts.forEach(count => { count.innerText = "파일을 놓으세요." });
+        };
+
+        id_attach_file.style.outline = outline;
+        id_attach_file.style.boxShadow = boxShadow;
+        id_attach_file.style.backgroundColor = attachBackgroundColor;
+        id_drop_file.style.backgroundColor = dropBackGroundColor;
+    }
+
+    function addEventListeners() {
+        isAdded = true;
+
+        id_drop_file.addEventListener("dragover", (event) => { event.preventDefault(); id_file.focus(); isDragging = true; updateStyle() });
+        id_drop_file.addEventListener("dragleave", () => { isDragging = false; updateStyle() });
+        id_drop_file.addEventListener("drop", (event) => { event.preventDefault(); isDragging = false; updateStyle(); attachFile(event) });
+
+        id_file.addEventListener("change", attachFile);
+
+        id_attach_file.addEventListener("focus", () => { isFocused = true; updateStyle() });
+        id_attach_file.addEventListener("blur", () => { isFocused = false; updateStyle() });
+        id_attach_file.addEventListener("mouseenter", () => { isHovered = true; updateStyle() });
+        id_attach_file.addEventListener("mouseleave", () => { isHovered = false; updateStyle() });
+
+        ["click", "keyup"].forEach(type => {
+            id_attach_file.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter") {
+                    id_attach_file.focus();
+                    id_file.click();
+                };
+            });
+        });
+    }
+
+    if (!isAdded) { addEventListeners() };
+
+    // create, update, delete button
+    displayButtonMsg(false, id_create_or_update_notice, "error");
+    displayButtonMsg(false, id_delete_notice, "error");
 }
 
 function initModal() {
-    let class_keywords = document.querySelectorAll(".class-keyword");
-    let class_creates = document.querySelectorAll(".class-create");
-    let class_adjusts = document.querySelectorAll(".class-adjust");
-    let class_shares = document.querySelectorAll(".class-share");
+    let keywords = document.querySelectorAll(".class-keyword");
+    let creates = document.querySelectorAll(".class-create");
+    let adjusts = document.querySelectorAll(".class-adjust");
+    let shares = document.querySelectorAll(".class-share");
 
     function openModal(action, datasetObj = null) {
         // action: all
@@ -210,7 +299,7 @@ function initModal() {
             resizeModalWidth(true);
             id_notice_modal_form.hidden = false;
             id_notice_modal_share.hidden = true;
-            class_keywords.forEach(keyword => {
+            keywords.forEach(keyword => {
                 keyword.innerText = "작성하기";
             });
             initForm();
@@ -231,7 +320,7 @@ function initModal() {
             let label, svg;
 
             openModal("create");
-            class_keywords.forEach(keyword => {
+            keywords.forEach(keyword => {
                 keyword.innerText = "수정하기";
             });
             id_page_id.value = noticePageId;
@@ -263,7 +352,7 @@ function initModal() {
             resizeModalWidth(false);
             if (id_notice_modal_form !== null) { id_notice_modal_form.hidden = true };
             id_notice_modal_share.hidden = false;
-            class_keywords.forEach(keyword => {
+            keywords.forEach(keyword => {
                 keyword.innerText = "공유하기";
             });
             id_copy_url_ready.classList.remove("hidden");
@@ -275,7 +364,7 @@ function initModal() {
     }
 
     // Users who want to create
-    class_creates.forEach(create => {
+    creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
             create.addEventListener(type, (event) => {
                 let target = event.target;
@@ -291,7 +380,7 @@ function initModal() {
     });
 
     // Users who want to update or delete
-    class_adjusts.forEach(adjust => {
+    adjusts.forEach(adjust => {
         ["click", "keyup"].forEach(type => {
             adjust.addEventListener(type, (event) => {
                 let target = event.target;
@@ -307,7 +396,7 @@ function initModal() {
     });
 
     // Users who want to share
-    class_shares.forEach(share => {
+    shares.forEach(share => {
         ["click", "keyup"].forEach(type => {
             share.addEventListener(type, (event) => {
                 if (type === "click" || event.key === "Enter") {
@@ -526,35 +615,41 @@ embedMedia();
 
 function attachFile(event = null) {
     let selectedFiles, fileId, fileName, fileSize, fileListItem, fileListItemHTML;
+    let isDuplicate = false;
+    let duplicateFiles = [];
+    let failureCount = 0;
 
     if (event instanceof DragEvent) {
-        event.preventDefault();
         selectedFiles = Array.from(event.dataTransfer.files);
     } else {
         selectedFiles = Array.from(id_file.files);
     };
 
     selectedFiles.forEach(file => {
-        if (file.size <= 5 * 1024 * 1024) {
+        fileName = file.name;
+
+        if (file.size < 1024 * 1024) {
+            fileSize = (file.size / 1024).toFixed(2) + "KB";
+        } else {
+            fileSize = (file.size / (1024 * 1024)).toFixed(2) + "MB";
+        };
+
+        if (attachedFiles.some(attachedFile => attachedFile.fileName === fileName && attachedFile.fileSize === fileSize)) {
+            isDuplicate = true;
+            duplicateFiles.push(fileName);
+            console.warn(`The file ${fileName} is already attached.`);
+        } else if (totalSize + file.size <= 5 * 1024 * 1024) {
+            totalSize += file.size;
             fileId = generateUUID();
-            fileName = file.name;
-            fileSize = (file.size / (1024 * 1024)).toFixed(2);
-
-            if (file.size < 1024 * 1024) {
-                fileSize = (file.size / 1024).toFixed(2) + "KB";
-            } else {
-                fileSize = (file.size / (1024 * 1024)).toFixed(2) + "MB";
-            };
-
-            file = { fileId: fileId, fileName: fileName, fileSize: fileSize }
+            fileObj = { file: file, fileId: fileId, fileName: fileName, fileSize: fileSize };
             fileListItem = document.createElement("li");
             fileListItem.id = fileId;
-            fileListItem.classList.add("relative", "flex", "p-4");
+            fileListItem.classList.add("relative", "flex", "p-4", "class-list");
             fileListItemHTML = `
                 <span class="flex flex-1">
                     <span class="flex flex-col">
-                        <span class="radio-title block text-sm font-medium text-gray-900">${fileName}</span>
-                        <span class="radio-descr mt-1 flex items-center text-sm text-gray-500">${fileSize}</span>
+                        <span class="block text-sm font-medium text-gray-900">${fileName}</span>
+                        <span class="mt-1 flex items-center text-sm text-gray-500">${fileSize}</span>
                     </span>
                 </span>
                 <svg class="h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
@@ -570,86 +665,75 @@ function attachFile(event = null) {
                 <span class="pointer-events-none absolute -inset-px" aria-hidden="true"></span>
             `;
             fileListItem.innerHTML = fileListItemHTML;
-            attachedFiles.push(file);
+            attachedFiles.push(fileObj);
             id_attach_file.parentNode.insertBefore(fileListItem, id_attach_file);
+
+            counts.forEach(count => {
+                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+            });
+
+            measures.forEach(measure => {
+                measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
+            });
         } else {
-            console.warn(`${file.name} is too large.`);
+            failureCount += 1;
+            console.warn(`${file.name} will exceed the 5MB total limit.`);
         };
     });
 
-    id_file.value = "";
+    if (isDuplicate) { displayNoti(true, "LDF", duplicateFiles.join(", ")) };
+    if (failureCount !== 0) { displayNoti(true, "LFS", failureCount) };
 
-    if (attachedFiles.length > 0) {
-        id_attach_file.classList.replace("rounded-md", "rounded-b-md");
-    };
+    id_file.value = "";
+    failureCount = 0;
 
     console.log(attachedFiles);
 }
 
-function detachFile(fileUUID) {
-    let fileName, fileSize, fileListItem, fileId;
+function detachFile(fileUUID = null) {
+    let fileListItem, fileId;
 
-    attachedFiles.forEach(function (file, i) {
-        fileName = file.fileName;
-        fileSize = file.fileSize;
-        fileId = file.fileId;
+    attachedFiles.forEach(function (fileObj, i) {
+        fileId = fileObj.fileId;
 
         if (fileId == fileUUID) {
+            totalSize -= fileObj.file.size;
             attachedFiles.splice(i, 1);
             fileListItem = document.getElementById(fileId);
             fileListItem.remove();
         };
+
+        counts.forEach(count => {
+            if (attachedFiles.length == 0) {
+                if (count.classList.contains("class-desktop")) {
+                    count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+                } else if (count.classList.contains("class-mobile")) {
+                    count.innerText = "파일을 첨부하세요.";
+                };
+            } else {
+                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+            };
+        });
+
+        measures.forEach(measure => {
+            measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
+        });
     });
 
-    if (attachedFiles.length == 0) {
-        id_attach_file.classList.replace("rounded-b-md", "rounded-md");
-    };
-
     console.log(attachedFiles);
-}
-
-function clickFileForm(event) {
-    if (event.type == "keyup") {
-        if (event.key != "Enter") { return };
-    };
-
-    id_file.focus();
-    id_file.click();
-}
-
-function enterFileForm(event) {
-    if (event.key == "Enter") {
-        clickFileForm();
-    };
-}
-
-function dragoverFileForm(event) {
-    event.preventDefault();
 }
 
 function freezeFileForm(boolean) {
     if (boolean) {
         id_file.disabled = true;
-        id_file_drop.classList.replace("cursor-pointer", "cursor-not-allowed");
-
-        id_attach_file.removeEventListener("click", clickFileForm);
-        id_attach_file.removeEventListener("keyup", clickFileForm);
-        id_file.removeEventListener("change", attachFile);
-        id_file_drop.removeEventListener("dragover", dragoverFileForm);
-        id_file_drop.removeEventListener("drop", attachFile);
+        id_drop_file.classList.replace("cursor-pointer", "cursor-not-allowed");
     } else if (!boolean) {
         id_file.disabled = false;
-        id_file_drop.classList.replace("cursor-not-allowed", "cursor-pointer");
-
-        id_attach_file.addEventListener("click", clickFileForm);
-        id_attach_file.addEventListener("keyup", clickFileForm);
-        id_file.addEventListener("change", attachFile);
-        id_file_drop.addEventListener("dragover", dragoverFileForm);
-        id_file_drop.addEventListener("drop", attachFile);
+        id_drop_file.classList.replace("cursor-not-allowed", "cursor-pointer");
     };
 }
 
-if (id_file_drop !== null) { freezeFileForm(false) };
+if (id_drop_file !== null) { freezeFileForm(false) };
 
 function goToList() {
     let details = document.querySelectorAll(".class-detail");
@@ -872,8 +956,13 @@ function setPage() {
                     };
                     displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
                     displayButtonMsg(false, id_create_or_update_notice, "error");
+                    displayNoti(false, "RYS");
                     displayNoti(false, "RAT");
                     displayNoti(false, "RDI");
+                    displayNoti(false, "EIS");
+                    displayNoti(false, "EIF");
+                    displayNoti(false, "LDF");
+                    displayNoti(false, "LFS");
                 } else {
                     inputs.forEach((input) => {
                         controlError(input);
@@ -905,8 +994,13 @@ function setPage() {
                     clearTimeout(askedTwiceTimer);
                     requestDeleteNotice();
                     displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                    displayNoti(false, "RYS");
                     displayNoti(false, "RAT");
                     displayNoti(false, "RDI");
+                    displayNoti(false, "EIS");
+                    displayNoti(false, "EIF");
+                    displayNoti(false, "LDF");
+                    displayNoti(false, "LFS");
                     askedTwice = false;
                 };
             };

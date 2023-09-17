@@ -129,7 +129,7 @@ def moderate_input_data(request):
 
 def create_hashtag(content):
     openai_response = chap_gpt(
-        f"{content}\n위 글의 핵심 주제를 최소 1개, 최대 3개의 해시태그로 만들어줘. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
+        f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
     )
 
     return openai_response
@@ -276,11 +276,12 @@ def update_content_and_get_img_name_list(content):
             img_name_list.append(img_name)
 
         content = replace_img_src_from_b64_to_bin(content, img_name_list)
-        
+
     elif len(bin_img_src_list) != 0:
         img_name_list = [
             src.replace("https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", "")
             for src in bin_img_src_list
+            if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in src
         ]
 
     return content, img_name_list
@@ -487,6 +488,7 @@ def notice(request):
                         "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", ""
                     )
                     for src in bin_img_src_list
+                    if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in src
                 ]
 
                 for old_img_name in old_img_name_list:

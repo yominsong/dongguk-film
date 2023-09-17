@@ -186,18 +186,25 @@
                                 <div>
                                     <label for="id_file"
                                            class="relative text-sm font-medium leading-6 text-gray-900">파일</label>
-                                    <input id="id_file" type="file" class="sr-only" multiple>
+                                    <input id="id_file" type="file" class="sr-only" tabindex="-1" multiple>
                                     <ul role="list"
-                                        id="id_file_drop"
+                                        id="id_drop_file"
                                         class="mt-2 divide-y divide-gray-100 overflow-hidden shadow-sm rounded-md df-ring-inset-gray">
+                                        <li class="relative flex flex-col justify-between p-4">
+                                            <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
+                                                <span class="class-count class-desktop hidden sm:block">파일을 이곳에 끌어다 놓으세요.</span>
+                                                <span class="class-count class-mobile sm:hidden">파일을 첨부하세요.</span>
+                                                <span class="class-measure text-xs">0.00MB/5MB</span>
+                                            </div>
+                                        </li>
                                         <li id="id_attach_file"
-                                            class="relative flex justify-start items-center gap-x-1 px-4 py-4 sm:px-6 text-sm rounded-md hover:bg-gray-50 focus:df-focus-ring-inset"
+                                            class="relative flex justify-start items-center gap-x-1 p-4 text-sm rounded-b-md"
                                             tabindex="0">
                                             <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                                             <svg xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                    class="w-5 h-5">
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 class="w-5 h-5">
                                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                                             </svg>
                                             새로 첨부하기

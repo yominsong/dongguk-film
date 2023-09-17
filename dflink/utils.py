@@ -86,7 +86,7 @@ def is_correct_url(original_url: str):
         result = (
             True
             if int(response.status_code) < 400
-            and not "565 Proxy Handshake Failed" in response.content
+            and not "565 Proxy Handshake Failed" in response.text
             else False
         )
     except:

@@ -2553,6 +2553,10 @@ select {
     margin-top: 2rem;
   }
 
+  .sm\:block {
+    display: block;
+  }
+
   .sm\:flex {
     display: flex;
   }

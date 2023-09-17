@@ -114,8 +114,8 @@
                          @keydown.arrow-up.prevent="onArrowUp()"
                          @keydown.arrow-down.prevent="onArrowDown()"
                          @keydown.tab="open = false"
-                         @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 0) { console.log(id_notice_modal_land) } else if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
-                         @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 0) { console.log(id_notice_modal_land) } else if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                         @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                         @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
                          style="display: none">
                         <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                              x-state:on="Active"

@@ -147,6 +147,18 @@ skipNavbar();
 
 function makeAjaxCall(request) {
     const csrftoken = getCookie("csrftoken");
+    const ajaxSettings = {
+        url: request.url,
+        type: request.type,
+        data: request.data,
+        async: request.async,
+        headers: request.headers,
+        beforeSend: (xhr, settings) => {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            };
+        }
+    }
 
     function getCookie(name) {
         let cookieValue = null;
@@ -167,18 +179,12 @@ function makeAjaxCall(request) {
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 
-    $.ajax({
-        url: request.url,
-        type: request.type,
-        data: request.data,
-        async: request.async,
-        headers: request.headers,
-        beforeSend: (xhr, settings) => {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            };
-        }
-    }).done((response) => {
+    if (request.data instanceof FormData) {
+        ajaxSettings.processData = false;
+        ajaxSettings.contentType = false;
+    };
+
+    $.ajax(ajaxSettings).done((response) => {
         console.log(response.result);
         handleAjaxCallback(response);
     }).fail((errorThrown, status) => {

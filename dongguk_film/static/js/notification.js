@@ -29,6 +29,8 @@ function editXDate(notiType, bool) {
  * - `RDI`: Request Description of Image
  * - `EIS`: Extracting text from an Image Succeeded
  * - `EIF`: Extracting text from an Image Failed
+ * - `LDF`: Limit Duplicate Files
+ * - `LFS`: Limit File Size
  * - `NUC`: Notify Under Construction
  * @param {string|null} param Additional information to add to the notification
  */
@@ -81,6 +83,36 @@ function displayNoti(bool, notiType, param = null) {
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
         </svg>
         `;
+        let textIcon = `
+        <svg class="h-6 w-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+        </svg>
+        `
+        let imageIcon = `
+        <svg class="h-6 w-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+        </svg>
+        `
+        let exclamationIcon = `
+        <svg class="h-6 w-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        `
         let clipboardIcon = `
         <svg class="w-6 h-6 text-white"
             fill="none"
@@ -120,12 +152,12 @@ function displayNoti(bool, notiType, param = null) {
         } else if (notiType == "RRL") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치 정보가 부정확한가요?";
-            notiContent = `날씨 새로고침 버튼(${refreshIconInline}) 또는 아래 버튼을 눌러 위치 정보를 다시 불러올 수 있어요.`;
+            notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 위치 정보를 다시 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RRL'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "CWF") {
             notiIcon = locationIcon;
-            notiTitle = "날씨를 마저 불러올 수 있어요.";
-            notiContent = `날씨 새로고침 버튼(${refreshIconInline}) 또는 아래 버튼을 눌러 기상 정보를 계속 불러올 수 있어요.`;
+            notiTitle = "기상 정보를 마저 불러올 수 있어요.";
+            notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 기상 정보를 계속 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'CWF'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "RNP") {
             notiIcon = bellIcon;
@@ -139,14 +171,14 @@ function displayNoti(bool, notiType, param = null) {
 
         // login
         else if (notiType == "RBG") {
-            notiIcon = infoIcon;
+            notiIcon = exclamationIcon;
             notiTitle = "Google로 로그인할 수 없어요.";
             notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome, Edge, Safari를 이용해주세요.`;
         }
 
         // dflink
         else if (notiType == "INL") {
-            notiIcon = infoIcon;
+            notiIcon = exclamationIcon;
             notiTitle = "존재하지 않는 동영링크예요.";
             notiContent = "주소가 잘못되었거나 삭제된 동영링크예요.";
         }
@@ -157,23 +189,31 @@ function displayNoti(bool, notiType, param = null) {
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
             notiContent = "YouTube 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
         } else if (notiType == "RAT") {
-            notiIcon = infoIcon;
+            notiIcon = imageIcon;
             notiTitle = "이미지 대체 텍스트를 입력해주세요.";
             notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://blog.naver.com/mofakr/222059815030', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "RDI") {
-            notiIcon = infoIcon;
+            notiIcon = imageIcon;
             notiTitle = "이미지에 대한 설명을 추가해주세요.";
             notiContent = "스크린 리더 사용자를 위해 이미지에 대한 설명을 추가해주세요. 디닷에프가 이미지 내 텍스트 추출을 도와드릴게요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType == "EIS") {
-            notiIcon = infoIcon;
-            notiTitle = "이미지 내 텍스트가 추출되었어요.";
-            notiContent = "일부 추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
+            notiIcon = textIcon;
+            notiTitle = "텍스트 추출이 완료되었어요.";
+            notiContent = "추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
         } else if (notiType == "EIF") {
-            notiIcon = infoIcon;
-            notiTitle = "이미지 내 텍스트 추출에 실패했어요.";
+            notiIcon = exclamationIcon;
+            notiTitle = "텍스트 추출에 실패했어요.";
             notiContent = "문자를 인식할 수 없는 이미지인 것 같아요. 직접 이미지에 대한 설명을 추가해주세요.";
+        } else if (notiType == "LDF") {
+            notiIcon = infoIcon;
+            notiTitle = "이미 첨부된 파일이 있어요.";
+            notiContent = `'${param}' 파일이 이미 첨부되어 있어요. 첨부 파일 목록을 확인해주세요.`;
+        } else if (notiType == "LFS") {
+            notiIcon = exclamationIcon;
+            notiTitle = "파일은 총합 5MB까지 첨부할 수 있어요.";
+            notiContent = `${param}개의 파일이 용량 제한으로 첨부되지 않았어요.`;
         }
 
         // everywhere
