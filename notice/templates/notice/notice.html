@@ -122,7 +122,7 @@
                                 </a>
                             </p>
                             <!-- notice.file -->
-                            {% if notice.file %}
+                            {% if notice.file != "[]" and notice.file != None %}
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                      fill="none"
                                      viewBox="0 0 24 24"
@@ -166,6 +166,7 @@
                                           data-notice-title="{{ notice.title }}"
                                           data-notice-category="{{ notice.category }}"
                                           data-notice-keyword="{{ notice.keyword }}"
+                                          data-notice-file="{{ notice.file }}"
                                           data-notice-listed-date="{{ notice.listed_date }}"
                                           class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>

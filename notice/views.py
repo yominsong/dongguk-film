@@ -4,7 +4,7 @@ from django.http import Http404
 from django.contrib.auth.models import User
 from utility.img import get_hero_img
 from utility.utils import notion, convert_datetime
-import re
+import re, ast
 
 #
 # Main functions
@@ -28,14 +28,16 @@ def notice(request):
             for k, v in notice.items():
                 if (
                     k != "user"
-                    and (
-                        (k != "file" and q.lower() in v.lower())
-                        or (
-                            k == "file"
-                            and v is not None
-                            and q.lower() in v["name"].lower()
-                        )
-                    )
+                    and v is not None
+                    and q.lower() in v.lower()
+                    # and (
+                    #     (k != "file_dict" and q.lower() in v.lower())
+                    #     or (
+                    #         k == "file_dict"
+                    #         and v is not None
+                    #         and q.lower() in v["name"].lower()
+                    #     )
+                    # )
                     and notice not in query_result_list
                 ):
                     query_result_list.append(notice)
@@ -75,26 +77,37 @@ def notice_detail(request, page_id):
         raise Http404
     elif response.status_code == 200:
         notice = response.json()
+        title = notice["properties"]["Title"]["title"][0]["plain_text"]
+        category = notice["properties"]["Category"]["select"]["name"]
+        keyword_string = notice["properties"]["Keyword"]["rich_text"][0]["plain_text"]
+        keyword_list = re.findall(r"#\w+", keyword_string)
         student_id = str(notice["properties"]["User"]["number"])
         user = User.objects.get(username=student_id)
         name = user.metadata.name
         profile_img = user.socialaccount_set.all()[0].get_avatar_url()
-        keyword_string = notice["properties"]["Keyword"]["rich_text"][0]["plain_text"]
-        keyword_list = re.findall(r"#\w+", keyword_string)
+        try:
+            file_string = notice["properties"]["File"]["rich_text"][0]["plain_text"]
+            file_dict = ast.literal_eval(file_string)
+        except:
+            file_string = None
+            file_dict = None
         listed_time = notice["properties"]["Listed time"]["created_time"]
         listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
+
         notice = {
             "page_id": page_id,
-            "title": notice["properties"]["Title"]["title"][0]["plain_text"],
-            "category": notice["properties"]["Category"]["select"]["name"],
+            "title": title,
+            "category": category,
             "keyword": {"string": keyword_string, "list": keyword_list},
             "user": {
                 "student_id": student_id,
                 "name": name,
                 "profile_img": profile_img,
             },
+            "file": {"string": file_string, "dict": file_dict},
             "listed_date": listed_time,
         }
+
         notice["content"] = notion(
             "retrieve", "block_children", data={"page_id": page_id}
         )[1]

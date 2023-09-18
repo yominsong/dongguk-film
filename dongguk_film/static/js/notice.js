@@ -72,11 +72,14 @@ const id_go_to_list = document.getElementById("id_go_to_list");
 let stepOnes = document.querySelectorAll(".step-one");
 let filteredInputs = [];
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
+
+let selectedFiles;
 let attachedFiles = [];
 let totalSize = 0;
 let counts = document.querySelectorAll(".class-count");
 let measures = document.querySelectorAll(".class-measure");
 let isAdded = false;
+
 let currentHistoryLength = history.length;
 let lastClickedWasHash = false;
 let modalOpen = false;
@@ -97,7 +100,7 @@ function search() {
             id_notice_q.value = urlParams.get("q");
             ["click", "keyup"].forEach(type => {
                 id_search_notice_init.addEventListener(type, (event) => {
-                    if (type == "click" || event.key == "Enter") {
+                    if (type == "click" || event.key == "Enter" || event.key == " ") {
                         location.href = `${originLocation}/notice`;
                         id_notice_q.readOnly = true;
                         id_search_notice.disabled = true;
@@ -107,14 +110,14 @@ function search() {
         };
 
         id_notice_q.addEventListener("keyup", (event) => {
-            if (event.key == "Enter") {
+            if (event.key == "Enter" || event.key == " ") {
                 id_search_notice.click();
             };
         });
 
         ["click", "keyup"].forEach(type => {
             id_search_notice.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter") {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
                     location.href = `${originLocation}/notice?q=${id_notice_q.value}`;
                     id_notice_q.readOnly = true;
                     id_search_notice.disabled = true;
@@ -169,7 +172,7 @@ function initForm() {
 
             const otherInputs = [...radioInputs].filter(i => i !== input);
             otherInputs.forEach(i => {
-                const otherLabel = i.closest("label")
+                const otherLabel = i.closest("label");
                 const otherSvg = otherLabel.querySelector("svg");
                 if (!i.checked) {
                     otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
@@ -198,15 +201,14 @@ function initForm() {
     id_file.value = null;
     attachedFiles.length = 0;
     totalSize = 0;
-    lists.forEach(list => {
-        list.remove()
-    });
+    lists.forEach(list => { list.remove() });
     updateStyle();
 
     function updateStyle() {
         let outline = "none";
-        let boxShadow = "none";
+        let attachBoxShadow = "none";
         let attachBackgroundColor = "transparent";
+        let dropBoxShadow = "inset 0 0 0 1px rgb(209 213 219)";
         let dropBackGroundColor = "transparent";
 
         counts.forEach(count => {
@@ -217,7 +219,7 @@ function initForm() {
                     count.innerText = "파일을 첨부하세요.";
                 };
             } else {
-                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             };
         });
 
@@ -226,21 +228,23 @@ function initForm() {
         });
 
         if (isFocused && isHovered) {
-            boxShadow = "inset 0 0 0 2px #F15922";
+            attachBoxShadow = "inset 0 0 0 2px #F15922";
             attachBackgroundColor = "rgb(249 250 251)";
         } else if (isFocused) {
-            boxShadow = "inset 0 0 0 2px #F15922";
+            attachBoxShadow = "inset 0 0 0 2px #F15922";
         } else if (isHovered) {
-            boxShadow = "inset 0px -1px 0px 0px rgb(209 213 219), inset -1px 0px 0px 0px rgb(209 213 219), inset 1px 0px 0px 0px rgb(209 213 219)";
+            attachBoxShadow = "inset 0px -1px 0px 0px rgb(209 213 219), inset -1px 0px 0px 0px rgb(209 213 219), inset 1px 0px 0px 0px rgb(209 213 219)";
             attachBackgroundColor = "rgb(249 250 251)";
         } else if (isDragging) {
+            dropBoxShadow = "inset 0 0 0 2px #F15922";
             dropBackGroundColor = "rgb(249 250 251)";
             counts.forEach(count => { count.innerText = "파일을 놓으세요." });
         };
 
         id_attach_file.style.outline = outline;
-        id_attach_file.style.boxShadow = boxShadow;
+        id_attach_file.style.boxShadow = attachBoxShadow;
         id_attach_file.style.backgroundColor = attachBackgroundColor;
+        id_drop_file.style.boxShadow = dropBoxShadow;
         id_drop_file.style.backgroundColor = dropBackGroundColor;
     }
 
@@ -260,7 +264,7 @@ function initForm() {
 
         ["click", "keyup"].forEach(type => {
             id_attach_file.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter") {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
                     id_attach_file.focus();
                     id_file.click();
                 };
@@ -372,7 +376,8 @@ function initModal() {
                 if ((type === "click" && target.tagName === "SPAN") ||
                     (type === "click" && target.tagName === "DIV") ||
                     (type === "click" && target.tagName === "BUTTON") ||
-                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                    (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
                     openModal("create");
                 };
             });
@@ -388,7 +393,8 @@ function initModal() {
                 if ((type === "click" && target.tagName === "SPAN") ||
                     (type === "click" && target.tagName === "DIV") ||
                     (type === "click" && target.tagName === "BUTTON") ||
-                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                    (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
                     openModal("adjust", adjust);
                 };
             });
@@ -399,7 +405,7 @@ function initModal() {
     shares.forEach(share => {
         ["click", "keyup"].forEach(type => {
             share.addEventListener(type, (event) => {
-                if (type === "click" || event.key === "Enter") {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
                     openModal("share");
                 };
             });
@@ -614,52 +620,62 @@ function embedMedia() {
 
 embedMedia();
 
-function attachFile(event = null) {
-    let selectedFiles, fileId, fileName, fileSize, fileListItem, fileListItemHTML;
+function attachFile(event = null, sudo = false) {
+    let id, name, size, readableSize, fileListItem, fileListItemHTML;
     let isDuplicate = false;
     let duplicateFiles = [];
     let failureCount = 0;
 
-    if (event instanceof DragEvent) {
+    if (sudo == true) {
+        selectedFiles = selectedFiles;
+    } else if (event instanceof DragEvent) {
         selectedFiles = Array.from(event.dataTransfer.files);
     } else {
         selectedFiles = Array.from(id_file.files);
     };
 
     selectedFiles.forEach(file => {
-        fileName = file.name;
+        name = file.name.replace(/ /g, "_");
+        size = Number(file.size);
 
-        if (file.size < 1024 * 1024) {
-            fileSize = (file.size / 1024).toFixed(2) + "KB";
+        if (sudo == true) {
+            readableSize = file.readableSize;
+        } else if (size < 1024 * 1024) {
+            readableSize = (size / 1024).toFixed(2) + "KB";
         } else {
-            fileSize = (file.size / (1024 * 1024)).toFixed(2) + "MB";
+            readableSize = (size / (1024 * 1024)).toFixed(2) + "MB";
         };
 
-        if (attachedFiles.some(attachedFile => attachedFile.fileName === fileName && attachedFile.fileSize === fileSize)) {
+        if (attachedFiles.some(file => file.name === name && file.size === size)) {
             isDuplicate = true;
-            duplicateFiles.push(fileName);
-            console.warn(`The file ${fileName} is already attached.`);
-        } else if (totalSize + file.size <= 5 * 1024 * 1024) {
-            totalSize += file.size;
-            fileId = generateUUID();
-            fileObj = { file: file, fileId: fileId, fileName: fileName, fileSize: fileSize };
+            duplicateFiles.push(name);
+            console.warn(`The file ${name} is already attached.`);
+        } else if (totalSize + size <= 5 * 1024 * 1024) {
+            totalSize += size;
+            if (sudo == true) {
+                id = file.id;
+                fileObj = { file: null, id: id, name: name, size: size, readableSize: readableSize };
+            } else {
+                id = generateUUID();
+                fileObj = { file: file, id: id, name: name, size: size, readableSize: readableSize };
+            };
             fileListItem = document.createElement("li");
-            fileListItem.id = fileId;
+            fileListItem.id = id;
             fileListItem.classList.add("relative", "flex", "p-4", "class-list");
             fileListItemHTML = `
                 <span class="flex flex-1">
                     <span class="flex flex-col">
-                        <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${fileName}</span>
-                        <span class="mt-1 flex items-center text-sm text-gray-500">${fileSize}</span>
+                        <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${name}</span>
+                        <span class="mt-1 flex items-center text-sm text-gray-500">${readableSize}</span>
                     </span>
                 </span>
-                <svg class="h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
+                <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    onclick="detachFile('${fileId}')"
-                    onkeydown="if (event.key === 'Enter') { detachFile('${fileId}') }"
+                    onclick="detachFile('${id}')"
+                    onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
                     tabindex="0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -670,7 +686,7 @@ function attachFile(event = null) {
             id_attach_file.parentNode.insertBefore(fileListItem, id_attach_file);
 
             counts.forEach(count => {
-                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             });
 
             measures.forEach(measure => {
@@ -678,7 +694,7 @@ function attachFile(event = null) {
             });
         } else {
             failureCount += 1;
-            console.warn(`${file.name} will exceed the 5MB total limit.`);
+            console.warn(`${name} will exceed the 5MB total limit.`);
         };
     });
 
@@ -687,20 +703,16 @@ function attachFile(event = null) {
 
     id_file.value = "";
     failureCount = 0;
-
-    console.log(attachedFiles);
 }
 
 function detachFile(fileUUID = null) {
-    let fileListItem, fileId;
+    let fileListItem;
 
-    attachedFiles.forEach(function (fileObj, i) {
-        fileId = fileObj.fileId;
-
-        if (fileId == fileUUID) {
-            totalSize -= fileObj.file.size;
+    attachedFiles.forEach(function (file, i) {
+        if (file.id == fileUUID) {
+            totalSize -= file.size;
             attachedFiles.splice(i, 1);
-            fileListItem = document.getElementById(fileId);
+            fileListItem = document.getElementById(file.id);
             fileListItem.remove();
         };
 
@@ -712,7 +724,7 @@ function detachFile(fileUUID = null) {
                     count.innerText = "파일을 첨부하세요.";
                 };
             } else {
-                count.innerText = `총 ${attachedFiles.length}개의 파일이 첨부되었어요.`;
+                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             };
         });
 
@@ -720,21 +732,37 @@ function detachFile(fileUUID = null) {
             measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
         });
     });
-
-    console.log(attachedFiles);
 }
 
 function freezeFileForm(boolean) {
+    let detaches = document.querySelectorAll(".class-detach");
+
     if (boolean) {
+        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
+        id_drop_file.nextElementSibling.classList.remove("hidden");
+        id_attach_file.tabIndex = -1;
+        detaches.forEach(detach => { detach.tabIndex = -1 });
         id_file.disabled = true;
-        id_drop_file.classList.replace("cursor-pointer", "cursor-not-allowed");
+
+        counts.forEach(count => {
+            count.innerText = `잠시만 기다려주세요.`;
+        });
     } else if (!boolean) {
+        id_drop_file.style.backgroundColor = "transparent";
+        id_drop_file.nextElementSibling.classList.add("hidden");
+        id_attach_file.tabIndex = 0;
+        detaches.forEach(detach => { detach.tabIndex = 0 });
         id_file.disabled = false;
-        id_drop_file.classList.replace("cursor-not-allowed", "cursor-pointer");
+
+        counts.forEach(count => {
+            if (count.classList.contains("class-desktop")) {
+                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (count.classList.contains("class-mobile")) {
+                count.innerText = "파일을 첨부하세요.";
+            };
+        });
     };
 }
-
-if (id_drop_file !== null) { freezeFileForm(false) };
 
 function goToList() {
     let details = document.querySelectorAll(".class-detail");
@@ -756,7 +784,7 @@ function goToList() {
 
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter") {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
                     let previousSearch = new URLSearchParams(location.search).get("previousSearch");
 
                     if (previousSearch !== null) {
@@ -878,9 +906,24 @@ function requestOcrNotice() {
 }
 
 function requestCreateNotice() {
+    let formData = new FormData();
+
+    formData.append("id", "create_notice");
+    formData.append("title", id_title.value);
+    formData.append("category", id_category.value);
+    formData.append("content", id_content.value);
+
+    attachedFiles.forEach((fileObj, index) => {
+        formData.append(`file_${index}`, fileObj.file);
+        formData.append(`fileId_${index}`, fileObj.id);
+        formData.append(`fileName_${index}`, fileObj.name);
+        formData.append(`fileSize_${index}`, fileObj.size);
+        formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
+    });
+
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "create_notice", title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}` };
+    request.data = formData;
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
@@ -896,14 +939,32 @@ function requestReadNotice() {
     request.data = { id: "read_notice", page_id: `${id_page_id.value}` };
     request.async = true;
     request.headers = null;
+    freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
 }
 
 function requestUpdateNotice() {
+    let formData = new FormData();
+
+    formData.append("id", "update_notice");
+    formData.append("page_id", id_page_id.value);
+    formData.append("title", id_title.value);
+    formData.append("category", id_category.value);
+    formData.append("block_id_list", id_block_id_list.value);
+    formData.append("content", id_content.value);
+
+    attachedFiles.forEach((fileObj, index) => {
+        formData.append(`file_${index}`, fileObj.file);
+        formData.append(`fileId_${index}`, fileObj.id);
+        formData.append(`fileName_${index}`, fileObj.name);
+        formData.append(`fileSize_${index}`, fileObj.size);
+        formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
+    });
+
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "update_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, block_id_list: `${id_block_id_list.value}`, content: `${id_content.value}` };
+    request.data = formData;
     request.async = true;
     request.headers = null;
     code(id_create_or_update_notice, "_spin").classList.remove("hidden");
@@ -948,7 +1009,8 @@ function setPage() {
 
             if ((type === "click" && target.tagName === "SPAN") ||
                 (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
                 Array.from(radios).forEach((radio) => {
                     let idx = inputs.indexOf(radio);
                     while (idx > -1) {
@@ -991,7 +1053,8 @@ function setPage() {
 
             if ((type === "click" && target.tagName === "SPAN") ||
                 (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
                 if (!askedTwice) {
                     id_delete_notice_inner_text.innerText = "정말 삭제하기";
                     askedTwice = true;

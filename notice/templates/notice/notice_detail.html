@@ -142,6 +142,7 @@
                                  data-notice-title="{{ notice.title }}"
                                  data-notice-category="{{ notice.category }}"
                                  data-notice-keyword="{{ notice.keyword.string }}"
+                                 data-notice-file="{{ notice.file.string }}"
                                  data-notice-listed-date="{{ notice.listed_date }}">수정하기</div>
                         {% endif %}
                     </div>
@@ -153,6 +154,43 @@
                 </div>
                 <div class="relative flex justify-end min-h-[36px]"></div>
             </div>
+            {% if notice.file.dict %}
+                <ul role="list"
+                    class="mt-2 mb-6 divide-y divide-gray-100 rounded-md ring-1 ring-inset ring-gray-100">
+                    {% for file in notice.file.dict %}
+                        <li class="relative flex items-center justify-between pl-4 py-4 pr-5 text-sm leading-6 sm:px-6 hover:bg-gray-50
+                                   {% if forloop.first %}
+                                       rounded-t-md
+                                   {% elif forloop.last %}
+                                       rounded-b-md
+                                   {% endif %}">
+                            <a href="https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{{ file.id }}_{{ file.name }}"
+                               class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset
+                                      {% if forloop.first %}
+                                          rounded-t-md
+                                      {% elif forloop.last %}
+                                          rounded-b-md
+                                      {% endif %}"></a>
+                            <div class="flex w-0 flex-1 items-center">
+                                <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243h.001l.497-.5a.75.75 0 011.064 1.057l-.498.501-.002.002a4.5 4.5 0 01-6.364-6.364l7-7a4.5 4.5 0 016.368 6.36l-3.455 3.553A2.625 2.625 0 119.52 9.52l3.45-3.451a.75.75 0 111.061 1.06l-3.45 3.451a1.125 1.125 0 001.587 1.595l3.454-3.553a3 3 0 000-4.242z" clip-rule="evenodd">
+                                    </path>
+                                </svg>
+                                <div class="ml-4 flex flex-col min-w-0 flex-1 sm:flex-row sm:gap-2">
+                                    <span class="truncate font-medium">{{ file.name }}</span>
+                                    <span class="flex-shrink-0 text-gray-400">{{ file.readableSize }}</span>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 sm:ml-4">
+                                <span class="font-medium text-flamingo-600 rounded-md hidden sm:block">내려받기</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
             <div class="mt-5 mb-3">
                 {% for keyword in notice.keyword.list %}
@@ -179,6 +217,7 @@
                             data-notice-title="{{ notice.title }}"
                             data-notice-category="{{ notice.category }}"
                             data-notice-keyword="{{ notice.keyword.string }}"
+                            data-notice-file="{{ notice.file.string }}"
                             data-notice-listed-date="{{ notice.listed_date }}"
                             type="button"
                             class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">

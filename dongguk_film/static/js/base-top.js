@@ -119,7 +119,9 @@ function skipNavbar() {
     document.addEventListener("keydown", function (event) {
         if (event.key === "Tab") {
             id_top_banner.classList.replace("hidden", "flex");
-        } else if (event.key === "Enter" && document.activeElement.id === "id_skip_navbar") {
+        } else if ((event.key === "Enter" && document.activeElement.id === "id_skip_navbar") ||
+            (event.key === " " && document.activeElement.id === "id_skip_navbar")) {
+            id_skip_navbar.click();
             id_top_banner.classList.replace("flex", "hidden");
         };
     });
@@ -398,6 +400,9 @@ function handleAjaxCallback(response) {
             ckEditor.setData(resResult.content);
             ckEditor.disableReadOnlyMode("id_content");
             id_block_id_list.value = resResult.block_id_list;
+            freezeFileForm(false);
+            selectedFiles = resResult.file;
+            attachFile(event = null, sudo = true);
         };
     }
 

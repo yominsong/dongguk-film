@@ -321,7 +321,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - content
         - keyword
         - img_name_list
-        - file_id_list
+        - file
         - user
     - limit | `int`
     """
@@ -336,7 +336,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         content = data.get("content", None)
         keyword = data.get("keyword", None)
         img_name_list = data.get("img_name_list", None)
-        file_id_list = data.get("file_id_list", None)
+        file = data.get("file", None)
         user = data.get("user", None)
 
     # action: query / target: db
@@ -370,12 +370,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
                     try:
-                        notice["file"] = {
-                            "name": items[i]["properties"]["File"]["files"][0]["name"],
-                            "url": items[i]["properties"]["File"]["files"][0]["file"][
-                                "url"
-                            ],
-                        }
+                        notice["file"] = items[i]["properties"]["File"][
+                            "rich_text"
+                        ][0]["plain_text"]
                     except:
                         notice["file"] = None
                     item_list.append(notice)
@@ -422,6 +419,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     "Image name list": {
                         "rich_text": [{"text": {"content": str(img_name_list)}}]
                     },
+                    "File": {"rich_text": [{"text": {"content": str(file)}}]},
                     "User": {"number": int(str(user))},
                 },
                 "children": paragraph_list,

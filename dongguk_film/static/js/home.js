@@ -23,21 +23,17 @@ const pulseOff = document.querySelectorAll(".pulse-off");
 // Sub functions
 //
 
+/**
+ * SOURCE: https://gist.github.com/fronteer-kr/14d7f779d52a21ac2f16
+ * 
+ * @param {string} code Code for converting longitude & latitude to coordinates and vice versa
+ * - `toXY`: LL → XY (longitude & latitude → coordinates)
+ * - `toLL`: XY → LL (coordinates → longitude & latitude)
+ * @param {number} v1 longitude OR Y coordinate
+ * @param {number} v2 latitude OR X coordinate
+ * @returns {object} Pairs of longitude & latitude OR coordinates
+ */
 function dfs_xy_conv(code, v1, v2) {
-    /* 
-     * SOURCE: https://gist.github.com/fronteer-kr/14d7f779d52a21ac2f16
-     * 
-     * LL -> XY
-     * code: "toXY"
-     * v1: longitude
-     * v2: latitude
-     * 
-     * XY -> LL
-     * code: "toLL"
-     * v1: y-coordinate
-     * v2: x-coordinate
-     */
-
     let RE = 6371.00877;
     let GRID = 5.0;
     let SLAT1 = 30.0;
@@ -105,7 +101,7 @@ function refreshWeather() {
                 id_get_weather.classList.contains("cursor-pointer")) {
                 displayNoti(false, "RRL");
                 displayNoti(false, "CWF");
-                getWeather("sudo");
+                getWeather(sudo = true);
             };
         });
     });
@@ -155,12 +151,12 @@ function handleGeolocationError(error) {
     requestWeather(defaultCoords);
 }
 
-function getWeather(type = null) {
+function getWeather(sudo = false) {
     let weatherCachedAt = new Date(sessionStorage.getItem("weatherCachedAt"));
     let cachedWeather = JSON.parse(sessionStorage.getItem("cachedWeather"));
     let notified = false;
 
-    if (((now - weatherCachedAt) / (1000 * 60) > 5) || type == "sudo") {
+    if (((now - weatherCachedAt) / (1000 * 60) > 5) || sudo == true) {
         navigator.geolocation.getCurrentPosition(requestWeather, handleGeolocationError, { enableHighAccuracy: false, timeout: 3000, maximumAge: 300000 });
         id_get_weather.classList.remove("cursor-pointer");
         id_get_weather.classList.remove("hover:cursor-pointer");

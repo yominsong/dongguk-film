@@ -145,71 +145,36 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_content_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_content_error" hidden></p>
                                 </div>
-                                <!-- <div>
-                                    <ul role="list" class="divide-y divide-gray-100 overflow-hidden bg-white shadow-sm rounded-md df-ring-inset-gray scrollbar-hide max-h-[185.7px] min-h-[185.7px] overflow-y-auto">
-                                        <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6">
-                                            <div class="flex min-w-0 gap-x-4">
-                                                <img class="h-6 w-6 flex-none rounded-full bg-gray-50" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" height="" width="">
-                                                <div class="min-w-0 flex-auto">
-                                                    <p class="text-sm font-semibold leading-6 text-gray-900">
-                                                        <a href="#">
-                                                            <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                                            Leslie Alexander
-                                                        </a>
-                                                    </p>
-                                                    <p class="mt-1 flex text-xs leading-5 text-gray-500">
-                                                        <a href="mailto:leslie.alexander@example.com" class="relative truncate hover:underline">leslie.alexander@example.com</a>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="flex shrink-0 items-center gap-x-4">
-                                                <div class="hidden sm:flex sm:flex-col sm:items-end">
-                                                    <p class="text-sm leading-6 text-gray-900">Co-Founder / CEO</p>
-                                                    <p class="mt-1 text-xs leading-5 text-gray-500">
-                                                        Last seen <time datetime="2023-01-23T13:23Z">3h ago</time>
-                                                    </p>
-                                                </div>
-                                                <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        </li>
-                                        <li class="class-attach relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset" tabindex="0">
-                                            <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                                            </svg>
-                                            새로 첨부하기
-                                        </li>
-                                    </ul>
-                                </div> -->
                                 <div>
                                     <label for="id_file"
                                            class="relative text-sm font-medium leading-6 text-gray-900">파일</label>
                                     <input id="id_file" type="file" class="sr-only" tabindex="-1" multiple>
-                                    <ul role="list"
-                                        id="id_drop_file"
-                                        class="mt-2 divide-y divide-gray-100 overflow-hidden shadow-sm rounded-md df-ring-inset-gray">
-                                        <li class="relative flex flex-col justify-between p-4">
-                                            <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
-                                                <span class="class-count class-desktop hidden sm:block">파일을 이곳에 끌어다 놓으세요.</span>
-                                                <span class="class-count class-mobile sm:hidden">파일을 첨부하세요.</span>
-                                                <span class="class-measure text-xs">0.00MB/5MB</span>
-                                            </div>
-                                        </li>
-                                        <li id="id_attach_file"
-                                            class="relative flex justify-start items-center gap-x-1 p-4 text-sm rounded-b-md"
-                                            tabindex="0">
-                                            <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                 viewBox="0 0 20 20"
-                                                 fill="currentColor"
-                                                 class="w-5 h-5">
-                                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                                            </svg>
-                                            새로 첨부하기
-                                        </li>
-                                    </ul>
+                                    <div class="relative rounded-md shadow-sm">
+                                        <ul role="list"
+                                            id="id_drop_file"
+                                            class="mt-2 divide-y divide-gray-100 overflow-hidden rounded-md">
+                                            <li class="relative flex flex-col justify-between p-4">
+                                                <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
+                                                    <span class="class-count class-desktop hidden sm:block">파일을 이곳에 끌어다 놓으세요.</span>
+                                                    <span class="class-count class-mobile sm:hidden">파일을 첨부하세요.</span>
+                                                    <span class="class-measure text-xs">0.00MB/5MB</span>
+                                                </div>
+                                            </li>
+                                            <li id="id_attach_file"
+                                                class="relative flex justify-start items-center gap-x-1 p-4 text-sm rounded-b-md"
+                                                tabindex="0">
+                                                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor"
+                                                     class="w-5 h-5">
+                                                    <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                                                </svg>
+                                                새로 첨부하기
+                                            </li>
+                                        </ul>
+                                        <div class="absolute inset-x-0 -top-px bottom-0 cursor-not-allowed hidden"></div>
+                                    </div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_file_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_file_error" hidden></p>
                                 </div>

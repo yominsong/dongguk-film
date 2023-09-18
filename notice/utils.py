@@ -268,8 +268,8 @@ def update_content_and_get_img_name_list(content):
         bin_img_list = decode_b64_to_bin(b64_img_src_list)
 
         for img in bin_img_list:
-            img_name = f"dongguk-film-{generate_random_string(5)}.{img[1]}".replace(
-                " ", "+"
+            img_name = f"dongguk_film_img_{generate_random_string(5)}.{img[1]}".replace(
+                " ", "_"
             )
             data = {"bin": img[0], "name": img_name}
             aws_s3("put", "object", data=data)
@@ -285,6 +285,30 @@ def update_content_and_get_img_name_list(content):
         ]
 
     return content, img_name_list
+
+
+def get_file(request):
+    file_list = []
+
+    for index, file_dict in enumerate(request.FILES):
+        file = request.FILES.get(f"file_{index}")
+        file_id = request.POST.get(f"fileId_{index}")
+        file_name = request.POST.get(f"fileName_{index}")
+        file_size = request.POST.get(f"fileSize_{index}")
+        file_readable_size = request.POST.get(f"fileReadableSize_{index}")
+
+        file_key = f"{file_id}_{file_name}".replace(" ", "_")
+        data = {"bin": file, "name": file_key}
+        aws_s3("put", "object", data=data)
+        file_dict = {
+            "id": file_id,
+            "name": file_name,
+            "size": file_size,
+            "readableSize": file_readable_size,
+        }
+        file_list.append(file_dict)
+
+    return file_list
 
 
 #
@@ -308,6 +332,7 @@ def notice(request):
         - block_id_list
         - content
         - keyword
+        - file
     """
 
     id = request.POST.get("id")
@@ -317,6 +342,7 @@ def notice(request):
     block_id_list = request.POST.get("block_id_list")
     content = request.POST.get("content")
     keyword = request.POST.get("keyword")
+    file = request.POST.get("file")
 
     status = None
 
@@ -388,6 +414,7 @@ def notice(request):
 
         if status == None:
             content, img_name_list = update_content_and_get_img_name_list(content)
+            file = get_file(request)
 
             data = {
                 "db_name": "notice-db",
@@ -396,6 +423,7 @@ def notice(request):
                 "content": content,
                 "keyword": create_hashtag(content),
                 "img_name_list": img_name_list,
+                "file": file,
                 "user": request.user,
             }
             response = notion("create", "page", data=data)
@@ -438,8 +466,16 @@ def notice(request):
 
     # id: read_notice
     elif id == "read_notice":
-        data = {"page_id": page_id}
+        data = {"page_id": page_id, "property_id": "B%5Dhc"}
         block_id_list, content = notion("retrieve", "block_children", data=data)
+        try:
+            file = ast.literal_eval(
+                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                    "rich_text"
+                ]["text"]["content"]
+            )
+        except:
+            file = None
 
         response = {
             "id": id,
@@ -448,6 +484,7 @@ def notice(request):
                 "page_id": page_id,
                 "block_id_list": block_id_list,
                 "content": content,
+                "file": file,
             },
         }
 
