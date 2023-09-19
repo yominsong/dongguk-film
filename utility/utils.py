@@ -320,7 +320,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - category
         - content
         - keyword
-        - img_name_list
+        - img_key_list
         - file
         - user
     - limit | `int`
@@ -335,7 +335,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         category = data.get("category", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
-        img_name_list = data.get("img_name_list", None)
+        img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
         user = data.get("user", None)
 
@@ -370,9 +370,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
                     try:
-                        notice["file"] = items[i]["properties"]["File"][
-                            "rich_text"
-                        ][0]["plain_text"]
+                        notice["file"] = items[i]["properties"]["File"]["rich_text"][0][
+                            "plain_text"
+                        ]
                     except:
                         notice["file"] = None
                     item_list.append(notice)
@@ -416,8 +416,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     },
                     "Title": {"title": [{"text": {"content": title}}]},
                     "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
-                    "Image name list": {
-                        "rich_text": [{"text": {"content": str(img_name_list)}}]
+                    "Image key list": {
+                        "rich_text": [{"text": {"content": str(img_key_list)}}]
                     },
                     "File": {"rich_text": [{"text": {"content": str(file)}}]},
                     "User": {"number": int(str(user))},
@@ -474,8 +474,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 },
                 "Title": {"title": [{"text": {"content": title}}]},
                 "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
-                "Image name list": {
-                    "rich_text": [{"text": {"content": str(img_name_list)}}]
+                "Image key list": {
+                    "rich_text": [{"text": {"content": str(img_key_list)}}]
                 },
             },
         }
@@ -537,18 +537,23 @@ def aws_s3(action: str, target: str, data: dict = None):
     if data != None:
         bin = data.get("bin", None)
         name = data.get("name", None)
+        key = data.get("key", None)
 
     # action: put / target: object
     if action == "put" and target == "object":
         response = AWS_S3.put_object(
-            Body=bin, Bucket="dongguk-film", Key=name, ACL="public-read"
+            Body=bin,
+            Bucket="dongguk-film",
+            ContentDisposition=f"attachment; filename={name}",
+            Key=key,
+            ACL="public-read",
         )
 
         result = response
 
     # action: delete / target: object
     elif action == "delete" and target == "object":
-        response = AWS_S3.delete_object(Bucket="dongguk-film", Key=name)
+        response = AWS_S3.delete_object(Bucket="dongguk-film", Key=key)
 
         result = response
 
@@ -565,14 +570,14 @@ def ncp_clova(action: str, target: str, data: dict = None):
         img_format = img_mime_type.split("/")[-1]
         img_data = img_src.split(",")[1]
         img_url = None
-        img_name = img_data[-5:]
+        img_key = img_data[-5:]
 
     # action: ocr / target: bin_img
     if action == "ocr" and target == "bin_img":
         img_format = img_src.rsplit(".", 1)[-1]
         img_data = None
         img_url = img_src
-        img_name = img_url.rsplit(".", 1)[0][-5:]
+        img_key = img_url.rsplit(".", 1)[0][-5:]
 
     # all
     if img_format in ["jpg", "jpeg", "png", "pdf", "tiff"]:
@@ -585,7 +590,7 @@ def ncp_clova(action: str, target: str, data: dict = None):
                     "format": img_format,
                     "data": img_data,
                     "url": img_url,
-                    "name": img_name,
+                    "name": img_key,
                 }
             ],
             "enableTableDetection": True,

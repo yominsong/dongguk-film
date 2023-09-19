@@ -158,19 +158,9 @@
                 <ul role="list"
                     class="mt-2 mb-6 divide-y divide-gray-100 rounded-md ring-1 ring-inset ring-gray-100">
                     {% for file in notice.file.dict %}
-                        <li class="relative flex items-center justify-between pl-4 py-4 pr-5 text-sm leading-6 sm:px-6 hover:bg-gray-50
-                                   {% if forloop.first %}
-                                       rounded-t-md
-                                   {% elif forloop.last %}
-                                       rounded-b-md
-                                   {% endif %}">
-                            <a href="https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{{ file.id }}_{{ file.name }}"
-                               class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset
-                                      {% if forloop.first %}
-                                          rounded-t-md
-                                      {% elif forloop.last %}
-                                          rounded-b-md
-                                      {% endif %}"></a>
+                        <li class="class-download relative flex items-center justify-between pl-4 py-4 pr-5 text-sm leading-6 sm:px-6 hover:bg-gray-50">
+                            <a href="https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{{ file.key }}"
+                               class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset"></a>
                             <div class="flex w-0 flex-1 items-center">
                                 <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
                                      viewBox="0 0 20 20"

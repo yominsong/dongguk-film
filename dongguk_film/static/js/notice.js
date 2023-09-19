@@ -661,26 +661,54 @@ function attachFile(event = null, sudo = false) {
             };
             fileListItem = document.createElement("li");
             fileListItem.id = id;
-            fileListItem.classList.add("relative", "flex", "p-4", "class-list");
+            // fileListItem.classList.add("relative", "flex", "p-4", "class-list");
+            fileListItem.classList.add("class-list", "relative", "flex", "items-center", "justify-between", "p-4", "text-sm", "leading-6");
+            // fileListItemHTML = `
+            //     <span class="flex flex-1">
+            //         <span class="flex flex-col">
+            //             <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${name}</span>
+            //             <span class="mt-1 flex items-center text-sm text-gray-500">${readableSize}</span>
+            //         </span>
+            //     </span>
+            //     <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
+            //         viewBox="0 0 24 24"
+            //         fill="none"
+            //         stroke-width="1.5"
+            //         stroke="currentColor"
+            //         onclick="detachFile('${id}')"
+            //         onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
+            //         tabindex="0">
+            //         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            //     </svg>
+            //     <span class="pointer-events-none absolute -inset-px" aria-hidden="true"></span>
+            // `;
             fileListItemHTML = `
-                <span class="flex flex-1">
-                    <span class="flex flex-col">
-                        <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${name}</span>
-                        <span class="mt-1 flex items-center text-sm text-gray-500">${readableSize}</span>
-                    </span>
-                </span>
-                <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    onclick="detachFile('${id}')"
-                    onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
-                    tabindex="0">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span class="pointer-events-none absolute -inset-px" aria-hidden="true"></span>
-            `;
+                <div class="flex w-0 flex-1 items-center">
+                    <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true">
+                        <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243h.001l.497-.5a.75.75 0 011.064 1.057l-.498.501-.002.002a4.5 4.5 0 01-6.364-6.364l7-7a4.5 4.5 0 016.368 6.36l-3.455 3.553A2.625 2.625 0 119.52 9.52l3.45-3.451a.75.75 0 111.061 1.06l-3.45 3.451a1.125 1.125 0 001.587 1.595l3.454-3.553a3 3 0 000-4.242z" clip-rule="evenodd">
+                        </path>
+                    </svg>
+                    <div class="ml-4 flex flex-col min-w-0 flex-1 sm:flex-row sm:gap-2">
+                        <span class="truncate font-medium">${name}</span>
+                        <span class="flex-shrink-0 text-gray-400">${readableSize}</span>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 ml-4">
+                    <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        onclick="detachFile('${id}')"
+                        onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
+                        tabindex="0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </div>
+            `
             fileListItem.innerHTML = fileListItemHTML;
             attachedFiles.push(fileObj);
             id_attach_file.parentNode.insertBefore(fileListItem, id_attach_file);
@@ -734,6 +762,29 @@ function detachFile(fileUUID = null) {
     });
 }
 
+function listFile() {
+    let downloads = document.querySelectorAll(".class-download");
+
+    if (downloads) {
+        downloads.forEach((download, index) => {
+            let aTag = download.querySelector("a");
+
+            if (downloads.length == 1) {
+                download.classList.add("rounded-md");
+                aTag.classList.add("rounded-md");
+            } else if (index == 0) {
+                download.classList.add("rounded-t-md");
+                aTag.classList.add("rounded-t-md");
+            } else if (index == downloads.length - 1) {
+                download.classList.add("rounded-b-md");
+                aTag.classList.add("rounded-b-md");
+            };
+        });
+    };
+}
+
+listFile();
+
 function freezeFileForm(boolean) {
     let detaches = document.querySelectorAll(".class-detach");
 
@@ -763,43 +814,6 @@ function freezeFileForm(boolean) {
         });
     };
 }
-
-function goToList() {
-    let details = document.querySelectorAll(".class-detail");
-    let params = {};
-
-    if (details !== null) {
-        details.forEach((detail) => {
-            if (location.search !== "") {
-                params.previousSearch = location.search;
-                detail.href += "?" + new URLSearchParams(params).toString();
-            };
-        });
-    };
-
-    if (id_go_to_list !== null) {
-        if (id_go_to_list.previousElementSibling == null) {
-            id_go_to_list.classList.remove("mt-3");
-        };
-
-        ["click", "keyup"].forEach(type => {
-            id_go_to_list.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    let previousSearch = new URLSearchParams(location.search).get("previousSearch");
-
-                    if (previousSearch !== null) {
-                        location.href = `${originLocation}/notice${previousSearch}`;
-                    } else {
-                        location.href = `${originLocation}/notice`;
-                    };
-                    id_go_to_list.disabled = true;
-                };
-            });
-        });
-    };
-}
-
-goToList();
 
 function copyNoticeUrl() {
     id_url.addEventListener("click", () => {
@@ -885,6 +899,43 @@ function share() {
 }
 
 if (id_notice_data) { share() };
+
+function goToList() {
+    let details = document.querySelectorAll(".class-detail");
+    let params = {};
+
+    if (details !== null) {
+        details.forEach((detail) => {
+            if (location.search !== "") {
+                params.previousSearch = location.search;
+                detail.href += "?" + new URLSearchParams(params).toString();
+            };
+        });
+    };
+
+    if (id_go_to_list !== null) {
+        if (id_go_to_list.previousElementSibling == null) {
+            id_go_to_list.classList.remove("mt-3");
+        };
+
+        ["click", "keyup"].forEach(type => {
+            id_go_to_list.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
+                    let previousSearch = new URLSearchParams(location.search).get("previousSearch");
+
+                    if (previousSearch !== null) {
+                        location.href = `${originLocation}/notice${previousSearch}`;
+                    } else {
+                        location.href = `${originLocation}/notice`;
+                    };
+                    id_go_to_list.disabled = true;
+                };
+            });
+        });
+    };
+}
+
+goToList();
 
 //
 // Main functions
