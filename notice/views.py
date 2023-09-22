@@ -22,25 +22,33 @@ def notice(request):
     q = request.GET.get("q")
     query_result_count = None
     query_param = None
+
     if q:
+        q = q.lower().replace(" ", "")
         query_result_list = []
         for notice in notice_list:
             for k, v in notice.items():
-                if (
-                    k != "user"
-                    and v is not None
-                    and q.lower() in v.lower()
-                    # and (
-                    #     (k != "file_dict" and q.lower() in v.lower())
-                    #     or (
-                    #         k == "file_dict"
-                    #         and v is not None
-                    #         and q.lower() in v["name"].lower()
-                    #     )
-                    # )
-                    and notice not in query_result_list
-                ):
-                    query_result_list.append(notice)
+                if k != "user" and v is not None:
+                    if (
+                        k != "img_key_list"
+                        and k != "file"
+                        and q in v.lower().replace(" ", "")
+                    ):
+                        if notice not in query_result_list:
+                            query_result_list.append(notice)
+                    elif k == "img_key_list":
+                        for item in v:
+                            if q in item:
+                                if notice not in query_result_list:
+                                    query_result_list.append(notice)
+                                break
+                    elif k == "file":
+                        for file_dict in v:
+                            if "name" in file_dict and q in file_dict["name"].lower().replace(" ", ""):
+                                if notice not in query_result_list:
+                                    query_result_list.append(notice)
+                                break
+
         notice_list = query_result_list
         query_result_count = len(query_result_list)
         query_param = f"q={q}&"

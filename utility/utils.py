@@ -7,8 +7,7 @@ from .img import save_hero_img
 from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
-import json, re, requests, pytz, datetime, openai, io, boto3, random, string, uuid, time, base64
+import json, re, requests, pytz, datetime, openai, boto3, random, string, uuid, time, ast
 
 #
 # Global constants and variables
@@ -370,9 +369,17 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
                     try:
-                        notice["file"] = items[i]["properties"]["File"]["rich_text"][0][
-                            "plain_text"
-                        ]
+                        notice["img_key_list"] = ast.literal_eval(
+                            items[i]["properties"]["Image key list"]["rich_text"][0][
+                                "plain_text"
+                            ]
+                        )
+                    except:
+                        notice["img_key_list"] = None
+                    try:
+                        notice["file"] = ast.literal_eval(
+                            items[i]["properties"]["File"]["rich_text"][0]["plain_text"]
+                        )
                     except:
                         notice["file"] = None
                     item_list.append(notice)

@@ -110,7 +110,7 @@ function search() {
         };
 
         id_notice_q.addEventListener("keyup", (event) => {
-            if (event.key == "Enter" || event.key == " ") {
+            if (event.key == "Enter") {
                 id_search_notice.click();
             };
         });
