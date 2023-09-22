@@ -477,6 +477,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 "Image key list": {
                     "rich_text": [{"text": {"content": str(img_key_list)}}]
                 },
+                "File": {"rich_text": [{"text": {"content": str(file)}}]},
             },
         }
         response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
@@ -551,6 +552,17 @@ def aws_s3(action: str, target: str, data: dict = None):
 
         result = response
 
+    # action: get / target: object
+    elif action == "get" and target == "object":
+        try:
+            response = AWS_S3.get_object(Bucket="dongguk-film", Key=key)
+        except:
+            # response = requests.models.Response()
+            # response.status_code = 400
+            response = {"ResponseMetadata": {"HTTPStatusCode": 400}}
+
+        result = response
+
     # action: delete / target: object
     elif action == "delete" and target == "object":
         response = AWS_S3.delete_object(Bucket="dongguk-film", Key=key)
@@ -573,7 +585,7 @@ def ncp_clova(action: str, target: str, data: dict = None):
         img_key = img_data[-5:]
 
     # action: ocr / target: bin_img
-    if action == "ocr" and target == "bin_img":
+    elif action == "ocr" and target == "bin_img":
         img_format = img_src.rsplit(".", 1)[-1]
         img_data = None
         img_url = img_src

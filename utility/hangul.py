@@ -1,4 +1,4 @@
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 
 def pronounce_last_digit(str_number):
@@ -54,3 +54,7 @@ def handle_hangul(str_word, str_handling_type, boolean_merge):
 
 def encode_hangul_to_url(str_hangul):
     return quote(str_hangul)
+
+
+def decode_url_to_hangul(str_encoded):
+    return unquote(str_encoded)

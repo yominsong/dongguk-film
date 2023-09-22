@@ -904,6 +904,11 @@ select {
   margin: -0.75rem;
 }
 
+.-my-1 {
+  margin-top: -0.25rem;
+  margin-bottom: -0.25rem;
+}
+
 .-my-2 {
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
@@ -920,6 +925,10 @@ select {
 
 .-ml-px {
   margin-left: -1px;
+}
+
+.-mr-1 {
+  margin-right: -0.25rem;
 }
 
 .-mr-2 {
@@ -1645,6 +1654,10 @@ select {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.p-1 {
+  padding: 0.25rem;
 }
 
 .p-2 {

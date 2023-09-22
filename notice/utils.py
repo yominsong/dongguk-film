@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from utility.msg import send_msg
-from utility.hangul import encode_hangul_to_url
+from utility.hangul import encode_hangul_to_url, decode_url_to_hangul
 from utility.utils import (
     generate_random_string,
     chap_gpt,
@@ -140,7 +140,8 @@ def find_in_content(target: str, content: str):
     - target | `str`:
         - str
         - str_list
-        - img_list
+        - b64_img_list
+        - bin_img_list
         - b64_img_src_list
         - bin_img_src_list
         - img_alt_list
@@ -164,15 +165,22 @@ def find_in_content(target: str, content: str):
         result = str_list
 
     # target: img_list
-    elif target == "img_list":
+    elif "img_list" in target:
+        prefix = "data:image/" if "b64" in target else "http" if "bin" in target else ""
         img_list = soup.find_all("img")
+
+        img_list = [
+            img
+            for img in img_list
+            if img.has_attr("src") and img["src"].startswith(prefix)
+        ]
 
         result = img_list
 
     # target: b64_img_src_list OR bin_img_src_list
     elif "img_src_list" in target:
         prefix = "data:image/" if "b64" in target else "http" if "bin" in target else ""
-        img_list = find_in_content("img_list", content)
+        img_list = soup.find_all("img")
 
         img_src_list = [
             img["src"]
@@ -184,7 +192,7 @@ def find_in_content(target: str, content: str):
 
     # target: img_alt_list
     elif target == "img_alt_list":
-        img_list = find_in_content("img_list", content)
+        img_list = soup.find_all("img")
 
         img_alt_list = [
             img["alt"]
@@ -197,16 +205,12 @@ def find_in_content(target: str, content: str):
     return result
 
 
-def decode_b64_to_bin(b64_str_list):
-    bin_list = []
+def decode_b64_to_bin(b64_str):
+    mime_type, encoded_data = b64_str.split(",", 1)
+    bin_str = base64.b64decode(encoded_data)
+    mime_type = mime_type.split(";")[0].split(":")[1].split("/")[1]
 
-    for b64_str in b64_str_list:
-        mime_type, encoded_data = b64_str.split(",", 1)
-        mime_type = mime_type.split(";")[0].split(":")[1].split("/")[1]
-        bin_data = base64.b64decode(encoded_data)
-        bin_list.append([bin_data, mime_type])
-
-    return bin_list
+    return bin_str, mime_type
 
 
 def replace_img_src_from_b64_to_bin(content, img_key_list):
@@ -259,48 +263,74 @@ def extract_text_from_img(type, img_src):
     return ocr_passed, extracted_text
 
 
-def update_content_and_get_img_key_list(content):
-    b64_img_src_list = find_in_content("b64_img_src_list", content)
-    bin_img_src_list = find_in_content("bin_img_src_list", content)
+def update_content_and_get_img_key_list(request):
+    content = request.POST.get("content")
+    b64_img_list = find_in_content("b64_img_list", content)
+    bin_img_list = find_in_content("bin_img_list", content)
     img_key_list = []
 
-    if len(b64_img_src_list) != 0:
-        bin_img_list = decode_b64_to_bin(b64_img_src_list)
+    if len(b64_img_list) != 0:
+        for img in b64_img_list:
+            alt = img["alt"]
+            src = img["src"]
+            src, mime_type = decode_b64_to_bin(src)
+            img_name = f"{alt}.{mime_type}".replace(" ", "_")
+            img_key = f"{generate_random_string(5)}_{img_name}"
 
-        for img in bin_img_list:
-            img_key = f"dongguk_film_img_{generate_random_string(5)}.{img[1]}".replace(
-                " ", "_"
-            )
-            data = {"bin": img[0], "name": img_key}
+            data = {"bin": src, "name": img_name, "key": img_key}
             aws_s3("put", "object", data=data)
             img_key_list.append(img_key)
 
         content = replace_img_src_from_b64_to_bin(content, img_key_list)
 
-    elif len(bin_img_src_list) != 0:
-        img_key_list = [
-            src.replace("https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", "")
-            for src in bin_img_src_list
-            if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in src
-        ]
+    if len(bin_img_list) != 0:
+        for img in bin_img_list:
+            if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in img["src"]:
+                img_key = img["src"].replace(
+                    "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", ""
+                )
+                img_key_list.append(decode_url_to_hangul(img_key))
+
+        try:
+            page_id = request.POST.get("page_id")
+            data = {"page_id": page_id, "property_id": "yquB"}
+            old_img_key_str = notion("retrieve", "page_properties", data=data).json()[
+                "results"
+            ][0]["rich_text"]["text"]["content"]
+            old_img_key_list = ast.literal_eval(old_img_key_str)
+
+            for old_img_key in old_img_key_list:
+                if old_img_key not in img_key_list:
+                    data = {"key": old_img_key}
+                    aws_s3("delete", "object", data=data)
+        except:
+            pass
 
     return content, img_key_list
 
 
 def get_file(request):
+    max_index = 0
     file_list = []
+    file_key_list = []
+    id = request.POST.get("id")
 
-    for index, file_dict in enumerate(request.FILES):
-        file = request.FILES.get(f"file_{index}")
+    while True:
+        if request.POST.get(f"fileId_{max_index}") is not None:
+            max_index += 1
+        else:
+            break
+
+    for index in range(max_index):
+        file = request.FILES.get(f"file_{index}", None)
         file_id = request.POST.get(f"fileId_{index}")
         file_name = request.POST.get(f"fileName_{index}")
-        file_key = f"{file_id}_{file_name}".replace(" ", "_")
+        file_key = request.POST.get(f"fileKey_{index}")
         file_size = request.POST.get(f"fileSize_{index}")
         file_readable_size = request.POST.get(f"fileReadableSize_{index}")
 
-        data = {"bin": file, "name": file_name, "key": file_key}
-        aws_s3("put", "object", data=data)
         file_dict = {
+            "bin": file,
             "id": file_id,
             "name": file_name,
             "key": file_key,
@@ -308,6 +338,52 @@ def get_file(request):
             "readableSize": file_readable_size,
         }
         file_list.append(file_dict)
+        file_key_list.append(file_key)
+
+    if id == "create_notice":
+        for file_dict in file_list:
+            file_bin = file_dict["bin"]
+            file_name = file_dict["name"]
+            file_key = file_dict["key"]
+            data = {"bin": file_bin, "name": file_name, "key": file_key}
+            aws_s3("put", "object", data=data)
+
+    elif id == "update_notice":
+        page_id = request.POST.get("page_id")
+        data = {"page_id": page_id, "property_id": "B%5Dhc"}
+        response = notion("retrieve", "page_properties", data=data)
+
+        if len(response.json()["results"]) > 0:
+            old_file_str = response.json()["results"][0]["rich_text"]["text"]["content"]
+            if old_file_str != "[]":
+                old_file_list = ast.literal_eval(old_file_str)
+                for old_file_dict in old_file_list:
+                    old_file_key = old_file_dict["key"]
+                    if old_file_key not in file_key_list:
+                        data = {"key": old_file_key}
+                        aws_s3("delete", "object", data=data)
+
+        if len(file_list) > 0:
+            ready_to_upload = False
+
+            for file_dict in file_list:
+                file_bin = file_dict["bin"]
+                file_name = file_dict["name"]
+                file_key = file_dict["key"]
+
+                data = {"bin": file_bin, "name": file_name, "key": file_key}
+                if (
+                    aws_s3("get", "object", data={"key": file_key})["ResponseMetadata"][
+                        "HTTPStatusCode"
+                    ]
+                    == 400
+                ):
+                    ready_to_upload = True
+                if ready_to_upload:
+                    aws_s3("put", "object", data=data)
+
+    for file_dict in file_list:
+        file_dict.pop("bin", None)
 
     return file_list
 
@@ -343,7 +419,6 @@ def notice(request):
     block_id_list = request.POST.get("block_id_list")
     content = request.POST.get("content")
     keyword = request.POST.get("keyword")
-    file = request.POST.get("file")
 
     status = None
 
@@ -414,7 +489,7 @@ def notice(request):
                 element = None
 
         if status == None:
-            content, img_key_list = update_content_and_get_img_key_list(content)
+            content, img_key_list = update_content_and_get_img_key_list(request)
             file = get_file(request)
 
             data = {
@@ -510,33 +585,8 @@ def notice(request):
                 element = None
 
         if status == None:
-            content, img_key_list = update_content_and_get_img_key_list(content)
-
-            try:
-                data = {"page_id": page_id, "property_id": "yquB"}
-                old_img_key_list = ast.literal_eval(
-                    notion("retrieve", "page_properties", data=data).json()["results"][
-                        0
-                    ]["rich_text"]["text"]["content"]
-                )
-
-                bin_img_src_list = find_in_content("bin_img_src_list", content)
-                bin_img_key_list = [
-                    src.replace(
-                        "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", ""
-                    )
-                    for src in bin_img_src_list
-                    if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in src
-                ]
-
-                for old_img_key in old_img_key_list:
-                    if encode_hangul_to_url(old_img_key) not in bin_img_key_list:
-                        data = {"name": old_img_key}
-                        aws_s3("delete", "object", data=data)
-
-                img_key_list = list(set(img_key_list + bin_img_key_list))
-            except:
-                None
+            content, img_key_list = update_content_and_get_img_key_list(request)
+            file = get_file(request)
 
             data = {
                 "page_id": page_id,
@@ -546,6 +596,7 @@ def notice(request):
                 "content": content,
                 "keyword": create_hashtag(content),
                 "img_key_list": img_key_list,
+                "file": file,
             }
             response = notion("update", "page_properties", data=data)
 
@@ -602,10 +653,24 @@ def notice(request):
             )
 
             for old_img_key in old_img_key_list:
-                data = {"name": old_img_key}
+                data = {"key": old_img_key}
                 aws_s3("delete", "object", data=data)
         except:
-            None
+            pass
+
+        try:
+            data = {"page_id": page_id, "property_id": "B%5Dhc"}
+            old_file_list = ast.literal_eval(
+                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                    "rich_text"
+                ]["text"]["content"]
+            )
+
+            for old_file in old_file_list:
+                data = {"key": old_file["key"]}
+                aws_s3("delete", "object", data=data)
+        except:
+            pass
 
         data = {"page_id": page_id}
         response = notion("delete", "page", data=data)

@@ -621,7 +621,7 @@ function embedMedia() {
 embedMedia();
 
 function attachFile(event = null, sudo = false) {
-    let id, name, size, readableSize, fileListItem, fileListItemHTML;
+    let id, name, key, size, readableSize, fileListItem, fileListItemHTML;
     let isDuplicate = false;
     let duplicateFiles = [];
     let failureCount = 0;
@@ -635,7 +635,7 @@ function attachFile(event = null, sudo = false) {
     };
 
     selectedFiles.forEach(file => {
-        name = file.name.replace(/ /g, "_");
+        name = file.name;
         size = Number(file.size);
 
         if (sudo == true) {
@@ -654,34 +654,16 @@ function attachFile(event = null, sudo = false) {
             totalSize += size;
             if (sudo == true) {
                 id = file.id;
-                fileObj = { file: null, id: id, name: name, size: size, readableSize: readableSize };
+                key = file.key;
+                fileObj = { file: null, id: id, name: name, key: key, size: size, readableSize: readableSize };
             } else {
                 id = generateUUID();
-                fileObj = { file: file, id: id, name: name, size: size, readableSize: readableSize };
+                key = `${id}_${name}`;
+                fileObj = { file: file, id: id, name: name, key: key, size: size, readableSize: readableSize };
             };
             fileListItem = document.createElement("li");
             fileListItem.id = id;
-            // fileListItem.classList.add("relative", "flex", "p-4", "class-list");
             fileListItem.classList.add("class-list", "relative", "flex", "items-center", "justify-between", "p-4", "text-sm", "leading-6");
-            // fileListItemHTML = `
-            //     <span class="flex flex-1">
-            //         <span class="flex flex-col">
-            //             <span class="block text-sm font-medium text-gray-900 truncate" style="width: ${id_content_parent.offsetWidth - 60}px">${name}</span>
-            //             <span class="mt-1 flex items-center text-sm text-gray-500">${readableSize}</span>
-            //         </span>
-            //     </span>
-            //     <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
-            //         viewBox="0 0 24 24"
-            //         fill="none"
-            //         stroke-width="1.5"
-            //         stroke="currentColor"
-            //         onclick="detachFile('${id}')"
-            //         onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
-            //         tabindex="0">
-            //         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            //     </svg>
-            //     <span class="pointer-events-none absolute -inset-px" aria-hidden="true"></span>
-            // `;
             fileListItemHTML = `
                 <div class="flex w-0 flex-1 items-center">
                     <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
@@ -696,15 +678,15 @@ function attachFile(event = null, sudo = false) {
                         <span class="flex-shrink-0 text-gray-400">${readableSize}</span>
                     </div>
                 </div>
-                <div class="flex-shrink-0 ml-4">
-                    <svg class="class-detach h-5 w-5 text-gray-400 rounded-md hover:text-gray-500 cursor-pointer focus:df-focus-ring-offset-white"
+                <div class="class-detach flex-shrink-0 p-1 -mr-1 -my-1 ml-4 rounded-md cursor-pointer group focus:df-focus-ring-offset-white"
+                    tabindex="0">
+                    <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke-width="1.5"
                         stroke="currentColor"
                         onclick="detachFile('${id}')"
-                        onkeydown="if (event.key === 'Enter') { detachFile('${id}') }"
-                        tabindex="0">
+                        onkeydown="if (event.key === 'Enter') { detachFile('${id}') }">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
@@ -730,6 +712,7 @@ function attachFile(event = null, sudo = false) {
     if (failureCount !== 0) { displayNoti(true, "LFS", failureCount) };
 
     id_file.value = "";
+    id_file.tabIndex = "-1";
     failureCount = 0;
 }
 
@@ -968,6 +951,7 @@ function requestCreateNotice() {
         formData.append(`file_${index}`, fileObj.file);
         formData.append(`fileId_${index}`, fileObj.id);
         formData.append(`fileName_${index}`, fileObj.name);
+        formData.append(`fileKey_${index}`, fileObj.key);
         formData.append(`fileSize_${index}`, fileObj.size);
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
@@ -1009,6 +993,7 @@ function requestUpdateNotice() {
         formData.append(`file_${index}`, fileObj.file);
         formData.append(`fileId_${index}`, fileObj.id);
         formData.append(`fileName_${index}`, fileObj.name);
+        formData.append(`fileKey_${index}`, fileObj.key);
         formData.append(`fileSize_${index}`, fileObj.size);
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
@@ -1028,7 +1013,7 @@ function requestUpdateNotice() {
 function requestDeleteNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
-    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
+    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}`, file: `${attachedFiles}` };
     request.async = true;
     request.headers = null;
     code(id_delete_notice, "_spin").classList.remove("hidden");

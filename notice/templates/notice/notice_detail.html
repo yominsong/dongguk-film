@@ -160,7 +160,8 @@
                     {% for file in notice.file.dict %}
                         <li class="class-download relative flex items-center justify-between pl-4 py-4 pr-5 text-sm leading-6 sm:px-6 hover:bg-gray-50">
                             <a href="https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{{ file.key }}"
-                               class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset"></a>
+                               class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset"
+                               title="{{ file.name }} 내려받기"></a>
                             <div class="flex w-0 flex-1 items-center">
                                 <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
                                      viewBox="0 0 20 20"
