@@ -514,7 +514,7 @@ function resizeModalAndFormWidth(bool) {
         matchDivWidth();
         window.addEventListener("resize", matchDivWidth);
     } else if (!bool) {
-        id_notice_modal_land.style = null;
+        id_notice_modal_land.style = "display: none";
         window.removeEventListener("resize", matchDivWidth);
     };
 }
