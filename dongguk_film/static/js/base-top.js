@@ -187,7 +187,7 @@ function makeAjaxCall(request) {
     };
 
     $.ajax(ajaxSettings).done((response) => {
-        console.log(response.result);
+        console.log(response);
         handleAjaxCallback(response);
     }).fail((errorThrown, status) => {
         console.log(`${errorThrown.status} ${errorThrown.statusText}\n${status}`);
