@@ -310,18 +310,11 @@ def update_content_and_get_img_key_list(request):
 
 
 def get_file(request):
-    max_index = 0
     file_list = []
     file_key_list = []
-    id = request.POST.get("id")
+    index = 0
 
-    while True:
-        if request.POST.get(f"fileId_{max_index}") is not None:
-            max_index += 1
-        else:
-            break
-
-    for index in range(max_index):
+    while request.POST.get(f"fileId_{index}") is not None:
         file = request.FILES.get(f"file_{index}", None)
         file_id = request.POST.get(f"fileId_{index}")
         file_name = request.POST.get(f"fileName_{index}")
@@ -339,13 +332,17 @@ def get_file(request):
         }
         file_list.append(file_dict)
         file_key_list.append(file_key)
+        index += 1
+
+    id = request.POST.get("id")
 
     if id == "create_notice":
         for file_dict in file_list:
-            file_bin = file_dict["bin"]
-            file_name = file_dict["name"]
-            file_key = file_dict["key"]
-            data = {"bin": file_bin, "name": file_name, "key": file_key}
+            data = {
+                "bin": file_dict["bin"],
+                "name": file_dict["name"],
+                "key": file_dict["key"],
+            }
             aws_s3("put", "object", data=data)
 
     elif id == "update_notice":
@@ -353,34 +350,26 @@ def get_file(request):
         data = {"page_id": page_id, "property_id": "B%5Dhc"}
         response = notion("retrieve", "page_properties", data=data)
 
+        old_file_keys = set()
+
         if len(response.json()["results"]) > 0:
             old_file_str = response.json()["results"][0]["rich_text"]["text"]["content"]
             if old_file_str != "[]":
                 old_file_list = ast.literal_eval(old_file_str)
-                for old_file_dict in old_file_list:
-                    old_file_key = old_file_dict["key"]
-                    if old_file_key not in file_key_list:
-                        data = {"key": old_file_key}
-                        aws_s3("delete", "object", data=data)
+                old_file_keys = {file_dict["key"] for file_dict in old_file_list}
 
-        if len(file_list) > 0:
-            ready_to_upload = False
+        keys_to_delete = old_file_keys - set(file_key_list)
+        for key in keys_to_delete:
+            aws_s3("delete", "object", data={"key": key})
 
-            for file_dict in file_list:
-                file_bin = file_dict["bin"]
-                file_name = file_dict["name"]
-                file_key = file_dict["key"]
-
-                data = {"bin": file_bin, "name": file_name, "key": file_key}
-                if (
-                    aws_s3("get", "object", data={"key": file_key})["ResponseMetadata"][
-                        "HTTPStatusCode"
-                    ]
-                    == 400
-                ):
-                    ready_to_upload = True
-                if ready_to_upload:
-                    aws_s3("put", "object", data=data)
+        for file_dict in file_list:
+            data = {
+                "bin": file_dict["bin"],
+                "name": file_dict["name"],
+                "key": file_dict["key"],
+            }
+            if file_dict["key"] not in old_file_keys:
+                aws_s3("put", "object", data=data)
 
     for file_dict in file_list:
         file_dict.pop("bin", None)
