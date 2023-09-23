@@ -44,7 +44,9 @@ def notice(request):
                                 break
                     elif k == "file":
                         for file_dict in v:
-                            if "name" in file_dict and q in file_dict["name"].lower().replace(" ", ""):
+                            if "name" in file_dict and q in file_dict[
+                                "name"
+                            ].lower().replace(" ", ""):
                                 if notice not in query_result_list:
                                     query_result_list.append(notice)
                                 break
@@ -81,7 +83,7 @@ def notice_detail(request, page_id):
 
     # Notion
     response = notion("retrieve", "page", data={"page_id": page_id})
-    if response.status_code != 200:
+    if response.status_code != 200 or response.json()["archived"]:
         raise Http404
     elif response.status_code == 200:
         notice = response.json()
