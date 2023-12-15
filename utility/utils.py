@@ -63,10 +63,11 @@ def update_dmd_cookie(request):
 
 def update_hero_img(request):
     home_img = save_hero_img("video-camera", "home")
+    equipment_img = save_hero_img("cinema-lens", "equipment")
     dflink_img = save_hero_img("keyboard", "dflink")
     notice_img = save_hero_img("office", "notice")
 
-    img_list_for_msg = home_img + dflink_img + notice_img
+    img_list_for_msg = home_img + equipment_img + dflink_img + notice_img
 
     send_msg(request, "UIG", "DEV", img_list_for_msg)
 
@@ -312,6 +313,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - db
     - data | `dict`
         - db_name
+        - filter_property | `list`
+        - filter | `dict`
+        - sort | `list`
         - page_id
         - block_id_list
         - property_id
@@ -327,6 +331,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
     if data != None:
         db_name = data.get("db_name", None)
+        filter_property = data.get("filter_property", None)
+        filter = data.get("filter", None)
+        sort = data.get("sort", None)
         page_id = data.get("page_id", None)
         block_id_list = data.get("block_id_list", None)
         property_id = data.get("property_id", None)
@@ -341,36 +348,49 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
     # action: query / target: db
     if action == "query" and target == "db":
         url = f"https://api.notion.com/v1/databases/{NOTION_DB_ID[db_name]}/query"
-        payload = {"page_size": limit} if limit != None else None
-        response = requests.post(
-            url, json=payload, headers=set_headers("NOTION")
-        ).json()
+        payload = {}
 
-        items = response["results"]
-        item_list = []
+        if filter_property:
+            url += "?"
+            last_index = len(filter_property) - 1
+            for index, property in enumerate(filter_property):
+                url += f"filter_properties={property}"
+                if index != last_index:
+                    url += "&"
 
-        if db_name == "notice-db":
+        if filter:
+            payload["filter"] = filter
+
+        if sort:
+            payload["sorts"] = sort
+
+        if limit:
+            payload["page_size"] = limit
+
+        if db_name == "notice":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
             try:
-                for i in range(len(items)):
-                    listed_time = items[i]["properties"]["Listed time"]["created_time"]
+                for index, item in enumerate(items):
+                    listed_time = item["properties"]["Listed time"]["created_time"]
                     listed_time = convert_datetime(listed_time)
                     notice = {
-                        "page_id": items[i]["id"],
-                        "title": items[i]["properties"]["Title"]["title"][0][
+                        "page_id": item["id"],
+                        "title": item["properties"]["Title"]["title"][0]["plain_text"],
+                        "category": item["properties"]["Category"]["select"]["name"],
+                        "keyword": item["properties"]["Keyword"]["rich_text"][0][
                             "plain_text"
                         ],
-                        "category": items[i]["properties"]["Category"]["select"][
-                            "name"
-                        ],
-                        "keyword": items[i]["properties"]["Keyword"]["rich_text"][0][
-                            "plain_text"
-                        ],
-                        "user": str(items[i]["properties"]["User"]["number"]),
+                        "user": str(item["properties"]["User"]["number"]),
                         "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
                     try:
                         notice["img_key_list"] = ast.literal_eval(
-                            items[i]["properties"]["Image key list"]["rich_text"][0][
+                            item["properties"]["Image key list"]["rich_text"][0][
                                 "plain_text"
                             ]
                         )
@@ -378,7 +398,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         notice["img_key_list"] = None
                     try:
                         notice["file"] = ast.literal_eval(
-                            items[i]["properties"]["File"]["rich_text"][0]["plain_text"]
+                            item["properties"]["File"]["rich_text"][0]["plain_text"]
                         )
                     except:
                         notice["file"] = None
@@ -386,13 +406,36 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             except:
                 pass
 
+        elif db_name == "equipment":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            # try:
+            for index, item in enumerate(items):
+                equipment = {
+                    "page_id": item["id"],
+                    "cover": item["cover"]["file"]["url"],
+                    "title": item["properties"]["Product name"]["formula"][
+                        "string"
+                    ],
+                    "category": item["properties"]["Category"]["rollup"]["array"][
+                        0
+                    ]["select"]["name"],
+                }
+                item_list.append(equipment)
+            # except:
+            #     pass
+
         result = item_list
 
     # action: create / target: page
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "notice-db":
+        if db_name == "notice":
             content_chunks = [
                 content[i : i + 2000] for i in range(0, len(content), 2000)
             ]
@@ -552,7 +595,7 @@ def aws_s3(action: str, target: str, data: dict = None):
         response = AWS_S3.put_object(
             Body=bin,
             Bucket="dongguk-film",
-            ContentDisposition=f"attachment; filename={name}",
+            ContentDisposition=f"attachment; filename=\"{name}\"",
             Key=key,
             ACL="public-read",
         )
