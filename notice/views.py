@@ -15,7 +15,7 @@ def notice(request):
     image_list = get_hero_img("notice")
 
     # Notion
-    notice_list = notion("query", "db", data={"db_name": "notice-db"})
+    notice_list = notion("query", "db", data={"db_name": "notice"})
     notice_count = len(notice_list)
 
     # Query
