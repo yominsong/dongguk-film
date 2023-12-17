@@ -5,8 +5,10 @@
     <meta property="og:title" content="공지사항 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'notice:notice' %}">
     <meta name="robots" content="index,follow">
-{% endblock %}
-{% block title %}공지사항 - 디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}
+    공지사항 - 디닷에프
+{% endblock title %}
 {% block body %}
     <!-- Hero -->
     <div class="relative sm:pt-6 lg:pt-8">
@@ -85,7 +87,7 @@
                            name="name_notice_q"
                            id="id_notice_q"
                            class="block w-full rounded-none rounded-l-md py-1.5 pl-10 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset read-only:bg-gray-100 read-only:cursor-not-allowed"
-                           placeholder="">
+                           placeholder="{{ placeholder }}">
                 </div>
                 <button type="button"
                         id="id_search_notice"
@@ -296,4 +298,4 @@
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
-{% endblock %}
+{% endblock body %}

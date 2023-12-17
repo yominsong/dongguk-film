@@ -30,7 +30,7 @@ const id_copy_url_done = document.getElementById("id_copy_url_done");
 const id_copy_url_descr = document.getElementById("id_copy_url_descr");
 const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
 const id_delete_notice = document.getElementById("id_delete_notice");
-const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부산국제영화제 시네필", "부산국제영화제");
+// const notice_q_placeholder = new Array("복학 신청", "희망강의 신청", "수강신청", "등록금 납부", "학위수여식", "촬영 협조공문", "제작지원비", "학교현장실습", "캡스톤디자인", "전주국제영화제", "교직과정", "계절학기", "졸업논문", "성적처리", "부산국제영화제 시네필", "부산국제영화제");
 const title_placeholder = [
     { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
     { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },
@@ -91,11 +91,11 @@ let askedTwiceTimer;
 //
 
 function search() {
-    let id_notice_q_placeholder = randomItem(notice_q_placeholder);
+    // let id_notice_q_placeholder = randomItem(notice_q_placeholder);
     let urlParams = new URLSearchParams(location.search);
 
     if (id_notice_q !== null) {
-        id_notice_q.placeholder = id_notice_q_placeholder;
+        // id_notice_q.placeholder = id_notice_q_placeholder;
         if (urlParams.has("q")) {
             id_notice_q.value = urlParams.get("q");
             ["click", "keyup"].forEach(type => {

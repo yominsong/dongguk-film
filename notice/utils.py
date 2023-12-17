@@ -482,7 +482,7 @@ def notice(request):
             file = get_file(request)
 
             data = {
-                "db_name": "notice-db",
+                "db_name": "notice",
                 "title": title,
                 "category": category,
                 "content": content,

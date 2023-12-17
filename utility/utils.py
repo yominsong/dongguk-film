@@ -79,7 +79,11 @@ def update_hero_img(request):
 #
 
 
-def convert_datetime(notion_datetime):
+def convert_datetime(notion_datetime: str):
+    """
+    - notion_datetime | `str`: DateTime string from Notion
+    """
+
     datetime_utc = datetime.datetime.strptime(
         notion_datetime, "%Y-%m-%dT%H:%M:%S.%fZ"
     ).replace(tzinfo=pytz.utc)
@@ -89,7 +93,11 @@ def convert_datetime(notion_datetime):
     return datetime_kor
 
 
-def generate_random_string(int):
+def generate_random_string(int: int):
+    """
+    - int | `int`: Any string length you want
+    """
+
     random_string = "".join(random.choices(string.ascii_letters, k=int))
 
     return random_string
@@ -413,21 +421,21 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             items = response["results"]
             item_list = []
 
-            # try:
-            for index, item in enumerate(items):
-                equipment = {
-                    "page_id": item["id"],
-                    "cover": item["cover"]["file"]["url"],
-                    "title": item["properties"]["Product name"]["formula"][
-                        "string"
-                    ],
-                    "category": item["properties"]["Category"]["rollup"]["array"][
-                        0
-                    ]["select"]["name"],
-                }
-                item_list.append(equipment)
-            # except:
-            #     pass
+            try:
+                for index, item in enumerate(items):
+                    equipment = {
+                        "page_id": item["id"],
+                        "cover": item["cover"]["file"]["url"],
+                        "title": item["properties"]["Product name"]["formula"][
+                            "string"
+                        ],
+                        "category": item["properties"]["Category"]["rollup"]["array"][
+                            0
+                        ]["select"]["name"],
+                    }
+                    item_list.append(equipment)
+            except:
+                pass
 
         result = item_list
 
@@ -595,7 +603,7 @@ def aws_s3(action: str, target: str, data: dict = None):
         response = AWS_S3.put_object(
             Body=bin,
             Bucket="dongguk-film",
-            ContentDisposition=f"attachment; filename=\"{name}\"",
+            ContentDisposition=f'attachment; filename="{name}"',
             Key=key,
             ACL="public-read",
         )

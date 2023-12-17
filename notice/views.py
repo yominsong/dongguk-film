@@ -4,7 +4,7 @@ from django.http import Http404
 from django.contrib.auth.models import User
 from utility.img import get_hero_img
 from utility.utils import notion, convert_datetime
-import re, ast
+import re, ast, random
 
 #
 # Main functions
@@ -22,6 +22,25 @@ def notice(request):
     q = request.GET.get("q")
     query_result_count = None
     query_param = None
+    placeholder = ""
+    default_placeholder_list = [
+        "복학 신청",
+        "희망강의 신청",
+        "수강신청",
+        "등록금 납부",
+        "학위수여식",
+        "촬영 협조공문",
+        "제작지원비",
+        "학교현장실습",
+        "캡스톤디자인",
+        "전주국제영화제",
+        "교직과정",
+        "계절학기",
+        "졸업논문",
+        "성적처리",
+        "부산국제영화제 시네필",
+        "부산국제영화제",
+    ]
 
     if q:
         q = q.lower().replace(" ", "")
@@ -54,6 +73,11 @@ def notice(request):
         notice_list = query_result_list
         query_result_count = len(query_result_list)
         query_param = f"q={q}&"
+    else:
+        if 0 < notice_count:
+            placeholder = random.choice(notice_list[: min(notice_count, 7)])["title"]
+        else:
+            placeholder = random.choice(default_placeholder_list)
 
     # Pagination
     try:
@@ -72,6 +96,7 @@ def notice(request):
             "notice_count": notice_count,
             "query_result_count": query_result_count,
             "query_param": query_param,
+            "placeholder": placeholder,
             "page_value": page_value,
             "page_range": page_range,
         },
