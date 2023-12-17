@@ -5,8 +5,10 @@
     <meta property="og:title" content="동영링크 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'dflink:dflink' %}">
     <meta name="robots" content="index,follow">
-{% endblock %}
-{% block title %}동영링크 - 디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}
+    동영링크 - 디닷에프
+{% endblock title %}
 {% block body %}
     <!-- Hero -->
     <div class="relative sm:pt-6 lg:pt-8">
@@ -279,8 +281,8 @@
     </div>
     <!-- Modal -->
     {% if user.is_authenticated %}
-        {% include "shared/_dflink_modal.html" %}
+        {% include "dflink/dflink_modal.html" %}
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/dflink.js' %}"></script>
-{% endblock %}
+{% endblock body %}
