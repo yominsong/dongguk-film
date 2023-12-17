@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% load static %}
+{% load tags %}
+{% block meta %}
+    <meta property="og:title" content="기자재 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'equipment:equipment' %}">
+    <meta name="robots" content="index,follow">
+{% endblock meta %}
+{% block title %}
+    기자재 - 디닷에프
+{% endblock title %}
+{% block body %}
+    <!-- Hero -->
+    <div class="relative sm:pt-6 lg:pt-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
+                <div class="absolute inset-0" aria-hidden="true">
+                    <div class="mix-blend-multiply w-full h-full">
+                        <!-- Swiper -->
+                        <div class="swiper mySwiper w-full h-full">
+                            <div class="swiper-wrapper">
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
+                </div>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">기자재</h1>
+                    <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                        카메라, 오디오 레코더 등 기자재 대여
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Search -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
+            {% if "?q=" in request.get_full_path %}
+                <div class="flex justify-between items-center">
+                    <label for="id_equipment_q"
+                           class="flex text-sm font-medium leading-6 text-gray-500">
+                        총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 기자재 검색됨
+                    </label>
+                    <div id="id_search_equipment_init"
+                         class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                         tabindex="0">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             class="w-4 h-4"
+                             aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                        </svg>
+                        <span class="sr-only">검색 초기화</span>
+                    </div>
+                </div>
+            {% else %}
+                <label for="id_equipment_q"
+                       class="block text-sm font-medium leading-6 text-gray-500">
+                    총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 기자재 검색
+                </label>
+            {% endif %}
+            <div class="mt-2 flex rounded-md shadow-sm">
+                <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             class="w-5 h-5 text-gray-400"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd" d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                           name="name_equipment_q"
+                           id="id_equipment_q"
+                           class="block w-full rounded-none rounded-l-md py-1.5 pl-10 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset read-only:bg-gray-100 read-only:cursor-not-allowed"
+                           placeholder="{{ placeholder }}">
+                </div>
+                <button type="button"
+                        id="id_search_equipment"
+                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.5"
+                         stroke="currentColor"
+                         class="w-5 h-5"
+                         aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <span class="sr-only">검색</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Filter -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
+            <span class="block text-sm font-medium leading-6 text-gray-500">
+                총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 기자재 검색
+            </span>
+        </div>
+    </div>
+    <!-- Grid -->
+    <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="overflow-hidden bg-white shadow rounded-md p-6">
+            <!-- Equipment grid -->
+            <div aria-labelledby="products-heading"
+                 class="mx-auto max-w-2xl lg:max-w-7xl">
+                <h2 id="products-heading" class="sr-only">Products</h2>
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {% for equipment in page_value %}
+                        <a href="#" class="group" alt="">
+                            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
+                                <img src="{{ equipment.cover }}"
+                                     width=""
+                                     height=""
+                                     alt=""
+                                     class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
+                            </div>
+                            <h3 class="mt-4 text-sm text-gray-500">{{ equipment.category }}</h3>
+                            <p class="mt-1 text-sm font-semibold text-gray-900">{{ equipment.title }}</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Pagination -->
+            <nav class="flex items-center justify-between border-t border-t-gray-100 mt-4 -mx-4 -mb-4 sm:mt-6 sm:-mx-6 sm:-mb-6">
+                <div class="-mt-px flex w-0 flex-1">
+                    {% if page_value.has_previous %}
+                        <a href="?{{ param|default_if_none:'' }}page={{ page_value.previous_page_number }}"
+                           class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-bl-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
+                            <svg class="h-5 w-5 text-gray-400"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a.75.75 0 01-.75.75H4.66l2.1 1.95a.75.75 0 11-1.02 1.1l-3.5-3.25a.75.75 0 010-1.1l3.5-3.25a.75.75 0 111.02 1.1l-2.1 1.95h12.59A.75.75 0 0118 10z" clip-rule="evenodd">
+                                </path>
+                            </svg>
+                            <span class="sr-only">이전 페이지</span>
+                        </a>
+                    {% else %}
+                        <div class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:cursor-not-allowed sm:px-6">
+                            <svg class="h-5 w-5 text-gray-400"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a.75.75 0 01-.75.75H4.66l2.1 1.95a.75.75 0 11-1.02 1.1l-3.5-3.25a.75.75 0 010-1.1l3.5-3.25a.75.75 0 111.02 1.1l-2.1 1.95h12.59A.75.75 0 0118 10z" clip-rule="evenodd">
+                                </path>
+                            </svg>
+                            <span class="sr-only">이전 페이지</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="-mt-px flex">
+                    {% for num in page_range %}
+                        {% if num == page_value.number %}
+                            <a href="?{{ param|default_if_none:'' }}page={{ num }}"
+                               class="inline-flex items-center border-t-2 border-flamingo-500 px-4 py-4 text-sm font-medium text-flamingo-600 focus:df-focus-ring-inset"
+                               aria-current="page">{{ num }}</a>
+                        {% else %}
+                            <a href="?{{ param|default_if_none:'' }}page={{ num }}"
+                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:df-focus-ring-inset">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="-mt-px flex w-0 flex-1 justify-end">
+                    {% if page_value.has_next %}
+                        <a href="?{{ param|default_if_none:'' }}page={{ page_value.next_page_number }}"
+                           class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-br-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
+                            <span class="sr-only">다음 페이지</span>
+                            <svg class="h-5 w-5 text-gray-400"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd" d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z" clip-rule="evenodd">
+                                </path>
+                            </svg>
+                        </a>
+                    {% else %}
+                        <div class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:cursor-not-allowed sm:px-6">
+                            <span class="sr-only">다음 페이지</span>
+                            <svg class="h-5 w-5 text-gray-400"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path fill-rule="evenodd" d="M2 10a.75.75 0 01.75-.75h12.59l-2.1-1.95a.75.75 0 111.02-1.1l3.5 3.25a.75.75 0 010 1.1l-3.5 3.25a.75.75 0 11-1.02-1.1l2.1-1.95H2.75A.75.75 0 012 10z" clip-rule="evenodd">
+                                </path>
+                            </svg>
+                        </div>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </div>
+    <script src="{% static 'js/equipment.js' %}"></script>
+{% endblock body %}

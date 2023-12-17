@@ -109,6 +109,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.kakao",
     "allauth.socialaccount.providers.naver",
     "home",
+    "equipment",
     "dflink",
     "notice",
     "users",
