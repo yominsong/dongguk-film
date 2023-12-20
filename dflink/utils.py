@@ -64,9 +64,26 @@ def has_www(original_url: str):
 
 def is_correct_url(original_url: str):
     global need_www
+    global proxy_was_already_used
+    proxy_was_already_used = False
+
+    def use_proxy(original_url: str):
+        global proxy_was_already_used
+        proxy_was_already_used = True
+
+        response = requests.get(
+            url="https://proxy.scrapeops.io/v1/",
+            params={
+                "api_key": SCRAPEOPS_API_KEY,
+                "url": original_url,
+            },
+        )
+
+        return response
 
     try:
         response = requests.get(original_url, headers=set_headers("RANDOM"))
+        response = use_proxy(original_url) if int(response.status_code) >= 400 else response 
     except:
         try:
             if not has_www(original_url):
@@ -74,13 +91,7 @@ def is_correct_url(original_url: str):
                 response = requests.get(original_url, headers=set_headers("RANDOM"))
                 need_www = True
         except:
-            response = requests.get(
-                url="https://proxy.scrapeops.io/v1/",
-                params={
-                    "api_key": SCRAPEOPS_API_KEY,
-                    "url": original_url,
-                },
-            )
+            response = use_proxy(original_url) if proxy_was_already_used == False else None
 
     try:
         result = (
