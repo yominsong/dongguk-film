@@ -1,0 +1,466 @@
+<div id="id_equipment_modal"
+     x-data="{ open: false }"
+     @keydown.window.escape="if (id_filter_equipment_descr.hidden) { open = false }"
+     x-show="open"
+     class="relative z-20"
+     aria-labelledby="modal-title"
+     x-ref="dialog"
+     aria-modal="true"
+     hidden>
+    <div x-show="open"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div x-show="open"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                 @click.away="open = true">
+                <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
+                    <button type="button"
+                            class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
+                            @click="open = false; enableFocus(); modalOpen = false; preventGoBack()">
+                        <span class="sr-only">검색 필터 화면 닫기</span>
+                        <svg class="h-6 w-6"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex items-start flex-col">
+                    <div class="flex mb-5">
+                        <div class="mt-0 text-left">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900">검색 필터</h3>
+                        </div>
+                    </div>
+                    <div class="flex flex-1 flex-col justify-between">
+                        <div class="space-y-5">
+                            <fieldset>
+                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
+                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_cameras"
+                                               name="id_category"
+                                               value="Cameras"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_cameras_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_cameras_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Cameras</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_camera_accessories"
+                                               name="id_category"
+                                               value="Camera Accessories"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_camera_accessories_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_camera_accessories_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Camera Accessories</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_camera_supports"
+                                               name="id_category"
+                                               value="Camera Supports"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_camera_supports_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_camera_supports_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Camera Supports</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_lenses"
+                                               name="id_category"
+                                               value="Lenses"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_lenses_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_lenses_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Lenses</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_filters"
+                                               name="id_category"
+                                               value="Filters"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_filters_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_filters_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Filters</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_lighting"
+                                               name="id_category"
+                                               value="Lighting"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_lighting_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_lighting_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Lighting</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_lighting_accessories"
+                                               name="id_category"
+                                               value="Lighting Accessories"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_lighting_accessories_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_lighting_accessories_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Lighting Accessories</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_audio_recorders"
+                                               name="id_category"
+                                               value="Audio Recorders"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_audio_recorders_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_audio_recorders_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Audio Recorders</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_microphones"
+                                               name="id_category"
+                                               value="Microphones"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_microphones_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_microphones_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Microphones</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_microphone_accessories"
+                                               name="id_category"
+                                               value="Microphone Accessories"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_microphone_accessories_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_microphone_accessories_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Microphone Accessories</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_category_grips"
+                                               name="id_category"
+                                               value="Grips"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_category_grips_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_category_grips_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">Grips</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                </div>
+                                <label for="id_category" hidden>범주</label>
+                                <input type="text"
+                                       id="id_category"
+                                       class="step-one alt-radio"
+                                       value="{{ category }}"
+                                       required
+                                       hidden>
+                            </fieldset>
+                            <fieldset>
+                                <legend class="text-sm font-medium leading-6 text-gray-900">목적</legend>
+                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_major_classes"
+                                               name="id_purpose"
+                                               value="전공과목 수업"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_major_classes_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_major_classes_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">전공과목 수업</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_thesis_project"
+                                               name="id_purpose"
+                                               value="졸업영화"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_thesis_project_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_thesis_project_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">졸업영화</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_capstone_design"
+                                               name="id_purpose"
+                                               value="캡스톤디자인"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_capstone_design_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_capstone_design_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">캡스톤디자인</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_cinematography"
+                                               name="id_purpose"
+                                               value="촬영"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_cinematography_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_cinematography_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">촬영</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_workshop"
+                                               name="id_purpose"
+                                               value="워크숍"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_workshop_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_workshop_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">워크숍</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                    <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                        <input type="radio"
+                                               id="id_purpose_personal"
+                                               name="id_purpose"
+                                               value="개인"
+                                               class="sr-only step-one radio"
+                                               aria-labelledby="id_purpose_personal_label">
+                                        <span class="flex flex-1">
+                                            <span id="id_purpose_personal_label"
+                                                  class="radio-title block text-sm font-medium text-gray-900">개인</span>
+                                        </span>
+                                        <svg class="h-5 w-5 ml-2 text-flamingo"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="pointer-events-none absolute -inset-px rounded-md"
+                                              aria-hidden="true"></span>
+                                    </label>
+                                </div>
+                                <label for="id_purpose" hidden>목적</label>
+                                <input type="text"
+                                       id="id_purpose"
+                                       class="step-one alt-radio"
+                                       value="{{ purpose }}"
+                                       required
+                                       hidden>
+                            </fieldset>
+                            <!-- <div>
+                                <div class="rounded-md shadow bg-flamingo-50 p-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-flamingo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-flamingo-800">공지사항 관련 안내사항</h3>
+                                            <div class="mt-2 text-sm text-flamingo-700">
+                                                <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    <li>공지사항에 개인정보가 포함되지 않도록 유의해주세요.</li>
+                                                    <li>안전한 서비스 제공을 위해 운영진은 송요민님의 공지사항 생성 및 관리 내역을 조회할 수 있습니다.</li>
+                                                    <li>
+                                                        하단의 '<span class="class-keyword">작성하기</span>' 버튼 클릭 시 접근성 및 유해성 검사가 진행되며, 일부 검사 결과는 부정확할 수 있습니다.
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
+                    <div class="flex mt-2 text-sm sm:mt-0">
+                        <p class="text-gray-500 sm:mt-0" id="id_filter_equipment_descr" hidden>잠시만 기다려주세요.</p>
+                    </div>
+                    <div class="sm:flex sm:flex-row-reverse">
+                        <button type="button"
+                                id="id_filter_equipment"
+                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 id="id_filter_equipment_spin">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            적용하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

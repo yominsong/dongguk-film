@@ -8,7 +8,7 @@ import random
 def equipment(request):
     sort = request.GET.get("sort", "ascending")
     category = request.GET.get("category", "Cameras")
-    grade = request.GET.get("grade", "4학년")
+    # grade = request.GET.get("grade", "4학년")
     purpose = request.GET.get("purpose", "전공과목 수업")
 
     image_list = get_hero_img("equipment")
@@ -17,7 +17,7 @@ def equipment(request):
     # Notion
     data = {
         "db_name": "equipment",
-        "filter_property": ["zI~%5E", "H%3ENe"],
+        "filter_property": ["zI~%5E", "H%3ENe", "pBcK", "Uf%60r"],
         "filter": {
             "and": [
                 {"property": "Validation", "formula": {"string": {"contains": "🟢"}}},
@@ -25,10 +25,10 @@ def equipment(request):
                     "property": "Category",
                     "rollup": {"every": {"select": {"equals": category}}},
                 },
-                {
-                    "property": "Allocated quantity per grade",
-                    "rollup": {"every": {"rich_text": {"does_not_contain": f"{grade} 00"}}},
-                },
+                # {
+                #     "property": "Allocated quantity per grade",
+                #     "rollup": {"every": {"rich_text": {"does_not_contain": f"{grade} 00"}}},
+                # },
                 {
                     "property": "Allocated quantity per purpose",
                     "rollup": {"every": {"rich_text": {"does_not_contain": f"{purpose} 00"}}},
@@ -42,7 +42,7 @@ def equipment(request):
     }
     equipment_list = notion("query", "db", data=data)
     equipment_count = len(equipment_list)
-    param += f"sort={sort}&category={category}&grade={grade}&purpose={purpose}&"
+    param += f"sort={sort}&category={category}&purpose={purpose}&"
 
     # Query
     q = request.GET.get("q")
@@ -80,6 +80,8 @@ def equipment(request):
         {
             "image_list": image_list,
             "param": param,
+            "category": category,
+            "purpose": purpose,
             "equipment_count": equipment_count,
             "query_result_count": query_result_count,
             "placeholder": placeholder,

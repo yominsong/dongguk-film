@@ -1,0 +1,20 @@
+{
+	"python.analysis.typeCheckingMode": "off",
+	"[python]": {
+		"editor.defaultFormatter": "ms-python.black-formatter",
+		"editor.tabSize": 4
+	},
+	"[html]": {
+		"editor.defaultFormatter": "monosans.djlint",
+		"editor.tabSize": 4
+	},
+	"[django-html]": {
+		"editor.defaultFormatter": "monosans.djlint",
+		"editor.tabSize": 4
+	},
+	"[javascript]": {
+		"editor.tabSize": 4
+	},
+	"djlint.profile": "django",
+	"html.format.enable": false
+}

@@ -42,14 +42,35 @@
             </div>
         </div>
     </div>
+    <!-- Filter -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="class-filter relative flex justify-between bg-white shadow rounded-md px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+             tabindex="0">
+            <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+            <div class="flex justify-start items-center gap-x-1">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 20 20"
+                     fill="currentColor"
+                     class="w-5 h-5">
+                    <path d="M9 6a.75.75 0 01.75.75v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5A.75.75 0 019 6z" />
+                    <path fill-rule="evenodd" d="M2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9zm7-5.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" clip-rule="evenodd" />
+                </svg>
+                검색 필터
+            </div>
+            <div class="flex justify-end gap-2">
+                <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-700 bg-flamingo-50 ring-flamingo-600/20">{{ category }}</span>
+                <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-700 bg-flamingo-50 ring-flamingo-600/20">{{ purpose }}</span>
+            </div>
+        </div>
+    </div>
     <!-- Search -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
-            {% if "?q=" in request.get_full_path %}
+            {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_equipment_q"
                            class="flex text-sm font-medium leading-6 text-gray-500">
-                        총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 기자재 검색됨
+                        총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 {{ category }} 검색됨
                     </label>
                     <div id="id_search_equipment_init"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
@@ -69,7 +90,7 @@
             {% else %}
                 <label for="id_equipment_q"
                        class="block text-sm font-medium leading-6 text-gray-500">
-                    총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 기자재 검색
+                    총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 {{ category }} 검색
                 </label>
             {% endif %}
             <div class="mt-2 flex rounded-md shadow-sm">
@@ -106,14 +127,6 @@
             </div>
         </div>
     </div>
-    <!-- Filter -->
-    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
-            <span class="block text-sm font-medium leading-6 text-gray-500">
-                총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 기자재 검색
-            </span>
-        </div>
-    </div>
     <!-- Grid -->
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow rounded-md p-6">
@@ -131,8 +144,8 @@
                                      alt=""
                                      class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
                             </div>
-                            <h3 class="mt-4 text-sm text-gray-500">{{ equipment.category }}</h3>
-                            <p class="mt-1 text-sm font-semibold text-gray-900">{{ equipment.title }}</p>
+                            <h3 class="mt-4 text-sm text-gray-500">{{ equipment.brand }}</h3>
+                            <p class="mt-1 text-sm font-semibold text-gray-900">{{ equipment.model }}</p>
                         </a>
                     {% endfor %}
                 </div>
@@ -206,5 +219,8 @@
             </nav>
         </div>
     </div>
+    <!-- Modal -->
+    {% include "equipment/equipment_modal.html" %}
+    <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/equipment.js' %}"></script>
 {% endblock body %}
