@@ -20,9 +20,12 @@ def dflink(request):
     query_result_count = None
     query_param = None
     if q:
+        q = q.lower().replace(" ", "")
         query_result_list = []
         for dflink in dflink_list:
             for k, v in dflink.items():
+                k = k.lower().replace(" ", "")
+                v = v.lower().replace(" ", "")
                 if k != "user" and q in v and dflink not in query_result_list:
                     query_result_list.append(dflink)
         dflink_list = query_result_list

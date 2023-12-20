@@ -54,9 +54,10 @@ def equipment(request):
         query_result_list = []
         for equipment in equipment_list:
             for k, v in equipment.items():
+                v = v.lower().replace(" ", "")
                 if v is not None:
                     if equipment not in query_result_list:
-                        if q in v.lower().replace(" ", ""):
+                        if q in v:
                             query_result_list.append(equipment)
 
         equipment_list = query_result_list
