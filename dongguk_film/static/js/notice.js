@@ -120,7 +120,7 @@ function search() {
     });
 }
 
-search();
+if (id_notice_q !== null) { search() };
 
 function initForm() {
     // title, category
