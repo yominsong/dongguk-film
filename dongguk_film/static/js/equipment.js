@@ -197,8 +197,13 @@ function requestFilterEquipment() {
     location.href = `${originLocation}/equipment?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
 }
 
-function setPage() {
+window.addEventListener("pageshow", function setPage(event) {
     // Init
+    if (event.persisted) {
+        id_equipment_modal.hidden = true;
+        id_equipment_modal.setAttribute("x-data", "{ open: false }");
+        modalOpen = false;
+    };
     code(id_filter_equipment, "_descr").hidden = true;
     code(id_filter_equipment, "_spin").classList.add("hidden");
     freezeForm(false);
@@ -223,6 +228,4 @@ function setPage() {
             };
         });
     });
-}
-
-window.addEventListener("pageshow", function () { setPage() });
+});
