@@ -2,6 +2,9 @@
 // Global constants and variables
 //
 
+const id_search_dflink = document.getElementById("id_search_dflink");
+const id_search_dflink_init = document.getElementById("id_search_dflink_init");
+const id_dflink_q = document.getElementById("id_dflink_q");
 const id_dflink_modal = document.getElementById("id_dflink_modal");
 const id_string_id = document.getElementById("id_string_id");
 const id_original_url = document.getElementById("id_original_url");
@@ -31,7 +34,6 @@ let askedTwiceTimer;
 //
 
 function search() {
-    let urlParams = new URLSearchParams(location.search);
     if (urlParams.has("q")) {
         id_dflink_q.value = urlParams.get("q");
         ["click", "keyup"].forEach(type => {
@@ -53,7 +55,7 @@ function search() {
 
     ["click", "keyup"].forEach(type => {
         id_search_dflink.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter") {
+            if (type == "click" || event.key == "Enter" || event.key == " ") {
                 location.href = `${originLocation}/dflink?q=${id_dflink_q.value}`;
                 id_dflink_q.readOnly = true;
                 id_search_dflink.disabled = true;
@@ -328,4 +330,8 @@ function setPage() {
     });
 }
 
-if (id_dflink_modal != null) { setPage() };
+window.addEventListener("pageshow", function () {
+    if (id_dflink_modal != null) { setPage() };
+    id_dflink_q.readOnly = false;
+    id_search_dflink.disabled = false;
+});

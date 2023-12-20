@@ -2,7 +2,9 @@
 // Global constants and variables
 //
 
-const originLocation = window.location.origin;
+const originLocation = location.origin;
+const urlParams = new URLSearchParams(location.search);
+
 let request = {}; // for `makeAjaxCall()` function
 
 //

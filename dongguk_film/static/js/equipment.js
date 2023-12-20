@@ -9,7 +9,6 @@ const id_equipment_modal = document.getElementById("id_equipment_modal");
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_filter_equipment = document.getElementById("id_filter_equipment");
-const urlParams = new URLSearchParams(location.search);
 const radioInputs = document.querySelectorAll("input[name='id_category'], input[name='id_purpose']");
 
 let currentHistoryLength = history.length;
@@ -21,39 +20,37 @@ let modalOpen = false;
 //
 
 function search() {
-    if (id_equipment_q !== null) {
-        if (urlParams.has("q")) {
-            id_equipment_q.value = urlParams.get("q");
-            ["click", "keyup"].forEach(type => {
-                id_search_equipment_init.addEventListener(type, (event) => {
-                    if (type == "click" || event.key == "Enter" || event.key == " ") {
-                        urlParams.delete("q");
-                        location.href = `${originLocation}/equipment?${urlParams.toString()}`;
-                        id_equipment_q.readOnly = true;
-                        id_search_equipment.disabled = true;
-                    };
-                });
-            });
-        };
-
-        id_equipment_q.addEventListener("keyup", (event) => {
-            if (event.key == "Enter") {
-                id_search_equipment.click();
-            };
-        });
-
+    if (urlParams.has("q")) {
+        id_equipment_q.value = urlParams.get("q");
         ["click", "keyup"].forEach(type => {
-            id_search_equipment.addEventListener(type, (event) => {
+            id_search_equipment_init.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    urlParams.delete("page");
                     urlParams.delete("q");
-                    location.href = `${originLocation}/equipment?${urlParams.toString()}&q=${id_equipment_q.value}`;
+                    location.href = `${originLocation}/equipment?${urlParams.toString()}`;
                     id_equipment_q.readOnly = true;
                     id_search_equipment.disabled = true;
                 };
             });
         });
     };
+
+    id_equipment_q.addEventListener("keyup", (event) => {
+        if (event.key == "Enter") {
+            id_search_equipment.click();
+        };
+    });
+
+    ["click", "keyup"].forEach(type => {
+        id_search_equipment.addEventListener(type, (event) => {
+            if (type == "click" || event.key == "Enter" || event.key == " ") {
+                urlParams.delete("page");
+                urlParams.delete("q");
+                location.href = `${originLocation}/equipment?${urlParams.toString()}&q=${id_equipment_q.value}`;
+                id_equipment_q.readOnly = true;
+                id_search_equipment.disabled = true;
+            };
+        });
+    });
 }
 
 search();
@@ -185,25 +182,47 @@ preventGoBack();
 // Main functions
 //
 
+function requestFilterEquipment() {
+    code(id_filter_equipment, "_descr").hidden = false;
+    code(id_filter_equipment, "_spin").classList.remove("hidden");
+    freezeForm(true);
+    radioInputs.forEach((input) => {
+        if (input.classList.contains("sr-only")) {
+            let label = input.closest("label");
+            label.classList.replace("hover:bg-gray-50", "bg-gray-100");
+            label.classList.replace("cursor-pointer", "cursor-not-allowed");
+        };
+        radios.forEach((radio) => { radio.disabled = true });
+    });
+    location.href = `${originLocation}/equipment?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
+}
+
 function setPage() {
+    // Init
+    code(id_filter_equipment, "_descr").hidden = true;
+    code(id_filter_equipment, "_spin").classList.add("hidden");
+    freezeForm(false);
+    radioInputs.forEach((input) => {
+        if (input.classList.contains("sr-only")) {
+            let label = input.closest("label");
+            label.classList.replace("bg-gray-100", "hover:bg-gray-50");
+            label.classList.replace("cursor-not-allowed", "cursor-pointer");
+        };
+        radios.forEach((radio) => { radio.disabled = false });
+    });
+    id_equipment_q.readOnly = false;
+    id_category.value = urlParams.get("category");
+    id_purpose.value = urlParams.get("purpose");
+    initForm();
+
+    // Step one (first and last)
     ["click", "keyup"].forEach(type => {
         id_filter_equipment.addEventListener(type, (event) => {
             if (type == "click" || event.key == "Enter" || event.key == " ") {
-                code(id_filter_equipment, "_descr").hidden = false;
-                code(id_filter_equipment, "_spin").classList.remove("hidden");
-                freezeForm(true);
-                radioInputs.forEach((input) => {
-                    if (input.classList.contains("sr-only")) {
-                        let label = input.closest("label");
-                        label.classList.replace("hover:bg-gray-50", "bg-gray-100");
-                        label.classList.replace("cursor-pointer", "cursor-not-allowed");
-                    };
-                    radios.forEach((radio) => { radio.disabled = true });
-                });
-                location.href = `${originLocation}/equipment?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
+                requestFilterEquipment();
             };
         });
     });
 }
 
-setPage();
+window.addEventListener("pageshow", function () { setPage() });
