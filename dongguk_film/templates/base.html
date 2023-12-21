@@ -19,7 +19,7 @@
             <meta name="description" content="동국대학교 영화영상학과 올인원 플랫폼">
             <meta name="naver-site-verification"
                   content="6ef414fd55394e6f2a362c4f75345cdc201da6c6" />
-            {% block meta %}{% endblock %}
+            {% block meta %}{% endblock meta %}
             <!-- Base CSS -->
             <link rel="stylesheet" href="{% static 'css/base.css' %}">
             <!-- Tailwind CSS -->
@@ -95,7 +95,7 @@
                   href="{% static 'favicon/favicon-16x16.png' %}">
             <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
             <title>
-                  {% block title %}{% endblock %}
+                  {% block title %}{% endblock title %}
             </title>
       </head>
       <body class="antialiased font-pretendard bg-gray-100 overflow-auto">
@@ -107,7 +107,7 @@
             <div class="flex flex-col h-screen justify-between">
                   <div>{% include "shared/_navbar.html" %}</div>
                   <div id="id_main_content" class="mb-auto">
-                        {% block body %}{% endblock %}
+                        {% block body %}{% endblock body %}
                   </div>
                   <div>{% include "shared/_footer.html" %}</div>
             </div>

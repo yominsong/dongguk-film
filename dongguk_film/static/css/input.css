@@ -24,6 +24,10 @@
         @apply outline-none ring-2 ring-offset-2 ring-offset-white ring-flamingo
     }
 
+    .df-focus-ring-offset-white-2 {
+        @apply outline-none ring-2 ring-offset-8 ring-offset-white ring-flamingo
+    }
+
     .df-focus-ring-offset-gray {
         @apply outline-none ring-2 ring-offset-2 ring-offset-gray-100 ring-flamingo
     }
