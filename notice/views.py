@@ -22,7 +22,6 @@ def notice(request):
     q = request.GET.get("q")
     query_result_count = None
     query_param = None
-    placeholder = ""
     default_placeholder_list = [
         "복학 신청",
         "희망강의 신청",
@@ -41,6 +40,7 @@ def notice(request):
         "부산국제영화제 시네필",
         "부산국제영화제",
     ]
+    placeholder = random.choice(notice_list[: min(notice_count, 7)])["title"] if notice_count > 0 else random.choice(default_placeholder_list)
 
     if q:
         q = q.lower().replace(" ", "")
@@ -73,11 +73,6 @@ def notice(request):
         notice_list = query_result_list
         query_result_count = len(query_result_list)
         query_param = f"q={q}&"
-    else:
-        if 0 < notice_count:
-            placeholder = random.choice(notice_list[: min(notice_count, 7)])["title"]
-        else:
-            placeholder = random.choice(default_placeholder_list)
 
     # Pagination
     try:

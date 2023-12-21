@@ -8,7 +8,6 @@ import random
 def equipment(request):
     sort = request.GET.get("sort", "ascending")
     category = request.GET.get("category", "Cameras")
-    # grade = request.GET.get("grade", "4학년")
     purpose = request.GET.get("purpose", "전공과목 수업")
 
     image_list = get_hero_img("equipment")
@@ -17,7 +16,13 @@ def equipment(request):
     # Notion
     data = {
         "db_name": "equipment",
-        "filter_property": ["zI~%5E", "H%3ENe", "pBcK", "Uf%60r"],
+        "filter_property": [
+            "zI~%5E",
+            "H%3ENe",
+            "pBcK",
+            "Uf%60r",
+            "Gk~F",
+        ],  # "zI~%5E": Product name, "H%3ENe": Category, "pBcK": Brand, "Uf%60r": Model, "Gk~F": Available quantity
         "filter": {
             "and": [
                 {"property": "Validation", "formula": {"string": {"contains": "🟢"}}},
@@ -25,20 +30,18 @@ def equipment(request):
                     "property": "Category",
                     "rollup": {"every": {"select": {"equals": category}}},
                 },
-                # {
-                #     "property": "Allocated quantity per grade",
-                #     "rollup": {"every": {"rich_text": {"does_not_contain": f"{grade} 00"}}},
-                # },
                 {
                     "property": "Allocated quantity per purpose",
-                    "rollup": {"every": {"rich_text": {"does_not_contain": f"{purpose} 00"}}},
+                    "rollup": {
+                        "every": {"rich_text": {"does_not_contain": f"{purpose} 00"}}
+                    },
                 },
             ]
         },
         "sort": [
             {"property": "Category order", "direction": "ascending"},
             {"property": "Title", "direction": sort},
-        ]
+        ],
     }
     equipment_list = notion("query", "db", data=data)
     equipment_count = len(equipment_list)
@@ -47,7 +50,7 @@ def equipment(request):
     # Query
     q = request.GET.get("q")
     query_result_count = None
-    placeholder = ""
+    placeholder = random.choice(equipment_list)["title"]
 
     if q:
         q = q.lower().replace(" ", "")
@@ -63,8 +66,6 @@ def equipment(request):
         equipment_list = query_result_list
         query_result_count = len(query_result_list)
         param += f"q={q}&"
-    else:
-        placeholder = random.choice(equipment_list)["title"]
 
     # Pagination
     try:

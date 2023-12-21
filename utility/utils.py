@@ -429,15 +429,15 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "title": item["properties"]["Product name"]["formula"][
                             "string"
                         ],
-                        "category": item["properties"]["Category"]["rollup"]["array"][
-                            0
-                        ]["select"]["name"],
-                        "brand": item["properties"]["Brand"]["rollup"]["array"][
-                            0
-                        ]["select"]["name"],
-                        "model": item["properties"]["Model"]["rollup"]["array"][
-                            0
-                        ]["select"]["name"],
+                        "brand": item["properties"]["Brand"]["rollup"]["array"][0][
+                            "select"
+                        ]["name"],
+                        "model": item["properties"]["Model"]["rollup"]["array"][0][
+                            "select"
+                        ]["name"],
+                        "available_quantity": item["properties"]["Available quantity"][
+                            "formula"
+                        ]["string"],
                     }
                     item_list.append(equipment)
             except:
