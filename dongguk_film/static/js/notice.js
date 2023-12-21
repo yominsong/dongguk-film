@@ -113,7 +113,7 @@ function search() {
         ["click", "keyup"].forEach(type => {
             id_search_notice.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    location.href = `${originLocation}/notice?q=${id_notice_q.value}`;
+                    location.href = `${originLocation}/notice/?q=${id_notice_q.value}`;
                     id_notice_q.readOnly = true;
                     id_search_notice.disabled = true;
                 };
@@ -1019,96 +1019,108 @@ function requestDeleteNotice() {
 }
 
 function setPage() {
-    // Init
-    let categoryInputs = document.querySelectorAll("input[name='id_category']");
+    window.addEventListener("pageshow", function (event) {
+        // Detect the web browser's back/forward buttons
+        if (event.persisted) {
+            // Enable Search
+            id_notice_q.readOnly = false;
+            id_notice_q.value = urlParams.get("q");
+            id_search_notice.disabled = false;
+        };
 
-    categoryInputs.forEach((input) => {
-        input.addEventListener("click", () => {
-            if (input == id_category_serv) {
-                id_category.value = input.value;
-            } else if (input == id_category_dept) {
-                id_category.value = input.value;
-            };
-        });
-    });
+        if (id_notice_modal != null) {
+            // Init
+            let categoryInputs = document.querySelectorAll("input[name='id_category']");
 
-    // Step one (first and last)
-    initValidation(stepOnes, id_create_or_update_notice);
-    ["click", "keyup"].forEach(type => {
-        id_create_or_update_notice.addEventListener(type, (event) => {
-            let target = event.target;
-
-            if ((type === "click" && target.tagName === "SPAN") ||
-                (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                Array.from(radios).forEach((radio) => {
-                    let idx = inputs.indexOf(radio);
-                    while (idx > -1) {
-                        inputs.splice(idx, 1);
-                        idx = inputs.indexOf(radio);
+            categoryInputs.forEach((input) => {
+                input.addEventListener("click", () => {
+                    if (input == id_category_serv) {
+                        id_category.value = input.value;
+                    } else if (input == id_category_dept) {
+                        id_category.value = input.value;
                     };
-                });
-                filteredInputs = inputs.filter(isValid);
-                if (filteredInputs.length == inputs.length) {
-                    if (id_create_or_update_notice.innerText == "작성하기") {
-                        requestCreateNotice();
-                    } else if (id_create_or_update_notice.innerText == "수정하기") {
-                        requestUpdateNotice();
-                    };
-                    displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
-                    displayButtonMsg(false, id_create_or_update_notice, "error");
-                    displayNoti(false, "RYS");
-                    displayNoti(false, "RAT");
-                    displayNoti(false, "RDI");
-                    displayNoti(false, "EIS");
-                    displayNoti(false, "EIF");
-                    displayNoti(false, "LDF");
-                    displayNoti(false, "LFS");
-                } else {
-                    inputs.forEach((input) => {
-                        controlError(input);
-                    });
-                };
-            };
-            ["keydown", "focusin"].forEach((type) => {
-                inputs.forEach((input) => {
-                    input.addEventListener(type, () => {
-                        displayButtonMsg(false, id_create_or_update_notice, "error");
-                    });
                 });
             });
-        });
-        id_delete_notice.addEventListener(type, (event) => {
-            let target = event.target;
 
-            if ((type === "click" && target.tagName === "SPAN") ||
-                (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                if (!askedTwice) {
-                    id_delete_notice_inner_text.innerText = "정말 삭제하기";
-                    askedTwice = true;
-                    askedTwiceTimer = setTimeout(() => {
-                        id_delete_notice_inner_text.innerText = "삭제하기";
-                        askedTwice = false;
-                    }, 5000);
-                } else if (askedTwice) {
-                    clearTimeout(askedTwiceTimer);
-                    requestDeleteNotice();
-                    displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
-                    displayNoti(false, "RYS");
-                    displayNoti(false, "RAT");
-                    displayNoti(false, "RDI");
-                    displayNoti(false, "EIS");
-                    displayNoti(false, "EIF");
-                    displayNoti(false, "LDF");
-                    displayNoti(false, "LFS");
-                    askedTwice = false;
-                };
-            };
-        });
+            // Step one (first and last)
+            initValidation(stepOnes, id_create_or_update_notice);
+            ["click", "keyup"].forEach(type => {
+                id_create_or_update_notice.addEventListener(type, (event) => {
+                    let target = event.target;
+
+                    if ((type === "click" && target.tagName === "SPAN") ||
+                        (type === "click" && target.tagName === "BUTTON") ||
+                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                        (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
+                        Array.from(radios).forEach((radio) => {
+                            let idx = inputs.indexOf(radio);
+                            while (idx > -1) {
+                                inputs.splice(idx, 1);
+                                idx = inputs.indexOf(radio);
+                            };
+                        });
+                        filteredInputs = inputs.filter(isValid);
+                        if (filteredInputs.length == inputs.length) {
+                            if (id_create_or_update_notice.innerText == "작성하기") {
+                                requestCreateNotice();
+                            } else if (id_create_or_update_notice.innerText == "수정하기") {
+                                requestUpdateNotice();
+                            };
+                            displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
+                            displayButtonMsg(false, id_create_or_update_notice, "error");
+                            displayNoti(false, "RYS");
+                            displayNoti(false, "RAT");
+                            displayNoti(false, "RDI");
+                            displayNoti(false, "EIS");
+                            displayNoti(false, "EIF");
+                            displayNoti(false, "LDF");
+                            displayNoti(false, "LFS");
+                        } else {
+                            inputs.forEach((input) => {
+                                controlError(input);
+                            });
+                        };
+                    };
+                    ["keydown", "focusin"].forEach((type) => {
+                        inputs.forEach((input) => {
+                            input.addEventListener(type, () => {
+                                displayButtonMsg(false, id_create_or_update_notice, "error");
+                            });
+                        });
+                    });
+                });
+                id_delete_notice.addEventListener(type, (event) => {
+                    let target = event.target;
+
+                    if ((type === "click" && target.tagName === "SPAN") ||
+                        (type === "click" && target.tagName === "BUTTON") ||
+                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
+                        (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
+                        if (!askedTwice) {
+                            id_delete_notice_inner_text.innerText = "정말 삭제하기";
+                            askedTwice = true;
+                            askedTwiceTimer = setTimeout(() => {
+                                id_delete_notice_inner_text.innerText = "삭제하기";
+                                askedTwice = false;
+                            }, 5000);
+                        } else if (askedTwice) {
+                            clearTimeout(askedTwiceTimer);
+                            requestDeleteNotice();
+                            displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                            displayNoti(false, "RYS");
+                            displayNoti(false, "RAT");
+                            displayNoti(false, "RDI");
+                            displayNoti(false, "EIS");
+                            displayNoti(false, "EIF");
+                            displayNoti(false, "LDF");
+                            displayNoti(false, "LFS");
+                            askedTwice = false;
+                        };
+                    };
+                });
+            });
+        };
     });
 }
 
-if (id_notice_modal !== null) { setPage() };
+setPage();

@@ -3,8 +3,8 @@
 //
 
 const originLocation = location.origin;
-const urlParams = new URLSearchParams(location.search);
 
+let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
 
 //

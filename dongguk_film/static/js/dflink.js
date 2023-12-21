@@ -56,7 +56,7 @@ function search() {
     ["click", "keyup"].forEach(type => {
         id_search_dflink.addEventListener(type, (event) => {
             if (type == "click" || event.key == "Enter" || event.key == " ") {
-                location.href = `${originLocation}/dflink?q=${id_dflink_q.value}`;
+                location.href = `${originLocation}/dflink/?q=${id_dflink_q.value}`;
                 id_dflink_q.readOnly = true;
                 id_search_dflink.disabled = true;
             };
@@ -252,86 +252,94 @@ function requestDeleteDflink() {
 }
 
 function setPage() {
-    // Init
-    let categoryInputs = document.querySelectorAll("input[name='id_category']");
-    id_expiration_date.setAttribute("min", yyyymmddWithDash);
-    id_expiration_date.setAttribute("max", yyyymmddOfAfter90DaysWithDash);
-    id_expiration_date_help.innerText = `유효범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
-    categoryInputs.forEach((input) => {
-        input.addEventListener("click", () => {
-            if (input == id_category_work) {
-                id_category.value = input.value;
-            } else if (input == id_category_dept) {
-                id_category.value = input.value;
-            };
-        });
-    });
+    window.addEventListener("pageshow", function (event) {
+        // Detect the web browser's back/forward buttons
+        if (event.persisted) {
+            // Enable Search
+            id_dflink_q.readOnly = false;
+            id_dflink_q.value = urlParams.get("q");
+            id_search_dflink.disabled = false;
+        };
 
-    // Step one (first and last)
-    initValidation(stepOnes, id_create_or_update_dflink);
-    ["click", "keyup"].forEach(type => {
-        id_create_or_update_dflink.addEventListener(type, (event) => {
-            let target = event.target;
-
-            if ((type === "click" && target.tagName === "SPAN") ||
-                (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
-                Array.from(radios).forEach((radio) => {
-                    let idx = inputs.indexOf(radio);
-                    while (idx > -1) {
-                        inputs.splice(idx, 1);
-                        idx = inputs.indexOf(radio);
+        if (id_dflink_modal != null) {
+            // Init
+            let categoryInputs = document.querySelectorAll("input[name='id_category']");
+            id_expiration_date.setAttribute("min", yyyymmddWithDash);
+            id_expiration_date.setAttribute("max", yyyymmddOfAfter90DaysWithDash);
+            id_expiration_date_help.innerText = `유효범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
+            categoryInputs.forEach((input) => {
+                input.addEventListener("click", () => {
+                    if (input == id_category_work) {
+                        id_category.value = input.value;
+                    } else if (input == id_category_dept) {
+                        id_category.value = input.value;
                     };
-                });
-                filteredInputs = inputs.filter(isValid);
-                if (filteredInputs.length == inputs.length) {
-                    if (id_create_or_update_dflink.innerText == "만들기") {
-                        requestCreateDflink();
-                    } else if (id_create_or_update_dflink.innerText == "수정하기") {
-                        requestUpdateDflink();
-                    };
-                    displayButtonMsg(true, id_create_or_update_dflink, "descr", "잠시만 기다려주세요.");
-                    displayButtonMsg(false, id_create_or_update_dflink, "error");
-                } else {
-                    inputs.forEach((input) => {
-                        controlError(input);
-                    });
-                };
-            };
-            ["keydown", "focusin"].forEach((type) => {
-                inputs.forEach((input) => {
-                    input.addEventListener(type, () => {
-                        displayButtonMsg(false, id_create_or_update_dflink, "error");
-                    });
                 });
             });
-        });
-        id_delete_dflink.addEventListener(type, (event) => {
-            let target = event.target;
-
-            if ((type === "click" && target.tagName === "SPAN") ||
-                (type === "click" && target.tagName === "BUTTON") ||
-                (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
-                if (!askedTwice) {
-                    id_delete_dflink_inner_text.innerText = "정말 삭제하기";
-                    askedTwice = true;
-                    askedTwiceTimer = setTimeout(() => {
-                        id_delete_dflink_inner_text.innerText = "삭제하기";
-                        askedTwice = false;
-                    }, 5000);
-                } else if (askedTwice) {
-                    clearTimeout(askedTwiceTimer);
-                    requestDeleteDflink();
-                    displayButtonMsg(true, id_delete_dflink, "descr", "잠시만 기다려주세요.");
-                    askedTwice = false;
-                };
-            };
-        });
+    
+            // Step one (first and last)
+            initValidation(stepOnes, id_create_or_update_dflink);
+            ["click", "keyup"].forEach(type => {
+                id_create_or_update_dflink.addEventListener(type, (event) => {
+                    let target = event.target;
+    
+                    if ((type === "click" && target.tagName === "SPAN") ||
+                        (type === "click" && target.tagName === "BUTTON") ||
+                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                        Array.from(radios).forEach((radio) => {
+                            let idx = inputs.indexOf(radio);
+                            while (idx > -1) {
+                                inputs.splice(idx, 1);
+                                idx = inputs.indexOf(radio);
+                            };
+                        });
+                        filteredInputs = inputs.filter(isValid);
+                        if (filteredInputs.length == inputs.length) {
+                            if (id_create_or_update_dflink.innerText == "만들기") {
+                                requestCreateDflink();
+                            } else if (id_create_or_update_dflink.innerText == "수정하기") {
+                                requestUpdateDflink();
+                            };
+                            displayButtonMsg(true, id_create_or_update_dflink, "descr", "잠시만 기다려주세요.");
+                            displayButtonMsg(false, id_create_or_update_dflink, "error");
+                        } else {
+                            inputs.forEach((input) => {
+                                controlError(input);
+                            });
+                        };
+                    };
+                    ["keydown", "focusin"].forEach((type) => {
+                        inputs.forEach((input) => {
+                            input.addEventListener(type, () => {
+                                displayButtonMsg(false, id_create_or_update_dflink, "error");
+                            });
+                        });
+                    });
+                });
+                id_delete_dflink.addEventListener(type, (event) => {
+                    let target = event.target;
+    
+                    if ((type === "click" && target.tagName === "SPAN") ||
+                        (type === "click" && target.tagName === "BUTTON") ||
+                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON")) {
+                        if (!askedTwice) {
+                            id_delete_dflink_inner_text.innerText = "정말 삭제하기";
+                            askedTwice = true;
+                            askedTwiceTimer = setTimeout(() => {
+                                id_delete_dflink_inner_text.innerText = "삭제하기";
+                                askedTwice = false;
+                            }, 5000);
+                        } else if (askedTwice) {
+                            clearTimeout(askedTwiceTimer);
+                            requestDeleteDflink();
+                            displayButtonMsg(true, id_delete_dflink, "descr", "잠시만 기다려주세요.");
+                            askedTwice = false;
+                        };
+                    };
+                });
+            });
+        };
     });
 }
 
-window.addEventListener("pageshow", function () {
-    if (id_dflink_modal != null) { setPage() };
-    id_dflink_q.readOnly = false;
-    id_search_dflink.disabled = false;
-});
+setPage();

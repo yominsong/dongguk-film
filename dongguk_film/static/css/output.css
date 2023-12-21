@@ -2314,7 +2314,7 @@ select {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
-  --tw-ring-offset-width: 8px;
+  --tw-ring-offset-width: 4px;
   --tw-ring-offset-color: #fff;
 }
 
@@ -2911,10 +2911,6 @@ select {
 
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .md\:grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .md\:flex-col {

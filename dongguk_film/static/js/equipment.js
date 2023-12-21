@@ -26,7 +26,7 @@ function search() {
             id_search_equipment_init.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter" || event.key == " ") {
                     urlParams.delete("q");
-                    location.href = `${originLocation}/equipment?${urlParams.toString()}`;
+                    location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
                     id_equipment_q.readOnly = true;
                     id_search_equipment.disabled = true;
                 };
@@ -45,7 +45,8 @@ function search() {
             if (type == "click" || event.key == "Enter" || event.key == " ") {
                 urlParams.delete("page");
                 urlParams.delete("q");
-                location.href = `${originLocation}/equipment?${urlParams.toString()}&q=${id_equipment_q.value}`;
+                urlParams.append("q", id_equipment_q.value);
+                location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
                 id_equipment_q.readOnly = true;
                 id_search_equipment.disabled = true;
             };
@@ -197,35 +198,47 @@ function requestFilterEquipment() {
     location.href = `${originLocation}/equipment?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
 }
 
-window.addEventListener("pageshow", function setPage(event) {
-    // Init
-    if (event.persisted) {
-        id_equipment_modal.hidden = true;
-        id_equipment_modal.setAttribute("x-data", "{ open: false }");
-        modalOpen = false;
-    };
-    code(id_filter_equipment, "_descr").hidden = true;
-    code(id_filter_equipment, "_spin").classList.add("hidden");
-    freezeForm(false);
-    radioInputs.forEach((input) => {
-        if (input.classList.contains("sr-only")) {
-            let label = input.closest("label");
-            label.classList.replace("bg-gray-100", "hover:bg-gray-50");
-            label.classList.replace("cursor-not-allowed", "cursor-pointer");
-        };
-        radios.forEach((radio) => { radio.disabled = false });
-    });
-    id_equipment_q.readOnly = false;
-    id_category.value = urlParams.get("category");
-    id_purpose.value = urlParams.get("purpose");
-    initForm();
+function setPage() {
+    window.addEventListener("pageshow", function (event) {
+        // Detect the web browser's back/forward buttons
+        if (event.persisted) {
+            // Enable Search
+            urlParams = new URLSearchParams(location.search);
+            id_equipment_q.readOnly = false;
+            id_equipment_q.value = urlParams.get("q");
+            id_search_equipment.disabled = false;
 
-    // Step one (first and last)
-    ["click", "keyup"].forEach(type => {
-        id_filter_equipment.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter" || event.key == " ") {
-                requestFilterEquipment();
+            // Close modal
+            id_equipment_modal.hidden = true;
+            id_equipment_modal.setAttribute("x-data", "{ open: false }");
+            modalOpen = false;
+        };
+
+        // Init
+        code(id_filter_equipment, "_descr").hidden = true;
+        code(id_filter_equipment, "_spin").classList.add("hidden");
+        freezeForm(false);
+        radioInputs.forEach((input) => {
+            if (input.classList.contains("sr-only")) {
+                let label = input.closest("label");
+                label.classList.replace("bg-gray-100", "hover:bg-gray-50");
+                label.classList.replace("cursor-not-allowed", "cursor-pointer");
             };
+            radios.forEach((radio) => { radio.disabled = false });
+        });
+        id_category.value = urlParams.get("category");
+        id_purpose.value = urlParams.get("purpose");
+        initForm();
+
+        // Step one (first and last)
+        ["click", "keyup"].forEach(type => {
+            id_filter_equipment.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
+                    requestFilterEquipment();
+                };
+            });
         });
     });
-});
+}
+
+setPage();
