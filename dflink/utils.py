@@ -199,6 +199,19 @@ def is_new_slug(id: str, dflink_slug: str):
     return result
 
 
+def is_correct_expiration_date(expiration_date: str):
+    today = timezone.now().date()
+    expiration_date = timezone.datetime.strptime(expiration_date, "%Y-%m-%d").date()
+    after_90_days_from_today = today + timezone.timedelta(days=90)
+
+    if today <= expiration_date < after_90_days_from_today:
+        result = True
+    else:
+        result = False
+    
+    return result
+
+
 def is_not_swearing(dflink_slug_or_title: str):
     openai_response = chap_gpt(
         f"'{dflink_slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
@@ -260,6 +273,7 @@ def validate_input_data(request):
     id = request.GET["id"]
     original_url = request.GET["original_url"]
     dflink_slug = request.GET["dflink_slug"]
+    expiration_date = request.GET["expiration_date"]
 
     if not is_correct_url(original_url):
         status = "FAIL"
@@ -272,6 +286,12 @@ def validate_input_data(request):
         reason = "이미 존재하는 동영링크 URL"
         msg = "앗, 이미 존재하는 동영링크 URL이에요!"
         element = "id_dflink_slug"
+    
+    elif not is_correct_expiration_date(expiration_date):
+        status = "FAIL"
+        reason = "유효범위를 벗어난 만료일"
+        msg = "만료일이 유효범위를 벗어난 것 같아요."
+        element = "id_expiration_date"
 
     elif not is_valid(request):
         status = "FAIL"
