@@ -14,15 +14,24 @@ def equipment(request):
     param = ""
 
     # Notion
+    """
+    - "zI~%5E": Product name
+    - "H%3ENe": Category
+    - "aULM": Subcategory
+    - "pBcK": Brand
+    - "Uf%60r": Model
+    - "Gk~F": Available quantity
+    """
     data = {
         "db_name": "equipment",
         "filter_property": [
             "zI~%5E",
             "H%3ENe",
+            "aULM",
             "pBcK",
             "Uf%60r",
             "Gk~F",
-        ],  # "zI~%5E": Product name, "H%3ENe": Category, "pBcK": Brand, "Uf%60r": Model, "Gk~F": Available quantity
+        ],
         "filter": {
             "and": [
                 {"property": "Validation", "formula": {"string": {"contains": "🟢"}}},

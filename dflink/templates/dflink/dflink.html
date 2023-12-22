@@ -43,7 +43,7 @@
     </div>
     <!-- Search -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md px-4 py-5 sm:px-6">
+        <div class="overflow-hidden bg-white shadow rounded-md px-4 pt-4 pb-5 sm:px-6">
             {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_dflink_q"
@@ -67,7 +67,7 @@
                 </div>
             {% else %}
                 <label for="id_dflink_q"
-                       class="block text-sm font-medium leading-6 text-gray-500">
+                       class="text-sm font-medium leading-6 text-gray-500">
                     총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>의 동영링크 검색
                 </label>
             {% endif %}

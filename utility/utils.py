@@ -429,6 +429,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "title": item["properties"]["Product name"]["formula"][
                             "string"
                         ],
+                        "subcategory": item["properties"]["Subcategory"]["rollup"][
+                            "array"
+                        ][0]["select"]["name"],
                         "brand": item["properties"]["Brand"]["rollup"]["array"][0][
                             "select"
                         ]["name"],
