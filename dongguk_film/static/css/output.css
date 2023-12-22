@@ -2504,6 +2504,16 @@ select {
   text-decoration-line: underline;
 }
 
+.read-only\:hover\:bg-gray-100:hover:-moz-read-only {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.read-only\:hover\:bg-gray-100:hover:read-only {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
 .focus\:z-10:focus {
   z-index: 10;
 }
@@ -2563,6 +2573,16 @@ select {
 
 .focus\:ring-offset-flamingo-50:focus {
   --tw-ring-offset-color: #FCDBCF;
+}
+
+.read-only\:focus\:bg-gray-100:focus:-moz-read-only {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.read-only\:focus\:bg-gray-100:focus:read-only {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
 .disabled\:cursor-not-allowed:disabled {
