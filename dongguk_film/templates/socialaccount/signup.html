@@ -4,8 +4,10 @@
     <meta property="og:title" content="회원가입 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'account_login' %}">
     <meta name="robots" content="noindex,nofollow">
-{% endblock %}
-{% block title %}회원가입 - 디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}
+    회원가입 - 디닷에프
+{% endblock title %}
 {% block body %}
     <div class="absolute inset-0">
         <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -206,4 +208,4 @@
     </div>
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/signup.js' %}"></script>
-{% endblock %}
+{% endblock body %}

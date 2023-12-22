@@ -5,8 +5,8 @@
     <meta property="og:title" content="디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'home:home' %}">
     <meta name="robots" content="index,follow">
-{% endblock %}
-{% block title %}디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}디닷에프{% endblock title %}
 {% block body %}
     <!-- Hero -->
     <div class="relative sm:pt-6 lg:pt-8">
@@ -282,4 +282,4 @@
             alertWelcomeNewUser(name);
         </script>
     {% endif %}
-{% endblock %}
+{% endblock body %}

@@ -14,7 +14,9 @@ SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 
 def is_new_user(user):
-    return timezone.now() - user.date_joined < timezone.timedelta(minutes=3)
+    return user.last_login - user.date_joined < timezone.timedelta(
+        minutes=30
+    ) and timezone.now() - user.last_login < timezone.timedelta(minutes=3)
 
 
 #
