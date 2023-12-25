@@ -83,7 +83,9 @@ def is_correct_url(original_url: str):
 
     try:
         response = requests.get(original_url, headers=set_headers("RANDOM"))
-        response = use_proxy(original_url) if int(response.status_code) >= 400 else response 
+        response = (
+            use_proxy(original_url) if int(response.status_code) >= 400 else response
+        )
     except:
         try:
             if not has_www(original_url):
@@ -91,13 +93,20 @@ def is_correct_url(original_url: str):
                 response = requests.get(original_url, headers=set_headers("RANDOM"))
                 need_www = True
         except:
-            response = use_proxy(original_url) if proxy_was_already_used == False else None
+            response = (
+                use_proxy(original_url) if proxy_was_already_used == False else None
+            )
 
     try:
         result = (
             True
-            if int(response.status_code) < 400
-            and not "565 Proxy Handshake Failed" in response.text
+            if (
+                (
+                    int(response.status_code) < 400
+                    and not "565 Proxy Handshake Failed" in response.text
+                )
+                or ("notion-html" in response.text)
+            )
             else False
         )
     except:
@@ -208,7 +217,7 @@ def is_correct_expiration_date(expiration_date: str):
         result = True
     else:
         result = False
-    
+
     return result
 
 
@@ -286,7 +295,7 @@ def validate_input_data(request):
         reason = "이미 존재하는 동영링크 URL"
         msg = "앗, 이미 존재하는 동영링크 URL이에요!"
         element = "id_dflink_slug"
-    
+
     elif not is_correct_expiration_date(expiration_date):
         status = "FAIL"
         reason = "유효범위를 벗어난 만료일"
