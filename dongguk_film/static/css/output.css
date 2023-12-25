@@ -1204,6 +1204,10 @@ select {
   width: 100%;
 }
 
+.w-\[144px\] {
+  width: 144px;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -1515,6 +1519,10 @@ select {
 
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.whitespace-pre-line {
+  white-space: pre-line;
 }
 
 .break-words {
@@ -2773,6 +2781,10 @@ select {
 
   .sm\:w-full {
     width: 100%;
+  }
+
+  .sm\:w-\[144px\] {
+    width: 144px;
   }
 
   .sm\:max-w-3xl {

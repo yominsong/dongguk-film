@@ -15,6 +15,13 @@ if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "08:00":
     requests.get("https://dongguk.film/users/utils/delete-inactive-users")
 
 #
+# equipment
+#
+
+if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "22:30":
+    requests.get("https://dongguk.film/equipment/utils/update-equipment-category-and-policy")
+
+#
 # dflink
 #
 

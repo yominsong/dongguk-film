@@ -94,6 +94,7 @@ def send_msg(request, type: str, channel: str, extra=None):
     - type | `str`:
         - UDC: Update DMD Cookie
         - UIG: Update images
+        - UEQ: Update Equipment category and policy
         - DSA: Duplicate signup attempt
         - AIV: Attempting to skip identity verification
         - UXR: Unexpected request
@@ -140,6 +141,27 @@ def send_msg(request, type: str, channel: str, extra=None):
             "picture_url": default_picture_url,
             "author_url": "",
             "title": "Hero 배경 이미지 업데이트됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": sub_content,
+        }
+
+    # type: "UEQ"
+    elif type == "UEQ":
+        sub_content = ""
+        for i, item in enumerate(extra[0]["category"]):
+            new_line = f"\nㆍ[범주] ({item['priority']}) {item['keyword']}"
+            new_line.replace("\n", "") if i == 0 else None
+            sub_content += new_line
+        for i, item in enumerate(extra[1]["policy"]):
+            [up_to, at_least, maximum] = [f"{int(value):02d}" for value in [item["up_to"], item["at_least"], item["maximum"]]]
+            new_line = f"\nㆍ[정책] ({item['priority']}) {item['keyword']}: 희망 대여일로부터 최대 {up_to}일 ~ 최소 {at_least}일 신청 가능, 최대 {maximum}일 동안 대여 가능"
+            sub_content += new_line
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": "기자재 범주 및 정책 업데이트됨",
             "url": "",
             "thumbnail_url": "",
             "description": sub_content,

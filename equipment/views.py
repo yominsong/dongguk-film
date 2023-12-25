@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from .utils import get_equipment_category_or_policy
 from utility.img import get_hero_img
 from utility.utils import notion
 import random
@@ -7,42 +8,35 @@ import random
 
 def equipment(request):
     sort = request.GET.get("sort", "ascending")
-    category = request.GET.get("category", "Cameras")
-    purpose = request.GET.get("purpose", "전공과목 수업")
+    category = request.GET.get("category", "A")
+    policy = request.GET.get("policy", "A")
 
     image_list = get_hero_img("equipment")
+    category_list = get_equipment_category_or_policy("category")
+    policy_list = get_equipment_category_or_policy("policy")
     param = ""
 
     # Notion
-    """
-    - "zI~%5E": Product name
-    - "H%3ENe": Category
-    - "aULM": Subcategory
-    - "pBcK": Brand
-    - "Uf%60r": Model
-    - "Gk~F": Available quantity
-    """
     data = {
-        "db_name": "equipment",
+        "db_name": "equipment-display",
         "filter_property": [
-            "zI~%5E",
-            "H%3ENe",
-            "aULM",
-            "pBcK",
-            "Uf%60r",
-            "Gk~F",
+            "zI~%5E",  # Product name
+            "aULM",  # Subcategory
+            "pBcK",  # Brand
+            "Uf%60r",  # Model
+            "Gk~F",  # Available quantity
         ],
         "filter": {
             "and": [
                 {"property": "Validation", "formula": {"string": {"contains": "🟢"}}},
                 {
-                    "property": "Category",
-                    "rollup": {"every": {"select": {"equals": category}}},
+                    "property": "Category as string",
+                    "formula": {"string": {"contains": category}},
                 },
                 {
-                    "property": "Allocated quantity per purpose",
+                    "property": "Allocated quantity per policy",
                     "rollup": {
-                        "every": {"rich_text": {"does_not_contain": f"{purpose} 00"}}
+                        "every": {"rich_text": {"does_not_contain": f"({policy}) 00"}}
                     },
                 },
             ]
@@ -54,7 +48,13 @@ def equipment(request):
     }
     equipment_list = notion("query", "db", data=data)
     equipment_count = len(equipment_list)
-    param += f"sort={sort}&category={category}&purpose={purpose}&"
+
+    # Parameter and template tag
+    param += f"sort={sort}&category={category}&policy={policy}&"
+    category_dict = {item["priority"]: item["keyword"] for item in category_list}
+    policy_dict = {item["priority"]: item["keyword"] for item in policy_list}
+    category = {"priority": category, "keyword": category_dict.get(category)}
+    policy = {"priority": policy, "keyword": policy_dict.get(policy)}
 
     # Query
     q = request.GET.get("q")
@@ -90,9 +90,11 @@ def equipment(request):
         "equipment/equipment.html",
         {
             "image_list": image_list,
+            "category_list": category_list,
+            "policy_list": policy_list,
             "param": param,
             "category": category,
-            "purpose": purpose,
+            "policy": policy,
             "equipment_count": equipment_count,
             "query_result_count": query_result_count,
             "placeholder": placeholder,

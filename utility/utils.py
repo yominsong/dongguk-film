@@ -375,7 +375,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         if limit:
             payload["page_size"] = limit
 
-        if db_name == "notice":
+        if db_name == "equipment-category":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -383,38 +383,19 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             item_list = []
 
             try:
-                for index, item in enumerate(items):
-                    listed_time = item["properties"]["Listed time"]["created_time"]
-                    listed_time = convert_datetime(listed_time)
-                    notice = {
-                        "page_id": item["id"],
-                        "title": item["properties"]["Title"]["title"][0]["plain_text"],
-                        "category": item["properties"]["Category"]["select"]["name"],
-                        "keyword": item["properties"]["Keyword"]["rich_text"][0][
-                            "plain_text"
-                        ],
-                        "user": str(item["properties"]["User"]["number"]),
-                        "listed_date": listed_time.strftime("%Y-%m-%d"),
+                for item in items:
+                    properties = item["properties"]
+
+                    policy = {
+                        "priority": properties["Priority"]["select"]["name"],
+                        "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
                     }
-                    try:
-                        notice["img_key_list"] = ast.literal_eval(
-                            item["properties"]["Image key list"]["rich_text"][0][
-                                "plain_text"
-                            ]
-                        )
-                    except:
-                        notice["img_key_list"] = None
-                    try:
-                        notice["file"] = ast.literal_eval(
-                            item["properties"]["File"]["rich_text"][0]["plain_text"]
-                        )
-                    except:
-                        notice["file"] = None
-                    item_list.append(notice)
+
+                    item_list.append(policy)
             except:
                 pass
 
-        elif db_name == "equipment":
+        elif db_name == "equipment-policy":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -422,27 +403,111 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             item_list = []
 
             try:
-                for index, item in enumerate(items):
+                for item in items:
+                    properties = item["properties"]
+
+                    policy = {
+                        "priority": properties["Priority"]["select"]["name"],
+                        "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
+                        "up_to": properties["Available up to n days in advance"][
+                            "number"
+                        ],
+                        "at_least": properties["Available at least n days in advance"][
+                            "number"
+                        ],
+                        "maximum": properties["Maximum rental duration"]["number"],
+                    }
+
+                    item_list.append(policy)
+            except:
+                pass
+
+        elif db_name == "equipment-display":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
                     equipment = {
                         "page_id": item["id"],
-                        "cover": item["cover"]["file"]["url"],
-                        "title": item["properties"]["Product name"]["formula"][
-                            "string"
-                        ],
-                        "subcategory": item["properties"]["Subcategory"]["rollup"][
-                            "array"
-                        ][0]["select"]["name"],
-                        "brand": item["properties"]["Brand"]["rollup"]["array"][0][
+                        "cover": item["cover"]["file"]["url"]
+                        if item.get("cover") and item["cover"].get("file")
+                        else None,
+                        "title": properties["Product name"]["formula"]["string"],
+                        "subcategory": properties["Subcategory"]["rollup"]["array"][0][
                             "select"
-                        ]["name"],
-                        "model": item["properties"]["Model"]["rollup"]["array"][0][
-                            "select"
-                        ]["name"],
-                        "available_quantity": item["properties"]["Available quantity"][
+                        ]["name"][6:]
+                        if properties["Subcategory"]["rollup"]["array"]
+                        else None,
+                        "brand": properties["Brand"]["rollup"]["array"][0]["select"][
+                            "name"
+                        ]
+                        if properties["Brand"]["rollup"]["array"]
+                        else None,
+                        "model": properties["Model"]["rollup"]["array"][0]["select"][
+                            "name"
+                        ]
+                        if properties["Model"]["rollup"]["array"]
+                        else None,
+                        "available_quantity": properties["Available quantity"][
                             "formula"
                         ]["string"],
                     }
+
                     item_list.append(equipment)
+            except:
+                pass
+
+        elif db_name == "notice":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
+                    listed_time = properties["Listed time"]["created_time"]
+                    listed_time = convert_datetime(listed_time)
+
+                    title = properties["Title"]["title"][0]["plain_text"]
+                    category = properties["Category"]["select"]["name"]
+                    keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
+                    user = str(properties["User"]["number"])
+
+                    notice = {
+                        "page_id": item["id"],
+                        "title": title,
+                        "category": category,
+                        "keyword": keyword,
+                        "user": user,
+                        "listed_date": listed_time.strftime("%Y-%m-%d"),
+                    }
+
+                    img_key_list = (
+                        properties.get("Image key list", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
+                    )
+                    file = (
+                        properties.get("File", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
+                    )
+
+                    notice["img_key_list"] = (
+                        ast.literal_eval(img_key_list) if img_key_list else None
+                    )
+                    notice["file"] = ast.literal_eval(file) if file else None
+
+                    item_list.append(notice)
             except:
                 pass
 
@@ -493,7 +558,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             }
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 
-            result = response
+        result = response
 
     # action: retrieve / target: block_children
     elif action == "retrieve" and target == "block_children":
