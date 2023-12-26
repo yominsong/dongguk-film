@@ -112,9 +112,19 @@ def notice_detail(request, page_id):
         keyword_string = notice["properties"]["Keyword"]["rich_text"][0]["plain_text"]
         keyword_list = re.findall(r"#\w+", keyword_string)
         student_id = str(notice["properties"]["User"]["number"])
-        user = User.objects.get(username=student_id)
-        name = user.metadata.name
-        profile_img = user.socialaccount_set.all()[0].get_avatar_url()
+        
+        user = None
+        name = "사용자"
+        profile_img = "/static/images/d_dot_f_logo.jpg"
+
+        try:
+            user = User.objects.get(username=student_id)
+        except:
+            pass
+
+        if user:
+            name = user.metadata.name
+            profile_img = user.socialaccount_set.all()[0].get_avatar_url()
         try:
             file_string = notice["properties"]["File"]["rich_text"][0]["plain_text"]
             file_dict = ast.literal_eval(file_string)
