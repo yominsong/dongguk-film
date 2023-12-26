@@ -5,8 +5,10 @@
     <meta property="og:title" content="공지사항 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'notice:notice' %}">
     <meta name="robots" content="index,follow">
-{% endblock %}
-{% block title %}공지사항 - 디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}
+    공지사항 - 디닷에프
+{% endblock title %}
 {% block body %}
     <!-- Hero -->
     <div class="relative sm:pt-6 lg:pt-8">
@@ -58,7 +60,7 @@
             <div class="flex justify-between items-center mt-3">
                 <div class="flex items-center text-sm text-gray-500 gap-x-2">
                     <img src="{{ notice.user.profile_img }}"
-                         class="h-6 w-6 rounded-full bg-gray-800"
+                         class="h-6 w-6 rounded-full"
                          alt="{{ notice.user.name }}님의 프로필 사진"
                          height=""
                          width="">
@@ -66,9 +68,6 @@
                     <span>·</span>
                     <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                 </div>
-                <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                </svg> -->
                 <div x-data="Components.menu({ open: false })"
                      x-init="init()"
                      @keydown.escape.stop="open = false; focusButton()"
@@ -228,4 +227,4 @@
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
-{% endblock %}
+{% endblock body %}
