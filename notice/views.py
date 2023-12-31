@@ -107,11 +107,13 @@ def notice_detail(request, page_id):
         raise Http404
     elif response.status_code == 200:
         notice = response.json()
-        title = notice["properties"]["Title"]["title"][0]["plain_text"]
-        category = notice["properties"]["Category"]["select"]["name"]
-        keyword_string = notice["properties"]["Keyword"]["rich_text"][0]["plain_text"]
+        properties = notice["properties"]
+
+        title = properties["Title"]["title"][0]["plain_text"]
+        category = properties["Category"]["select"]["name"]
+        keyword_string = properties["Keyword"]["rich_text"][0]["plain_text"]
         keyword_list = re.findall(r"#\w+", keyword_string)
-        student_id = str(notice["properties"]["User"]["number"])
+        student_id = str(properties["User"]["number"])
         
         user = None
         name = "사용자"

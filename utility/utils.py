@@ -386,16 +386,16 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 for item in items:
                     properties = item["properties"]
 
-                    policy = {
+                    purpose = {
                         "priority": properties["Priority"]["select"]["name"],
                         "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
                     }
 
-                    item_list.append(policy)
+                    item_list.append(purpose)
             except:
                 pass
 
-        elif db_name == "equipment-policy":
+        elif db_name == "equipment-purpose":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -406,7 +406,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 for item in items:
                     properties = item["properties"]
 
-                    policy = {
+                    purpose = {
                         "priority": properties["Priority"]["select"]["name"],
                         "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
                         "up_to": properties["Available up to n days in advance"][
@@ -418,7 +418,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "maximum": properties["Maximum rental duration"]["number"],
                     }
 
-                    item_list.append(policy)
+                    item_list.append(purpose)
             except:
                 pass
 
@@ -434,21 +434,15 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     properties = item["properties"]
 
                     equipment = {
-                        "page_id": item["id"],
+                        "page_id": properties["Product"]["relation"][0]["id"],
                         "cover": item["cover"]["file"]["url"]
                         if item.get("cover") and item["cover"].get("file")
                         else None,
                         "title": properties["Product name"]["formula"]["string"],
-                        "subcategory": properties["Subcategory"]["rollup"]["array"][0][
-                            "select"
-                        ]["name"][6:]
-                        if properties["Subcategory"]["rollup"]["array"]
-                        else None,
-                        "brand": properties["Brand"]["rollup"]["array"][0]["select"][
-                            "name"
-                        ]
-                        if properties["Brand"]["rollup"]["array"]
-                        else None,
+                        "subcategory": properties["Subcategory as string"]["formula"][
+                            "string"
+                        ][6:],
+                        "brand": properties["Brand"]["formula"]["string"],
                         "model": properties["Model"]["rollup"]["array"][0]["select"][
                             "name"
                         ]

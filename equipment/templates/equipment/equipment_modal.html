@@ -88,17 +88,17 @@
                             <fieldset>
                                 <legend class="text-sm font-medium leading-6 text-gray-900">목적</legend>
                                 <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                    {% for policy in policy_list %}
+                                    {% for purpose in purpose_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
                                             <input type="radio"
-                                                   id="id_policy_{{ policy.priority }}"
-                                                   name="id_policy"
-                                                   value="{{ policy.priority }}"
+                                                   id="id_purpose_{{ purpose.priority }}"
+                                                   name="id_purpose"
+                                                   value="{{ purpose.priority }}"
                                                    class="sr-only radio"
-                                                   aria-labelledby="id_policy_{{ policy.priority }}_label">
+                                                   aria-labelledby="id_purpose_{{ purpose.priority }}_label">
                                             <span class="flex flex-1">
-                                                <span id="id_policy_{{ policy.priority }}_label"
-                                                      class="radio-title block whitespace-pre-line text-sm font-medium text-gray-900">{{ policy.keyword|replace_space_with_newline }}</span>
+                                                <span id="id_purpose_{{ purpose.priority }}_label"
+                                                      class="radio-title block whitespace-pre-line text-sm font-medium text-gray-900">{{ purpose.keyword|replace_space_with_newline }}</span>
                                             </span>
                                             <svg class="h-5 w-5 ml-2 text-flamingo"
                                                  viewBox="0 0 20 20"
@@ -111,11 +111,11 @@
                                         </label>
                                     {% endfor %}
                                 </div>
-                                <label for="id_policy" hidden>목적</label>
+                                <label for="id_purpose" hidden>목적</label>
                                 <input type="text"
-                                       id="id_policy"
+                                       id="id_purpose"
                                        class="alt-radio"
-                                       value="{{ policy.priority }}"
+                                       value="{{ purpose.priority }}"
                                        required
                                        hidden>
                             </fieldset>

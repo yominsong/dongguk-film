@@ -15,8 +15,8 @@ json_path = (
 #
 
 
-def update_equipment_category_and_policy(request):
-    target_list = ["category", "policy"]
+def update_equipment_category_and_purpose(request):
+    target_list = ["category", "purpose"]
     result_list = []
 
     for target in target_list:
@@ -29,9 +29,9 @@ def update_equipment_category_and_policy(request):
                 ],
                 "sort": [{"property": "Priority", "direction": "ascending"}],
             }
-        elif target == "policy":
+        elif target == "purpose":
             data = {
-                "db_name": "equipment-policy",
+                "db_name": "equipment-purpose",
                 "filter_property": [
                     "FW%7Cd",  # Priority
                     "DrOq",  # Keyword
@@ -54,7 +54,7 @@ def update_equipment_category_and_policy(request):
 
     send_msg(request, "UEQ", "DEV", result_list)
 
-    return HttpResponse(f"Updated category and policy: {result_list}")
+    return HttpResponse(f"Updated category and purpose: {result_list}")
 
 
 #
@@ -62,9 +62,9 @@ def update_equipment_category_and_policy(request):
 #
 
 
-def get_equipment_category_or_policy(category_or_policy: str):
+def get_equipment_category_or_purpose(category_or_purpose: str):
     with open(json_path, "r") as f:
-        item_list = json.load(f)[category_or_policy]
+        item_list = json.load(f)[category_or_purpose]
         f.close()
 
     return item_list

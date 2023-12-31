@@ -7,9 +7,9 @@ const id_search_equipment_init = document.getElementById("id_search_equipment_in
 const id_equipment_q = document.getElementById("id_equipment_q");
 const id_equipment_modal = document.getElementById("id_equipment_modal");
 const id_category = document.getElementById("id_category");
-const id_policy = document.getElementById("id_policy");
+const id_purpose = document.getElementById("id_purpose");
 const id_filter_equipment = document.getElementById("id_filter_equipment");
-const radioInputs = document.querySelectorAll("input[name='id_category'], input[name='id_policy']");
+const radioInputs = document.querySelectorAll("input[name='id_category'], input[name='id_purpose']");
 
 let currentHistoryLength = history.length;
 let lastClickedWasHash = false;
@@ -64,8 +64,8 @@ function initForm() {
         input.addEventListener("click", () => {
             if (input.id.indexOf("category") != -1) {
                 id_category.value = input.value;
-            } else if (input.id.indexOf("policy") != -1) {
-                id_policy.value = input.value;
+            } else if (input.id.indexOf("purpose") != -1) {
+                id_purpose.value = input.value;
             };
         });
 
@@ -103,7 +103,7 @@ function initForm() {
         });
 
         if (input.id.indexOf("category") != -1 && input.value == id_category.value ||
-            input.id.indexOf("policy") != -1 && input.value == id_policy.value) {
+            input.id.indexOf("purpose") != -1 && input.value == id_purpose.value) {
             input.click();
         };
 
@@ -196,7 +196,7 @@ function requestFilterEquipment() {
         };
         radios.forEach((radio) => { radio.disabled = true });
     });
-    location.href = `${originLocation}/equipment/?sort=ascending&category=${id_category.value}&policy=${id_policy.value}`;
+    location.href = `${originLocation}/equipment/?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
 }
 
 function setPage() {
@@ -228,7 +228,7 @@ function setPage() {
             radios.forEach((radio) => { radio.disabled = false });
         });
         id_category.value = urlParams.get("category");
-        id_policy.value = urlParams.get("policy");
+        id_purpose.value = urlParams.get("purpose");
         initForm();
 
         // Step one (first and last)

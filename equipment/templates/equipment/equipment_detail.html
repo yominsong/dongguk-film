@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+{% load static %}
+{% load tags %}
+{% block meta %}
+    <meta property="og:title" content="기자재 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'equipment:equipment' %}">
+    <meta name="robots" content="index,follow">
+{% endblock meta %}
+{% block title %}
+    기자재 - 디닷에프
+{% endblock title %}
+{% block body %}
+    <!-- Hero -->
+    <div class="relative sm:pt-6 lg:pt-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
+                <div class="absolute inset-0" aria-hidden="true">
+                    <div class="mix-blend-multiply w-full h-full">
+                        <!-- Swiper -->
+                        <div class="swiper mySwiper w-full h-full">
+                            <div class="swiper-wrapper">
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
+                </div>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">기자재</h1>
+                    <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                        카메라, 오디오 레코더 등 기자재 대여
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <!-- Detail body -->
+        <div id="id_equipment_detail"
+             class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8">
+            <!-- Product details -->
+            <div class="lg:max-w-lg lg:self-end">
+                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                    {{ equipment.category }}
+                </p>
+                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.title }}</h2>
+                <div class="flex justify-between items-center mt-3 h-[24px]">
+                    <div class="flex items-center text-sm text-gray-500 gap-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.5"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <span>대여 수량 한도 없음</span>
+                    </div>
+                    <div x-data="Components.menu({ open: false })"
+                         x-init="init()"
+                         @keydown.escape.stop="open = false; focusButton()"
+                         @click.away="onClickAway($event)"
+                         class="relative ml-auto">
+                        <button type="button"
+                                class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
+                                id="id_notice_detail_option_button"
+                                x-ref="button"
+                                @click="onButtonClick()"
+                                @keyup.space.prevent="onButtonEnter()"
+                                @keydown.enter.prevent="onButtonEnter()"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                x-bind:aria-expanded="open.toString()"
+                                @keydown.arrow-up.prevent="onArrowUp()"
+                                @keydown.arrow-down.prevent="onArrowDown()">
+                            <span class="sr-only">옵션 열기</span>
+                            <svg class="h-5 w-5"
+                                 viewBox="0 0 20 20"
+                                 fill="currentColor"
+                                 aria-hidden="true">
+                                <path d="M3 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
+                                </path>
+                            </svg>
+                        </button>
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-1 shadow-md ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
+                             x-ref="menu-items"
+                             x-description="Dropdown menu, show/hide based on menu state."
+                             x-bind:aria-activedescendant="activeDescendant"
+                             role="menu"
+                             aria-orientation="vertical"
+                             aria-labelledby="id_notice_detail_option_button"
+                             tabindex="-1"
+                             id="id_notice_detail_option_menu"
+                             @keydown.arrow-up.prevent="onArrowUp()"
+                             @keydown.arrow-down.prevent="onArrowDown()"
+                             @keydown.tab="open = false"
+                             @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                             @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                             style="display: none">
+                            <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                 x-state:on="Active"
+                                 x-state:off="Not Active"
+                                 :class="{ 'bg-gray-100': activeIndex === 0 }"
+                                 role="menuitem"
+                                 tabindex="-1"
+                                 id="id_notice_detail_share"
+                                 @mouseenter="onMouseEnter($event); activeIndex = 0"
+                                 @mousemove="onMouseMove($event, 0)"
+                                 @mouseleave="onMouseLeave($event); activeIndex = -1"
+                                 @click="open = false">공유하기</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative mt-2">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-100"></div>
+                    </div>
+                    <div class="relative flex justify-end min-h-[36px]"></div>
+                </div>
+                <!-- <section aria-labelledby="information-heading" class="mt-4">
+                    <h2 id="information-heading" class="sr-only">Product information</h2>
+                    <div class="flex items-center">
+                        <p class="text-lg text-gray-900 sm:text-xl">$220</p>
+                        <div class="ml-4 border-l border-gray-300 pl-4">
+                            <h2 class="sr-only">Reviews</h2>
+                            <div class="flex items-center">
+                                <div>
+                                    <div class="flex items-center">
+                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state:on="Active" x-state:off="Default" x-state-description="Active: &quot;text-yellow-400&quot;, Default: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                        <svg class="text-gray-300 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <p class="sr-only">4 out of 5 stars</p>
+                                </div>
+                                <p class="ml-2 text-sm text-gray-500">1624 reviews</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-6">
+                        <p class="text-base text-gray-500">
+                            Don't compromise on snack-carrying capacity with this lightweight and spacious bag. The drawstring top keeps all your favorite chips, crisps, fries, biscuits, crackers, and cookies secure.
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center">
+                        <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
+                            </path>
+                        </svg>
+                        <p class="ml-2 text-sm text-gray-500">In stock and ready to ship</p>
+                    </div>
+                </section> -->
+            </div>
+            <!-- Product image -->
+            <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
+                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
+                    <img src="{{ equipment.cover }}"
+                         alt="Light green canvas bag with black straps, handle, front zipper pouch, and drawstring top."
+                         class="h-full w-full object-cover object-center"
+                         height=""
+                         width="">
+                </div>
+            </div>
+            <!-- Product form -->
+            <div class="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start">
+                <section aria-labelledby="options-heading">
+                    <h2 id="options-heading" class="sr-only">Product options</h2>
+                    <form>
+                        <div class="sm:flex sm:justify-between">
+                            <!-- Size selector -->
+                            <fieldset x-data="window.Components.radioGroup({ initialCheckedIndex: 0 })"
+                                      x-init="init()">
+                                <legend class="block text-sm font-medium text-gray-700">Size</legend>
+                                <div class="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <div x-radio-group-option=""
+                                         class="relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none undefined"
+                                         x-description="Active: &quot;ring-2 ring-flamingo-500&quot;"
+                                         :class="{ 'ring-2 ring-flamingo-500': (active === '18L'), 'undefined': !(active === '18L') }">
+                                        <input type="radio"
+                                               x-model="value"
+                                               name="size-choice"
+                                               value="18L"
+                                               class="sr-only"
+                                               aria-labelledby="size-choice-0-label"
+                                               aria-describedby="size-choice-0-description">
+                                        <p id="size-choice-0-label" class="text-base font-medium text-gray-900">18L</p>
+                                        <p id="size-choice-0-description" class="mt-1 text-sm text-gray-500">Perfect for a reasonable amount of snacks.</p>
+                                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-flamingo-500"
+                                             aria-hidden="true"
+                                             x-description="Active: &quot;border&quot;, Not Active: &quot;border-2&quot;	Checked: &quot;border-flamingo-500&quot;, Not Checked: &quot;border-transparent&quot;"
+                                             :class="{ 'border': (active === '18L'), 'border-2': !(active === '18L'), 'border-flamingo-500': (value === '18L'), 'border-transparent': !(value === '18L') }">
+                                        </div>
+                                    </div>
+                                    <div x-radio-group-option=""
+                                         class="relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none undefined"
+                                         x-description="Active: &quot;ring-2 ring-flamingo-500&quot;"
+                                         :class="{ 'ring-2 ring-flamingo-500': (active === '20L'), 'undefined': !(active === '20L') }">
+                                        <input type="radio"
+                                               x-model="value"
+                                               name="size-choice"
+                                               value="20L"
+                                               class="sr-only"
+                                               aria-labelledby="size-choice-1-label"
+                                               aria-describedby="size-choice-1-description">
+                                        <p id="size-choice-1-label" class="text-base font-medium text-gray-900">20L</p>
+                                        <p id="size-choice-1-description" class="mt-1 text-sm text-gray-500">Enough room for a serious amount of snacks.</p>
+                                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent"
+                                             aria-hidden="true"
+                                             x-description="Active: &quot;border&quot;, Not Active: &quot;border-2&quot;	Checked: &quot;border-flamingo-500&quot;, Not Checked: &quot;border-transparent&quot;"
+                                             :class="{ 'border': (active === '20L'), 'border-2': !(active === '20L'), 'border-flamingo-500': (value === '20L'), 'border-transparent': !(value === '20L') }">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="mt-4">
+                            <a href="#"
+                               class="group inline-flex text-sm text-gray-500 hover:text-gray-700">
+                                <span>What size should I buy?</span>
+                                <svg class="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd">
+                                    </path>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="mt-10">
+                            <button type="submit"
+                                    class="flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-8 py-3 text-base font-medium text-white hover:bg-flamingo-700 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2 focus:ring-offset-gray-50">
+                                Add to bag
+                            </button>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <a href="#" class="group inline-flex text-base font-medium">
+                                <svg class="mr-2 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke-width="1.5"
+                                     stroke="currentColor"
+                                     aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z">
+                                    </path>
+                                </svg>
+                                <span class="text-gray-500 hover:text-gray-700">Lifetime Guarantee</span>
+                            </a>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+        <span id="id_notice_data"
+              data-notice-page-id="{{ notice.page_id }}"
+              data-notice-title="{{ notice.title }}"
+              data-notice-category="{{ notice.category }}"
+              data-notice-keyword="{{ notice.keyword.string }}"
+              data-notice-user-name="{{ notice.user.name }}"
+              data-notice-user-profile-img="{{ notice.user.profile_img }}"
+              data-notice-listed-date="{{ notice.listed_date }}"
+              hidden></span>
+        <!-- Detail footer -->
+        <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
+            <div class="sm:flex sm:flex-row-reverse">
+                <button type="button"
+                        id="id_go_to_list"
+                        class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed">
+                    목록 보기
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    {% include "equipment/equipment_modal.html" %}
+    <script src="{% static 'js/forms.js' %}"></script>
+    <script src="{% static 'js/equipment.js' %}"></script>
+{% endblock body %}
