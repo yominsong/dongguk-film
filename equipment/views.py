@@ -117,7 +117,11 @@ def equipment_detail(request, page_id):
         equipment = response.json()
         properties = equipment["properties"]
 
-        title = properties["Title"]["title"][0]["plain_text"]
+        title = ""
+        for part in properties["Title"]["title"]:
+            title += part["plain_text"]
+
+        # title = properties["Title"]["title"][0]["plain_text"]
         category = properties["Category keyword"]["formula"]["string"]
         subcategory = properties["Subcategory keyword"]["rollup"]["array"][0]["rich_text"][0]["plain_text"]
         brand = properties["Brand as string"]["formula"]["string"]

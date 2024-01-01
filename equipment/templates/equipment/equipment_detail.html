@@ -48,7 +48,7 @@
         <div id="id_equipment_detail"
              class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8">
             <!-- Product details -->
-            <div class="lg:max-w-lg lg:self-end">
+            <div>
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ equipment.category }}
                 </p>
@@ -184,17 +184,25 @@
                 </section> -->
             </div>
             <!-- Product image -->
-            <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
-                <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
+            <!-- <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
+                <div class="aspect-h-1 aspect-w-1 bg-gray-50 overflow-hidden rounded-lg">
                     <img src="{{ equipment.cover }}"
-                         alt="Light green canvas bag with black straps, handle, front zipper pouch, and drawstring top."
-                         class="h-full w-full object-cover object-center"
+                         alt="{{ equipment.title }} 사진"
+                         class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center"
                          height=""
                          width="">
                 </div>
+            </div> -->
+            <!-- Product image -->
+            <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0">
+                <div class="flex justify-center items-center aspect-1 p-4 bg-gray-50 overflow-hidden rounded-lg">
+                    <img src="{{ equipment.cover }}"
+                         alt="{{ equipment.title }} 사진"
+                         class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center">
+                </div>
             </div>
             <!-- Product form -->
-            <div class="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start">
+            <div class="mt-10 lg:col-start-1 lg:row-start-2 lg:self-start">
                 <section aria-labelledby="options-heading">
                     <h2 id="options-heading" class="sr-only">Product options</h2>
                     <form>

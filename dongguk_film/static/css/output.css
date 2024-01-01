@@ -1100,6 +1100,10 @@ select {
   display: none;
 }
 
+.aspect-1 {
+  aspect-ratio: 1;
+}
+
 .h-1 {
   height: 0.25rem;
 }
@@ -1136,6 +1140,10 @@ select {
   height: 18px;
 }
 
+.h-\[24px\] {
+  height: 24px;
+}
+
 .h-\[72px\] {
   height: 72px;
 }
@@ -1148,8 +1156,8 @@ select {
   height: 100vh;
 }
 
-.h-\[24px\] {
-  height: 24px;
+.max-h-\[500px\] {
+  max-height: 500px;
 }
 
 .min-h-\[36px\] {
@@ -1222,6 +1230,10 @@ select {
 
 .max-w-7xl {
   max-width: 80rem;
+}
+
+.max-w-\[500px\] {
+  max-width: 500px;
 }
 
 .max-w-lg {
@@ -1350,6 +1362,10 @@ select {
 
 .flex-col-reverse {
   flex-direction: column-reverse;
+}
+
+.place-items-center {
+  place-items: center;
 }
 
 .items-start {
@@ -1499,6 +1515,10 @@ select {
   border-color: rgb(249 250 251 / var(--tw-divide-opacity));
 }
 
+.self-end {
+  align-self: flex-end;
+}
+
 .justify-self-end {
   justify-self: end;
 }
@@ -1633,11 +1653,6 @@ select {
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
-.border-indigo-500 {
-  --tw-border-opacity: 1;
-  border-color: rgb(99 102 241 / var(--tw-border-opacity));
-}
-
 .border-transparent {
   border-color: transparent;
 }
@@ -1726,11 +1741,6 @@ select {
   background-color: rgb(240 253 244 / var(--tw-bg-opacity));
 }
 
-.bg-indigo-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
-}
-
 .bg-red-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity));
@@ -1776,6 +1786,11 @@ select {
 .object-center {
   -o-object-position: center;
      object-position: center;
+}
+
+.object-right-bottom {
+  -o-object-position: right bottom;
+     object-position: right bottom;
 }
 
 .p-1 {
@@ -2274,6 +2289,11 @@ select {
   --tw-ring-color: rgb(0 0 0 / var(--tw-ring-opacity));
 }
 
+.ring-flamingo-500 {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
+}
+
 .ring-flamingo-600\/20 {
   --tw-ring-color: rgb(206 64 13 / 0.2);
 }
@@ -2296,11 +2316,6 @@ select {
   --tw-ring-color: rgb(22 163 74 / 0.2);
 }
 
-.ring-indigo-500 {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
-}
-
 .ring-red-600\/20 {
   --tw-ring-color: rgb(220 38 38 / 0.2);
 }
@@ -2315,11 +2330,6 @@ select {
 
 .ring-yellow-600\/20 {
   --tw-ring-color: rgb(202 138 4 / 0.2);
-}
-
-.ring-flamingo-500 {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
 }
 
 .ring-opacity-5 {
@@ -2534,11 +2544,6 @@ select {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-indigo-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(67 56 202 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-red-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity));
@@ -2635,11 +2640,6 @@ select {
 .focus\:ring-flamingo-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
-}
-
-.focus\:ring-indigo-500:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-white:focus {
