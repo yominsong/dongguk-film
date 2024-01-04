@@ -48,22 +48,18 @@
         <div id="id_equipment_detail"
              class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8">
             <!-- Product details -->
-            <div>
+            <div class="lg:col-start-2 lg:row-start-1">
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ equipment.category }}
                 </p>
                 <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.title }}</h2>
                 <div class="flex justify-between items-center mt-3 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke-width="1.5"
-                             stroke="currentColor"
-                             class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <span>대여 수량 한도 없음</span>
+                        {% if not "N/A" in equipment.subcategory %}
+                            <span>{{ equipment.subcategory }}</span>
+                            <span>·</span>
+                        {% endif %}
+                        <span>{{ equipment.equipment_id }}</span>
                     </div>
                     <div x-data="Components.menu({ open: false })"
                          x-init="init()"
@@ -128,81 +124,145 @@
                     </div>
                 </div>
                 <div class="relative mt-2">
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="absolute inset-0 flex items-center sm:items-end"
+                         aria-hidden="true">
                         <div class="w-full border-t border-gray-100"></div>
                     </div>
-                    <div class="relative flex justify-end min-h-[36px]"></div>
+                    <div class="relative flex justify-end min-h-[36px] sm:min-h-[18px]"></div>
                 </div>
-                <!-- <section aria-labelledby="information-heading" class="mt-4">
-                    <h2 id="information-heading" class="sr-only">Product information</h2>
-                    <div class="flex items-center">
-                        <p class="text-lg text-gray-900 sm:text-xl">$220</p>
-                        <div class="ml-4 border-l border-gray-300 pl-4">
-                            <h2 class="sr-only">Reviews</h2>
-                            <div class="flex items-center">
-                                <div>
-                                    <div class="flex items-center">
-                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state:on="Active" x-state:off="Default" x-state-description="Active: &quot;text-yellow-400&quot;, Default: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
-                                            </path>
-                                        </svg>
-                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
-                                            </path>
-                                        </svg>
-                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
-                                            </path>
-                                        </svg>
-                                        <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
-                                            </path>
-                                        </svg>
-                                        <svg class="text-gray-300 h-5 w-5 flex-shrink-0" x-state-description="undefined: &quot;text-yellow-400&quot;, undefined: &quot;text-gray-300&quot;" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <p class="sr-only">4 out of 5 stars</p>
-                                </div>
-                                <p class="ml-2 text-sm text-gray-500">1624 reviews</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 space-y-6">
-                        <p class="text-base text-gray-500">
-                            Don't compromise on snack-carrying capacity with this lightweight and spacious bag. The drawstring top keeps all your favorite chips, crisps, fries, biscuits, crackers, and cookies secure.
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center">
-                        <svg class="h-5 w-5 flex-shrink-0 text-green-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
-                            </path>
-                        </svg>
-                        <p class="ml-2 text-sm text-gray-500">In stock and ready to ship</p>
-                    </div>
-                </section> -->
             </div>
             <!-- Product image -->
-            <!-- <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
-                <div class="aspect-h-1 aspect-w-1 bg-gray-50 overflow-hidden rounded-lg">
+            <div class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+                <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
                     <img src="{{ equipment.cover }}"
                          alt="{{ equipment.title }} 사진"
                          class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center"
                          height=""
                          width="">
                 </div>
-            </div> -->
-            <!-- Product image -->
-            <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0">
-                <div class="flex justify-center items-center aspect-1 p-4 bg-gray-50 overflow-hidden rounded-lg">
-                    <img src="{{ equipment.cover }}"
-                         alt="{{ equipment.title }} 사진"
-                         class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center">
-                </div>
             </div>
             <!-- Product form -->
-            <div class="mt-10 lg:col-start-1 lg:row-start-2 lg:self-start">
+            <div class="mt-4 sm:mt-0 lg:col-start-2 lg:row-start-2 lg:self-start">
+                <section aria-labelledby="details-heading">
+                    <h2 id="details-heading" class="sr-only">기자재 정보</h2>
+                    <div class="divide-y divide-gray-100 border-t border-t-gray-100 sm:border-t-0">
+                        <div x-data="{ open: true }">
+                            <h3>
+                                <button type="button"
+                                        x-description="Expand/collapse question button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left"
+                                        aria-controls="disclosure-1"
+                                        @click="open = !open"
+                                        aria-expanded="false"
+                                        x-bind:aria-expanded="open.toString()">
+                                    <span class="text-sm font-medium text-gray-900"
+                                          x-state:on="Open"
+                                          x-state:off="Closed"
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 정보</span>
+                                    <span class="ml-6 flex items-center">
+                                        <svg class="h-6 w-6 text-gray-400 group-hover:text-gray-500 block"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'hidden': open, 'block': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                                        </svg>
+                                        <svg class="h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500 hidden"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'block': open, 'hidden': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div class="pb-6" id="disclosure-1" x-show="open" style="display: none">
+                                <div class="rounded-md bg-gray-50 p-4">
+                                    <div class="flex">
+                                        <div>
+                                            <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
+                                            <div class="text-sm text-gray-700">
+                                                <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    <li>
+                                                        <span class="font-semibold">대여 목적 제한</span>:
+                                                        {{ equipment.matched_purpose_list|join:" | " }}
+                                                    </li>
+                                                    <li>
+                                                        <span class="font-semibold">대여 수량 한도</span>: 카메라 1개
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div x-data="{ open: false }">
+                            <h3>
+                                <button type="button"
+                                        x-description="Expand/collapse question button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left"
+                                        aria-controls="disclosure-1"
+                                        @click="open = !open"
+                                        aria-expanded="false"
+                                        x-bind:aria-expanded="open.toString()">
+                                    <span class="text-gray-900 text-sm font-medium"
+                                          x-state:on="Open"
+                                          x-state:off="Closed"
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">유의 사항</span>
+                                    <span class="ml-6 flex items-center">
+                                        <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'hidden': open, 'block': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                                        </svg>
+                                        <svg class="hidden h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'block': open, 'hidden': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div class="pb-6" id="disclosure-1" x-show="open" style="display: none">
+                                <div class="rounded-md bg-gray-50 p-4">
+                                    <div class="flex">
+                                        <div>
+                                            <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
+                                            <div class="text-sm text-gray-700">
+                                                <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    <li>개별 기자재마다 부속품 구성 및 세부 상태가 상이할 수 있어요.</li>
+                                                    <li>예약 완료 시 대여 기간은 연장할 수 없어요.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 <section aria-labelledby="options-heading">
                     <h2 id="options-heading" class="sr-only">Product options</h2>
                     <form>

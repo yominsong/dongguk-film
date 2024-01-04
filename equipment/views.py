@@ -108,6 +108,7 @@ def equipment(request):
 
 def equipment_detail(request, page_id):
     image_list = get_hero_img("equipment")
+    purpose_list = get_equipment_category_or_purpose("purpose")
 
     # Notion
     response = notion("retrieve", "page", data={"page_id": page_id})
@@ -121,19 +122,37 @@ def equipment_detail(request, page_id):
         for part in properties["Title"]["title"]:
             title += part["plain_text"]
 
-        # title = properties["Title"]["title"][0]["plain_text"]
+        equipment_id = properties["Equipment ID"]["formula"]["string"]
         category = properties["Category keyword"]["formula"]["string"]
-        subcategory = properties["Subcategory keyword"]["rollup"]["array"][0]["rich_text"][0]["plain_text"]
+        subcategory = properties["Subcategory keyword"]["rollup"]["array"][0][
+            "rich_text"
+        ][0]["plain_text"]
         brand = properties["Brand as string"]["formula"]["string"]
         model = properties["Model"]["select"]["name"]
+
+        allocated_quantity_by_purpose = [
+            aqp
+            for aqp in properties["Allocated quantity by purpose"]["formula"][
+                "string"
+            ].split("   ")
+            if "00" not in aqp
+        ]
+        priority = [aqp.split(" ")[0][1] for aqp in allocated_quantity_by_purpose]
+        matched_purpose_list = []
+        for item in purpose_list:
+            if item["priority"] in priority:
+                matched_purpose_list.append(item["keyword"])
+
         shown_as = properties["Shown as"]["relation"][0]["id"]
 
         equipment = {
+            "equipment_id": equipment_id,
             "title": title,
             "category": category,
             "subcategory": subcategory,
             "brand": brand,
             "model": model,
+            "matched_purpose_list": matched_purpose_list
         }
 
         equipment["cover"] = notion(
