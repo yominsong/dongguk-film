@@ -25,7 +25,7 @@ def update_equipment_policy(request):
                 "table_name": "equipment-category",
                 "param": {
                     "view": "Grid view",
-                    "fields": ["Priority", "Keyword"],
+                    "fields": ["Name", "Priority", "Keyword"],
                 },
             }
         elif target == "purpose":
@@ -33,7 +33,7 @@ def update_equipment_policy(request):
                 "table_name": "equipment-purpose",
                 "param": {
                     "view": "Grid view",
-                    "fields": ["Priority", "Keyword", "Up to", "At least", "Max"],
+                    "fields": ["Name", "Priority", "Keyword", "Up to", "At least", "Max"],
                 },
             }
 

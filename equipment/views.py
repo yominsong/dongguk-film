@@ -8,7 +8,6 @@ import random
 
 
 def equipment(request):
-    sort = request.GET.get("sort", "ascending")
     category = request.GET.get("category", "A")
     purpose = request.GET.get("purpose", "A")
 
@@ -36,7 +35,7 @@ def equipment(request):
     equipment_count = len(equipment_list)
 
     # Parameter and template tag
-    param += f"sort={sort}&category={category}&purpose={purpose}&"
+    param += f"category={category}&purpose={purpose}&"
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category = {"priority": category, "keyword": category_dict.get(category)}
@@ -103,58 +102,11 @@ def equipment_detail(request, record_id):
     }
     equipment = airtable("get", "record", data=data)
 
-    # Notion
-    # response = notion("retrieve", "page", data={"page_id": page_id})
-    # if response.status_code != 200 or response.json()["archived"]:
-    #     raise Http404
-    # elif response.status_code == 200:
-    #     equipment = response.json()
-    #     properties = equipment["properties"]
-
-    #     title = ""
-    #     for part in properties["Title"]["title"]:
-    #         title += part["plain_text"]
-
-    #     equipment_id = properties["Equipment ID"]["formula"]["string"]
-    #     category = properties["Category keyword"]["formula"]["string"]
-    #     subcategory = properties["Subcategory keyword"]["rollup"]["array"][0][
-    #         "rich_text"
-    #     ][0]["plain_text"]
-    #     brand = properties["Brand as string"]["formula"]["string"]
-    #     model = properties["Model"]["select"]["name"]
-
-    #     allocated_quantity_by_purpose = [
-    #         quantity
-    #         for quantity in properties["Allocated quantity by purpose"]["formula"][
-    #             "string"
-    #         ].split("   ")
-    #         if "00" not in quantity
-    #     ]
-    #     priority_list = [
-    #         quantity.split(" ")[0][1] for quantity in allocated_quantity_by_purpose
-    #     ]
-
-    #     shown_as = properties["Shown as"]["relation"][0]["id"]
-
-    #     equipment = {
-    #         "page_id": page_id,
-    #         "equipment_id": equipment_id,
-    #         "title": title,
-    #         "category": category,
-    #         "subcategory": subcategory,
-    #         "brand": brand,
-    #         "model": model,
-    #     }
-
-    #     equipment["cover"] = notion(
-    #         "retrieve", "page", data={"page_id": shown_as}
-    #     ).json()["cover"]["file"]["url"]
-
-        # for purpose in purpose_list:
-        #     if purpose["priority"] in priority_list:
-        #         purpose["available"] = True
-        #     else:
-        #         purpose["available"] = False
+    for purpose in purpose_list:
+        if purpose["name"] in equipment["item_purpose"]:
+            purpose["available"] = True
+        else:
+            purpose["available"] = False
 
     return render(
         request,

@@ -7,7 +7,7 @@
     <meta name="robots" content="index,follow">
 {% endblock meta %}
 {% block title %}
-    기자재 - 디닷에프
+    {{ equipment.name }} - 기자재 - 디닷에프
 {% endblock title %}
 {% block body %}
     <!-- Hero -->
@@ -396,10 +396,12 @@
             </div>
         </div>
         <span id="id_equipment_data"
-              data-equipment-page-id="{{ equipment.record_id }}"
-              data-equipment-title="{{ equipment.name }}"
+              data-equipment-record-id="{{ equipment.record_id }}"
+              data-equipment-collection-id="{{ equipment.collection_id }}"
+              data-equipment-thumbnail="{{ equipment.thumbnail }}"
+              data-equipment-name="{{ equipment.name }}"
               data-equipment-category="{{ equipment.category }}"
-              data-equipment-keyword="{{ equipment.keyword.string }}"
+              data-equipment-subcategory="{{ equipment.subcategory }}"
               hidden></span>
         <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">

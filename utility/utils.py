@@ -350,6 +350,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "subcategory": fields.get("Subcategory keyword", [None])[0],
                 "brand": fields["Brand name"][0],
                 "model": fields["Model"],
+                "item_purpose": sorted(set(fields["Item purpose"].split(", "))),
             }
 
         result = record
@@ -371,6 +372,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     category = {
+                        "name": fields["Name"],
                         "priority": fields["Priority"],
                         "keyword": fields["Keyword"],
                     }
@@ -385,6 +387,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     purpose = {
+                        "name": fields["Name"],
                         "priority": fields["Priority"],
                         "keyword": fields["Keyword"],
                         "up_to": fields["Up to"],

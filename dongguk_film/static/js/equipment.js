@@ -255,24 +255,26 @@ if (id_copy_url !== null) { copyNoticeUrl() };
 function share() {
     let data = id_equipment_data.dataset;
     let [
-        equipmentTitle, equipmentCategory, equipmentKeyword, equipmentUserName, equipmentUserProfileImg, equipmentListedDate
+        equipmentCollectionId, equipmentThumbnail, equipmentName, equipmentCategory, equipmentSubcategory
     ] = [
-            data.equipmentTitle, data.equipmentCategory, data.equipmentKeyword, data.equipmentUserName, data.equipmentUserProfileImg, data.equipmentListedDate
+            data.equipmentCollectionId, data.equipmentThumbnail, data.equipmentName, data.equipmentCategory, data.equipmentSubcategory
         ];
+    let description;
+
+    if (equipmentSubcategory !== "None") {
+        description = `${equipmentCategory} · ${equipmentSubcategory} · ${equipmentCollectionId}`
+    } else {
+        description = `${equipmentCategory} · ${equipmentCollectionId}`
+    };
 
     Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
     id_kakaotalk.addEventListener("click", () => {
         Kakao.Share.sendDefault({
             objectType: "feed",
-            itemContent: {
-                profileText: equipmentUserName,
-                profileImageUrl: equipmentUserProfileImg,
-            },
             content: {
-                title: equipmentTitle,
-                description: `${equipmentListedDate} · ${equipmentCategory}\n${equipmentKeyword}`,
-                imageUrl:
-                    "https://dongguk.film/static/images/d_dot_f_logo.jpg",
+                title: equipmentName,
+                description: description,
+                imageUrl: equipmentThumbnail,
                 link: {
                     mobileWebUrl: `${originLocation}${location.pathname}`,
                     webUrl: `${originLocation}${location.pathname}`,
@@ -291,8 +293,7 @@ function share() {
     });
 
     id_x.addEventListener("click", () => {
-        let hashtags = equipmentKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
-        let xUrl = `https://twitter.com/intent/tweet?text=${equipmentTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+        let xUrl = `https://twitter.com/intent/tweet?text=${equipmentName}&url=${originLocation}${location.pathname}`;
 
         window.open(xUrl);
     });
