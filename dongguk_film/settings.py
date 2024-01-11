@@ -62,6 +62,12 @@ DMD_URL = get_secret("DMD_URL")
 
 DMD_COOKIE = get_secret("DMD_COOKIE")
 
+AIRTABLE_TOKEN = get_secret("AIRTABLE_TOKEN")
+
+AIRTABLE_BASE_ID = get_secret("AIRTABLE_BASE_ID")
+
+AIRTABLE_TABLE_ID = get_secret("AIRTABLE_TABLE_ID")
+
 NOTION_SECRET = get_secret("NOTION_SECRET")
 
 NOTION_DB_ID = get_secret("NOTION_DB_ID")
