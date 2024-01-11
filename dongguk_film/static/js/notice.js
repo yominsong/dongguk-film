@@ -487,7 +487,6 @@ function freezeCkEditor() {
 }
 
 function matchDivWidth() {
-    let id_notice_modal_land = document.getElementById("id_notice_modal_land");
     let id_content_parent = document.getElementById("id_content_parent");
     let widthBase;
 

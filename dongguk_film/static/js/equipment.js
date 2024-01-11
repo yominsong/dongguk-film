@@ -5,11 +5,18 @@
 const id_search_equipment = document.getElementById("id_search_equipment");
 const id_search_equipment_init = document.getElementById("id_search_equipment_init");
 const id_equipment_q = document.getElementById("id_equipment_q");
+// const id_equipment_grid = document.getElementById("id_equipment_grid");
+// const id_equipment_detail = document.getElementById("id_equipment_detail");
 const id_equipment_modal = document.getElementById("id_equipment_modal");
+// const id_equipment_modal_land = document.getElementById("id_equipment_modal_land");
+const id_equipment_modal_form = document.getElementById("id_equipment_modal_form");
+const id_equipment_modal_share = document.getElementById("id_equipment_modal_share");
+const id_equipment_data = document.getElementById("id_equipment_data");
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_filter_equipment = document.getElementById("id_filter_equipment");
 const radioInputs = document.querySelectorAll("input[name='id_category'], input[name='id_purpose']");
+const id_go_to_list = document.getElementById("id_go_to_list");
 
 let currentHistoryLength = history.length;
 let lastClickedWasHash = false;
@@ -20,12 +27,33 @@ let modalOpen = false;
 //
 
 function search() {
-    if (urlParams.has("q")) {
-        id_equipment_q.value = urlParams.get("q");
+    if (id_equipment_q !== null) {
+        if (urlParams.has("q")) {
+            id_equipment_q.value = urlParams.get("q");
+            ["click", "keyup"].forEach(type => {
+                id_search_equipment_init.addEventListener(type, (event) => {
+                    if (type == "click" || event.key == "Enter" || event.key == " ") {
+                        urlParams.delete("q");
+                        location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
+                        id_equipment_q.readOnly = true;
+                        id_search_equipment.disabled = true;
+                    };
+                });
+            });
+        };
+
+        id_equipment_q.addEventListener("keyup", (event) => {
+            if (event.key == "Enter") {
+                id_search_equipment.click();
+            };
+        });
+
         ["click", "keyup"].forEach(type => {
-            id_search_equipment_init.addEventListener(type, (event) => {
+            id_search_equipment.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter" || event.key == " ") {
+                    urlParams.delete("page");
                     urlParams.delete("q");
+                    urlParams.append("q", id_equipment_q.value);
                     location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
                     id_equipment_q.readOnly = true;
                     id_search_equipment.disabled = true;
@@ -33,25 +61,6 @@ function search() {
             });
         });
     };
-
-    id_equipment_q.addEventListener("keyup", (event) => {
-        if (event.key == "Enter") {
-            id_search_equipment.click();
-        };
-    });
-
-    ["click", "keyup"].forEach(type => {
-        id_search_equipment.addEventListener(type, (event) => {
-            if (type == "click" || event.key == "Enter" || event.key == " ") {
-                urlParams.delete("page");
-                urlParams.delete("q");
-                urlParams.append("q", id_equipment_q.value);
-                location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
-                id_equipment_q.readOnly = true;
-                id_search_equipment.disabled = true;
-            };
-        });
-    });
 }
 
 search();
@@ -117,9 +126,12 @@ function initForm() {
 }
 
 function initModal() {
-    let class_filters = document.querySelectorAll(".class-filter");
+    let keywords = document.querySelectorAll(".class-keyword");
+    let filters = document.querySelectorAll(".class-filter");
+    let shares = document.querySelectorAll(".class-share");
 
-    function openModal() {
+    function openModal(action) {
+        // action: all
         id_equipment_modal.hidden = false;
         id_equipment_modal.setAttribute("x-data", "{ open: true }");
         disableFocusOutsideModal(id_equipment_modal);
@@ -130,14 +142,49 @@ function initModal() {
         });
         sessionStorage.setItem("scrollPosition", window.scrollY);
         modalOpen = true;
-        initForm();
+
+        // action: filter
+        if (action == "filter") {
+            id_equipment_modal_form.hidden = false;
+            id_equipment_modal_share.hidden = true;
+            keywords.forEach(keyword => {
+                keyword.innerText = "검색 필터";
+            });
+            initForm();
+            id_filter_equipment.classList.replace("hidden", "inline-flex");
+        }
+
+        // action: share
+        else if (action == "share") {
+            if (id_equipment_modal_form !== null) { id_equipment_modal_form.hidden = true };
+            id_equipment_modal_share.hidden = false;
+            keywords.forEach(keyword => {
+                keyword.innerText = "공유하기";
+            });
+            id_copy_url_ready.classList.remove("hidden");
+            id_copy_url_done.classList.add("hidden");
+            id_copy_url_descr.hidden = true;
+            id_filter_equipment.classList.replace("inline-flex", "hidden");
+        };
     };
 
-    class_filters.forEach(filter => {
+    // Users who want to filter their search
+    filters.forEach(filter => {
         ["click", "keyup"].forEach(type => {
             filter.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter") {
-                    openModal();
+                    openModal("filter");
+                };
+            });
+        });
+    });
+
+    // Users who want to share
+    shares.forEach(share => {
+        ["click", "keyup"].forEach(type => {
+            share.addEventListener(type, (event) => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    openModal("share");
                 };
             });
         });
@@ -179,6 +226,128 @@ function preventGoBack() {
 }
 
 preventGoBack();
+
+function copyNoticeUrl() {
+    id_url.addEventListener("click", () => {
+        id_url.select();
+    });
+
+    id_copy_url.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(id_url.value);
+        } catch (e) {
+            id_url.select();
+            document.execCommand("copy"); // deprecated, but used for KakaoTalk in-app browser
+        };
+
+        id_copy_url_ready.classList.add("hidden");
+        id_copy_url_done.classList.remove("hidden");
+        id_copy_url_descr.hidden = false;
+        id_copy_url_done.classList.add("blink");
+
+        setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
+    });
+}
+
+if (id_copy_url !== null) { copyNoticeUrl() };
+
+
+function share() {
+    let data = id_equipment_data.dataset;
+    let [
+        equipmentTitle, equipmentCategory, equipmentKeyword, equipmentUserName, equipmentUserProfileImg, equipmentListedDate
+    ] = [
+            data.equipmentTitle, data.equipmentCategory, data.equipmentKeyword, data.equipmentUserName, data.equipmentUserProfileImg, data.equipmentListedDate
+        ];
+
+    Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+    id_kakaotalk.addEventListener("click", () => {
+        Kakao.Share.sendDefault({
+            objectType: "feed",
+            itemContent: {
+                profileText: equipmentUserName,
+                profileImageUrl: equipmentUserProfileImg,
+            },
+            content: {
+                title: equipmentTitle,
+                description: `${equipmentListedDate} · ${equipmentCategory}\n${equipmentKeyword}`,
+                imageUrl:
+                    "https://dongguk.film/static/images/d_dot_f_logo.jpg",
+                link: {
+                    mobileWebUrl: `${originLocation}${location.pathname}`,
+                    webUrl: `${originLocation}${location.pathname}`,
+                },
+            },
+            buttons: [
+                {
+                    title: "디닷에프에서 보기",
+                    link: {
+                        mobileWebUrl: `${originLocation}${location.pathname}`,
+                        webUrl: `${originLocation}${location.pathname}`,
+                    },
+                },
+            ],
+        });
+    });
+
+    id_x.addEventListener("click", () => {
+        let hashtags = equipmentKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
+        let xUrl = `https://twitter.com/intent/tweet?text=${equipmentTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+
+        window.open(xUrl);
+    });
+
+    id_facebook.addEventListener("click", () => {
+        let facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+
+        window.open(facebookUrl);
+    });
+
+    id_line.addEventListener("click", () => {
+        let lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+
+        window.open(lineUrl);
+    });
+}
+
+if (id_equipment_data) { share() };
+
+function goToList() {
+    let details = document.querySelectorAll(".class-detail");
+    let params = {};
+
+    if (details !== null) {
+        details.forEach((detail) => {
+            if (location.search !== "") {
+                params.previousSearch = location.search;
+                detail.href += "?" + new URLSearchParams(params).toString();
+            };
+        });
+    };
+
+    if (id_go_to_list !== null) {
+        if (id_go_to_list.previousElementSibling == null) {
+            id_go_to_list.classList.remove("mt-3");
+        };
+
+        ["click", "keyup"].forEach(type => {
+            id_go_to_list.addEventListener(type, (event) => {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
+                    let previousSearch = new URLSearchParams(location.search).get("previousSearch");
+
+                    if (previousSearch !== null) {
+                        location.href = `${originLocation}/equipment${previousSearch}`;
+                    } else {
+                        location.href = `${originLocation}/equipment`;
+                    };
+                    id_go_to_list.disabled = true;
+                };
+            });
+        });
+    };
+}
+
+goToList();
 
 //
 // Main functions

@@ -129,18 +129,19 @@
     </div>
     <!-- Grid -->
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow rounded-md p-6">
+        <div id="id_equipment_grid"
+             class="overflow-hidden bg-white shadow rounded-md p-6">
             <!-- Equipment grid -->
             <div aria-labelledby="products-heading"
                  class="mx-auto max-w-2xl lg:max-w-7xl">
                 <h2 id="products-heading" class="sr-only">Products</h2>
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                     {% for equipment in page_value %}
-                        <a href="{% url 'equipment:equipment_detail' equipment.page_id %}"
+                        <a href="{% url 'equipment:equipment_detail' equipment.record_id %}"
                            class="rounded-md group focus:df-focus-ring-offset-white-2"
                            alt="">
                             <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
-                                <img src="{{ equipment.cover }}"
+                                <img src="{{ equipment.thumbnail }}"
                                      width=""
                                      height=""
                                      alt=""
@@ -149,11 +150,11 @@
                             <h3 class="mt-4 text-sm text-gray-500">{{ equipment.brand }}</h3>
                             <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ equipment.model }}</p>
                             <div class="inline-flex mt-2 gap-2">
-                                {% if equipment.available_quantity != "0" %}
+                                <!-- {% if equipment.available_quantity != "0" %}
                                     <span class="inline-flex items-center rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-green-700 bg-green-50 ring-green-600/20">
                                         <svg class="mr-1.5 h-1.5 w-1.5 fill-green-500"
-                                            viewBox="0 0 6 6"
-                                            aria-hidden="true">
+                                             viewBox="0 0 6 6"
+                                             aria-hidden="true">
                                             <circle cx="3" cy="3" r="3" />
                                         </svg>
                                         재고 {{ equipment.available_quantity }}개
@@ -161,14 +162,14 @@
                                 {% else %}
                                     <span class="inline-flex items-center rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-red-700 bg-red-50 ring-red-600/20">
                                         <svg class="mr-1.5 h-1.5 w-1.5 fill-red-500"
-                                            viewBox="0 0 6 6"
-                                            aria-hidden="true">
+                                             viewBox="0 0 6 6"
+                                             aria-hidden="true">
                                             <circle cx="3" cy="3" r="3" />
                                         </svg>
                                         재고 없음
                                     </span>
-                                {% endif %}
-                                {% if equipment.subcategory != "N/A" %}
+                                {% endif %} -->
+                                {% if equipment.subcategory != None %}
                                     <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">{{ equipment.subcategory }}</span>
                                 {% endif %}
                             </div>

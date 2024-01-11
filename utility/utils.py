@@ -7,7 +7,7 @@ from .img import save_hero_img
 from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import json, re, requests, pytz, datetime, openai, boto3, random, string, uuid, time, ast
+import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
 # Global constants and variables
@@ -17,17 +17,27 @@ NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
 NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
     settings, "NCP_CLOVA_OCR_APIGW_INVOKE_URL", None
 )
+
+AIRTABLE_TOKEN = getattr(settings, "AIRTABLE_TOKEN", None)
+AIRTABLE_BASE_ID = getattr(settings, "AIRTABLE_BASE_ID", None)
+AIRTABLE_TABLE_ID = getattr(settings, "AIRTABLE_TABLE_ID", None)
+AIRTABLE = pyairtable.Api(AIRTABLE_TOKEN)
+
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", None)
 NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", None)
+
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", None)
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
+
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", None)
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", None)
+
 GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
     getattr(settings, "GOOGLE_SA_CREDS", "GOOGLE_SA_CREDS"),
     scopes=["https://www.googleapis.com/auth/drive"],
 )
 GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
+
 AWS_ACCESS_KEY = getattr(settings, "AWS_ACCESS_KEY", None)
 AWS_SECRET_ACCESS_KEY = getattr(settings, "AWS_SECRET_ACCESS_KEY", None)
 AWS_S3 = boto3.client(
@@ -304,6 +314,111 @@ def short_io(action: str, request=None, limit: int = None):
     return result
 
 
+def airtable(action: str, target: str, data: dict = None, limit: int = None):
+    """
+    - action | `str`:
+        - get
+        - get_all
+    - target | `str`:
+        - record
+        - records
+    - data | `dict`
+        - table_name
+        - param | `dict`
+    - limit | `int`
+    """
+
+    if data != None:
+        table_name = data.get("table_name", None)
+        param = data.get("param", None)
+
+    # action: get / target: record
+    if action == "get" and target == "record":
+        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
+            param.get("record_id", None),
+        )
+
+        if table_name == "equipment-collection":
+            fields = record["fields"]
+
+            record = {
+                "record_id": record["id"],
+                "collection_id": fields["ID"],
+                "thumbnail": fields["Thumbnail"][0]["url"],
+                "name": fields["Name"],
+                "category": fields["Category keyword"][0],
+                "subcategory": fields.get("Subcategory keyword", [None])[0],
+                "brand": fields["Brand name"][0],
+                "model": fields["Model"],
+            }
+
+        result = record
+
+    # action: get_all / target: records
+    elif action == "get_all" and target == "records":
+        records = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).all(
+            view=param.get("view", None),
+            fields=param.get("fields", None),
+            formula=param.get("formula", None),
+            sort=["Order"],
+            max_records=limit,
+        )
+        record_list = []
+
+        if table_name == "equipment-category":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    category = {
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                    }
+
+                    record_list.append(category)
+            except:
+                pass
+
+        elif table_name == "equipment-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                        "up_to": fields["Up to"],
+                        "at_least": fields["At least"],
+                        "max": fields["Max"],
+                    }
+
+                    record_list.append(purpose)
+            except:
+                pass
+
+        elif table_name == "equipment-collection":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    collection = {
+                        "record_id": record["id"],
+                        "thumbnail": fields["Thumbnail"][0]["url"],
+                        "name": fields["Name"],
+                        "subcategory": fields.get("Subcategory keyword", [None])[0],
+                        "brand": fields["Brand name"][0],
+                        "model": fields["Model"],
+                    }
+
+                    record_list.append(collection)
+            except:
+                pass
+
+        result = record_list
+
+    return result
+
+
 def notion(action: str, target: str, data: dict = None, limit: int = None):
     """
     - action | `str`:
@@ -375,89 +490,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         if limit:
             payload["page_size"] = limit
 
-        if db_name == "equipment-category":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-
-                    purpose = {
-                        "priority": properties["Priority"]["select"]["name"],
-                        "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
-                    }
-
-                    item_list.append(purpose)
-            except:
-                pass
-
-        elif db_name == "equipment-purpose":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-
-                    purpose = {
-                        "priority": properties["Priority"]["select"]["name"],
-                        "keyword": properties["Keyword"]["rich_text"][0]["plain_text"],
-                        "up_to": properties["Available up to n days in advance"][
-                            "number"
-                        ],
-                        "at_least": properties["Available at least n days in advance"][
-                            "number"
-                        ],
-                        "maximum": properties["Maximum rental duration"]["number"],
-                    }
-
-                    item_list.append(purpose)
-            except:
-                pass
-
-        elif db_name == "equipment-display":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-
-                    equipment = {
-                        "page_id": properties["Product"]["relation"][0]["id"],
-                        "cover": item["cover"]["file"]["url"]
-                        if item.get("cover") and item["cover"].get("file")
-                        else None,
-                        "title": properties["Product name"]["formula"]["string"],
-                        "subcategory": properties["Subcategory as string"]["formula"][
-                            "string"
-                        ][6:],
-                        "brand": properties["Brand"]["formula"]["string"],
-                        "model": properties["Model"]["rollup"]["array"][0]["select"][
-                            "name"
-                        ]
-                        if properties["Model"]["rollup"]["array"]
-                        else None,
-                        "available_quantity": properties["Available quantity"][
-                            "formula"
-                        ]["string"],
-                    }
-
-                    item_list.append(equipment)
-            except:
-                pass
-
-        elif db_name == "notice":
+        if db_name == "notice":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()

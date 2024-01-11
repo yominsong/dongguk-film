@@ -52,14 +52,14 @@
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ equipment.category }}
                 </p>
-                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.title }}</h2>
+                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.name }}</h2>
                 <div class="flex justify-between items-center mt-3 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
-                        {% if not "N/A" in equipment.subcategory %}
+                        {% if equipment.subcategory != None %}
                             <span>{{ equipment.subcategory }}</span>
                             <span>·</span>
                         {% endif %}
-                        <span>{{ equipment.equipment_id }}</span>
+                        <span>{{ equipment.collection_id }}</span>
                     </div>
                     <div x-data="Components.menu({ open: false })"
                          x-init="init()"
@@ -68,7 +68,7 @@
                          class="relative ml-auto">
                         <button type="button"
                                 class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
-                                id="id_notice_detail_option_button"
+                                id="id_equipment_detail_option_button"
                                 x-ref="button"
                                 @click="onButtonClick()"
                                 @keyup.space.prevent="onButtonEnter()"
@@ -100,9 +100,9 @@
                              x-bind:aria-activedescendant="activeDescendant"
                              role="menu"
                              aria-orientation="vertical"
-                             aria-labelledby="id_notice_detail_option_button"
+                             aria-labelledby="id_equipment_detail_option_button"
                              tabindex="-1"
-                             id="id_notice_detail_option_menu"
+                             id="id_equipment_detail_option_menu"
                              @keydown.arrow-up.prevent="onArrowUp()"
                              @keydown.arrow-down.prevent="onArrowDown()"
                              @keydown.tab="open = false"
@@ -115,7 +115,7 @@
                                  :class="{ 'bg-gray-100': activeIndex === 0 }"
                                  role="menuitem"
                                  tabindex="-1"
-                                 id="id_notice_detail_share"
+                                 id="id_equipment_detail_share"
                                  @mouseenter="onMouseEnter($event); activeIndex = 0"
                                  @mousemove="onMouseMove($event, 0)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
@@ -134,8 +134,8 @@
             <!-- Product image -->
             <div class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
                 <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
-                    <img src="{{ equipment.cover }}"
-                         alt="{{ equipment.title }} 사진"
+                    <img src="{{ equipment.thumbnail }}"
+                         alt="{{ equipment.name }} 사진"
                          class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center"
                          height=""
                          width="">
@@ -158,7 +158,7 @@
                                     <span class="text-sm font-medium text-gray-900"
                                           x-state:on="Open"
                                           x-state:off="Closed"
-                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 정보</span>
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">대여 목적</span>
                                     <span class="ml-6 flex items-center">
                                         <svg class="h-6 w-6 text-gray-400 group-hover:text-gray-500 block"
                                              x-state:on="Open"
@@ -186,22 +186,67 @@
                                 </button>
                             </h3>
                             <div class="pb-6" id="disclosure-1" x-show="open" style="display: none">
-                                <div class="rounded-md bg-gray-50 p-4">
-                                    <div class="flex">
-                                        <div>
-                                            <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
-                                            <div class="text-sm text-gray-700">
-                                                <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li>
-                                                        <span class="font-semibold">대여 목적 제한</span>:
-                                                        {{ equipment.matched_purpose_list|join:" | " }}
-                                                    </li>
-                                                    <li>
-                                                        <span class="font-semibold">대여 수량 한도</span>: 카메라 1개
-                                                    </li>
-                                                </ul>
+                                <div class="rounded-md">
+                                    <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
+                                    <div class="text-sm text-gray-700">
+                                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                            {% for purpose in purpose_list %}
+                                                <div class="relative flex items-center cursor-pointer p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                                    <div class="min-w-0 flex-1">
+                                                        <a href="#" class="focus:outline-none">
+                                                            <span class="absolute inset-0" aria-hidden="true"></span>
+                                                            <p class="text-sm font-medium text-gray-900">{{ purpose.keyword }}</p>
+                                                            <p class="truncate text-sm text-gray-500">
+                                                                {% if purpose.available %}
+                                                                    대여 가능
+                                                                {% elif not purpose.available %}
+                                                                    대여 불가
+                                                                {% endif %}
+                                                            </p>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <!-- <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                                <div class="min-w-0 flex-1">
+                                                    <a href="#" class="focus:outline-none">
+                                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                                        <p class="text-sm font-medium text-gray-900">Leslie Alexander</p>
+                                                        <p class="truncate text-sm text-gray-500">Co-Founder / CEO</p>
+                                                    </a>
+                                                </div>
                                             </div>
+                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                                <div class="min-w-0 flex-1">
+                                                    <a href="#" class="focus:outline-none">
+                                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                                        <p class="text-sm font-medium text-gray-900">Michael Foster</p>
+                                                        <p class="truncate text-sm text-gray-500">Co-Founder / CTO</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                                <div class="min-w-0 flex-1">
+                                                    <a href="#" class="focus:outline-none">
+                                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                                        <p class="text-sm font-medium text-gray-900">Dries Vincent</p>
+                                                        <p class="truncate text-sm text-gray-500">Business Relations</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                                <div class="min-w-0 flex-1">
+                                                    <a href="#" class="focus:outline-none">
+                                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                                        <p class="text-sm font-medium text-gray-900">Lindsay Walton</p>
+                                                        <p class="truncate text-sm text-gray-500">Front-end Developer</p>
+                                                    </a>
+                                                </div>
+                                            </div> -->
                                         </div>
+                                        <!-- <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    {% for purpose in equipment.matched_purpose_list %}<li>{{ purpose }}</li>{% endfor %}
+                                                </ul> -->
                                     </div>
                                 </div>
                             </div>
@@ -252,8 +297,8 @@
                                             <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                             <div class="text-sm text-gray-700">
                                                 <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li>개별 기자재마다 부속품 구성 및 세부 상태가 상이할 수 있어요.</li>
-                                                    <li>예약 완료 시 대여 기간은 연장할 수 없어요.</li>
+                                                    <li>개별 기자재마다 구성품 종류 및 세부 상태가 상이할 수 있어요.</li>
+                                                    <li>예약 확정 시 대여 기간은 연장할 수 없어요.</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -350,14 +395,11 @@
                 </section>
             </div>
         </div>
-        <span id="id_notice_data"
-              data-notice-page-id="{{ notice.page_id }}"
-              data-notice-title="{{ notice.title }}"
-              data-notice-category="{{ notice.category }}"
-              data-notice-keyword="{{ notice.keyword.string }}"
-              data-notice-user-name="{{ notice.user.name }}"
-              data-notice-user-profile-img="{{ notice.user.profile_img }}"
-              data-notice-listed-date="{{ notice.listed_date }}"
+        <span id="id_equipment_data"
+              data-equipment-page-id="{{ equipment.record_id }}"
+              data-equipment-title="{{ equipment.name }}"
+              data-equipment-category="{{ equipment.category }}"
+              data-equipment-keyword="{{ equipment.keyword.string }}"
               hidden></span>
         <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">

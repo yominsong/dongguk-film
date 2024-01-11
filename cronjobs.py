@@ -19,7 +19,7 @@ if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "08:00":
 #
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "22:30":
-    requests.get("https://dongguk.film/equipment/utils/update-equipment-category-and-policy")
+    requests.get("https://dongguk.film/equipment/utils/update-equipment-policy")
 
 #
 # dflink

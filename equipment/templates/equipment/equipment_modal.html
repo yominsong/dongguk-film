@@ -26,13 +26,14 @@
                  x-transition:leave="ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                 class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
+                 id="id_equipment_modal_land"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="open = false; enableFocus(); modalOpen = false; preventGoBack()">
-                        <span class="sr-only">검색 필터 화면 닫기</span>
+                        <span class="sr-only">기자재 <span class="class-keyword">검색 필터</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -46,11 +47,13 @@
                 <div class="flex items-start flex-col">
                     <div class="flex mb-5">
                         <div class="mt-0 text-left">
-                            <h3 class="text-base font-semibold leading-6 text-gray-900">검색 필터</h3>
+                            <h3 class="text-base font-semibold leading-6 text-gray-900">
+                                기자재 <span class="class-keyword">검색 필터</span>
+                            </h3>
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
-                        <div class="space-y-5">
+                        <div id="id_equipment_modal_form" class="space-y-5">
                             <fieldset>
                                 <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                 <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -119,6 +122,141 @@
                                        required
                                        hidden>
                             </fieldset>
+                        </div>
+                        <div id="id_equipment_modal_share" class="mt-3 -mb-5" hidden>
+                            <div class="flex relative shadow-sm">
+                                <label for="id_url"
+                                       class="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900 z-20">
+                                    URL
+                                </label>
+                                <div class="relative flex flex-grow items-stretch">
+                                    <input type="text"
+                                           id="id_url"
+                                           class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset focus:z-10"
+                                           placeholder="https://dongguk.film/equipment/..."
+                                           value="https://dongguk.film/equipment/{{ equipment.record_id }}"
+                                           readonly>
+                                </div>
+                                <button type="button"
+                                        id="id_copy_url"
+                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset">
+                                    <svg id="id_copy_url_ready"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor"
+                                         class="w-5 h-5"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z" />
+                                    </svg>
+                                    <svg id="id_copy_url_done"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor"
+                                         class="hidden w-5 h-5"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+                                    </svg>
+                                    <span class="sr-only">URL 복사</span>
+                                </button>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500" id="id_copy_url_descr" hidden>URL이 클립보드에 복사되었어요.</p>
+                            <ul role="list"
+                                class="mt-5 sm:mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <button id="id_kakaotalk"
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#FEE500] rounded-l-md text-sm font-medium text-black group-hover:bg-[#F0D800]">
+                                            <svg class="h-5"
+                                                 fill="currentColor"
+                                                 viewBox="0 0 386.1 354.68"
+                                                 aria-hidden="true">
+                                                <g id="a" />
+                                                <g id="b">
+                                                <g id="c">
+                                                <path d="M193,0C86.4,0,0,68.3,0,152.6c0,54.9,36.6,102.9,91.6,129.8-4,15.1-14.6,54.6-16.7,63.1-2.6,10.5,3.9,10.4,8.1,7.5,3.3-2.2,52.9-35.9,74.3-50.5,11.6,1.7,23.6,2.6,35.8,2.6,106.6,0,193-68.3,193-152.6,0-84.2-86.5-152.5-193.1-152.5" />
+                                                </g>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-300 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">카카오톡으로 공유하기</span>
+                                        </div>
+                                    </button>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <button id="id_x"
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-black rounded-l-md text-sm font-medium text-white">
+                                            <svg class="h-5"
+                                                 fill="currentColor"
+                                                 width="1200"
+                                                 height="1227"
+                                                 viewBox="0 0 1200 1227"
+                                                 aria-hidden="true">
+                                                <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-300 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">X로 공유하기</span>
+                                        </div>
+                                    </button>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <button id="id_facebook"
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#1877F2] rounded-l-md text-sm font-medium text-white group-hover:bg-[#1567d3]">
+                                            <svg class="h-5"
+                                                 x="0px"
+                                                 y="0px"
+                                                 viewBox="0 0 1024 1024"
+                                                 style="enable-background:new 0 0 1024 1024"
+                                                 xml:space="preserve"
+                                                 aria-hidden="true">
+                                                <style type="text/css">
+                                                .fb0 {fill: #FFFFFF;}
+                                                .fb1 {fill: transparent;}
+                                                </style>
+                                                <g>
+                                                <path class="fb0" d="M1024,512C1024,229.23,794.77,0,512,0S0,229.23,0,512c0,255.55,187.23,467.37,432,505.78V660H302V512h130   V399.2C432,270.88,508.44,200,625.39,200C681.41,200,740,210,740,210v126h-64.56c-63.6,0-83.44,39.47-83.44,79.96V512h142   l-22.7,148H592v357.78C836.77,979.37,1024,767.55,1024,512z" />
+                                                <path class="fb1" d="M711.3,660L734,512H592v-96.04c0-40.49,19.84-79.96,83.44-79.96H740V210c0,0-58.59-10-114.61-10   C508.44,200,432,270.88,432,399.2V512H302v148h130v357.78c26.07,4.09,52.78,6.22,80,6.22s53.93-2.13,80-6.22V660H711.3z" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-300 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">
+                                                Facebook으로 공유하기
+                                            </span>
+                                        </div>
+                                    </button>
+                                </li>
+                                <li class="group col-span-1 flex rounded-md shadow-sm">
+                                    <button id="id_line"
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                        <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#06C755] rounded-l-md text-sm font-medium text-white group-hover:bg-[#05b34d]">
+                                            <svg class="h-5"
+                                                 x="0px"
+                                                 y="0px"
+                                                 viewBox="0 0 213.4 203.3"
+                                                 style="enable-background:new 0 0 213.4 203.3"
+                                                 xml:space="preserve"
+                                                 aria-hidden="true">
+                                                <style type="text/css">.line {fill: #FFFFFF;}</style>
+                                                <g>
+                                                <g>
+                                                <path class="line" d="M106.7,0C47.9,0,0,38.8,0,86.6c0,42.8,38,78.6,89.2,85.4c3.5,0.8,8.2,2.3,9.4,5.3c1.1,2.7,0.7,6.9,0.4,9.6    c0,0-1.2,7.5-1.5,9.1c-0.5,2.7-2.2,10.5,9.2,5.8c11.4-4.8,61.4-36.2,83.8-62c15.5-17,22.9-34.2,22.9-53.3    C213.4,38.8,165.5,0,106.7,0z M69,112.2c0,1.1-0.9,2-2,2l0,0H37c-1.1,0-2-0.9-2-2V65.6c0-1.1,0.9-2,2-2h7.6c1.1,0,2,0.9,2,2v37H67    c1.1,0,2,0.9,2,2V112.2z M87.1,112.1c0,1.1-0.9,2-2,2h-7.6c-1.1,0-2-0.9-2-2V65.5c0-1.1,0.9-2,2-2H85c1.1,0,2,0.9,2,2V112.1z     M138.6,112c0,1.1-0.9,2-2,2H129c-0.2,0-0.4,0-0.5-0.1h-0.3l-0.1,0H128l-0.1-0.1c-0.2-0.1-0.4-0.3-0.5-0.5l-21.3-28.8v27.9    c0,1.1-0.9,2-2,2h-7.6c-1.1,0-2-0.9-2-2V65.8c0-1.1,0.9-2,2-2h8.5l0.1,0.1h0.1l0.1,0.1h0.1l0.1,0.1l0.1,0.1    c0.1,0.1,0.1,0.1,0.2,0.2L127,93.2V65.5c0-1.1,0.9-2,2-2h7.6c0,0,0,0,0,0c1.1,0,2,0.9,2,2V112z M179.9,73.2c0,1.1-0.9,2-2,2h-20.4    V83h20.4c1.1,0,2,0.9,2,2v7.6c0,1.1-0.9,2-2,2h-20.4v7.9h20.4c1.1,0,2,0.9,2,2v7.6c0,1.1-0.8,2-1.9,2.1c0,0,0,0-0.1,0h-30    c-1.1,0-2-0.9-2-2V65.6c0-1.1,0.9-2,2-2h30c1.1,0,2,0.9,2,2V73.2z" />
+                                                <polygon class="line" points="213.4,86.6 213.4,86.6 213.4,86.6   " />
+                                                </g>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div class="flex flex-1 items-center truncate rounded-r-md border-b border-r border-t border-gray-300 bg-white group-hover:bg-gray-50">
+                                            <span class="font-medium text-gray-500 flex-1 truncate px-4 py-2 text-sm group-hover:text-gray-900">라인으로 공유하기</span>
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

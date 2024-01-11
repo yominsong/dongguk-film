@@ -2,43 +2,7 @@
     "category": [
         {
             "priority": "A",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "A",
             "keyword": "\uce74\uba54\ub77c"
-        },
-        {
-            "priority": "B",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "B",
-            "keyword": "Battery"
-        },
-        {
-            "priority": "B",
-            "keyword": "Exposure Meter"
-        },
-        {
-            "priority": "B",
-            "keyword": "Monitor"
-        },
-        {
-            "priority": "B",
-            "keyword": "Matte Box"
-        },
-        {
-            "priority": "B",
-            "keyword": "Donut"
-        },
-        {
-            "priority": "B",
-            "keyword": "Follow Focus"
-        },
-        {
-            "priority": "B",
-            "keyword": "Mount Adapter"
         },
         {
             "priority": "B",
@@ -46,39 +10,7 @@
         },
         {
             "priority": "C",
-            "keyword": "Tripod Set"
-        },
-        {
-            "priority": "C",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "C",
-            "keyword": "Dolly"
-        },
-        {
-            "priority": "C",
-            "keyword": "Fig Rig"
-        },
-        {
-            "priority": "C",
-            "keyword": "Tripod"
-        },
-        {
-            "priority": "C",
             "keyword": "\uce74\uba54\ub77c \uc11c\ud3ec\ud2b8"
-        },
-        {
-            "priority": "D",
-            "keyword": "Lens Set"
-        },
-        {
-            "priority": "D",
-            "keyword": "Lens"
-        },
-        {
-            "priority": "D",
-            "keyword": "N/A"
         },
         {
             "priority": "D",
@@ -86,27 +18,7 @@
         },
         {
             "priority": "E",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "E",
             "keyword": "\ud544\ud130"
-        },
-        {
-            "priority": "F",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "F",
-            "keyword": "LED"
-        },
-        {
-            "priority": "F",
-            "keyword": "Florecent"
-        },
-        {
-            "priority": "F",
-            "keyword": "Tungsten"
         },
         {
             "priority": "F",
@@ -114,15 +26,7 @@
         },
         {
             "priority": "G",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "G",
             "keyword": "\uc870\uba85 \uc561\uc138\uc11c\ub9ac"
-        },
-        {
-            "priority": "H",
-            "keyword": "N/A"
         },
         {
             "priority": "H",
@@ -130,43 +34,11 @@
         },
         {
             "priority": "I",
-            "keyword": "On-camera"
-        },
-        {
-            "priority": "I",
-            "keyword": "Wireless"
-        },
-        {
-            "priority": "I",
-            "keyword": "Shotgun"
-        },
-        {
-            "priority": "I",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "I",
             "keyword": "\ub9c8\uc774\ud06c"
         },
         {
             "priority": "J",
-            "keyword": "Boom Pole Holder"
-        },
-        {
-            "priority": "J",
-            "keyword": "Boom Pole"
-        },
-        {
-            "priority": "J",
-            "keyword": "N/A"
-        },
-        {
-            "priority": "J",
             "keyword": "\ub9c8\uc774\ud06c \uc561\uc138\uc11c\ub9ac"
-        },
-        {
-            "priority": "K",
-            "keyword": "N/A"
         },
         {
             "priority": "K",
@@ -179,70 +51,70 @@
             "keyword": "\uad50\uc218",
             "up_to": 7,
             "at_least": 3,
-            "maximum": 2
+            "max": 2
         },
         {
             "priority": "B",
             "keyword": "\uc878\uc5c5",
             "up_to": 18,
             "at_least": 3,
-            "maximum": 8
+            "max": 8
         },
         {
             "priority": "C",
             "keyword": "\ucea1\uc2a4\ud1a4 \ub514\uc790\uc778",
             "up_to": 14,
             "at_least": 3,
-            "maximum": 7
+            "max": 7
         },
         {
             "priority": "D",
             "keyword": "\ucd2c\uc601",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 5
+            "max": 5
         },
         {
             "priority": "E",
             "keyword": "\uc81c\uc791 \uc6cc\ud06c\uc20d",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 5
+            "max": 5
         },
         {
             "priority": "F",
             "keyword": "\uac1c\uc778",
             "up_to": 5,
             "at_least": 3,
-            "maximum": 5
+            "max": 5
         },
         {
             "priority": "G",
             "keyword": "4\ud559\ub144 \ubc29\ud559",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 7
+            "max": 7
         },
         {
             "priority": "H",
             "keyword": "3\ud559\ub144 \ubc29\ud559",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 7
+            "max": 7
         },
         {
             "priority": "I",
             "keyword": "2\ud559\ub144 \ubc29\ud559",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 7
+            "max": 7
         },
         {
             "priority": "J",
             "keyword": "1\ud559\ub144 \ubc29\ud559",
             "up_to": 10,
             "at_least": 3,
-            "maximum": 7
+            "max": 7
         }
     ]
 }
