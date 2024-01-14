@@ -266,7 +266,7 @@ function setPage() {
             let categoryInputs = document.querySelectorAll("input[name='id_category']");
             id_expiration_date.setAttribute("min", yyyymmddWithDash);
             id_expiration_date.setAttribute("max", yyyymmddOfAfter90DaysWithDash);
-            id_expiration_date_help.innerText = `유효범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
+            id_expiration_date_help.innerText = `유효 범위는 ${yyyymmddWithDash}부터 ${yyyymmddOfAfter90DaysWithDash}까지예요.`;
             categoryInputs.forEach((input) => {
                 input.addEventListener("click", () => {
                     if (input == id_category_work) {

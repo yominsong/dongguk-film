@@ -10,7 +10,7 @@ class Metadata(models.Model):
 
     class Meta:
         verbose_name = "사용자 추가 정보"
-        verbose_name_plural = "사용자 추가 정보(들)"
+        verbose_name_plural = "사용자 추가 정보들"
 
 
 class Vcode(models.Model):
@@ -24,4 +24,4 @@ class Vcode(models.Model):
 
     class Meta:
         verbose_name = "인증번호"
-        verbose_name_plural = "인증번호(들)"
+        verbose_name_plural = "인증번호들"

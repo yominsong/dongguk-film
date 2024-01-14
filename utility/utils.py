@@ -366,7 +366,48 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         )
         record_list = []
 
-        if table_name == "equipment-category":
+        if table_name == "equipment-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "name": fields["Name"],
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                        "at_least": fields["At least"],
+                        "up_to": fields["Up to"],
+                        "max": fields["Max"],
+                        "in_a_nutshell": fields["In a nutshell"],
+                    }
+
+                    record_list.append(purpose)
+            except:
+                pass
+
+        elif table_name == "equipment-limit":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    limit = {
+                        "name": fields.get("Name", None),
+                        "depth": fields.get("Depth", None),
+                        "category_priority": fields.get("Category priority", None),
+                        "subcategory priority": fields.get(
+                            "Subcategory priority", None
+                        ),
+                        "brand_name": fields.get("Brand name", None),
+                        "group_collection_id": fields.get("Group collection ID", None),
+                        "collection_id": fields.get("Collection ID", None),
+                        "limit": fields.get("Limit", None),
+                    }
+
+                    record_list.append(limit)
+            except:
+                pass
+
+        elif table_name == "equipment-category":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -378,24 +419,6 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     }
 
                     record_list.append(category)
-            except:
-                pass
-
-        elif table_name == "equipment-purpose":
-            try:
-                for record in records:
-                    fields = record["fields"]
-
-                    purpose = {
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
-                        "up_to": fields["Up to"],
-                        "at_least": fields["At least"],
-                        "max": fields["Max"],
-                    }
-
-                    record_list.append(purpose)
             except:
                 pass
 

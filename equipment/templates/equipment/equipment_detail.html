@@ -47,8 +47,8 @@
         <!-- Detail body -->
         <div id="id_equipment_detail"
              class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8">
-            <!-- Product details -->
-            <div class="lg:col-start-2 lg:row-start-1">
+            <!-- Title -->
+            <div id="id_equipment_detail_title" class="lg:col-start-2 lg:row-start-1 sm:h-[126px] sm:z-10">
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ equipment.category }}
                 </p>
@@ -68,7 +68,7 @@
                          class="relative ml-auto">
                         <button type="button"
                                 class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
-                                id="id_equipment_detail_option_button"
+                                id="id_equipment_detail_option"
                                 x-ref="button"
                                 @click="onButtonClick()"
                                 @keyup.space.prevent="onButtonEnter()"
@@ -96,13 +96,11 @@
                              x-transition:leave-end="transform opacity-0 scale-95"
                              class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-1 shadow-md ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
                              x-ref="menu-items"
-                             x-description="Dropdown menu, show/hide based on menu state."
                              x-bind:aria-activedescendant="activeDescendant"
                              role="menu"
                              aria-orientation="vertical"
-                             aria-labelledby="id_equipment_detail_option_button"
+                             aria-labelledby="id_equipment_detail_option"
                              tabindex="-1"
-                             id="id_equipment_detail_option_menu"
                              @keydown.arrow-up.prevent="onArrowUp()"
                              @keydown.arrow-down.prevent="onArrowDown()"
                              @keydown.tab="open = false"
@@ -131,8 +129,9 @@
                     <div class="relative flex justify-end min-h-[36px] sm:min-h-[18px]"></div>
                 </div>
             </div>
-            <!-- Product image -->
-            <div class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
+            <!-- Image -->
+            <div id="id_equipment_detail_image"
+                 class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
                 <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
                     <img src="{{ equipment.thumbnail }}"
                          alt="{{ equipment.name }} 사진"
@@ -141,24 +140,26 @@
                          width="">
                 </div>
             </div>
-            <!-- Product form -->
-            <div class="mt-4 sm:mt-0 lg:col-start-2 lg:row-start-2 lg:self-start">
+            <!-- Content -->
+            <div id="id_equipment_detail_content"
+                 class="pt-4 sm:mt-0 lg:col-start-2 lg:row-start-1 lg:self-start">
+                <div id="id_equipment_detail_content_blank" class="sm:pt-[110px]"></div>
                 <section aria-labelledby="details-heading">
                     <h2 id="details-heading" class="sr-only">기자재 정보</h2>
                     <div class="divide-y divide-gray-100 border-t border-t-gray-100 sm:border-t-0">
                         <div x-data="{ open: true }">
                             <h3>
-                                <button type="button"
-                                        x-description="Expand/collapse question button"
-                                        class="group relative flex w-full items-center justify-between py-6 text-left"
-                                        aria-controls="disclosure-1"
+                                <button id="id_equipment_detail_purpose_title"
+                                        type="button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
+                                        aria-controls="id_equipment_detail_purpose_content"
                                         @click="open = !open"
                                         aria-expanded="false"
                                         x-bind:aria-expanded="open.toString()">
                                     <span class="text-sm font-medium text-gray-900"
                                           x-state:on="Open"
                                           x-state:off="Closed"
-                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">대여 목적</span>
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">대여 목적 제한</span>
                                     <span class="ml-6 flex items-center">
                                         <svg class="h-6 w-6 text-gray-400 group-hover:text-gray-500 block"
                                              x-state:on="Open"
@@ -185,78 +186,103 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div class="pb-6" id="disclosure-1" x-show="open" style="display: none">
-                                <div class="rounded-md">
+                            <div class="pb-6" id="id_equipment_detail_purpose_content" x-show="open" style="display: none">
+                                <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
-                                        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                        <ul role="list" class="list-disc space-y-4 pl-5">
                                             {% for purpose in purpose_list %}
-                                                <div class="relative flex items-center cursor-pointer p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
-                                                    <div class="min-w-0 flex-1">
-                                                        <a href="#" class="focus:outline-none">
-                                                            <span class="absolute inset-0" aria-hidden="true"></span>
-                                                            <p class="text-sm font-medium text-gray-900">{{ purpose.keyword }}</p>
-                                                            <p class="truncate text-sm text-gray-500">
+                                                <li>
+                                                    <div class="relative flex items-center">
+                                                        <div class="min-w-0 flex-1">
+                                                            <p class="text-sm font-medium">{{ purpose.keyword }}</p>
+                                                            <p class="text-sm text-gray-500">
                                                                 {% if purpose.available %}
-                                                                    대여 가능
+                                                                    {{ purpose.in_a_nutshell }}
                                                                 {% elif not purpose.available %}
                                                                     대여 불가
                                                                 {% endif %}
                                                             </p>
-                                                        </a>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </li>
                                             {% endfor %}
-                                            <!-- <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                                                <div class="min-w-0 flex-1">
-                                                    <a href="#" class="focus:outline-none">
-                                                        <span class="absolute inset-0" aria-hidden="true"></span>
-                                                        <p class="text-sm font-medium text-gray-900">Leslie Alexander</p>
-                                                        <p class="truncate text-sm text-gray-500">Co-Founder / CEO</p>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                                                <div class="min-w-0 flex-1">
-                                                    <a href="#" class="focus:outline-none">
-                                                        <span class="absolute inset-0" aria-hidden="true"></span>
-                                                        <p class="text-sm font-medium text-gray-900">Michael Foster</p>
-                                                        <p class="truncate text-sm text-gray-500">Co-Founder / CTO</p>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                                                <div class="min-w-0 flex-1">
-                                                    <a href="#" class="focus:outline-none">
-                                                        <span class="absolute inset-0" aria-hidden="true"></span>
-                                                        <p class="text-sm font-medium text-gray-900">Dries Vincent</p>
-                                                        <p class="truncate text-sm text-gray-500">Business Relations</p>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                                                <div class="min-w-0 flex-1">
-                                                    <a href="#" class="focus:outline-none">
-                                                        <span class="absolute inset-0" aria-hidden="true"></span>
-                                                        <p class="text-sm font-medium text-gray-900">Lindsay Walton</p>
-                                                        <p class="truncate text-sm text-gray-500">Front-end Developer</p>
-                                                    </a>
-                                                </div>
-                                            </div> -->
-                                        </div>
-                                        <!-- <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    {% for purpose in equipment.matched_purpose_list %}<li>{{ purpose }}</li>{% endfor %}
-                                                </ul> -->
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div x-data="{ open: false }">
                             <h3>
-                                <button type="button"
-                                        x-description="Expand/collapse question button"
-                                        class="group relative flex w-full items-center justify-between py-6 text-left"
-                                        aria-controls="disclosure-1"
+                                <button id="id_equipment_detail_limit_title"
+                                        type="button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
+                                        aria-controls="id_equipment_detail_limit_content"
+                                        @click="open = !open"
+                                        aria-expanded="false"
+                                        x-bind:aria-expanded="open.toString()">
+                                    <span class="text-sm font-medium text-gray-900"
+                                          x-state:on="Open"
+                                          x-state:off="Closed"
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">대여 수량 한도</span>
+                                    <span class="ml-6 flex items-center">
+                                        <svg class="h-6 w-6 text-gray-400 group-hover:text-gray-500 block"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'hidden': open, 'block': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                                        </svg>
+                                        <svg class="h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500 hidden"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'block': open, 'hidden': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div class="pb-6" id="id_equipment_detail_limit_content" x-show="open" style="display: none">
+                                <div class="rounded-md bg-gray-50 p-4">
+                                    <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
+                                    <div class="text-sm text-gray-700">
+                                        <ul role="list" class="list-disc space-y-4 pl-5">
+                                            {% for purpose in purpose_list %}
+                                                <li>
+                                                    <div class="relative flex items-center">
+                                                        <div class="min-w-0 flex-1">
+                                                            <p class="text-sm font-medium">{{ purpose.keyword }}</p>
+                                                            <p class="text-sm text-gray-500">
+                                                                {% if purpose.available %}
+                                                                    {{ purpose.in_a_nutshell }}
+                                                                {% elif not purpose.available %}
+                                                                    대여 불가
+                                                                {% endif %}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div x-data="{ open: false }">
+                            <h3>
+                                <button id="id_equipment_detail_precaution_title"
+                                        type="button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
+                                        aria-controls="id_equipment_detail_precaution_content"
                                         @click="open = !open"
                                         aria-expanded="false"
                                         x-bind:aria-expanded="open.toString()">
@@ -290,18 +316,14 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div class="pb-6" id="disclosure-1" x-show="open" style="display: none">
-                                <div class="rounded-md bg-gray-50 p-4">
-                                    <div class="flex">
-                                        <div>
-                                            <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
-                                            <div class="text-sm text-gray-700">
-                                                <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li>개별 기자재마다 구성품 종류 및 세부 상태가 상이할 수 있어요.</li>
-                                                    <li>예약 확정 시 대여 기간은 연장할 수 없어요.</li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                            <div id="id_equipment_detail_precaution_content" x-show="open" style="display: none">
+                                <div class="rounded-md bg-flamingo-50 p-4">
+                                    <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
+                                    <div class="text-sm text-flamingo-700">
+                                        <ul role="list" class="list-disc space-y-1 pl-5">
+                                            <li>개별 기자재마다 구성품 종류 및 세부 상태가 상이할 수 있어요.</li>
+                                            <li>예약 확정 시 대여 기간은 연장할 수 없어요.</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -310,88 +332,12 @@
                 </section>
                 <section aria-labelledby="options-heading">
                     <h2 id="options-heading" class="sr-only">Product options</h2>
-                    <form>
-                        <div class="sm:flex sm:justify-between">
-                            <!-- Size selector -->
-                            <fieldset x-data="window.Components.radioGroup({ initialCheckedIndex: 0 })"
-                                      x-init="init()">
-                                <legend class="block text-sm font-medium text-gray-700">Size</legend>
-                                <div class="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                    <div x-radio-group-option=""
-                                         class="relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none undefined"
-                                         x-description="Active: &quot;ring-2 ring-flamingo-500&quot;"
-                                         :class="{ 'ring-2 ring-flamingo-500': (active === '18L'), 'undefined': !(active === '18L') }">
-                                        <input type="radio"
-                                               x-model="value"
-                                               name="size-choice"
-                                               value="18L"
-                                               class="sr-only"
-                                               aria-labelledby="size-choice-0-label"
-                                               aria-describedby="size-choice-0-description">
-                                        <p id="size-choice-0-label" class="text-base font-medium text-gray-900">18L</p>
-                                        <p id="size-choice-0-description" class="mt-1 text-sm text-gray-500">Perfect for a reasonable amount of snacks.</p>
-                                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-flamingo-500"
-                                             aria-hidden="true"
-                                             x-description="Active: &quot;border&quot;, Not Active: &quot;border-2&quot;	Checked: &quot;border-flamingo-500&quot;, Not Checked: &quot;border-transparent&quot;"
-                                             :class="{ 'border': (active === '18L'), 'border-2': !(active === '18L'), 'border-flamingo-500': (value === '18L'), 'border-transparent': !(value === '18L') }">
-                                        </div>
-                                    </div>
-                                    <div x-radio-group-option=""
-                                         class="relative block cursor-pointer rounded-lg border border-gray-300 p-4 focus:outline-none undefined"
-                                         x-description="Active: &quot;ring-2 ring-flamingo-500&quot;"
-                                         :class="{ 'ring-2 ring-flamingo-500': (active === '20L'), 'undefined': !(active === '20L') }">
-                                        <input type="radio"
-                                               x-model="value"
-                                               name="size-choice"
-                                               value="20L"
-                                               class="sr-only"
-                                               aria-labelledby="size-choice-1-label"
-                                               aria-describedby="size-choice-1-description">
-                                        <p id="size-choice-1-label" class="text-base font-medium text-gray-900">20L</p>
-                                        <p id="size-choice-1-description" class="mt-1 text-sm text-gray-500">Enough room for a serious amount of snacks.</p>
-                                        <div class="pointer-events-none absolute -inset-px rounded-lg border-2 border-transparent"
-                                             aria-hidden="true"
-                                             x-description="Active: &quot;border&quot;, Not Active: &quot;border-2&quot;	Checked: &quot;border-flamingo-500&quot;, Not Checked: &quot;border-transparent&quot;"
-                                             :class="{ 'border': (active === '20L'), 'border-2': !(active === '20L'), 'border-flamingo-500': (value === '20L'), 'border-transparent': !(value === '20L') }">
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="mt-4">
-                            <a href="#"
-                               class="group inline-flex text-sm text-gray-500 hover:text-gray-700">
-                                <span>What size should I buy?</span>
-                                <svg class="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                     viewBox="0 0 20 20"
-                                     fill="currentColor"
-                                     aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div>
-                        <div class="mt-10">
-                            <button type="submit"
-                                    class="flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-8 py-3 text-base font-medium text-white hover:bg-flamingo-700 focus:outline-none focus:ring-2 focus:ring-flamingo-500 focus:ring-offset-2 focus:ring-offset-gray-50">
-                                Add to bag
-                            </button>
-                        </div>
-                        <div class="mt-6 text-center">
-                            <a href="#" class="group inline-flex text-base font-medium">
-                                <svg class="mr-2 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                     fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke-width="1.5"
-                                     stroke="currentColor"
-                                     aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z">
-                                    </path>
-                                </svg>
-                                <span class="text-gray-500 hover:text-gray-700">Lifetime Guarantee</span>
-                            </a>
-                        </div>
-                    </form>
+                    <div class="mt-6">
+                        <button type="submit"
+                                class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            장바구니에 담기
+                        </button>
+                    </div>
                 </section>
             </div>
         </div>

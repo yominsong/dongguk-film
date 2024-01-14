@@ -149,13 +149,15 @@ def send_msg(request, type: str, channel: str, extra=None):
     # type: "UEP"
     elif type == "UEP":
         sub_content = ""
-        for i, item in enumerate(extra[0]["category"]):
+        for i, item in enumerate(extra[0]["purpose"]):
+            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
+            sub_content += new_line
+        sub_content += "\n"
+        sub_content += f"\nㆍ[한도] {len(extra[1]['limit'])}개"
+        sub_content += "\n"
+        for i, item in enumerate(extra[2]["category"]):
             new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
             new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        for i, item in enumerate(extra[1]["purpose"]):
-            [up_to, at_least, max] = [item["up_to"], item["at_least"], item["max"]]
-            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: 희망 대여일로부터 최대 {up_to}일 ~ 최소 {at_least}일 신청 가능, 최대 {max}일 동안 대여 가능"
             sub_content += new_line
         main_content = {
             "important": False,

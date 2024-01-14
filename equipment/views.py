@@ -3,17 +3,17 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
-from utility.utils import airtable, notion
+from utility.utils import airtable
 import random
 
 
 def equipment(request):
-    category = request.GET.get("category", "A")
     purpose = request.GET.get("purpose", "A")
+    category = request.GET.get("category", "A")
 
     image_list = get_hero_img("equipment")
-    category_list = get_equipment_policy("category")
     purpose_list = get_equipment_policy("purpose")
+    category_list = get_equipment_policy("category")
     param = ""
 
     # Airtable
@@ -28,18 +28,18 @@ def equipment(request):
                 "Brand name",
                 "Model",
             ],
-            "formula": f"AND(FIND('{category}', {{Category name}} & ''), FIND('{purpose}', {{Item purpose}} & ''))",
+            "formula": f"AND(FIND('{purpose}', {{Item purpose}} & ''), FIND('{category}', {{Category name}} & ''))",
         },
     }
     equipment_list = airtable("get_all", "records", data=data)
     equipment_count = len(equipment_list)
 
     # Parameter and template tag
-    param += f"category={category}&purpose={purpose}&"
-    category_dict = {item["priority"]: item["keyword"] for item in category_list}
+    param += f"purpose={purpose}&category={category}&"
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
-    category = {"priority": category, "keyword": category_dict.get(category)}
+    category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose = {"priority": purpose, "keyword": purpose_dict.get(purpose)}
+    category = {"priority": category, "keyword": category_dict.get(category)}
 
     # Query
     q = request.GET.get("q")
@@ -75,11 +75,11 @@ def equipment(request):
         "equipment/equipment.html",
         {
             "image_list": image_list,
-            "category_list": category_list,
             "purpose_list": purpose_list,
+            "category_list": category_list,
             "param": param,
-            "category": category,
             "purpose": purpose,
+            "category": category,
             "equipment_count": equipment_count,
             "query_result_count": query_result_count,
             "placeholder": placeholder,
@@ -113,7 +113,7 @@ def equipment_detail(request, record_id):
         "equipment/equipment_detail.html",
         {
             "image_list": image_list,
-            "equipment": equipment,
             "purpose_list": purpose_list,
+            "equipment": equipment,
         },
     )

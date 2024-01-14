@@ -1,4 +1,3 @@
-
 {% load tags %}
 <div id="id_equipment_modal"
      x-data="{ open: false }"
@@ -27,7 +26,6 @@
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
-                 id="id_equipment_modal_land"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button type="button"
@@ -54,8 +52,175 @@
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
                         <div id="id_equipment_modal_form" class="space-y-5">
+                            <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [
+                                {% for purpose in purpose_list %}
+                                    { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'at_least': '{{ purpose.at_least }}', 'up_to': '{{ purpose.up_to }}', 'max': '{{ purpose.max }}' }
+                                    {% if not forloop.last %},&nbsp;{% endif %}
+                                {% endfor %}
+                                ] })" x-init="init(); id_start_date.min = getDateDaysLaterFormatted(now, Number(selected.at_least)); id_start_date.max = getDateDaysLaterFormatted(now, Number(selected.up_to)); id_purpose.dataset.priority = selected.priority; id_purpose.dataset.keyword = selected.keyword; id_purpose.dataset.atLeast = selected.at_least; id_purpose.dataset.upTo = selected.up_to; id_purpose.dataset.max = selected.max">
+                                <label id="listbox-label"
+                                       class="block text-sm font-medium leading-6 text-gray-900"
+                                       @click="$refs.button.focus()">대여 목적</label>
+                                <input type="text"
+                                       id="id_purpose"
+                                       value="{{ purpose.priority }}"
+                                       data-priority=""
+                                       data-keyword=""
+                                       data-at-least=""
+                                       data-up-to=""
+                                       data-max=""
+                                       required
+                                       hidden>
+                                <div class="relative mt-2">
+                                    <button type="button"
+                                            class="relative w-full cursor-default bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm rounded-md df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            x-ref="button"
+                                            @keydown.arrow-up.stop.prevent="onButtonClick()"
+                                            @keydown.arrow-down.stop.prevent="onButtonClick()"
+                                            @click="onButtonClick()"
+                                            aria-haspopup="listbox"
+                                            :aria-expanded="open"
+                                            aria-labelledby="listbox-label"
+                                            aria-expanded="true">
+                                        <span x-text="selected.keyword" class="block truncate"></span>
+                                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                            <svg class="h-5 w-5 text-gray-400"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <ul x-show="open"
+                                        x-transition:leave="transition ease-in duration-100"
+                                        x-transition:leave-start="opacity-100"
+                                        x-transition:leave-end="opacity-0"
+                                        class="absolute z-10 mt-1 max-h-60 w-full overflow-auto divide-y divide-gray-100 rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                        x-max="1"
+                                        @click.away="open = false"
+                                        @keydown.enter.stop.prevent="onOptionSelect(); id_purpose.value = selected.priority; id_start_date.min = getDateDaysLaterFormatted(now, Number(selected.at_least)); id_start_date.max = getDateDaysLaterFormatted(now, Number(selected.up_to)); initCalendar(); id_purpose.dataset.priority = selected.priority; id_purpose.dataset.keyword = selected.keyword; id_purpose.dataset.atLeast = selected.at_least; id_purpose.dataset.upTo = selected.up_to; id_purpose.dataset.max = selected.max"
+                                        @keydown.space.stop.prevent="onOptionSelect(); id_purpose.value = selected.priority; id_start_date.min = getDateDaysLaterFormatted(now, Number(selected.at_least)); id_start_date.max = getDateDaysLaterFormatted(now, Number(selected.up_to)); initCalendar(); id_purpose.dataset.priority = selected.priority; id_purpose.dataset.keyword = selected.keyword; id_purpose.dataset.atLeast = selected.at_least; id_purpose.dataset.upTo = selected.up_to; id_purpose.dataset.max = selected.max"
+                                        @keydown.escape="onEscape()"
+                                        @keydown.arrow-up.prevent="onArrowUp()"
+                                        @keydown.arrow-down.prevent="onArrowDown()"
+                                        x-ref="listbox"
+                                        tabindex="-1"
+                                        role="listbox"
+                                        aria-labelledby="listbox-label"
+                                        :aria-activedescendant="activeDescendant"
+                                        aria-activedescendant="">
+                                        {% for purpose in purpose_list %}
+                                            <li x-state:on="Highlighted"
+                                                x-state:off="Not Highlighted"
+                                                class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
+                                                id="id_purpose_{{ purpose.priority }}"
+                                                role="option"
+                                                @click="choose({{ forloop.counter0 }}); id_purpose.value='{{ purpose.priority }}'; id_start_date.min = getDateDaysLaterFormatted(now, Number(selected.at_least)); id_start_date.max = getDateDaysLaterFormatted(now, Number(selected.up_to)); initCalendar(); id_purpose.dataset.priority = selected.priority; id_purpose.dataset.keyword = selected.keyword; id_purpose.dataset.atLeast = selected.at_least; id_purpose.dataset.upTo = selected.up_to; id_purpose.dataset.max = selected.max"
+                                                @mouseenter="onMouseEnter($event)"
+                                                @mousemove="onMouseMove($event, {{ forloop.counter0 }})"
+                                                @mouseleave="onMouseLeave($event)"
+                                                :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter0 }}, 'text-gray-900': !(activeIndex === {{ forloop.counter0 }}) }">
+                                                <span x-state:on="Selected"
+                                                      x-state:off="Not Selected"
+                                                      class="font-normal block mr-4 truncate"
+                                                      :class="{ 'font-semibold': selectedIndex === {{ forloop.counter0 }}, 'font-normal': !(selectedIndex === {{ forloop.counter0 }}) }">{{ purpose.keyword }}</span>
+                                                <span x-state:on="Highlighted"
+                                                      x-state:off="Not Highlighted"
+                                                      class="font-normal block mt-1 mr-4 text-gray-500"
+                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter0 }}, 'text-gray-500': !(activeIndex === {{ forloop.counter0 }}) }">{{ purpose.in_a_nutshell }}</span>
+                                                <span x-state:on="Highlighted"
+                                                      x-state:off="Not Highlighted"
+                                                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
+                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter0 }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter0 }}) }"
+                                                      x-show="selectedIndex === {{ forloop.counter0 }}"
+                                                      style="display: none">
+                                                    <svg class="h-5 w-5"
+                                                         viewBox="0 0 20 20"
+                                                         fill="currentColor"
+                                                         aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
+                                                        </path>
+                                                    </svg>
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-sm font-medium leading-6 text-gray-900">대여 기간</label>
+                                    <input type="text"
+                                           id="id_start_date"
+                                           class="only-date"
+                                           value=""
+                                           maxlength="10"
+                                           minlength="10"
+                                           min=""
+                                           max=""
+                                           required
+                                           hidden>
+                                    <input type="text"
+                                           id="id_end_date"
+                                           class="only-date"
+                                           value=""
+                                           maxlength="10"
+                                           minlength="10"
+                                           min=""
+                                           max=""
+                                           required
+                                           hidden>
+                                    <div class="flex items-center gap-x-2">
+                                        <h2 id="id_period_label" class="flex text-sm leading-6 text-gray-700"></h2>
+                                        <div class="flex">
+                                            <button id="id_period_prev"
+                                                    type="button"
+                                                    class="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500">
+                                                <span class="sr-only">지난달</span>
+                                                <svg class="h-5 w-5"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor"
+                                                     aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                            <button id="id_period_next"
+                                                    type="button"
+                                                    class="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500">
+                                                <span class="sr-only">다음달</span>
+                                                <svg class="h-5 w-5"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor"
+                                                     aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                    <div class="my-2 pt-2 grid grid-cols-7 text-center text-xs leading-6 text-gray-500">
+                                        <div class="text-red-700">일</div>
+                                        <div>월</div>
+                                        <div>화</div>
+                                        <div>수</div>
+                                        <div>목</div>
+                                        <div>금</div>
+                                        <div class="text-blue-700">토</div>
+                                    </div>
+                                    <div id="id_period_days_container"
+                                         class="grid grid-cols-7 text-sm rounded-md df-ring-inset-gray bg-white"></div>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-500" id="id_period_help"></p>
+                                <p class="mt-2 text-sm text-gray-500" id="id_period_descr" hidden></p>
+                                <p class="mt-2 text-sm text-flamingo-600" id="id_period_error" hidden></p>
+                            </div>
                             <fieldset>
-                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
+                                <legend class="text-sm font-medium leading-6 text-gray-900">기자재 범주</legend>
                                 <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
                                     {% for category in category_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
@@ -80,45 +245,10 @@
                                         </label>
                                     {% endfor %}
                                 </div>
-                                <label for="id_category" hidden>범주</label>
                                 <input type="text"
                                        id="id_category"
                                        class="alt-radio"
                                        value="{{ category.priority }}"
-                                       required
-                                       hidden>
-                            </fieldset>
-                            <fieldset>
-                                <legend class="text-sm font-medium leading-6 text-gray-900">목적</legend>
-                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                    {% for purpose in purpose_list %}
-                                        <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
-                                            <input type="radio"
-                                                   id="id_purpose_{{ purpose.priority }}"
-                                                   name="id_purpose"
-                                                   value="{{ purpose.priority }}"
-                                                   class="sr-only radio"
-                                                   aria-labelledby="id_purpose_{{ purpose.priority }}_label">
-                                            <span class="flex flex-1">
-                                                <span id="id_purpose_{{ purpose.priority }}_label"
-                                                      class="radio-title block whitespace-pre-line text-sm font-medium text-gray-900">{{ purpose.keyword|replace_space_with_newline }}</span>
-                                            </span>
-                                            <svg class="h-5 w-5 ml-2 text-flamingo"
-                                                 viewBox="0 0 20 20"
-                                                 fill="currentColor"
-                                                 aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="pointer-events-none absolute -inset-px rounded-md"
-                                                  aria-hidden="true"></span>
-                                        </label>
-                                    {% endfor %}
-                                </div>
-                                <label for="id_purpose" hidden>목적</label>
-                                <input type="text"
-                                       id="id_purpose"
-                                       class="alt-radio"
-                                       value="{{ purpose.priority }}"
                                        required
                                        hidden>
                             </fieldset>

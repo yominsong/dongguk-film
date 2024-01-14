@@ -5,17 +5,24 @@
 const id_search_equipment = document.getElementById("id_search_equipment");
 const id_search_equipment_init = document.getElementById("id_search_equipment_init");
 const id_equipment_q = document.getElementById("id_equipment_q");
-// const id_equipment_grid = document.getElementById("id_equipment_grid");
-// const id_equipment_detail = document.getElementById("id_equipment_detail");
+const id_equipment_detail = document.getElementById("id_equipment_detail");
+const id_equipment_detail_title = document.getElementById("id_equipment_detail_title");
+const id_equipment_detail_content_blank = document.getElementById("id_equipment_detail_content_blank")
 const id_equipment_modal = document.getElementById("id_equipment_modal");
-// const id_equipment_modal_land = document.getElementById("id_equipment_modal_land");
 const id_equipment_modal_form = document.getElementById("id_equipment_modal_form");
 const id_equipment_modal_share = document.getElementById("id_equipment_modal_share");
 const id_equipment_data = document.getElementById("id_equipment_data");
-const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
+const id_period_label = document.getElementById("id_period_label");
+const id_period_prev = document.getElementById("id_period_prev");
+const id_period_next = document.getElementById("id_period_next");
+const id_period_days_container = document.getElementById("id_period_days_container");
+const id_period_help = document.getElementById("id_period_help");
+const id_start_date = document.getElementById("id_start_date");
+const id_end_date = document.getElementById("id_end_date");
+const id_category = document.getElementById("id_category");
 const id_filter_equipment = document.getElementById("id_filter_equipment");
-const radioInputs = document.querySelectorAll("input[name='id_category'], input[name='id_purpose']");
+const radioInputs = document.querySelectorAll("input[name='id_category']");
 const id_go_to_list = document.getElementById("id_go_to_list");
 
 let currentHistoryLength = history.length;
@@ -65,7 +72,172 @@ function search() {
 
 search();
 
+function initCalendar() {
+    let currentDate = new Date();
+    let startDate = null;
+    let endDate = null;
+
+    id_start_date.value = "";
+    id_end_date.value = "";
+
+    function formatDate(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function isDateSelected(date) {
+        const formattedDate = formatDate(date);
+        return formattedDate === id_start_date.value || formattedDate === id_end_date.value;
+    }
+
+    function isDateInRange(date) {
+        let minDate = new Date(id_start_date.min + "T00:00:00");
+        let maxDate = id_start_date.value && !id_end_date.value
+            ? new Date(getDateDaysLaterFormatted(id_start_date.value, Number(id_purpose.dataset.max)) + "T00:00:00")
+            : new Date(id_start_date.max + "T00:00:00");
+
+        const compareDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return compareDate >= minDate && compareDate <= maxDate;
+    }
+
+    function updateCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const today = new Date();
+
+        id_period_label.textContent = `${year}년 ${month + 1}월`;
+
+        while (id_period_days_container.firstChild) {
+            id_period_days_container.removeChild(id_period_days_container.firstChild);
+        };
+
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const numDays = new Date(year, month + 1, 0).getDate();
+        const startCalendarDate = new Date(year, month, 1 - firstDayOfMonth);
+        const totalDays = firstDayOfMonth + numDays + (7 - ((firstDayOfMonth + numDays) % 7)) % 7;
+
+        for (let i = 0; i < totalDays; i++) {
+            const date = new Date(startCalendarDate.getFullYear(), startCalendarDate.getMonth(), startCalendarDate.getDate() + i);
+            const isToday = date.toDateString() === today.toDateString();
+            const isSelected = isDateSelected(date);
+            const isCurrentMonth = date.getMonth() === month;
+            const isInRange = isDateInRange(date);
+            const isStartDate = formatDate(date) === id_start_date.value;
+            const isEndDate = formatDate(date) === id_end_date.value;
+            const isSameStartEnd = id_start_date.value === id_end_date.value && isStartDate;
+
+            const dayElement = document.createElement("div");
+            dayElement.className = "py-2";
+
+            let buttonClasses = "mx-auto flex h-8 w-8 items-center justify-center ";
+            if (isSameStartEnd) {
+                buttonClasses += "rounded-full ";
+            } else {
+                if (isStartDate || (isSelected && !endDate)) {
+                    buttonClasses += "rounded-l-full ";
+                } else if (isEndDate || (isSelected && !startDate)) {
+                    buttonClasses += "rounded-r-full ";
+                } else {
+                    buttonClasses += "rounded-full ";
+                }
+            }
+
+            if (isStartDate || (isSelected && !endDate)) {
+                buttonClasses += "rounded-l-full ";
+            } else if (isEndDate || (isSelected && !startDate)) {
+                buttonClasses += "rounded-r-full ";
+            } else {
+                buttonClasses += "rounded-full ";
+            }
+
+            if (isSelected) {
+                buttonClasses += "bg-flamingo-600 text-white ";
+            } else {
+                if (isToday) {
+                    buttonClasses += "text-flamingo-600 ";
+                } else {
+                    buttonClasses += isCurrentMonth ? "text-gray-900 " : "text-gray-400 ";
+                }
+            }
+
+            if (isInRange) {
+                buttonClasses += isSelected || isToday ? "font-semibold " : "hover:bg-gray-200 ";
+            } else {
+                buttonClasses += "opacity-50 cursor-not-allowed";
+            }
+
+            const buttonElement = document.createElement("button");
+            buttonElement.type = "button";
+            buttonElement.className = buttonClasses;
+            buttonElement.innerHTML = `<time datetime="${formatDate(date)}">${date.getDate()}</time>`;
+            buttonElement.disabled = !isInRange;
+
+            if (isInRange) {
+                buttonElement.addEventListener("click", function () {
+                    handleDateSelection(date);
+                });
+            }
+
+            dayElement.appendChild(buttonElement);
+            id_period_days_container.appendChild(dayElement);
+        };
+    }
+
+    function handleDateSelection(date) {
+        if (!isDateInRange(date)) return;
+
+        const formattedDate = formatDate(date);
+
+        if (!startDate || endDate) {
+            startDate = date;
+            id_start_date.value = formattedDate;
+            id_end_date.value = "";
+            endDate = null;
+            id_end_date.max = getDateDaysLaterFormatted(id_start_date.value, Number(id_purpose.dataset.max));
+            id_period_help.innerText = `희망 반납일을 ${id_start_date.value}부터 ${id_end_date.max}까지의 범위 내에서 선택해주세요.`;
+            id_period_error.hidden = true;
+        } else {
+            if (date < startDate) {
+                startDate = date;
+                id_start_date.value = formatDate(startDate);
+                id_end_date.value = "";
+                endDate = null;
+                id_end_date.max = getDateDaysLaterFormatted(id_start_date.value, Number(id_purpose.dataset.max));
+                id_period_help.innerText = `희망 반납일을 ${id_start_date.value}부터 ${id_end_date.max}까지의 범위 내에서 선택해주세요.`;
+                id_period_error.hidden = true;
+            } else {
+                endDate = date;
+                id_end_date.value = formatDate(endDate);
+                id_period_help.innerText = `희망 대여일이 ${id_start_date.value}, 희망 반납일이 ${id_end_date.value}으로 선택되었어요.`;
+                id_period_error.hidden = true;
+            }
+        }
+        updateCalendar();
+    }
+
+    id_period_prev.addEventListener("click", function () {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateCalendar();
+    });
+
+    id_period_next.addEventListener("click", function () {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateCalendar();
+    });
+
+    updateCalendar();
+    id_period_help.innerText = `희망 대여일을 ${id_start_date.min}부터 ${id_start_date.max}까지의 범위 내에서 선택해주세요.`;
+}
+
 function initForm() {
+    // id_purpose
+    if (urlParams.get("purpose") != null) {
+        code("id_purpose_", urlParams.get("purpose")).click();
+    };
+
+    // id_start_date, id_end_date
+    initCalendar();
+
+    // id_category
     radioInputs.forEach((input) => {
         const label = input.closest("label");
         const svg = label.querySelector("svg");
@@ -73,8 +245,6 @@ function initForm() {
         input.addEventListener("click", () => {
             if (input.id.indexOf("category") != -1) {
                 id_category.value = input.value;
-            } else if (input.id.indexOf("purpose") != -1) {
-                id_purpose.value = input.value;
             };
         });
 
@@ -111,8 +281,7 @@ function initForm() {
             });
         });
 
-        if (input.id.indexOf("category") != -1 && input.value == id_category.value ||
-            input.id.indexOf("purpose") != -1 && input.value == id_purpose.value) {
+        if (input.id.indexOf("category") != -1 && input.value == urlParams.get("category")) {
             input.click();
         };
 
@@ -192,6 +361,45 @@ function initModal() {
 }
 
 initModal();
+
+function resizeDetail() {
+    if (id_equipment_detail !== null) {
+        if (this.window.innerWidth >= 640 &&
+            id_equipment_detail_title.querySelector("h2").offsetHeight > 32) {
+            id_equipment_detail_title.style.setProperty("height", "158px", "important")
+            id_equipment_detail_content_blank.style.setProperty("padding-top", "142px", "important");
+        };
+    };
+}
+
+resizeDetail();
+
+function ignoreFocusStyleChangeDueToClick() {
+    if (id_equipment_detail !== null) {
+        [id_equipment_detail_purpose_title, id_equipment_detail_limit_title, id_equipment_detail_precaution_title].forEach(accordion => {
+            accordion.addEventListener("keydown", () => {
+                accordion.classList.add("focus:df-focus-ring-offset-white");
+            });
+            accordion.addEventListener("keypress", () => {
+                accordion.classList.add("focus:df-focus-ring-offset-white");
+            });
+            accordion.addEventListener("keyup", () => {
+                accordion.classList.add("focus:df-focus-ring-offset-white");
+            });
+            accordion.addEventListener("mouseout", () => {
+                accordion.classList.remove("focus:df-focus-ring-offset-white");
+            });
+            accordion.addEventListener("mousedown", () => {
+                accordion.classList.remove("focus:df-focus-ring-offset-white");
+            });
+            accordion.addEventListener("mouseover", () => {
+                accordion.classList.remove("focus:df-focus-ring-offset-white");
+            });
+        });
+    };
+}
+
+ignoreFocusStyleChangeDueToClick();
 
 function detectHashLinkClick() {
     document.addEventListener("click", function (event) {
@@ -366,7 +574,8 @@ function requestFilterEquipment() {
         };
         radios.forEach((radio) => { radio.disabled = true });
     });
-    location.href = `${originLocation}/equipment/?sort=ascending&category=${id_category.value}&purpose=${id_purpose.value}`;
+    id_period_error.hidden = true;
+    location.href = `${originLocation}/equipment/?purpose=${id_purpose.value}&start_date=${id_start_date.value}&end_date=${id_end_date.value}&category=${id_category.value}`;
 }
 
 function setPage() {
@@ -397,15 +606,30 @@ function setPage() {
             };
             radios.forEach((radio) => { radio.disabled = false });
         });
-        id_category.value = urlParams.get("category");
         id_purpose.value = urlParams.get("purpose");
+        id_category.value = urlParams.get("category");
+        if (id_equipment_detail !== null) {
+            if (this.window.innerWidth >= 640 &&
+                id_equipment_detail_title.querySelector("h2").offsetHeight > 32) {
+                id_equipment_detail_title.style.setProperty("height", "158px", "important")
+                id_equipment_detail_content_blank.style.setProperty("padding-top", "142px", "important");
+            };
+        };
         initForm();
 
         // Step one (first and last)
         ["click", "keyup"].forEach(type => {
             id_filter_equipment.addEventListener(type, (event) => {
                 if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    requestFilterEquipment();
+                    if (id_start_date.value == "") {
+                        id_period_error.hidden = false;
+                        id_period_error.innerText = "희망 대여일을 선택해주세요.";
+                    } else if (id_end_date.value == "") {
+                        id_period_error.hidden = false;
+                        id_period_error.innerText = "희망 반납일을 선택해주세요.";
+                    } else {
+                        requestFilterEquipment();
+                    };
                 };
             });
         });

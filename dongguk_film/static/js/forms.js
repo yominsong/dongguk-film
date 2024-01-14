@@ -576,7 +576,7 @@ function displayError(bool, input, errorType = null) {
             narrativeClause = "수정해주세요.";
         } else if (errorType == "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
-            narrativeClause = `유효범위를 벗어났어요.`;
+            narrativeClause = `유효 범위를 벗어났어요.`;
         };
 
         errorMsg.innerText = `${subject} ${narrativeClause}`;

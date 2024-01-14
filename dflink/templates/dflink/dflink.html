@@ -184,7 +184,7 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                <li class="class-create relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                <li class="class-create relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                     tabindex="0">
                     <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +196,7 @@
                     새로 만들기
                 </li>
             {% else %}
-                <li class="relative flex justify-start items-center gap-x-1 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6">
+                <li class="relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6">
                     <a href="{% url 'account_login' %}"
                        class="login-button absolute inset-x-0 -top-px bottom-0 focus:df-focus-ring-inset"
                        data-login-request-msg="dflink"></a>
@@ -209,9 +209,10 @@
                     새로 만들기
                 </li>
             {% endif %}
+            <!-- Pagination -->
             <li class="mx-auto max-w-7xl">
-                <nav class="flex items-center justify-between">
-                    <div class="-mt-px flex w-0 flex-1">
+                <nav class="flex -mt-px items-center justify-between">
+                    <div class="flex w-0 flex-1">
                         {% if page_value.has_previous %}
                             <a href="?{{ query_param|default_if_none:'' }}page={{ page_value.previous_page_number }}"
                                class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-bl-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
@@ -237,7 +238,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    <div class="-mt-px flex">
+                    <div class="flex">
                         {% for num in page_range %}
                             {% if num == page_value.number %}
                                 <a href="?{{ query_param|default_if_none:'' }}page={{ num }}"
@@ -249,7 +250,7 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="-mt-px flex w-0 flex-1 justify-end">
+                    <div class="flex w-0 flex-1 justify-end">
                         {% if page_value.has_next %}
                             <a href="?{{ query_param|default_if_none:'' }}page={{ page_value.next_page_number }}"
                                class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-br-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">

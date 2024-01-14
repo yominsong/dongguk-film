@@ -16,24 +16,31 @@ json_path = (
 
 
 def update_equipment_policy(request):
-    target_list = ["category", "purpose"]
+    target_list = ["purpose", "limit", "category"]
     result_list = []
 
     for target in target_list:
-        if target == "category":
+        if target == "purpose":
+            data = {
+                "table_name": "equipment-purpose",
+                "param": {
+                    "view": "Grid view",
+                    "fields": ["Name", "Priority", "Keyword", "Up to", "At least", "Max", "In a nutshell"],
+                },
+            }
+        elif target == "limit":
+            data = {
+                "table_name": "equipment-limit",
+                "param": {
+                    "view": "Grid view",
+                },
+            }
+        elif target == "category":
             data = {
                 "table_name": "equipment-category",
                 "param": {
                     "view": "Grid view",
                     "fields": ["Name", "Priority", "Keyword"],
-                },
-            }
-        elif target == "purpose":
-            data = {
-                "table_name": "equipment-purpose",
-                "param": {
-                    "view": "Grid view",
-                    "fields": ["Name", "Priority", "Keyword", "Up to", "At least", "Max"],
                 },
             }
 
