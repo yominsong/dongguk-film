@@ -4,16 +4,28 @@ from django.http import Http404
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import airtable
-import random
+from datetime import datetime, timedelta
+import pytz, random
 
 
 def equipment(request):
-    purpose = request.GET.get("purpose", "A")
-    category = request.GET.get("category", "A")
-
     image_list = get_hero_img("equipment")
     purpose_list = get_equipment_policy("purpose")
     category_list = get_equipment_policy("category")
+
+    current_date = datetime.now(pytz.timezone("Asia/Seoul"))
+
+    for purpose in purpose_list:
+        if purpose["priority"] == "A":
+            default_start_date = current_date + timedelta(days=int(purpose["at_least"]))
+            default_end_date = default_start_date + timedelta(days=int(purpose["max"]))
+            default_end_date = default_end_date.date().isoformat()
+            default_start_date = default_start_date.date().isoformat()
+    
+    purpose = request.GET.get("purpose", "A")
+    category = request.GET.get("category", "A")
+    start_date = request.GET.get("startDate", default_start_date)
+    end_date = request.GET.get("endDate", default_end_date)
     param = ""
 
     # Airtable
@@ -35,7 +47,7 @@ def equipment(request):
     equipment_count = len(equipment_list)
 
     # Parameter and template tag
-    param += f"purpose={purpose}&category={category}&"
+    param += f"purpose={purpose}&startDate={start_date}&endDate={end_date}&category={category}&"
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose = {"priority": purpose, "keyword": purpose_dict.get(purpose)}

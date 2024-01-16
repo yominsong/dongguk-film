@@ -22,6 +22,7 @@ const id_start_date = document.getElementById("id_start_date");
 const id_end_date = document.getElementById("id_end_date");
 const id_category = document.getElementById("id_category");
 const id_filter_equipment = document.getElementById("id_filter_equipment");
+const id_url_param = document.getElementById("id_url_param");
 const radioInputs = document.querySelectorAll("input[name='id_category']");
 const id_go_to_list = document.getElementById("id_go_to_list");
 
@@ -73,12 +74,20 @@ function search() {
 search();
 
 function initCalendar() {
-    let currentDate = new Date();
+    let currentDate;
     let startDate = null;
     let endDate = null;
 
-    id_start_date.value = "";
-    id_end_date.value = "";
+    if (id_start_date.value) {
+        startDate = new Date(id_start_date.value + "T00:00:00");
+        currentDate = new Date(id_start_date.value + "T00:00:00"); // Set currentDate to the start date
+    } else {
+        currentDate = new Date(); // If no start date, use the current date
+    }
+
+    if (id_end_date.value) {
+        endDate = new Date(id_end_date.value + "T00:00:00");
+    }
 
     function formatDate(date) {
         return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -215,17 +224,26 @@ function initCalendar() {
     }
 
     id_period_prev.addEventListener("click", function () {
+        // Set currentDate to the first day of the current month, then subtract one month
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         currentDate.setMonth(currentDate.getMonth() - 1);
         updateCalendar();
     });
-
+    
     id_period_next.addEventListener("click", function () {
+        // Set currentDate to the first day of the current month, then add one month
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         currentDate.setMonth(currentDate.getMonth() + 1);
         updateCalendar();
     });
 
     updateCalendar();
-    id_period_help.innerText = `희망 대여일을 ${id_start_date.min}부터 ${id_start_date.max}까지의 범위 내에서 선택해주세요.`;
+
+    if (id_start_date.value == "") {
+        id_period_help.innerText = `희망 대여일을 ${id_start_date.min}부터 ${id_start_date.max}까지의 범위 내에서 선택해주세요.`;
+    } else {
+        id_period_help.innerText = `희망 대여일이 ${id_start_date.value}, 희망 반납일이 ${id_end_date.value}으로 선택되었어요.`;
+    };
 }
 
 function initForm() {
@@ -575,7 +593,7 @@ function requestFilterEquipment() {
         radios.forEach((radio) => { radio.disabled = true });
     });
     id_period_error.hidden = true;
-    location.href = `${originLocation}/equipment/?purpose=${id_purpose.value}&start_date=${id_start_date.value}&end_date=${id_end_date.value}&category=${id_category.value}`;
+    location.href = `${originLocation}/equipment/?purpose=${id_purpose.value}&startDate=${id_start_date.value}&endDate=${id_end_date.value}&category=${id_category.value}`;
 }
 
 function setPage() {
@@ -595,6 +613,11 @@ function setPage() {
         };
 
         // Init
+        if (id_url_param !== null && urlParams.size < 4) {
+            this.window.location.href = `${originLocation}/equipment/?${id_url_param.value}`;
+        };
+        id_start_date.value = urlParams.get("startDate");
+        id_end_date.value = urlParams.get("endDate");
         code(id_filter_equipment, "_descr").hidden = true;
         code(id_filter_equipment, "_spin").classList.add("hidden");
         freezeForm(false);

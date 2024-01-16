@@ -393,10 +393,10 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     limit = {
                         "name": fields.get("Name", None),
                         "depth": fields.get("Depth", None),
-                        "category_priority": fields.get("Category priority", None),
+                        "category_priority": fields.get("Category priority", [None])[0],
                         "subcategory priority": fields.get(
-                            "Subcategory priority", None
-                        ),
+                            "Subcategory priority", [None]
+                        )[0],
                         "brand_name": fields.get("Brand name", None),
                         "group_collection_id": fields.get("Group collection ID", None),
                         "collection_id": fields.get("Collection ID", None),
