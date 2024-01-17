@@ -10,7 +10,8 @@ const onlyEmails = document.querySelectorAll(".only-email");
 const onlyUrls = document.querySelectorAll(".only-url");
 const onlySlugs = document.querySelectorAll(".only-slug");
 const labels = document.querySelectorAll("label");
-const radios = document.querySelectorAll(".radio");
+const class_radios = document.querySelectorAll(".class-radio");
+const radios = document.querySelectorAll(".radio"); // This line will be removed after all `radio` classes are changed to `class-radio`.
 let spins = document.querySelectorAll(".animate-spin");
 let buttons = document.querySelectorAll("button");
 let inputs = [];
@@ -102,7 +103,7 @@ function freezeForm(bool) {
                         label.classList.replace("cursor-not-allowed", "cursor-pointer");
                     };
                 };
-                bool ? radios.forEach((radio) => { radio.disabled = true }) : radios.forEach((radio) => { radio.disabled = false });
+                bool ? class_radios.forEach((radio) => { radio.disabled = true }) : class_radios.forEach((radio) => { radio.disabled = false });
             });
         } else if (input.type == "textarea" && ckEditor) {
             bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
