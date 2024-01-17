@@ -4,7 +4,7 @@
 
 let timer;
 let clickCount = 0;
-let urls = document.querySelectorAll(".class-url");
+const class_urls = document.querySelectorAll(".class-url");
 
 //
 // Sub functions
@@ -76,42 +76,64 @@ function announceConstruction() {
 announceConstruction();
 
 function copyUrl() {
-    urls.forEach(url => {
+    class_urls.forEach(url => {
+        const originalInnerHTML = url.innerHTML;
+        let isInCopiedState = false;
+
+        const showFullText = () => {
+            if (!isInCopiedState) {
+                if (url.innerHTML.indexOf("not-sr-only") == -1) {
+                    url.innerHTML = url.innerHTML.replace("sr-only", "not-sr-only");
+                };
+            }
+        };
+
+        const revertToOriginalInnerHTML = () => {
+            if (!isInCopiedState) {
+                url.innerHTML = originalInnerHTML;
+            }
+        };
+
+        url.addEventListener('focus', showFullText);
+        url.addEventListener('blur', revertToOriginalInnerHTML);
+        url.addEventListener('mouseover', showFullText);
+        url.addEventListener('mouseout', revertToOriginalInnerHTML);
+
         ["click", "keyup"].forEach(type => {
             url.addEventListener(type, async (event) => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    let srOnlySpan = document.createElement("span");
-                    let originalUrlValue;
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    const data = url.dataset;
 
-                    srOnlySpan.className = "sr-only";
-                    srOnlySpan.textContent = "\u00A0URL\u00A0복사하기";
-
-                    url.removeChild(url.querySelector(".sr-only"));
-                    originalUrlValue = url.innerText;
+                    isInCopiedState = true;
 
                     try {
-                        await navigator.clipboard.writeText(url.innerText);
+                        await navigator.clipboard.writeText(data.dflinkUrl);
                     } catch (e) {
                         let textarea = document.createElement("textarea");
-                        textarea.value = url.innerText;
+                        textarea.value = data.dflinkUrl;
                         document.body.appendChild(textarea);
                         textarea.select();
-                        document.execCommand("copy"); // deprecated, but used for KakaoTalk in-app browser
+                        document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
                         document.body.removeChild(textarea);
-                    };
+                    }
 
-                    url.innerText = "URL이 클립보드에 복사되었어요.";
+                    url.innerHTML = "URL이 클립보드에 복사되었어요!";
                     url.classList.add("blink");
 
                     setTimeout(() => {
                         url.classList.remove("blink");
-                        url.innerText = originalUrlValue;
-                        url.appendChild(srOnlySpan);
+                        url.innerHTML = originalInnerHTML;
+                        isInCopiedState = false;
                     }, 3000);
-                };
+                }
             });
         });
     });
 }
 
-if (urls) { copyUrl() };
+
+
+
+
+
+if (class_urls) { copyUrl() };

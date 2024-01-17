@@ -48,18 +48,22 @@ inheritObject();
 function code(one, two) {
     let result;
 
-    if (two == null) {
-        two = "";
-    };
-
-    if (typeof (one) == "object" && typeof (two) == "string") {
-        result = one.id + two;
-    } else if (typeof (one) == "string" && typeof (two) == "object") {
-        result = one + two.id;
-    } else if (typeof (one) == "object" && typeof (two) == "object") {
-        result = one.id + two.id;
-    } else if (typeof (one) == "string" && typeof (two) == "string") {
-        result = one + two;
+    if (one == null) {
+        result = null;
+    } else {
+        if (two == null) {
+            two = "";
+        };
+    
+        if (typeof (one) == "object" && typeof (two) == "string") {
+            result = one.id + two;
+        } else if (typeof (one) == "string" && typeof (two) == "object") {
+            result = one + two.id;
+        } else if (typeof (one) == "object" && typeof (two) == "object") {
+            result = one.id + two.id;
+        } else if (typeof (one) == "string" && typeof (two) == "string") {
+            result = one + two;
+        };
     };
 
     result = document.querySelector(`#${result}`);

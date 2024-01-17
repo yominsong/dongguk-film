@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from utility.img import get_hero_img
 from utility.utils import short_io
+import random
 
 #
 # Main functions
@@ -9,6 +10,7 @@ from utility.utils import short_io
 
 
 def dflink(request):
+    search_params = ""
     image_list = get_hero_img("dflink")
 
     # Short.io
@@ -16,21 +18,29 @@ def dflink(request):
     dflink_count = len(dflink_list)
 
     # Query
-    q = request.GET.get("q")
+    query = request.GET.get("q")
     query_result_count = None
-    query_param = None
-    if q:
-        q = q.lower().replace(" ", "")
+
+    if dflink_count > 0:
+        selected_link = random.choice(dflink_list[: min(dflink_count, 7)])
+        query_placeholder = random.choice(
+            [selected_link["title"], f"dgufilm.link/{selected_link['slug']}"]
+        )
+    else:
+        query_placeholder = "dgufilm.link/example"
+
+    if query:
+        query = query.lower().replace(" ", "")
         query_result_list = []
         for dflink in dflink_list:
             for k, v in dflink.items():
                 k = k.lower().replace(" ", "")
                 v = v.lower().replace(" ", "")
-                if k != "user" and q in v and dflink not in query_result_list:
+                if k != "user" and query in v and dflink not in query_result_list:
                     query_result_list.append(dflink)
         dflink_list = query_result_list
         query_result_count = len(query_result_list)
-        query_param = f"q={q}&"
+        search_params += f"q={query}&"
 
     # Pagination
     try:
@@ -45,10 +55,11 @@ def dflink(request):
         request,
         "dflink/dflink.html",
         {
+            "search_params": search_params,
             "image_list": image_list,
             "dflink_count": dflink_count,
             "query_result_count": query_result_count,
-            "query_param": query_param,
+            "query_placeholder": query_placeholder,
             "page_value": page_value,
             "page_range": page_range,
         },

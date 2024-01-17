@@ -260,6 +260,7 @@ def short_io(action: str, request=None, limit: int = None):
                 dflink = {
                     "link_id": dflinks[i]["idString"],
                     "target_url": dflinks[i]["originalURL"],
+                    "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
                     "slug": dflinks[i]["path"],
                     "title": dflinks[i]["title"],
                     "category": dflinks[i]["tags"][0],

@@ -21,7 +21,7 @@ const id_delete_dflink = document.getElementById("id_delete_dflink");
 const id_delete_dflink_text_content = code(id_delete_dflink, "_text_content");
 
 let currentHistoryLength = history.length;
-let lastClickedWasHash = false;
+let isLastSelectedAnchorHash = false;
 let modalOpen = false;
 let askedTwice = false;
 let askedTwiceTimer;
@@ -30,13 +30,13 @@ let askedTwiceTimer;
 // Sub functions
 //
 
-function search() {
+function query() {
     const id_query = document.getElementById("id_query");
     const id_send_query = document.getElementById("id_send_query");
     const id_initialize_query = document.getElementById("id_initialize_query");
 
     window.addEventListener("pageshow", event => {
-        if (event.persisted) {  // Detect the web browser's back/forward buttons
+        if (event.persisted) {  // Detect if a user used the web browser back or forward buttons
             id_query.readOnly = false;
             id_query.value = urlParams.get("q");
             id_send_query.disabled = false;
@@ -73,7 +73,7 @@ function search() {
     };
 }
 
-search();
+query();
 
 function initForm() {
     const target_url_placeholder = new Array("https://docs.google.com/document/d/...", "https://docs.google.com/spreadsheets/d/...", "https://docs.google.com/presentation/d/...", "https://docs.google.com/forms/d/...", "https://drive.google.com/drive/folders/...", "https://drive.google.com/file/d/...", "https://www.dropbox.com/s/...", "https://www.youtube.com/playlist?list=...", "https://www.youtube.com/watch?v=...", "https://vimeo.com/...", "https://www.dailymotion.com/video/...", "https://www.notion.so/...", "https://example.notion.site/...", "https://www.evernote.com/shard/...", "https://zoom.us/j/...", "https://www.filmmakers.co.kr/actorsAudition/...", "https://www.dongguk.edu/article/HAKSANOTICE/detail/...");
@@ -88,7 +88,7 @@ function initForm() {
     id_category_work.checked = false;
     id_category_dept.checked = false;
     id_expiration_date.value = null;
-    id_expiration_date.placeholder = yyyymmddWithDash;
+    id_expiration_date.placeholder = yyyymmddOfAfter90DaysWithDash;
     id_target_url.placeholder = id_target_url_placeholder;
     id_slug.placeholder = id_slug_placeholder;
     id_title.placeholder = id_title_placeholder;
@@ -181,28 +181,24 @@ function initModal() {
 
 initModal();
 
-function detectHashLinkClick() {
-    document.addEventListener("click", event => {
-        const closestAnchor = event.target.closest("a");
-
-        if (closestAnchor) {
-            lastClickedWasHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-}
-
-detectHashLinkClick();
-
 function preventGoBack() {
-    const id_create_or_update_dflink_descr = code(id_create_or_update_dflink, "_descr");
-    const id_delete_dflink_descr = code(id_delete_dflink, "_descr");
-    const id_delete_dflink_error = code(id_delete_dflink, "_error");
-
     if (currentHistoryLength == history.length) {
         history.pushState(null, null, location.href);
     };
 
+    document.addEventListener("click", event => {
+        const closestAnchor = event.target.closest("a");
+
+        if (closestAnchor) {
+            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
+        };
+    });
+
     window.onpopstate = function () {
+        const id_create_or_update_dflink_descr = code(id_create_or_update_dflink, "_descr");
+        const id_delete_dflink_descr = code(id_delete_dflink, "_descr");
+        const id_delete_dflink_error = code(id_delete_dflink, "_error");
+
         if (modalOpen) {
             history.pushState(null, null, location.href);
             if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) {
@@ -211,7 +207,7 @@ function preventGoBack() {
                 modalOpen = false;
             };
         } else if (!modalOpen) {
-            if (!lastClickedWasHash) {
+            if (!isLastSelectedAnchorHash) {
                 history.go(-1);
             };
         };
@@ -270,7 +266,7 @@ function setPage() {
     const stepOnes = document.querySelectorAll(".step-one");
     let filteredInputs = [];
 
-    window.addEventListener("pageshow", function (event) {
+    window.addEventListener("pageshow", () => {
         if (id_modal != null) {
             // Init
             const id_expiration_date_help = code(id_expiration_date, "_help");
@@ -298,7 +294,7 @@ function setPage() {
                     if ((type === "click" && target.tagName === "SPAN") ||
                         (type === "click" && target.tagName === "BUTTON") ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && target.tagName !== "BUTTON")) {
-                        Array.from(radios).forEach((radio) => {
+                        Array.from(radios).forEach(radio => {
                             let idx = inputs.indexOf(radio);
                             while (idx > -1) {
                                 inputs.splice(idx, 1);
@@ -315,20 +311,20 @@ function setPage() {
                             displayButtonMsg(true, id_create_or_update_dflink, "descr", "잠시만 기다려주세요.");
                             displayButtonMsg(false, id_create_or_update_dflink, "error");
                         } else {
-                            inputs.forEach((input) => {
+                            inputs.forEach(input => {
                                 controlError(input);
                             });
                         };
                     };
-                    ["keydown", "focusin"].forEach((type) => {
-                        inputs.forEach((input) => {
+                    ["keydown", "focusin"].forEach(type => {
+                        inputs.forEach(input => {
                             input.addEventListener(type, () => {
                                 displayButtonMsg(false, id_create_or_update_dflink, "error");
                             });
                         });
                     });
                 });
-                id_delete_dflink.addEventListener(type, (event) => {
+                id_delete_dflink.addEventListener(type, event => {
                     let target = event.target;
 
                     if ((type === "click" && target.tagName === "SPAN") ||
