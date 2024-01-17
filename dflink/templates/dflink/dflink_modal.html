@@ -1,6 +1,6 @@
-<div id="id_dflink_modal"
+<div id="id_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false }"
+     @keydown.window.escape="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
      x-show="open"
      class="relative z-20"
      aria-labelledby="modal-title"
@@ -29,7 +29,9 @@
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
-                            @click="open = false; enableFocus(); modalOpen = false; preventGoBack()">
+                            @click="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
+                            @keydown.enter.prevent="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
+                            @keyup.space.prevent="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }">
                         <span class="sr-only">동영링크 <span class="class-keyword">만들기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -51,41 +53,42 @@
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
                         <div class="space-y-5">
-                            <input id="id_string_id" value="" hidden>
+                            <input id="id_link_id" value="" hidden>
                             <div>
-                                <label for="id_original_url"
-                                       class="block text-sm font-medium leading-6 text-gray-900">원본 URL</label>
+                                <label for="id_target_url"
+                                       class="block text-sm font-medium leading-6 text-gray-900">대상 URL</label>
                                 <div class="mt-2">
                                     <div class="relative flex flex-grow items-stretch focus-within:z-10">
                                         <input type="url"
-                                               id="id_original_url"
+                                               id="id_target_url"
                                                class="step-one only-url block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
                                 </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_original_url_descr" hidden></p>
+                                <p class="mt-2 text-sm text-gray-500" id="id_target_url_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600"
-                                   id="id_original_url_error"
+                                   id="id_target_url_error"
                                    hidden></p>
                             </div>
-                            <input id="id_dflink_slug_original" value="" hidden>
+                            <input id="id_target_url_original" value="" hidden>
                             <div>
-                                <label for="id_dflink_slug"
+                                <label for="id_slug"
                                        class="block text-sm font-medium leading-6 text-gray-900">동영링크 URL</label>
                                 <div class="mt-2 flex rounded-md shadow-sm">
                                     <span class="inline-flex items-center rounded-l-md df-ring-inset-gray px-3 text-gray-500 sm:text-sm">https://dgufilm.link/</span>
                                     <input type="text"
-                                           id="id_dflink_slug"
+                                           id="id_slug"
                                            class="step-one only-slug block w-full min-w-0 flex-1 -ml-px rounded-none rounded-r-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                            placeholder=""
                                            required>
                                 </div>
-                                <p class="mt-2 text-sm text-gray-500" id="id_dflink_slug_descr" hidden></p>
+                                <p class="mt-2 text-sm text-gray-500" id="id_slug_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600"
-                                   id="id_dflink_slug_error"
+                                   id="id_slug_error"
                                    hidden></p>
                             </div>
+                            <input id="id_slug_original" value="" hidden>
                             <div>
                                 <label for="id_title"
                                        class="block text-sm font-medium leading-6 text-gray-900">제목</label>
@@ -99,6 +102,7 @@
                                 <p class="mt-2 text-sm text-gray-500" id="id_title_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
                             </div>
+                            <input id="id_title_original" value="" hidden>
                             <fieldset>
                                 <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                 <div class="mt-2 space-y-4">
@@ -143,6 +147,7 @@
                                 <p class="mt-2 text-sm text-gray-500" id="id_category_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                             </fieldset>
+                            <input id="id_category_original" value="" hidden>
                             <div>
                                 <label for="id_expiration_date"
                                        class="block text-sm font-medium leading-6 text-gray-900">만료일</label>
@@ -152,7 +157,7 @@
                                            class="step-one only-date block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                            maxlength="10"
                                            minlength="10"
-                                           placeholder='{% now "Y" %}-00-00'
+                                           placeholder=""
                                            min=""
                                            max=""
                                            required>
@@ -165,6 +170,7 @@
                                    id="id_expiration_date_error"
                                    hidden></p>
                             </div>
+                            <input id="id_expiration_date_original" value="" hidden>
                             <div>
                                 <div class="rounded-md shadow bg-flamingo-50 p-4">
                                     <div class="flex">
@@ -233,7 +239,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span id="id_delete_dflink_inner_text">삭제하기</span>
+                            <span id="id_delete_dflink_text_content">삭제하기</span>
                         </button>
                     </div>
                 </div>

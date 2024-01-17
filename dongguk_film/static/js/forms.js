@@ -702,3 +702,51 @@ function enableFocus() {
         setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
     };
 }
+
+function toggleFocusOnModal(isModalOpen, modal) {
+    let focusableElements;
+    let tabIndexStorage = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
+
+    if (isModalOpen) {
+        lastFocusedElement = document.activeElement;
+
+        focusableElements = document.querySelectorAll("a, button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])");
+        focusableElements.forEach((element, index) => {
+            if (!modal.contains(element)) {
+                if (element.getAttribute("tabindex") === "0") {
+                    element.dataset.focusIndex = index;
+                    tabIndexStorage.push(index);
+                };
+                element.setAttribute("tabindex", "-1");
+            };
+        });
+
+        sessionStorage.setItem("focusableItems", JSON.stringify(tabIndexStorage));
+    } else {
+        focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
+        focusableElements.forEach(element => {
+            element.removeAttribute("tabindex");
+        });
+
+        tabIndexStorage.forEach(index => {
+            const element = document.querySelector(`[data-focus-index='${index}']`);
+            if (element) {
+                element.setAttribute("tabindex", "0");
+                element.removeAttribute("data-focus-index");
+            };
+        });
+
+        sessionStorage.removeItem("focusableItems");
+
+        let id_notice_detail_option_menu = document.getElementById("id_notice_detail_option_menu");
+        let id_notice_detail_option_button = document.getElementById("id_notice_detail_option_button");
+
+        if (lastFocusedElement) {
+            if (lastFocusedElement === id_notice_detail_option_menu) {
+                lastFocusedElement = id_notice_detail_option_button;
+            }
+            setTimeout(() => { lastFocusedElement.focus() }, 300);
+            setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
+        };
+    };
+}

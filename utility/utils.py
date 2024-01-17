@@ -226,8 +226,8 @@ def short_io(action: str, request=None, limit: int = None):
 
     # action: create
     if action == "create":
-        original_url = request.GET["original_url"]
-        dflink_slug = request.GET["dflink_slug"]
+        target_url = request.GET["target_url"]
+        slug = request.GET["slug"]
         title = request.GET["title"]
         category = request.GET["category"]
         expiration_date = request.GET["expiration_date"]
@@ -237,8 +237,8 @@ def short_io(action: str, request=None, limit: int = None):
             "tags": [category, f"{request.user}", expiration_date],
             "domain": "dgufilm.link",
             "allowDuplicates": True,
-            "originalURL": original_url,
-            "path": dflink_slug,
+            "originalURL": target_url,
+            "path": slug,
             "title": title,
         }
         response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
@@ -258,8 +258,8 @@ def short_io(action: str, request=None, limit: int = None):
         try:
             for i in range(dflink_count):
                 dflink = {
-                    "id_string": dflinks[i]["idString"],
-                    "original_url": dflinks[i]["originalURL"],
+                    "link_id": dflinks[i]["idString"],
+                    "target_url": dflinks[i]["originalURL"],
                     "slug": dflinks[i]["path"],
                     "title": dflinks[i]["title"],
                     "category": dflinks[i]["tags"][0],
@@ -274,18 +274,18 @@ def short_io(action: str, request=None, limit: int = None):
 
     # action: update
     elif action == "update":
-        string_id = request.GET["string_id"]
-        original_url = request.GET["original_url"]
-        dflink_slug = request.GET["dflink_slug"]
+        link_id = request.GET["link_id"]
+        target_url = request.GET["target_url"]
+        slug = request.GET["slug"]
         title = request.GET["title"]
         category = request.GET["category"]
         expiration_date = request.GET["expiration_date"]
 
-        url = f"https://api.short.io/links/{string_id}"
+        url = f"https://api.short.io/links/{link_id}"
         payload = {
             "tags": [category, f"{request.user}", expiration_date],
-            "originalURL": original_url,
-            "path": dflink_slug,
+            "originalURL": target_url,
+            "path": slug,
             "title": title,
         }
         response = requests.post(url, json=payload, headers=set_headers("SHORT_IO"))
@@ -294,19 +294,19 @@ def short_io(action: str, request=None, limit: int = None):
 
     # action: delete
     elif action == "delete":
-        string_id = request.GET["string_id"]
-        dflink_slug = request.GET["dflink_slug"]
+        link_id = request.GET["link_id"]
+        slug = request.GET["slug"]
 
         url = (
-            f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
+            f"https://api.short.io/links/expand?domain=dgufilm.link&path={slug}"
         )
         response = requests.get(url, headers=set_headers("SHORT_IO")).json()
-        original_url = response["originalURL"]
+        target_url = response["originalURL"]
         title = response["title"]
         category = response["tags"][0]
         expiration_date = response["tags"][2]
 
-        url = f"https://api.short.io/links/{string_id}"
+        url = f"https://api.short.io/links/{link_id}"
         response = requests.delete(url, headers=set_headers("SHORT_IO"))
 
         result = response

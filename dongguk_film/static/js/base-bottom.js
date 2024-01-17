@@ -79,7 +79,7 @@ function copyUrl() {
     urls.forEach(url => {
         ["click", "keyup"].forEach(type => {
             url.addEventListener(type, async (event) => {
-                if (type == "click" || event.key == "Enter") {
+                if (type == "click" || event.key == "Enter" || event.key == " ") {
                     let srOnlySpan = document.createElement("span");
                     let originalUrlValue;
 

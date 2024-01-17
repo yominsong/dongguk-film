@@ -317,7 +317,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_create_or_update_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update_dflink, "error");
-            location.href = location.href;
+            location.href = location.href.replace("#id_main_content", "");
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -337,7 +337,7 @@ function handleAjaxCallback(response) {
         if (resResult.status == "DONE") {
             displayButtonMsg(true, id_delete_dflink, "descr", resResult.msg);
             displayButtonMsg(false, id_delete_dflink, "error");
-            location.href = location.href;
+            location.href = location.href.replace("#id_main_content", "");
         } else if (resResult.status == "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {

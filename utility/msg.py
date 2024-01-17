@@ -250,7 +250,7 @@ def send_msg(request, type: str, channel: str, extra=None):
     elif type == "DLC":
         status = extra["result"]["status"]
         reason = extra["result"]["reason"]
-        original_url = extra["result"]["original_url"]
+        target_url = extra["result"]["target_url"]
         dflink = extra["result"]["dflink"]
         title = extra["result"]["title"]
         category = extra["result"]["category"]
@@ -264,14 +264,14 @@ def send_msg(request, type: str, channel: str, extra=None):
             "title": "동영링크 생성 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
     # type: "DLU"
     elif type == "DLU":
         status = extra["result"]["status"]
         reason = extra["result"]["reason"]
-        original_url = extra["result"]["original_url"]
+        target_url = extra["result"]["target_url"]
         dflink = extra["result"]["dflink"]
         title = extra["result"]["title"]
         category = extra["result"]["category"]
@@ -285,13 +285,13 @@ def send_msg(request, type: str, channel: str, extra=None):
             "title": "동영링크 수정 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
     # type: "DLD"
     elif type == "DLD":
         status = extra["result"]["status"]
-        original_url = extra["result"]["original_url"]
+        target_url = extra["result"]["target_url"]
         dflink = extra["result"]["dflink"]
         title = extra["result"]["title"]
         category = extra["result"]["category"]
@@ -305,7 +305,7 @@ def send_msg(request, type: str, channel: str, extra=None):
             "title": "동영링크 삭제 요청이 처리됨",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ원본 URL: {original_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ상태: {status}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
     # type: "DLA"

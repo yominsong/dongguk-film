@@ -50,24 +50,24 @@ def delete_expired_dflinks(request):
 #
 
 
-def has_www(original_url: str):
-    if "://" in original_url:
-        original_url = urlparse(original_url).netloc
+def has_www(target_url: str):
+    if "://" in target_url:
+        target_url = urlparse(target_url).netloc
 
-    if "www." == original_url[:4]:
+    if "www." == target_url[:4]:
         result = True
-    elif not "www." == original_url[:4]:
+    elif not "www." == target_url[:4]:
         result = False
 
     return result
 
 
-def is_correct_url(original_url: str):
+def is_correct_url(target_url: str):
     global need_www
     global proxy_was_already_used
     proxy_was_already_used = False
 
-    def use_proxy(original_url: str):
+    def use_proxy(target_url: str):
         global proxy_was_already_used
         proxy_was_already_used = True
 
@@ -75,26 +75,26 @@ def is_correct_url(original_url: str):
             url="https://proxy.scrapeops.io/v1/",
             params={
                 "api_key": SCRAPEOPS_API_KEY,
-                "url": original_url,
+                "url": target_url,
             },
         )
 
         return response
 
     try:
-        response = requests.get(original_url, headers=set_headers("RANDOM"))
+        response = requests.get(target_url, headers=set_headers("RANDOM"))
         response = (
-            use_proxy(original_url) if int(response.status_code) >= 400 else response
+            use_proxy(target_url) if int(response.status_code) >= 400 else response
         )
     except:
         try:
-            if not has_www(original_url):
-                original_url = original_url.replace("://", "://www.")
-                response = requests.get(original_url, headers=set_headers("RANDOM"))
+            if not has_www(target_url):
+                target_url = target_url.replace("://", "://www.")
+                response = requests.get(target_url, headers=set_headers("RANDOM"))
                 need_www = True
         except:
             response = (
-                use_proxy(original_url) if proxy_was_already_used == False else None
+                use_proxy(target_url) if proxy_was_already_used == False else None
             )
 
     try:
@@ -115,11 +115,11 @@ def is_correct_url(original_url: str):
     return result
 
 
-def is_listed(original_url: str):
-    if "://" in original_url:
-        original_url = urlparse(original_url).netloc
-    if has_www(original_url):
-        original_url = original_url[4:]
+def is_listed(target_url: str):
+    if "://" in target_url:
+        target_url = urlparse(target_url).netloc
+    if has_www(target_url):
+        target_url = target_url[4:]
 
     url = (
         f"https://api.notion.com/v1/databases/{NOTION_DB_ID['dflink-allowlist']}/query"
@@ -127,7 +127,7 @@ def is_listed(original_url: str):
     payload = {
         "filter": {
             "and": [
-                {"property": "URL", "rich_text": {"contains": original_url}},
+                {"property": "URL", "rich_text": {"contains": target_url}},
                 {"property": "Validation", "rich_text": {"contains": "🟢"}},
             ]
         }
@@ -138,25 +138,25 @@ def is_listed(original_url: str):
 
     try:
         listed_url = notion_response["results"][0]["properties"]["URL"]["url"]
-        result = True if original_url in listed_url else False
+        result = True if target_url in listed_url else False
     except:
         result = False
 
     return result
 
 
-def is_well_known(original_url: str):
-    if "://" in original_url:
-        original_url = urlparse(original_url).netloc
+def is_well_known(target_url: str):
+    if "://" in target_url:
+        target_url = urlparse(target_url).netloc
 
-    openai_response = chap_gpt(f"{original_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+    openai_response = chap_gpt(f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
 
     if "True" in openai_response:
         result = True
     elif "False" in openai_response:
-        if not has_www(original_url):
-            original_url = f"www.{original_url}"
-            result = is_well_known(original_url)
+        if not has_www(target_url):
+            target_url = f"www.{target_url}"
+            result = is_well_known(target_url)
         else:
             result = False
     else:
@@ -165,12 +165,12 @@ def is_well_known(original_url: str):
     return result
 
 
-def is_harmless(original_url: str):
-    if "://" in original_url:
-        original_url = urlparse(original_url).netloc
+def is_harmless(target_url: str):
+    if "://" in target_url:
+        target_url = urlparse(target_url).netloc
 
     openai_response = chap_gpt(
-        f"{original_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
+        f"{target_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
     )
 
     if "True" in openai_response:
@@ -183,22 +183,22 @@ def is_harmless(original_url: str):
     return result
 
 
-def is_new_slug(id: str, dflink_slug: str):
+def is_new_slug(id: str, slug: str):
     """
     - id | `str`:
         - create_dflink
         - update_dflink
-    - dflink_slug | `str`
+    - slug | `str`
     """
 
-    url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={dflink_slug}"
+    url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={slug}"
     response = requests.get(url, headers=set_headers("SHORT_IO"))
 
     if response.status_code == 200:
         if id == "create_dflink":
             result = False
         elif id == "update_dflink":
-            if dflink_slug == response.json()["path"]:
+            if slug == response.json()["path"]:
                 result = True
             else:
                 result = False
@@ -213,7 +213,7 @@ def is_correct_expiration_date(expiration_date: str):
     expiration_date = timezone.datetime.strptime(expiration_date, "%Y-%m-%d").date()
     after_90_days_from_today = today + timezone.timedelta(days=90)
 
-    if today <= expiration_date < after_90_days_from_today:
+    if today <= expiration_date <= after_90_days_from_today:
         result = True
     else:
         result = False
@@ -221,9 +221,9 @@ def is_correct_expiration_date(expiration_date: str):
     return result
 
 
-def is_not_swearing(dflink_slug_or_title: str):
+def is_not_swearing(slug_or_title: str):
     openai_response = chap_gpt(
-        f"'{dflink_slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
+        f"'{slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
     )
 
     if "False" in openai_response:
@@ -239,21 +239,21 @@ def is_not_swearing(dflink_slug_or_title: str):
 def is_valid(request):
     """
     - request | `HttpRequest`:
-        - original_url
-        - dflink_slug
+        - target_url
+        - slug
         - expiration_date
     """
 
-    original_url = request.GET["original_url"]
-    dflink_slug = request.GET["dflink_slug"]
+    target_url = request.GET["target_url"]
+    slug = request.GET["slug"]
     expiration_date = request.GET["expiration_date"]
 
     try:
         result = (
             True
             if (
-                reg_test(original_url, "URL")
-                and reg_test(dflink_slug, "LRN")
+                reg_test(target_url, "URL")
+                and reg_test(slug, "LRN")
                 and reg_test(expiration_date, "DAT")
             )
             else False
@@ -272,34 +272,34 @@ def validate_input_data(request):
             - update_dflink
             - delete_dflink
         - string_id
-        - original_url
-        - dflink_slug
+        - target_url
+        - slug
         - title
         - category
         - expiration_date
     """
 
     id = request.GET["id"]
-    original_url = request.GET["original_url"]
-    dflink_slug = request.GET["dflink_slug"]
+    target_url = request.GET["target_url"]
+    slug = request.GET["slug"]
     expiration_date = request.GET["expiration_date"]
 
-    if not is_correct_url(original_url):
+    if not is_correct_url(target_url):
         status = "FAIL"
-        reason = "원본 URL 접속 불가"
-        msg = "원본 URL이 잘못 입력된 것 같아요."
-        element = "id_original_url"
+        reason = "대상 URL 접속 불가"
+        msg = "대상 URL이 잘못 입력된 것 같아요."
+        element = "id_target_url"
 
-    elif not is_new_slug(id, dflink_slug):
+    elif not is_new_slug(id, slug):
         status = "FAIL"
         reason = "이미 존재하는 동영링크 URL"
         msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-        element = "id_dflink_slug"
+        element = "id_slug"
 
     elif not is_correct_expiration_date(expiration_date):
         status = "FAIL"
-        reason = "유효범위를 벗어난 만료일"
-        msg = "만료일이 유효범위를 벗어난 것 같아요."
+        reason = "유효 범위를 벗어난 만료일"
+        msg = "만료일이 유효 범위를 벗어난 것 같아요."
         element = "id_expiration_date"
 
     elif not is_valid(request):
@@ -325,34 +325,34 @@ def moderate_input_data(request):
             - update_dflink
             - delete_dflink
         - string_id
-        - original_url
-        - dflink_slug
+        - target_url
+        - slug
         - title
         - category
         - expiration_date
     """
 
-    original_url = request.GET["original_url"]
-    dflink_slug = request.GET["dflink_slug"]
+    target_url = request.GET["target_url"]
+    slug = request.GET["slug"]
     title = request.GET["title"]
 
-    if not is_listed(original_url) and not is_well_known(original_url):
+    if not is_listed(target_url) and not is_well_known(target_url):
         status = "FAIL"
         reason = "allowlist 등재 필요"
-        msg = "이 원본 URL은 현재 사용할 수 없어요."
-        element = "id_original_url"
+        msg = "이 대상 URL은 현재 사용할 수 없어요."
+        element = "id_target_url"
 
-    elif not is_listed(original_url) and not is_harmless(original_url):
+    elif not is_listed(target_url) and not is_harmless(target_url):
         status = "FAIL"
         reason = "유해 사이트"
-        msg = "이 원본 URL은 사용할 수 없어요."
-        element = "id_original_url"
+        msg = "이 대상 URL은 사용할 수 없어요."
+        element = "id_target_url"
 
-    elif not is_not_swearing(dflink_slug):
+    elif not is_not_swearing(slug):
         status = "FAIL"
         reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
         msg = "이 동영링크 URL은 사용할 수 없어요."
-        element = "id_dflink_slug"
+        element = "id_slug"
 
     elif not is_not_swearing(title):
         status = "FAIL"
@@ -383,8 +383,8 @@ def dflink(request):
             - update_dflink
             - delete_dflink
         - string_id
-        - original_url
-        - dflink_slug
+        - target_url
+        - slug
         - title
         - category
         - expiration_date
@@ -392,8 +392,8 @@ def dflink(request):
 
     global need_www
     id = request.GET.get("id")
-    original_url = request.GET.get("original_url")
-    dflink_slug = request.GET.get("dflink_slug")
+    target_url = request.GET.get("target_url")
+    slug = request.GET.get("slug")
     title = request.GET.get("title")
     category = request.GET.get("category")
     expiration_date = request.GET.get("expiration_date")
@@ -422,7 +422,7 @@ def dflink(request):
 
         if status == None:
             if need_www:
-                original_url = original_url.replace("://", "://www.")
+                target_url = target_url.replace("://", "://www.")
                 need_www = False
 
             response = short_io("create", request)
@@ -437,7 +437,7 @@ def dflink(request):
                 status = "FAIL"
                 reason = "이미 존재하는 동영링크 URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-                element = "id_dflink_slug"
+                element = "id_slug"
 
         response = {
             "id": id,
@@ -445,8 +445,8 @@ def dflink(request):
                 "status": status,
                 "reason": reason,
                 "msg": msg,
-                "original_url": original_url,
-                "dflink": f"https://dgufilm.link/{dflink_slug}",
+                "target_url": target_url,
+                "dflink": f"https://dgufilm.link/{slug}",
                 "title": title,
                 "category": category,
                 "user": f"{request.user}",
@@ -478,7 +478,7 @@ def dflink(request):
 
         if status == None:
             if need_www:
-                original_url = original_url.replace("://", "://www.")
+                target_url = target_url.replace("://", "://www.")
                 need_www = False
 
             response = short_io("update", request)
@@ -494,7 +494,7 @@ def dflink(request):
                 status = "FAIL"
                 reason = "이미 존재하는 동영링크 URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
-                element = "id_dflink_slug"
+                element = "id_slug"
 
         response = {
             "id": id,
@@ -502,8 +502,8 @@ def dflink(request):
                 "status": status,
                 "reason": reason,
                 "msg": msg,
-                "original_url": original_url,
-                "dflink": f"https://dgufilm.link/{dflink_slug}",
+                "target_url": target_url,
+                "dflink": f"https://dgufilm.link/{slug}",
                 "title": title,
                 "category": category,
                 "user": f"{request.user}",
@@ -528,8 +528,8 @@ def dflink(request):
             "result": {
                 "status": status,
                 "msg": msg,
-                "original_url": original_url,
-                "dflink": f"https://dgufilm.link/{dflink_slug}",
+                "target_url": target_url,
+                "dflink": f"https://dgufilm.link/{slug}",
                 "title": title,
                 "category": category,
                 "user": f"{request.user}",

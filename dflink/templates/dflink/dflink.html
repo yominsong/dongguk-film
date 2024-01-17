@@ -46,11 +46,11 @@
         <div class="overflow-hidden bg-white shadow rounded-md px-4 pt-4 pb-5 sm:px-6">
             {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
-                    <label for="id_dflink_q"
+                    <label for="id_query"
                            class="flex text-sm font-medium leading-6 text-gray-500">
                         총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp;<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
                     </label>
-                    <div id="id_search_dflink_init"
+                    <div id="id_initialize_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -66,8 +66,7 @@
                     </div>
                 </div>
             {% else %}
-                <label for="id_dflink_q"
-                       class="text-sm font-medium leading-6 text-gray-500">
+                <label for="id_query" class="text-sm font-medium leading-6 text-gray-500">
                     총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>의 동영링크 검색
                 </label>
             {% endif %}
@@ -83,13 +82,12 @@
                         </svg>
                     </div>
                     <input type="text"
-                           name="name_dflink_q"
-                           id="id_dflink_q"
+                           id="id_query"
                            class="block w-full rounded-none rounded-l-md py-1.5 pl-10 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 hover:bg-gray-50 focus:bg-white focus:df-focus-ring-inset read-only:bg-gray-100 read-only:hover:bg-gray-100 read-only:focus:bg-gray-100 read-only:cursor-not-allowed"
                            placeholder="dgufilm.link/example">
                 </div>
                 <button type="button"
-                        id="id_search_dflink"
+                        id="id_send_query"
                         class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          fill="none"
@@ -151,13 +149,17 @@
                             </p>
                             {% if user.username == dflink.user %}
                                 <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-dflink-id="{{ dflink.id_string }}"
-                                          data-dflink-original-url="{{ dflink.original_url }}"
-                                          data-dflink-slug="{{ dflink.slug }}"
-                                          data-dflink-slug-original="{{ dflink.slug }}"
-                                          data-dflink-title="{{ dflink.title }}"
-                                          data-dflink-category="{{ dflink.category }}"
-                                          data-dflink-expiration-date="{{ dflink.expiration_date }}"
+                                    <span data-link-id="{{ dflink.link_id }}"
+                                          data-target-url="{{ dflink.target_url }}"
+                                          data-target-url-original="{{ dflink.target_url }}"
+                                          data-slug="{{ dflink.slug }}"
+                                          data-slug-original="{{ dflink.slug }}"
+                                          data-title="{{ dflink.title }}"
+                                          data-title-original="{{ dflink.title }}"
+                                          data-category="{{ dflink.category }}"
+                                          data-category-original="{{ dflink.category }}"
+                                          data-expiration-date="{{ dflink.expiration_date }}"
+                                          data-expiration-date-original="{{ dflink.expiration_date }}"
                                           class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>
                                 </p>
