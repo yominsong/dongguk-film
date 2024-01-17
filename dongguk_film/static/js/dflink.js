@@ -17,18 +17,28 @@ const id_category_dept = document.getElementById("id_category_dept");
 const id_expiration_date = document.getElementById("id_expiration_date");
 const id_expiration_date_original = code(id_expiration_date, "_original");
 const id_create_or_update_dflink = document.getElementById("id_create_or_update_dflink");
+const id_create_or_update_dflink_descr = code(id_create_or_update_dflink, "_descr");
 const id_delete_dflink = document.getElementById("id_delete_dflink");
+const id_delete_dflink_descr = code(id_delete_dflink, "_descr");
+const id_delete_dflink_error = code(id_delete_dflink, "_error");
 const id_delete_dflink_text = code(id_delete_dflink, "_text");
 
-let currentHistoryLength = history.length;
+let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
-let modalOpen = false;
 let isItDoubleChecked = false;
+
+let currentHistoryLength = history.length;
 let doubleCheckTimer;
 
 //
 // Sub functions
 //
+
+function alertNonexistentLink() {
+    if (window.location.search.indexOf("nonexistent-link") != -1) { displayNoti(true, "INL") };
+}
+
+alertNonexistentLink();
 
 function preventGoBack() {
     if (currentHistoryLength == history.length) {
@@ -44,18 +54,14 @@ function preventGoBack() {
     });
 
     window.onpopstate = function () {
-        const id_create_or_update_dflink_descr = code(id_create_or_update_dflink, "_descr");
-        const id_delete_dflink_descr = code(id_delete_dflink, "_descr");
-        const id_delete_dflink_error = code(id_delete_dflink, "_error");
-
-        if (modalOpen) {
+        if (isModalOpen) {
             history.pushState(null, null, location.href);
             if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) {
+                isModalOpen = false;
                 id_modal.setAttribute("x-data", "{ open: false }");
                 toggleFocusOnModal(false);
-                modalOpen = false;
             };
-        } else if (!modalOpen) {
+        } else if (!isModalOpen) {
             if (!isLastSelectedAnchorHash) {
                 history.go(-1);
             };
@@ -65,11 +71,15 @@ function preventGoBack() {
 
 preventGoBack();
 
-function alertNonexistentLink() {
-    if (window.location.search.indexOf("nonexistent-link") != -1) { displayNoti(true, "INL") };
+function isItOkayToCloseModal() {
+    return id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden;
 }
 
-alertNonexistentLink();
+function executeWhenModalIsClosed() {
+    isModalOpen = false;
+    toggleFocusOnModal(false);
+    preventGoBack();
+}
 
 //
 // Main functions
@@ -159,15 +169,15 @@ function initForm() {
 function initModal() {
     const class_keywords = document.querySelectorAll(".class-keyword");
     const class_creates = document.querySelectorAll(".class-create");
-    const class_adjusts = document.querySelectorAll(".class-adjust");
+    const class_adjusts = document.querySelectorAll(".class-adjust"); // Update or delete
 
     function openModal(action, datasetObj = null) {
         // action: all
+        isModalOpen = true;
         id_modal.hidden = false;
         id_modal.setAttribute("x-data", "{ open: true }");
         toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
         sessionStorage.setItem("scrollPosition", window.scrollY);
-        modalOpen = true;
 
         // action: create
         if (action == "create") {
@@ -210,7 +220,6 @@ function initModal() {
         };
     };
 
-    // Users who want to create
     class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
             create.addEventListener(type, event => {
@@ -221,7 +230,6 @@ function initModal() {
         });
     });
 
-    // Users who want to update or delete
     class_adjusts.forEach(adjust => {
         ["click", "keyup"].forEach(type => {
             adjust.addEventListener(type, event => {

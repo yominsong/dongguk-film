@@ -1,6 +1,6 @@
 <div id="id_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
+     @keydown.window.escape="if (isItOkayToCloseModal) { open = false; executeWhenModalIsClosed(); }"
      x-show="open"
      class="relative z-20"
      aria-labelledby="modal-title"
@@ -29,9 +29,9 @@
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
-                            @click="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
-                            @keydown.enter.prevent="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }"
-                            @keyup.space.prevent="if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) { open = false; toggleFocusOnModal(false); modalOpen = false; preventGoBack() }">
+                            @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }">
                         <span class="sr-only">동영링크 <span class="class-keyword">만들기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
