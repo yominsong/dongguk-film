@@ -3,6 +3,7 @@
 //
 
 const id_modal = document.getElementById("id_modal");
+
 const id_link_id = document.getElementById("id_link_id");
 const id_target_url = document.getElementById("id_target_url");
 const id_target_url_original = code(id_target_url, "_original");
@@ -16,12 +17,10 @@ const id_category_work = document.getElementById("id_category_work");
 const id_category_dept = document.getElementById("id_category_dept");
 const id_expiration_date = document.getElementById("id_expiration_date");
 const id_expiration_date_original = code(id_expiration_date, "_original");
-const id_create_or_update_dflink = document.getElementById("id_create_or_update_dflink");
-const id_create_or_update_dflink_descr = code(id_create_or_update_dflink, "_descr");
-const id_delete_dflink = document.getElementById("id_delete_dflink");
-const id_delete_dflink_descr = code(id_delete_dflink, "_descr");
-const id_delete_dflink_error = code(id_delete_dflink, "_error");
-const id_delete_dflink_text = code(id_delete_dflink, "_text");
+
+const id_create_or_update = document.getElementById("id_create_or_update");
+const id_delete = document.getElementById("id_delete");
+const id_delete_text = code(id_delete, "_text");
 
 let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
@@ -41,7 +40,7 @@ function alertNonexistentLink() {
 alertNonexistentLink();
 
 function preventGoBack() {
-    if (currentHistoryLength == history.length) {
+    if (currentHistoryLength === history.length) {
         history.pushState(null, null, location.href);
     };
 
@@ -53,10 +52,10 @@ function preventGoBack() {
         };
     });
 
-    window.onpopstate = function () {
+    window.onpopstate = () => {
         if (isModalOpen) {
             history.pushState(null, null, location.href);
-            if (id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden) {
+            if (isItOkayToCloseModal()) {
                 isModalOpen = false;
                 id_modal.setAttribute("x-data", "{ open: false }");
                 toggleFocusOnModal(false);
@@ -72,7 +71,11 @@ function preventGoBack() {
 preventGoBack();
 
 function isItOkayToCloseModal() {
-    return id_create_or_update_dflink_descr.hidden && id_delete_dflink_descr.hidden && id_delete_dflink_error.hidden;
+    const id_create_or_update_descr = code(id_create_or_update, "_descr");
+    const id_delete_descr = code(id_delete, "_descr");
+    const id_delete_error = code(id_delete, "_error");
+
+    return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
 }
 
 function executeWhenModalIsClosed() {
@@ -85,50 +88,51 @@ function executeWhenModalIsClosed() {
 // Main functions
 //
 
-function query() {
+function initSearchBar() {
     const id_query = document.getElementById("id_query");
-    const id_send_query = document.getElementById("id_send_query");
-    const id_initialize_query = document.getElementById("id_initialize_query");
+    const id_submit_query = document.getElementById("id_submit_query");
 
     window.addEventListener("pageshow", event => {
         if (event.persisted) {  // Detect if a user used the web browser back or forward buttons
             id_query.readOnly = false;
             id_query.value = urlParams.get("q");
-            id_send_query.disabled = false;
+            id_submit_query.disabled = false;
         };
     });
 
     id_query.addEventListener("keyup", event => {
-        if (event.key == "Enter") {
-            id_send_query.click();
+        if (event.key === "Enter") {
+            id_submit_query.click();
         };
     });
 
     ["click", "keyup"].forEach(type => {
-        id_send_query.addEventListener(type, event => {
-            if (type == "click" || event.key == "Enter" || event.key == " ") {
+        id_submit_query.addEventListener(type, event => {
+            if (type === "click" || event.key === "Enter" || event.key === " ") {
                 location.href = `${originLocation}/dflink/?q=${id_query.value}`;
                 id_query.readOnly = true;
-                id_send_query.disabled = true;
+                id_submit_query.disabled = true;
             };
         });
     });
 
     if (urlParams.has("q")) {
+        const id_initialize_query = document.getElementById("id_initialize_query");
+
         id_query.value = urlParams.get("q");
         ["click", "keyup"].forEach(type => {
             id_initialize_query.addEventListener(type, event => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
                     location.href = `${originLocation}/dflink`;
                     id_query.readOnly = true;
-                    id_send_query.disabled = true;
+                    id_submit_query.disabled = true;
                 };
             });
         });
     };
 }
 
-query();
+initSearchBar();
 
 function initForm() {
     const id_target_url_placeholder_array = new Array("https://docs.google.com/document/d/...", "https://docs.google.com/spreadsheets/d/...", "https://docs.google.com/presentation/d/...", "https://docs.google.com/forms/d/...", "https://drive.google.com/drive/folders/...", "https://drive.google.com/file/d/...", "https://www.dropbox.com/s/...", "https://www.youtube.com/playlist?list=...", "https://www.youtube.com/watch?v=...", "https://vimeo.com/...", "https://www.dailymotion.com/video/...", "https://www.notion.so/...", "https://example.notion.site/...", "https://www.evernote.com/shard/...", "https://zoom.us/j/...", "https://www.filmmakers.co.kr/actorsAudition/...", "https://www.dongguk.edu/article/HAKSANOTICE/detail/...");
@@ -146,11 +150,13 @@ function initForm() {
     id_category.value = null;
     id_category_work.checked = false;
     id_category_dept.checked = false;
+
     [id_category_work, id_category_dept].forEach(category => {
         category.addEventListener("click", () => {
             id_category.value = category.value;
         });
     });
+
     id_expiration_date.value = null;
     id_expiration_date.placeholder = yyyymmddOfAfter90DaysWithDash;
     id_expiration_date.min = yyyymmddWithDash;
@@ -161,70 +167,71 @@ function initForm() {
         displayError(false, input);
     });
 
-    [id_create_or_update_dflink, id_delete_dflink].forEach(button => {
+    [id_create_or_update, id_delete].forEach(button => {
         displayButtonMsg(false, button, "error");
     });
 }
 
-function initModal() {
+function updateForm(action, datasetObj = null) {
     const class_keywords = document.querySelectorAll(".class-keyword");
+
+    // action: all
+    isModalOpen = true;
+    id_modal.hidden = false;
+    id_modal.setAttribute("x-data", "{ open: true }");
+    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    sessionStorage.setItem("scrollPosition", window.scrollY);
+
+    // action: create
+    if (action === "create") {
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "만들기";
+        });
+        initForm();
+        id_delete.classList.replace("inline-flex", "hidden");
+    }
+
+    // action: adjust
+    else if (action === "adjust") {
+        const data = datasetObj.dataset;
+
+        updateForm("create");
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "수정하기";
+        });
+        id_link_id.value = data.linkId;
+        id_target_url.value = data.targetUrl;
+        id_target_url_original.value = data.targetUrlOriginal;
+        id_slug.value = data.slug;
+        id_slug_original.value = data.slugOriginal;
+        id_title.value = data.title;
+        id_title_original.value = data.titleOriginal;
+        if (data.category === "작품") {
+            id_category.value = "작품";
+            id_category_work.checked = true;
+        } else if (data.category === "학과") {
+            id_category.value = "학과";
+            id_category_dept.checked = true;
+        };
+        id_category_original.value = data.categoryOriginal;
+        id_expiration_date.value = data.expirationDate;
+        id_expiration_date_original.value = data.expirationDateOriginal;
+        id_delete.classList.replace("hidden", "inline-flex");
+        id_delete_text.innerText = "삭제하기";
+        isItDoubleChecked = false;
+        clearTimeout(doubleCheckTimer);
+    };
+}
+
+function initModal() {
     const class_creates = document.querySelectorAll(".class-create");
     const class_adjusts = document.querySelectorAll(".class-adjust"); // Update or delete
-
-    function openModal(action, datasetObj = null) {
-        // action: all
-        isModalOpen = true;
-        id_modal.hidden = false;
-        id_modal.setAttribute("x-data", "{ open: true }");
-        toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
-        sessionStorage.setItem("scrollPosition", window.scrollY);
-
-        // action: create
-        if (action == "create") {
-            class_keywords.forEach(keyword => {
-                keyword.innerText = "만들기";
-            });
-            initForm();
-            id_delete_dflink.classList.replace("inline-flex", "hidden");
-        }
-
-        // action: adjust
-        else if (action == "adjust") {
-            const data = datasetObj.dataset;
-
-            openModal("create");
-            class_keywords.forEach(keyword => {
-                keyword.innerText = "수정하기";
-            });
-            id_link_id.value = data.linkId;
-            id_target_url.value = data.targetUrl;
-            id_target_url_original.value = data.targetUrlOriginal;
-            id_slug.value = data.slug;
-            id_slug_original.value = data.slugOriginal;
-            id_title.value = data.title;
-            id_title_original.value = data.titleOriginal;
-            if (data.category == "작품") {
-                id_category.value = "작품";
-                id_category_work.checked = true;
-            } else if (data.category == "학과") {
-                id_category.value = "학과";
-                id_category_dept.checked = true;
-            };
-            id_category_original.value = data.categoryOriginal;
-            id_expiration_date.value = data.expirationDate;
-            id_expiration_date_original.value = data.expirationDateOriginal;
-            id_delete_dflink.classList.replace("hidden", "inline-flex");
-            id_delete_dflink_text.innerText = "삭제하기";
-            isItDoubleChecked = false;
-            clearTimeout(doubleCheckTimer);
-        };
-    };
 
     class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
             create.addEventListener(type, event => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    openModal("create");
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("create");
                 };
             });
         });
@@ -233,8 +240,8 @@ function initModal() {
     class_adjusts.forEach(adjust => {
         ["click", "keyup"].forEach(type => {
             adjust.addEventListener(type, event => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    openModal("adjust", adjust);
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("adjust", adjust);
                 };
             });
         });
@@ -243,90 +250,13 @@ function initModal() {
 
 initModal();
 
-function initPage() {
-    window.addEventListener("pageshow", () => {
-        const class_firsts = document.querySelectorAll(".class-first");
-        let filteredInputs = [];
-
-        if (id_modal !== null) {
-            initValidation(class_firsts, id_create_or_update_dflink);
-
-            ["click", "keyup"].forEach(type => {
-                id_create_or_update_dflink.addEventListener(type, event => {
-                    let targetTagName = event.target.tagName;
-
-                    if ((type === "click" && targetTagName === "SPAN") ||
-                        (type === "click" && targetTagName === "BUTTON") ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        Array.from(class_radios).forEach(radio => {
-                            let idx = inputs.indexOf(radio);
-                            while (idx > -1) {
-                                inputs.splice(idx, 1);
-                                idx = inputs.indexOf(radio);
-                            };
-                        });
-
-                        filteredInputs = inputs.filter(isValid);
-
-                        if (filteredInputs.length == inputs.length) {
-                            if (id_create_or_update_dflink.innerText == "만들기") {
-                                requestCreateDflink();
-                            } else if (id_create_or_update_dflink.innerText == "수정하기") {
-                                requestUpdateDflink();
-                            };
-                            displayButtonMsg(true, id_create_or_update_dflink, "descr", "잠시만 기다려주세요.");
-                            displayButtonMsg(false, id_create_or_update_dflink, "error");
-                        } else {
-                            inputs.forEach(input => {
-                                controlError(input);
-                            });
-                        };
-                    };
-
-                    ["keydown", "focusin"].forEach(type => {
-                        inputs.forEach(input => {
-                            input.addEventListener(type, () => {
-                                displayButtonMsg(false, id_create_or_update_dflink, "error");
-                            });
-                        });
-                    });
-                });
-
-                id_delete_dflink.addEventListener(type, event => {
-                    let targetTagName = event.target.tagName;
-
-                    if ((type === "click" && targetTagName === "SPAN") ||
-                        (type === "click" && targetTagName === "BUTTON") ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (!isItDoubleChecked) {
-                            id_delete_dflink_text.innerText = "정말 삭제하기";
-                            isItDoubleChecked = true;
-                            doubleCheckTimer = setTimeout(() => {
-                                id_delete_dflink_text.innerText = "삭제하기";
-                                isItDoubleChecked = false;
-                            }, 5000);
-                        } else if (isItDoubleChecked) {
-                            clearTimeout(doubleCheckTimer);
-                            requestDeleteDflink();
-                            displayButtonMsg(true, id_delete_dflink, "descr", "잠시만 기다려주세요.");
-                            isItDoubleChecked = false;
-                        };
-                    };
-                });
-            });
-        };
-    });
-}
-
-initPage();
-
 function requestCreateDflink() {
     request.url = `${originLocation}/dflink/utils/dflink`;
     request.type = "GET";
     request.data = { id: "create_dflink", target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
     request.headers = null;
-    code(id_create_or_update_dflink, "_spin").classList.remove("hidden");
+    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     makeAjaxCall(request);
     request = {};
@@ -338,7 +268,7 @@ function requestUpdateDflink() {
     request.data = { id: "update_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
     request.headers = null;
-    code(id_create_or_update_dflink, "_spin").classList.remove("hidden");
+    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     makeAjaxCall(request);
     request = {};
@@ -350,8 +280,74 @@ function requestDeleteDflink() {
     request.data = { id: "delete_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url_original.value}`, slug: `${id_slug_original.value}`, title: `${id_title_original.value}`, category: `${id_category_original.value}`, expiration_date: `${id_expiration_date_original.value}` };
     request.async = true;
     request.headers = null;
-    code(id_delete_dflink, "_spin").classList.remove("hidden");
+    code(id_delete, "_spin").classList.remove("hidden");
     freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
+
+function initRequest() {
+    window.addEventListener("pageshow", () => {
+        if (id_modal !== null) {
+            const class_firsts = document.querySelectorAll(".class-first");
+
+            initValidation(class_firsts, id_create_or_update);
+
+            ["click", "keyup"].forEach(type => {
+                id_create_or_update.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        if (isItOkayToSubmitForm()) {
+                            if (id_create_or_update.innerText === "만들기") {
+                                requestCreateDflink();
+                            } else if (id_create_or_update.innerText === "수정하기") {
+                                requestUpdateDflink();
+                            };
+                            
+                            displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
+                            displayButtonMsg(false, id_create_or_update, "error");
+                        } else {
+                            inputs.forEach(input => {
+                                controlError(input);
+                            });
+                        };
+                    };
+
+                    ["keydown", "focusin"].forEach(type => {
+                        inputs.forEach(input => {
+                            input.addEventListener(type, () => {
+                                displayButtonMsg(false, id_create_or_update, "error");
+                            });
+                        });
+                    });
+                });
+
+                id_delete.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        if (!isItDoubleChecked) {
+                            id_delete_text.innerText = "정말 삭제하기";
+                            isItDoubleChecked = true;
+
+                            doubleCheckTimer = setTimeout(() => {
+                                id_delete_text.innerText = "삭제하기";
+                                isItDoubleChecked = false;
+                            }, 5000);
+                        } else if (isItDoubleChecked) {
+                            clearTimeout(doubleCheckTimer);
+                            requestDeleteDflink();
+                            displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
+                            isItDoubleChecked = false;
+                        };
+                    };
+                });
+            });
+        };
+    });
+}
+
+initRequest();

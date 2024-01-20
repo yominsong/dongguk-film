@@ -35,7 +35,7 @@ function editXDate(notiType, bool) {
  * @param {string|null} param Additional information to add to the notification
  */
 function displayNoti(bool, notiType, param = null) {
-    if (bool == true) {
+    if (bool === true) {
         editXDate(notiType, false);
 
         let notiIcon, notiTitle, notiContent, notiFormat;
@@ -145,79 +145,79 @@ function displayNoti(bool, notiType, param = null) {
         `;
 
         // home
-        if (notiType == "RLP") {
+        if (notiType === "RLP") {
             notiIcon = locationIcon;
             notiTitle = "지금 계신 지역의 날씨를 확인해보세요.";
             notiContent = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
-        } else if (notiType == "RRL") {
+        } else if (notiType === "RRL") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치 정보가 부정확한가요?";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 위치 정보를 다시 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RRL'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType == "CWF") {
+        } else if (notiType === "CWF") {
             notiIcon = locationIcon;
             notiTitle = "기상 정보를 마저 불러올 수 있어요.";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 기상 정보를 계속 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'CWF'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType == "RNP") {
+        } else if (notiType === "RNP") {
             notiIcon = bellIcon;
             notiTitle = "디닷에프 푸시 알림을 받아보세요.";
             notiContent = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
-        } else if (notiType == "WNU") {
+        } else if (notiType === "WNU") {
             notiIcon = smileIcon;
             notiTitle = `반가워요, ${param}님! 🖐️`;
             notiContent = `디닷에프가 ${param}님의 학과 생활에 도움이 되어드릴게요!`;
         }
 
         // login
-        else if (notiType == "RBG") {
+        else if (notiType === "RBG") {
             notiIcon = exclamationIcon;
             notiTitle = "Google로 로그인할 수 없어요.";
             notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome, Edge, Safari를 이용해주세요.`;
         }
 
         // dflink
-        else if (notiType == "INL") {
+        else if (notiType === "INL") {
             notiIcon = exclamationIcon;
             notiTitle = "존재하지 않는 동영링크예요.";
             notiContent = "주소가 잘못되었거나 삭제된 동영링크예요.";
         }
 
         // notice
-        else if (notiType == "RYS") {
+        else if (notiType === "RYS") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
             notiContent = "YouTube 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
-        } else if (notiType == "RAT") {
+        } else if (notiType === "RAT") {
             notiIcon = imageIcon;
             notiTitle = "이미지 대체 텍스트를 입력해주세요.";
             notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://blog.naver.com/mofakr/222059815030', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType == "RDI") {
+        } else if (notiType === "RDI") {
             notiIcon = imageIcon;
-            notiTitle = "이미지에 대한 설명을 추가해주세요.";
-            notiContent = "스크린 리더 사용자를 위해 이미지에 대한 설명을 추가해주세요. 디닷에프가 이미지 내 텍스트 추출을 도와드릴게요.";
+            notiTitle = "내용에 텍스트를 추가해주세요.";
+            notiContent = "스크린 리더 사용자를 위해 내용에 텍스트를 추가해주세요. 이미지에 텍스트가 있다면 디닷에프가 추출을 도와드릴게요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType == "EIS") {
+        } else if (notiType === "EIS") {
             notiIcon = textIcon;
             notiTitle = "텍스트 추출이 완료되었어요.";
-            notiContent = "추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
-        } else if (notiType == "EIF") {
+            notiContent = "단, 추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있어요.";
+        } else if (notiType === "EIF") {
             notiIcon = exclamationIcon;
             notiTitle = "텍스트 추출에 실패했어요.";
             notiContent = "문자를 인식할 수 없는 이미지인 것 같아요. 직접 이미지에 대한 설명을 추가해주세요.";
-        } else if (notiType == "LDF") {
+        } else if (notiType === "LDF") {
             notiIcon = infoIcon;
             notiTitle = "이미 첨부된 파일이 있어요.";
             notiContent = `'${param}' 파일이 이미 첨부되어 있어요. 첨부 파일 목록을 확인해주세요.`;
-        } else if (notiType == "LFS") {
+        } else if (notiType === "LFS") {
             notiIcon = exclamationIcon;
             notiTitle = "파일은 총합 5MB까지 첨부할 수 있어요.";
             notiContent = `${param}개의 파일이 용량 제한으로 첨부되지 않았어요.`;
         }
 
         // everywhere
-        else if (notiType == "NUC") {
+        else if (notiType === "NUC") {
             notiIcon = infoIcon;
             notiTitle = "아직 준비 중인 기능이에요.";
             notiContent = `언젠가 출시될 거예요! ${param}`;
@@ -269,7 +269,7 @@ function displayNoti(bool, notiType, param = null) {
         setTimeout(() => { editXDate(notiType, true) }, 100);
     }
 
-    else if (bool == false) {
+    else if (bool === false) {
         let body = document.querySelector(`#id_${notiType}`);
 
         if (body != null) {

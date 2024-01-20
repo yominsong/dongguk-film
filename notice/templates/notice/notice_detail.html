@@ -45,8 +45,15 @@
     <!-- Detail -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <!-- Detail body -->
-        <div id="id_notice_detail"
-             class="bg-white shadow rounded-md px-4 py-5 sm:px-6">
+        <div id="id_detail"
+             class="bg-white shadow rounded-md px-4 py-5 sm:px-6"
+             data-page-id="{{ notice.page_id }}"
+             data-title="{{ notice.title }}"
+             data-category="{{ notice.category }}"
+             data-keyword="{{ notice.keyword.string }}"
+             data-user-name="{{ notice.user.name }}"
+             data-user-profile-img="{{ notice.user.profile_img }}"
+             data-listed-date="{{ notice.listed_date }}">
             {% if notice.category == "서비스" %}
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ notice.category }}
@@ -75,7 +82,7 @@
                      class="relative ml-auto">
                     <button type="button"
                             class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
-                            id="id_notice_detail_option"
+                            id="id_detail_option"
                             x-ref="button"
                             @click="onButtonClick()"
                             @keyup.space.prevent="onButtonEnter()"
@@ -107,7 +114,7 @@
                          x-bind:aria-activedescendant="activeDescendant"
                          role="menu"
                          aria-orientation="vertical"
-                         aria-labelledby="id_notice_detail_option"
+                         aria-labelledby="id_detail_option"
                          tabindex="-1"
                          @keydown.arrow-up.prevent="onArrowUp()"
                          @keydown.arrow-down.prevent="onArrowDown()"
@@ -121,7 +128,7 @@
                              :class="{ 'bg-gray-100': activeIndex === 0 }"
                              role="menuitem"
                              tabindex="-1"
-                             id="id_notice_detail_share"
+                             id="id_detail_share"
                              @mouseenter="onMouseEnter($event); activeIndex = 0"
                              @mousemove="onMouseMove($event, 0)"
                              @mouseleave="onMouseLeave($event); activeIndex = -1"
@@ -131,7 +138,7 @@
                                  :class="{ 'bg-gray-100': activeIndex === 1 }"
                                  role="menuitem"
                                  tabindex="-1"
-                                 id="id_notice_detail_adjust"
+                                 id="id_detail_adjust"
                                  @mouseenter="onMouseEnter($event); activeIndex = 1"
                                  @mousemove="onMouseMove($event, 1)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
@@ -189,25 +196,16 @@
                 {% endfor %}
             </div>
         </div>
-        <span id="id_notice_data"
-              data-notice-page-id="{{ notice.page_id }}"
-              data-notice-title="{{ notice.title }}"
-              data-notice-category="{{ notice.category }}"
-              data-notice-keyword="{{ notice.keyword.string }}"
-              data-notice-user-name="{{ notice.user.name }}"
-              data-notice-user-profile-img="{{ notice.user.profile_img }}"
-              data-notice-listed-date="{{ notice.listed_date }}"
-              hidden></span>
         <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}
-                    <button data-notice-page-id="{{ notice.page_id }}"
-                            data-notice-title="{{ notice.title }}"
-                            data-notice-category="{{ notice.category }}"
-                            data-notice-keyword="{{ notice.keyword.string }}"
-                            data-notice-file="{{ notice.file.string }}"
-                            data-notice-listed-date="{{ notice.listed_date }}"
+                    <button data-page-id="{{ notice.page_id }}"
+                            data-title="{{ notice.title }}"
+                            data-category="{{ notice.category }}"
+                            data-keyword="{{ notice.keyword.string }}"
+                            data-file="{{ notice.file.string }}"
+                            data-listed-date="{{ notice.listed_date }}"
                             type="button"
                             class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                         수정하기

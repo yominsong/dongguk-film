@@ -1,567 +1,106 @@
 //
-// Global constants and variables
+// Global variables
 //
 
-const id_search_notice = document.getElementById("id_search_notice");
-const id_search_notice_init = document.getElementById("id_search_notice_init");
-const id_notice_q = document.getElementById("id_notice_q");
-const id_notice_list = document.getElementById("id_notice_list");
-const id_notice_detail = document.getElementById("id_notice_detail");
-const id_notice_modal = document.getElementById("id_notice_modal");
-const id_notice_modal_land = document.getElementById("id_notice_modal_land");
-const id_notice_modal_form = document.getElementById("id_notice_modal_form");
-const id_notice_modal_share = document.getElementById("id_notice_modal_share");
-const id_notice_data = document.getElementById("id_notice_data");
+const id_list = document.getElementById("id_list");
+
+const id_modal = document.getElementById("id_modal");
+
 const id_page_id = document.getElementById("id_page_id");
 const id_block_id_list = document.getElementById("id_block_id_list");
 const id_title = document.getElementById("id_title");
+const id_category = document.getElementById("id_category");
 const id_category_serv = document.getElementById("id_category_serv");
 const id_category_dept = document.getElementById("id_category_dept");
-const id_category = document.getElementById("id_category");
 const id_content = document.getElementById("id_content");
-const id_drop_file = document.getElementById("id_drop_file");
 const id_file = document.getElementById("id_file");
-const id_attach_file = document.getElementById("id_attach_file")
+const id_drop_file = document.getElementById("id_drop_file");
+const id_attach_file = document.getElementById("id_attach_file");
 const id_keyword = document.getElementById("id_keyword");
+
+const id_create_or_update = document.getElementById("id_create_or_update");
+const id_delete = document.getElementById("id_delete");
+const id_delete_text = code(id_delete, "_text");
+
 const id_url = document.getElementById("id_url");
 const id_copy_url = document.getElementById("id_copy_url");
-const id_copy_url_ready = document.getElementById("id_copy_url_ready");
-const id_copy_url_done = document.getElementById("id_copy_url_done");
-const id_copy_url_descr = document.getElementById("id_copy_url_descr");
-const id_create_or_update_notice = document.getElementById("id_create_or_update_notice");
-const id_delete_notice = document.getElementById("id_delete_notice");
-const title_placeholder = [
-    { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
-    { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },
-    { s: "0101", e: "0225", t: `${now.getFullYear()}학년도 1학기 수강신청 안내` },
-    { s: "0125", e: "0205", t: `${now.getFullYear()}학년도 1학기 등록금 납부 안내` },
-    { s: "0120", e: "0210", t: `${now.getFullYear()}학년도 봄 학위수여식 안내` },
-    { s: "0201", e: "0215", t: `${now.getFullYear()}학년도 촬영 협조공문 발급 안내` },
-    { s: "0210", e: "0220", t: `${now.getFullYear()}학년도 봄 학위수여식 졸업가운 및 학사모 대여 안내` },
-    { s: "0225", e: "0310", t: `${now.getFullYear()}학년도 1학기 수강신청 확인 및 정정 기간 안내` },
-    { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학과 제작지원비 안내` },
-    { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학교현장실습 시행 안내` },
-    { s: "0301", e: "0531", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 운영계획` },
-    { s: "0325", e: "0425", t: `제${now.getFullYear() - 2000 + 1}회 전주국제영화제 참가 관련 협조공문 발급 안내` },
-    { s: "0401", e: "0430", t: `${now.getFullYear()}학년도 교직과정 이수예정자 선발 안내` },
-    { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 여름계절학기 시행 안내` },
-    { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 가을 졸업대상자 졸업논문 제출 안내` },
-    { s: "0501", e: "0531", t: `${now.getFullYear()}학년도 1학기 성적처리 일정 및 유의사항 안내` },
-    { s: "0601", e: "0630", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 최종보고서 제출 안내` },
-    { s: "0625", e: "0725", t: `${now.getFullYear()}학년도 2학기 복학 신청 안내` },
-    { s: "0701", e: "0731", t: `${now.getFullYear()}학년도 2학기 희망강의 신청 안내` },
-    { s: "0701", e: "0825", t: `${now.getFullYear()}학년도 2학기 수강신청 안내` },
-    { s: "0720", e: "0810", t: `${now.getFullYear()}학년도 가을 학위수여식 안내` },
-    { s: "0725", e: "0805", t: `${now.getFullYear()}학년도 2학기 등록금 납부 안내` },
-    { s: "0810", e: "0820", t: `${now.getFullYear()}학년도 가을 학위수여식 졸업가운 및 학사모 대여 안내` },
-    { s: "0825", e: "0910", t: `${now.getFullYear()}학년도 2학기 수강신청 확인 및 정정 기간 안내` },
-    { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학과 제작지원비 안내` },
-    { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학교현장실습 시행 안내` },
-    { s: "0901", e: "1130", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 운영계획` },
-    { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 시네필 발급 안내` },
-    { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 참가 관련 협조공문 발급 안내` },
-    { s: "1101", e: "1120", t: `${now.getFullYear()}학년도 겨울계절학기 시행 안내` },
-    { s: "1101", e: "1120", t: `${now.getFullYear() + 1}학년도 봄 졸업대상자 졸업논문 제출 안내` },
-    { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 성적처리 일정 및 유의사항` },
-    { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 최종보고서 제출 안내` }
-];
-const filtered_title_placeholder = title_placeholder.filter(item => isCurrentDateInRange(String(now.getFullYear()) + item.s, String(now.getFullYear()) + item.e));
+const id_copy_url_ready = code(id_copy_url, "_ready");
+const id_copy_url_done = code(id_copy_url, "_done");
+const id_copy_url_descr = code(id_copy_url, "_descr");
+
+const id_detail = document.getElementById("id_detail");
+
 const id_go_to_list = document.getElementById("id_go_to_list");
 
-let stepOnes = document.querySelectorAll(".step-one");
-let filteredInputs = [];
-let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
+const class_counts = document.querySelectorAll(".class-count");
+const class_measures = document.querySelectorAll(".class-measure");
 
+let isFocused = false;
+let isHovered = false;
+let isDragging = false;
+let isEventListenersAddedToFileForm = false;
+let isModalOpen = false;
+let isLastSelectedAnchorHash = false;
+let isItDoubleChecked = false;
+
+let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let selectedFiles;
 let attachedFiles = [];
-let totalSize = 0;
-let counts = document.querySelectorAll(".class-count");
-let measures = document.querySelectorAll(".class-measure");
-let isAdded = false;
+let totalSizeOfFiles = 0;
 
 let currentHistoryLength = history.length;
-let lastClickedWasHash = false;
-let modalOpen = false;
-let askedTwice = false;
-let askedTwiceTimer;
+let doubleCheckTimer;
 
 //
 // Sub functions
 //
-
-function search() {
-    if (id_notice_q !== null) {
-        if (urlParams.has("q")) {
-            id_notice_q.value = urlParams.get("q");
-            ["click", "keyup"].forEach(type => {
-                id_search_notice_init.addEventListener(type, (event) => {
-                    if (type == "click" || event.key == "Enter" || event.key == " ") {
-                        location.href = `${originLocation}/notice`;
-                        id_notice_q.readOnly = true;
-                        id_search_notice.disabled = true;
-                    };
-                });
-            });
-        };
-    
-        id_notice_q.addEventListener("keyup", (event) => {
-            if (event.key == "Enter") {
-                id_search_notice.click();
-            };
-        });
-    
-        ["click", "keyup"].forEach(type => {
-            id_search_notice.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    location.href = `${originLocation}/notice/?q=${id_notice_q.value}`;
-                    id_notice_q.readOnly = true;
-                    id_search_notice.disabled = true;
-                };
-            });
-        });
-    };
-}
-
-search();
-
-function initForm() {
-    // title, category
-    let id_title_placeholder = randomItem(filtered_title_placeholder);
-    let radioInputs = document.querySelectorAll("input[name='id_category']");
-
-    id_title.value = null;
-    id_title.placeholder = id_title_placeholder.t;
-    id_category.value = null;
-    id_category_serv.checked = false;
-    id_category_dept.checked = false;
-
-    inputs.forEach((input) => {
-        displayError(false, input);
-    });
-
-    radioInputs.forEach((input) => {
-        const label = input.closest("label");
-        const svg = label.querySelector("svg");
-
-        input.addEventListener("focus", () => {
-            label.classList.add("df-focus-ring-inset");
-            svg.classList.remove("invisible");
-        });
-
-        input.addEventListener("blur", () => {
-            if (!input.checked) {
-                svg.classList.add("invisible");
-            } else if (input.checked) {
-                label.classList.add("df-ring-inset-flamingo");
-            };
-            label.classList.remove("df-focus-ring-inset");
-        });
-
-        input.addEventListener("change", () => {
-            if (input.checked) {
-                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
-                svg.classList.remove("invisible");
-            } else {
-                svg.classList.add("invisible");
-            };
-
-            const otherInputs = [...radioInputs].filter(i => i !== input);
-            otherInputs.forEach(i => {
-                const otherLabel = i.closest("label");
-                const otherSvg = otherLabel.querySelector("svg");
-                if (!i.checked) {
-                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-                    otherSvg.classList.add("invisible");
-                };
-            });
-        });
-
-        if (!input.checked) {
-            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-            svg.classList.add("invisible");
-        } else {
-            label.classList.add("df-ring-inset-flamingo");
-        };
-    });
-
-    // content
-    ckEditor.setData("");
-
-    // file
-    let lists = document.querySelectorAll(".class-list");
-    let isFocused = false;
-    let isHovered = false;
-    let isDragging = false;
-
-    id_file.value = null;
-    attachedFiles.length = 0;
-    totalSize = 0;
-    lists.forEach(list => { list.remove() });
-    updateStyle();
-
-    function updateStyle() {
-        let outline = "none";
-        let attachBoxShadow = "none";
-        let attachBackgroundColor = "transparent";
-        let dropBoxShadow = "inset 0 0 0 1px rgb(209 213 219)";
-        let dropBackGroundColor = "transparent";
-
-        counts.forEach(count => {
-            if (attachedFiles.length == 0) {
-                if (count.classList.contains("class-desktop")) {
-                    count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-                } else if (count.classList.contains("class-mobile")) {
-                    count.innerText = "파일을 첨부하세요.";
-                };
-            } else {
-                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
-            };
-        });
-
-        measures.forEach(measure => {
-            measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
-        });
-
-        if (isFocused && isHovered) {
-            attachBoxShadow = "inset 0 0 0 2px #F15922";
-            attachBackgroundColor = "rgb(249 250 251)";
-        } else if (isFocused) {
-            attachBoxShadow = "inset 0 0 0 2px #F15922";
-        } else if (isHovered) {
-            attachBoxShadow = "inset 0px -1px 0px 0px rgb(209 213 219), inset -1px 0px 0px 0px rgb(209 213 219), inset 1px 0px 0px 0px rgb(209 213 219)";
-            attachBackgroundColor = "rgb(249 250 251)";
-        } else if (isDragging) {
-            dropBoxShadow = "inset 0 0 0 2px #F15922";
-            dropBackGroundColor = "rgb(249 250 251)";
-            counts.forEach(count => { count.innerText = "파일을 놓으세요." });
-        };
-
-        id_attach_file.style.outline = outline;
-        id_attach_file.style.boxShadow = attachBoxShadow;
-        id_attach_file.style.backgroundColor = attachBackgroundColor;
-        id_drop_file.style.boxShadow = dropBoxShadow;
-        id_drop_file.style.backgroundColor = dropBackGroundColor;
-    }
-
-    function addEventListeners() {
-        isAdded = true;
-
-        id_drop_file.addEventListener("dragover", (event) => { event.preventDefault(); id_file.focus(); isDragging = true; updateStyle() });
-        id_drop_file.addEventListener("dragleave", () => { isDragging = false; updateStyle() });
-        id_drop_file.addEventListener("drop", (event) => { event.preventDefault(); isDragging = false; updateStyle(); attachFile(event) });
-
-        id_file.addEventListener("change", attachFile);
-
-        id_attach_file.addEventListener("focus", () => { isFocused = true; updateStyle() });
-        id_attach_file.addEventListener("blur", () => { isFocused = false; updateStyle() });
-        id_attach_file.addEventListener("mouseenter", () => { isHovered = true; updateStyle() });
-        id_attach_file.addEventListener("mouseleave", () => { isHovered = false; updateStyle() });
-
-        ["click", "keyup"].forEach(type => {
-            id_attach_file.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    id_attach_file.focus();
-                    id_file.click();
-                };
-            });
-        });
-    }
-
-    if (!isAdded) { addEventListeners() };
-
-    // create, update, delete button
-    displayButtonMsg(false, id_create_or_update_notice, "error");
-    displayButtonMsg(false, id_delete_notice, "error");
-}
-
-function initModal() {
-    let keywords = document.querySelectorAll(".class-keyword");
-    let creates = document.querySelectorAll(".class-create");
-    let adjusts = document.querySelectorAll(".class-adjust");
-    let shares = document.querySelectorAll(".class-share");
-
-    function openModal(action, datasetObj = null) {
-        // action: all
-        id_notice_modal.hidden = false;
-        id_notice_modal.setAttribute("x-data", "{ open: true }");
-        disableFocusOutsideModal(id_notice_modal);
-        document.addEventListener("keydown", function (event) {
-            if (event.key === "Escape" && id_notice_modal.getAttribute("x-data") == "{ open: true }") {
-                enableFocus();
-            };
-        });
-        sessionStorage.setItem("scrollPosition", window.scrollY);
-        modalOpen = true;
-
-        // action: create
-        if (action == "create") {
-            resizeModalAndFormWidth(true);
-            id_notice_modal_form.hidden = false;
-            id_notice_modal_share.hidden = true;
-            keywords.forEach(keyword => {
-                keyword.innerText = "작성하기";
-            });
-            initForm();
-            ckEditor.destroy();
-            initCkEditor();
-            id_create_or_update_notice.classList.replace("hidden", "inline-flex");
-            id_delete_notice.classList.replace("inline-flex", "hidden");
-        }
-
-        // action: adjust / datasetObj: adjust
-        else if (action == "adjust") {
-            let data = datasetObj.dataset;
-            let [
-                noticePageId, noticeTitle, noticeCategory, noticeKeyword
-            ] = [
-                    data.noticePageId, data.noticeTitle, data.noticeCategory, data.noticeKeyword
-                ];
-            let label, svg;
-
-            openModal("create");
-            keywords.forEach(keyword => {
-                keyword.innerText = "수정하기";
-            });
-            id_page_id.value = noticePageId;
-            id_title.value = noticeTitle;
-            if (noticeCategory == "서비스") {
-                id_category.value = "서비스";
-                id_category_serv.checked = true;
-                label = id_category_serv.closest("label");
-            } else if (noticeCategory == "학과") {
-                id_category.value = "학과";
-                id_category_dept.checked = true;
-                label = id_category_dept.closest("label");
-            };
-            id_keyword.value = noticeKeyword;
-            label.classList.remove("df-ring-inset-gray");
-            label.classList.add("df-ring-inset-flamingo");
-            svg = label.querySelector("svg");
-            svg.classList.remove("invisible");
-            id_delete_notice.classList.replace("hidden", "inline-flex");
-            id_delete_notice_inner_text.innerText = "삭제하기";
-            askedTwice = false;
-            clearTimeout(askedTwiceTimer);
-            setTimeout(() => { freezeCkEditor() }, 0.00001);
-            requestReadNotice();
-        }
-
-        // action: share
-        else if (action == "share") {
-            resizeModalAndFormWidth(false);
-            if (id_notice_modal_form !== null) { id_notice_modal_form.hidden = true };
-            id_notice_modal_share.hidden = false;
-            keywords.forEach(keyword => {
-                keyword.innerText = "공유하기";
-            });
-            id_copy_url_ready.classList.remove("hidden");
-            id_copy_url_done.classList.add("hidden");
-            id_copy_url_descr.hidden = true;
-            id_create_or_update_notice.classList.replace("inline-flex", "hidden");
-            id_delete_notice.classList.replace("inline-flex", "hidden");
-        };
-    }
-
-    // Users who want to create
-    creates.forEach(create => {
-        ["click", "keyup"].forEach(type => {
-            create.addEventListener(type, (event) => {
-                let target = event.target;
-
-                if ((type === "click" && target.tagName === "SPAN") ||
-                    (type === "click" && target.tagName === "DIV") ||
-                    (type === "click" && target.tagName === "BUTTON") ||
-                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                    (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                    openModal("create");
-                };
-            });
-        });
-    });
-
-    // Users who want to update or delete
-    adjusts.forEach(adjust => {
-        ["click", "keyup"].forEach(type => {
-            adjust.addEventListener(type, (event) => {
-                let target = event.target;
-
-                if ((type === "click" && target.tagName === "SPAN") ||
-                    (type === "click" && target.tagName === "DIV") ||
-                    (type === "click" && target.tagName === "BUTTON") ||
-                    (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                    (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                    openModal("adjust", adjust);
-                };
-            });
-        });
-    });
-
-    // Users who want to share
-    shares.forEach(share => {
-        ["click", "keyup"].forEach(type => {
-            share.addEventListener(type, (event) => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    openModal("share");
-                };
-            });
-        });
-    });
-}
-
-initModal();
-
-function initCkEditor() {
-    let userIsAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
-
-    if (userIsAuthenticated) {
-        ClassicEditor
-            .create(document.querySelector("#id_content"), {
-                removePlugins: ["Title", "Markdown"],
-                language: "ko",
-                outputFormat: "html",
-                placeholder: "여기에 내용을 입력하세요.",
-                mediaEmbed: {
-                    previewsInData: true
-                }
-            })
-            .then(editor => {
-                ckEditor = editor;
-                ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
-                toolbarViewRoot = ckEditor.ui.view.toolbar.element;
-                textboxModel = ckEditor.model.document;
-                textboxViewRoot = ckEditor.editing.view.getDomRoot();
-                let rysFlag = false;
-
-                textboxModel.on("change:data", () => {
-                    let data = ckEditor.getData();
-                    let rysRegex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
-                    let rysMatch = data.match(rysRegex);
-
-                    if (!rysFlag && rysMatch) {
-                        rysFlag = true;
-                        displayNoti(true, "RYS");
-                    };
-
-                    id_content.value = ckEditor.getData();
-                });
-
-                ckElements.forEach((ck) => {
-                    ck.addEventListener("focus", () => { displayError(false, id_content) });
-                    ck.addEventListener("blur", (event) => {
-                        if (!ckElements.includes(event.relatedTarget)) {
-                            if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
-                                displayError(true, id_content, "empty");
-                            } else {
-                                displayError(false, id_content);
-                            };
-                        };
-                    });
-                    ck.addEventListener("keydown", (event) => {
-                        if (ck == textboxViewRoot && event.shiftKey && event.key === "Tab") {
-                            if (id_category_error.innerText.length == 0) {
-                                setTimeout(() => {
-                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-                                    displayError(false, id_category);
-                                });
-                            } else {
-                                setTimeout(() => {
-                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-                                });
-                            };
-                        };
-                    });
-                    ck.addEventListener("click", () => { displayError(false, id_content) });
-                });
-            })
-            .catch(err => {
-                console.error(err.stack);
-            });
-    };
-}
-
-initCkEditor();
 
 function freezeCkEditor() {
     ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
     ckEditor.enableReadOnlyMode("id_content");
 }
 
-function matchDivWidth() {
-    let id_content_parent = document.getElementById("id_content_parent");
-    let widthBase;
+function freezeFileForm(boolean) {
+    const class_detaches = document.querySelectorAll(".class-detach");
 
-    if (id_notice_list !== null) {
-        widthBase = id_notice_list;
-    } else if (id_notice_detail !== null) {
-        widthBase = id_notice_detail;
-    };
+    if (boolean) {
+        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
+        id_drop_file.nextElementSibling.classList.remove("hidden");
+        id_attach_file.tabIndex = -1;
+        class_detaches.forEach(detach => { detach.tabIndex = -1 });
+        id_file.disabled = true;
 
-    if (id_notice_modal_land !== null) {
-        id_notice_modal_land.style.setProperty("width", widthBase.offsetWidth + "px", "important");
-        id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
-        id_drop_file.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
-    };
-}
+        class_counts.forEach(count => {
+            count.innerText = "잠시만 기다려주세요.";
+        });
+    } else if (!boolean) {
+        id_drop_file.style.backgroundColor = "transparent";
+        id_drop_file.nextElementSibling.classList.add("hidden");
+        id_attach_file.tabIndex = 0;
+        class_detaches.forEach(detach => { detach.tabIndex = 0 });
+        id_file.disabled = false;
 
-function resizeModalAndFormWidth(bool) {
-    if (bool) {
-        matchDivWidth();
-        window.addEventListener("resize", matchDivWidth);
-    } else if (!bool) {
-        id_notice_modal_land.style = "display: none";
-        window.removeEventListener("resize", matchDivWidth);
-    };
-}
-
-function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
-    return currentDate >= start && currentDate <= end;
-}
-
-function detectHashLinkClick() {
-    document.addEventListener("click", function (event) {
-        let closestAnchor = event.target.closest("a");
-
-        if (closestAnchor) {
-            lastClickedWasHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-}
-
-detectHashLinkClick();
-
-function preventGoBack() {
-    if (currentHistoryLength == history.length) {
-        history.pushState(null, null, location.href);
-    };
-    window.onpopstate = function () {
-        if (modalOpen) {
-            history.pushState(null, null, location.href);
-            if (id_create_or_update_notice_descr.hidden && id_delete_notice_descr.hidden && id_delete_notice_error.hidden) {
-                id_notice_modal.setAttribute("x-data", "{ open: false }");
-                enableFocus();
-                modalOpen = false;
+        class_counts.forEach(count => {
+            if (count.classList.contains("class-desktop")) {
+                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (count.classList.contains("class-mobile")) {
+                count.innerText = "파일을 첨부하세요.";
             };
-        } else if (!modalOpen) {
-            if (!lastClickedWasHash) {
-                history.go(-1);
-            };
-        };
+        });
     };
 }
 
-preventGoBack();
-
-function embedMedia() {
-    let mediaElements = document.querySelectorAll("figure.media");
+function embedMediaInCkEditor() {
+    const mediaElements = document.querySelectorAll("figure.media");
 
     if (mediaElements) {
         mediaElements.forEach(media => {
-            let oembed = media.querySelector("oembed");
+            const oembed = media.querySelector("oembed");
             let div = media.querySelector("div");
 
             if (oembed) {
-                let url = oembed.getAttribute("url");
-                let newStructure = generateNewStructure(url);
+                const url = oembed.getAttribute("url");
+                const newStructure = generateNewStructure(url);
 
                 function generateNewStructure(url) {
                     let mediaName, newStructure;
@@ -612,15 +151,217 @@ function embedMedia() {
     };
 }
 
-embedMedia();
+embedMediaInCkEditor();
+
+function matchDivWidth() {
+    const id_modal_base = document.getElementById("id_modal_base");
+    const id_content_parent = code(id_content, "_parent");
+    let widthBase;
+
+    if (id_list !== null) {
+        widthBase = id_list;
+    } else if (id_detail !== null) {
+        widthBase = id_detail;
+    };
+
+    if (id_modal_base !== null) {
+        id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+        id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
+        id_drop_file.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
+    };
+}
+
+function toggleWidthOfModalAndForm(bool) {
+    if (bool) {
+        matchDivWidth();
+        window.addEventListener("resize", matchDivWidth);
+    } else if (!bool) {
+        id_modal_base.style = "display: none";
+        window.removeEventListener("resize", matchDivWidth);
+    };
+}
+
+function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
+    return currentDate >= start && currentDate <= end;
+}
+
+function preventGoBack() {
+    if (currentHistoryLength === history.length) {
+        history.pushState(null, null, location.href);
+    };
+
+    document.addEventListener("click", function (event) {
+        let closestAnchor = event.target.closest("a");
+
+        if (closestAnchor) {
+            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
+        };
+    });
+
+    window.onpopstate = () => {
+        if (isModalOpen) {
+            history.pushState(null, null, location.href);
+            if (isItOkayToCloseModal()) {
+                id_modal.setAttribute("x-data", "{ open: false }");
+                enableFocus();
+                isModalOpen = false;
+            };
+        } else if (!isModalOpen) {
+            if (!isLastSelectedAnchorHash) {
+                history.go(-1);
+            };
+        };
+    };
+}
+
+preventGoBack();
+
+function isItOkayToCloseModal() {
+    const id_create_or_update_descr = code(id_create_or_update, "_descr");
+    const id_delete_descr = code(id_delete, "_descr");
+    const id_delete_error = code(id_delete, "_error");
+
+    return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
+}
+
+function executeWhenModalIsClosed() {
+    isModalOpen = false;
+    toggleFocusOnModal(false);
+    preventGoBack();
+}
+
+//
+// Main functions
+//
+
+function initSearchBar() {
+    const id_query = document.getElementById("id_query");
+    const id_submit_query = document.getElementById("id_submit_query");
+
+    if (id_query !== null) {
+        window.addEventListener("pageshow", event => {
+            if (event.persisted) {  // Detect if a user used the web browser back or forward buttons
+                id_query.readOnly = false;
+                id_query.value = urlParams.get("q");
+                id_submit_query.disabled = false;
+            };
+        });
+
+        id_query.addEventListener("keyup", (event) => {
+            if (event.key === "Enter") {
+                id_submit_query.click();
+            };
+        });
+
+        ["click", "keyup"].forEach(type => {
+            id_submit_query.addEventListener(type, (event) => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    location.href = `${originLocation}/notice/?q=${id_query.value}`;
+                    id_query.readOnly = true;
+                    id_submit_query.disabled = true;
+                };
+            });
+        });
+
+        if (urlParams.has("q")) {
+            const id_initialize_query = document.getElementById("id_initialize_query");
+
+            id_query.value = urlParams.get("q");
+            ["click", "keyup"].forEach(type => {
+                id_initialize_query.addEventListener(type, (event) => {
+                    if (type === "click" || event.key === "Enter" || event.key === " ") {
+                        location.href = `${originLocation}/notice`;
+                        id_query.readOnly = true;
+                        id_submit_query.disabled = true;
+                    };
+                });
+            });
+        };
+    };
+}
+
+initSearchBar();
+
+function initCkEditor() {
+    const isUserAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
+
+    if (isUserAuthenticated) {
+        ClassicEditor
+            .create(document.querySelector("#id_content"), {
+                removePlugins: ["Title", "Markdown"],
+                language: "ko",
+                outputFormat: "html",
+                placeholder: "여기에 내용을 입력하세요.",
+                mediaEmbed: {
+                    previewsInData: true
+                }
+            })
+            .then(editor => {
+                ckEditor = editor;
+                ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
+                toolbarViewRoot = ckEditor.ui.view.toolbar.element;
+                textboxModel = ckEditor.model.document;
+                textboxViewRoot = ckEditor.editing.view.getDomRoot();
+                let rysFlag = false;
+
+                textboxModel.on("change:data", () => {
+                    let data = ckEditor.getData();
+                    let rysRegex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
+                    let rysMatch = data.match(rysRegex);
+
+                    if (!rysFlag && rysMatch) {
+                        rysFlag = true;
+                        displayNoti(true, "RYS");
+                    };
+
+                    id_content.value = ckEditor.getData();
+                });
+
+                ckElements.forEach((ck) => {
+                    ck.addEventListener("focus", () => { displayError(false, id_content) });
+                    ck.addEventListener("blur", (event) => {
+                        if (!ckElements.includes(event.relatedTarget)) {
+                            if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
+                                displayError(true, id_content, "empty");
+                            } else {
+                                displayError(false, id_content);
+                            };
+                        };
+                    });
+                    ck.addEventListener("keydown", (event) => {
+                        if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
+                            const id_category_error = code(id_category, "_error");
+
+                            if (id_category_error.innerText.length === 0) {
+                                setTimeout(() => {
+                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+                                    displayError(false, id_category);
+                                });
+                            } else {
+                                setTimeout(() => {
+                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+                                });
+                            };
+                        };
+                    });
+                    ck.addEventListener("click", () => { displayError(false, id_content) });
+                });
+            })
+            .catch(err => {
+                console.error(err.stack);
+            });
+    };
+}
+
+initCkEditor();
 
 function attachFile(event = null, sudo = false) {
-    let id, name, key, size, readableSize, fileListItem, fileListItemHTML;
+    let id, name, key, size, readableSize, fileElement;
     let isDuplicate = false;
     let duplicateFiles = [];
     let failureCount = 0;
 
-    if (sudo == true) {
+    if (sudo === true) {
         selectedFiles = selectedFiles;
     } else if (event instanceof DragEvent) {
         selectedFiles = Array.from(event.dataTransfer.files);
@@ -632,7 +373,7 @@ function attachFile(event = null, sudo = false) {
         name = file.name;
         size = Number(file.size);
 
-        if (sudo == true) {
+        if (sudo === true) {
             readableSize = file.readableSize;
         } else if (size < 1024 * 1024) {
             readableSize = (size / 1024).toFixed(2) + "KB";
@@ -644,9 +385,9 @@ function attachFile(event = null, sudo = false) {
             isDuplicate = true;
             duplicateFiles.push(name);
             console.warn(`The file ${name} is already attached.`);
-        } else if (totalSize + size <= 5 * 1024 * 1024) {
-            totalSize += size;
-            if (sudo == true) {
+        } else if (totalSizeOfFiles + size <= 5 * 1024 * 1024) {
+            totalSizeOfFiles += size;
+            if (sudo === true) {
                 id = file.id;
                 key = file.key;
                 fileObj = { file: null, id: id, name: name, key: key, size: size, readableSize: readableSize };
@@ -655,10 +396,10 @@ function attachFile(event = null, sudo = false) {
                 key = `${id}_${name}`;
                 fileObj = { file: file, id: id, name: name, key: key, size: size, readableSize: readableSize };
             };
-            fileListItem = document.createElement("li");
-            fileListItem.id = id;
-            fileListItem.classList.add("class-list", "relative", "flex", "items-center", "justify-between", "p-4", "text-sm", "leading-6");
-            fileListItemHTML = `
+            fileElement = document.createElement("li");
+            fileElement.id = id;
+            fileElement.classList.add("class-file", "relative", "flex", "items-center", "justify-between", "p-4", "text-sm", "leading-6");
+            fileElement.innerHTML = `
                 <div class="flex w-0 flex-1 items-center">
                     <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
                             viewBox="0 0 20 20"
@@ -684,17 +425,16 @@ function attachFile(event = null, sudo = false) {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
-            `
-            fileListItem.innerHTML = fileListItemHTML;
+            `;
             attachedFiles.push(fileObj);
-            id_attach_file.parentNode.insertBefore(fileListItem, id_attach_file);
+            id_attach_file.parentNode.insertBefore(fileElement, id_attach_file);
 
-            counts.forEach(count => {
+            class_counts.forEach(count => {
                 count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             });
 
-            measures.forEach(measure => {
-                measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
+            class_measures.forEach(measure => {
+                measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
             });
         } else {
             failureCount += 1;
@@ -711,18 +451,18 @@ function attachFile(event = null, sudo = false) {
 }
 
 function detachFile(fileUUID = null) {
-    let fileListItem;
+    let fileElement;
 
     attachedFiles.forEach(function (file, i) {
-        if (file.id == fileUUID) {
-            totalSize -= file.size;
+        if (file.id === fileUUID) {
+            totalSizeOfFiles -= file.size;
             attachedFiles.splice(i, 1);
-            fileListItem = document.getElementById(file.id);
-            fileListItem.remove();
+            fileElement = document.getElementById(file.id);
+            fileElement.remove();
         };
 
-        counts.forEach(count => {
-            if (attachedFiles.length == 0) {
+        class_counts.forEach(count => {
+            if (attachedFiles.length === 0) {
                 if (count.classList.contains("class-desktop")) {
                     count.innerText = "파일을 이곳에 끌어다 놓으세요.";
                 } else if (count.classList.contains("class-mobile")) {
@@ -733,26 +473,324 @@ function detachFile(fileUUID = null) {
             };
         });
 
-        measures.forEach(measure => {
-            measure.innerText = `${(totalSize / (1024 * 1024)).toFixed(2)}MB/5MB`;
+        class_measures.forEach(measure => {
+            measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
         });
     });
 }
 
-function listFile() {
-    let downloads = document.querySelectorAll(".class-download");
+function styleFileForm() {
+    let dropBoxShadow = "inset 0 0 0 1px rgb(209 213 219)";
+    let dropBackgroundColor = "transparent";
+    let attachBoxShadow = "none";
+    let attachBackgroundColor = "transparent";
 
-    if (downloads) {
-        downloads.forEach((download, index) => {
+    class_counts.forEach(count => {
+        if (attachedFiles.length === 0) {
+            if (count.classList.contains("class-desktop")) {
+                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (count.classList.contains("class-mobile")) {
+                count.innerText = "파일을 첨부하세요.";
+            };
+        } else {
+            count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
+        };
+    });
+
+    class_measures.forEach(measure => {
+        measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
+    });
+
+    if (isFocused && isHovered) {
+        attachBoxShadow = "inset 0 0 0 2px #F15922";
+        attachBackgroundColor = "rgb(249 250 251)";
+    } else if (isFocused) {
+        attachBoxShadow = "inset 0 0 0 2px #F15922";
+    } else if (isHovered) {
+        attachBoxShadow = "inset 0px -1px 0px 0px rgb(209 213 219), inset -1px 0px 0px 0px rgb(209 213 219), inset 1px 0px 0px 0px rgb(209 213 219)";
+        attachBackgroundColor = "rgb(249 250 251)";
+    } else if (isDragging) {
+        dropBoxShadow = "inset 0 0 0 2px #F15922";
+        dropBackgroundColor = "rgb(249 250 251)";
+        class_counts.forEach(count => { count.innerText = "파일을 놓으세요." });
+    };
+
+    id_drop_file.style.boxShadow = dropBoxShadow;
+    id_drop_file.style.backgroundColor = dropBackgroundColor;
+    id_attach_file.style.outline = "none";
+    id_attach_file.style.boxShadow = attachBoxShadow;
+    id_attach_file.style.backgroundColor = attachBackgroundColor;
+}
+
+function addEventListenersToFileForm() {
+    isEventListenersAddedToFileForm = true;
+
+    id_file.addEventListener("change", attachFile);
+    id_drop_file.addEventListener("dragover", (event) => { event.preventDefault(); id_file.focus(); isDragging = true; styleFileForm() });
+    id_drop_file.addEventListener("dragleave", () => { isDragging = false; styleFileForm() });
+    id_drop_file.addEventListener("drop", (event) => { event.preventDefault(); isDragging = false; styleFileForm(); attachFile(event) });
+    id_attach_file.addEventListener("focus", () => { isFocused = true; styleFileForm() });
+    id_attach_file.addEventListener("blur", () => { isFocused = false; styleFileForm() });
+    id_attach_file.addEventListener("mouseenter", () => { isHovered = true; styleFileForm() });
+    id_attach_file.addEventListener("mouseleave", () => { isHovered = false; styleFileForm() });
+
+    ["click", "keyup"].forEach(type => {
+        id_attach_file.addEventListener(type, event => {
+            if (type === "click" || event.key === "Enter" || event.key === " ") {
+                id_attach_file.focus();
+                id_file.click();
+            };
+        });
+    });
+}
+
+function initForm() {
+    const id_title_placeholder_array = [
+        { s: "1225", e: "0125", t: `${now.getFullYear()}학년도 1학기 복학 신청 안내` },
+        { s: "0101", e: "0131", t: `${now.getFullYear()}학년도 1학기 희망강의 신청 안내` },
+        { s: "0101", e: "0225", t: `${now.getFullYear()}학년도 1학기 수강신청 안내` },
+        { s: "0125", e: "0205", t: `${now.getFullYear()}학년도 1학기 등록금 납부 안내` },
+        { s: "0120", e: "0210", t: `${now.getFullYear()}학년도 봄 학위수여식 안내` },
+        { s: "0201", e: "0215", t: `${now.getFullYear()}학년도 촬영 협조공문 발급 안내` },
+        { s: "0210", e: "0220", t: `${now.getFullYear()}학년도 봄 학위수여식 졸업가운 및 학사모 대여 안내` },
+        { s: "0225", e: "0310", t: `${now.getFullYear()}학년도 1학기 수강신청 확인 및 정정 기간 안내` },
+        { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학과 제작지원비 안내` },
+        { s: "0301", e: "0331", t: `${now.getFullYear()}학년도 1학기 학교현장실습 시행 안내` },
+        { s: "0301", e: "0531", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 운영계획` },
+        { s: "0325", e: "0425", t: `제${now.getFullYear() - 2000 + 1}회 전주국제영화제 참가 관련 협조공문 발급 안내` },
+        { s: "0401", e: "0430", t: `${now.getFullYear()}학년도 교직과정 이수예정자 선발 안내` },
+        { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 여름계절학기 시행 안내` },
+        { s: "0501", e: "0520", t: `${now.getFullYear()}학년도 가을 졸업대상자 졸업논문 제출 안내` },
+        { s: "0501", e: "0531", t: `${now.getFullYear()}학년도 1학기 성적처리 일정 및 유의사항 안내` },
+        { s: "0601", e: "0630", t: `${now.getFullYear()}학년도 1학기 캡스톤디자인 최종보고서 제출 안내` },
+        { s: "0625", e: "0725", t: `${now.getFullYear()}학년도 2학기 복학 신청 안내` },
+        { s: "0701", e: "0731", t: `${now.getFullYear()}학년도 2학기 희망강의 신청 안내` },
+        { s: "0701", e: "0825", t: `${now.getFullYear()}학년도 2학기 수강신청 안내` },
+        { s: "0720", e: "0810", t: `${now.getFullYear()}학년도 가을 학위수여식 안내` },
+        { s: "0725", e: "0805", t: `${now.getFullYear()}학년도 2학기 등록금 납부 안내` },
+        { s: "0810", e: "0820", t: `${now.getFullYear()}학년도 가을 학위수여식 졸업가운 및 학사모 대여 안내` },
+        { s: "0825", e: "0910", t: `${now.getFullYear()}학년도 2학기 수강신청 확인 및 정정 기간 안내` },
+        { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학과 제작지원비 안내` },
+        { s: "0901", e: "0930", t: `${now.getFullYear()}학년도 2학기 학교현장실습 시행 안내` },
+        { s: "0901", e: "1130", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 운영계획` },
+        { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 시네필 발급 안내` },
+        { s: "0915", e: "1015", t: `제${now.getFullYear() - 1996 + 1}회 부산국제영화제 참가 관련 협조공문 발급 안내` },
+        { s: "1101", e: "1120", t: `${now.getFullYear()}학년도 겨울계절학기 시행 안내` },
+        { s: "1101", e: "1120", t: `${now.getFullYear() + 1}학년도 봄 졸업대상자 졸업논문 제출 안내` },
+        { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 성적처리 일정 및 유의사항` },
+        { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 최종보고서 제출 안내` }
+    ];
+    const id_title_placeholder = randomItem(id_title_placeholder_array.filter(placeholder => isCurrentDateInRange(String(now.getFullYear()) + placeholder.s, String(now.getFullYear()) + placeholder.e))).t;
+    const class_files = document.querySelectorAll(".class-file");
+
+    id_title.value = null;
+    id_title.placeholder = id_title_placeholder;
+    id_category.value = null;
+    id_category_serv.checked = false;
+    id_category_dept.checked = false;
+
+    [id_category_serv, id_category_dept].forEach((category) => {
+        const label = category.closest("label");
+        const svg = label.querySelector("svg");
+
+        category.addEventListener("click", () => {
+            id_category.value = category.value;
+        });
+
+        category.addEventListener("focus", () => {
+            label.classList.add("df-focus-ring-inset");
+            svg.classList.remove("invisible");
+        });
+
+        category.addEventListener("blur", () => {
+            if (!category.checked) {
+                svg.classList.add("invisible");
+            } else if (category.checked) {
+                label.classList.add("df-ring-inset-flamingo");
+            };
+
+            label.classList.remove("df-focus-ring-inset");
+        });
+
+        category.addEventListener("change", () => {
+            const otherInputs = [id_category_serv, id_category_dept].filter(i => i !== category);
+
+            if (category.checked) {
+                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                svg.classList.remove("invisible");
+            } else {
+                svg.classList.add("invisible");
+            };
+
+            otherInputs.forEach(i => {
+                const otherLabel = i.closest("label");
+                const otherSvg = otherLabel.querySelector("svg");
+
+                if (!i.checked) {
+                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                    otherSvg.classList.add("invisible");
+                };
+            });
+        });
+
+        if (!category.checked) {
+            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+            svg.classList.add("invisible");
+        } else {
+            label.classList.add("df-ring-inset-flamingo");
+        };
+    });
+
+    ckEditor.setData("");
+
+    id_file.value = null;
+    class_files.forEach(file => { file.remove() });
+    attachedFiles.length = 0;
+    totalSizeOfFiles = 0;
+    styleFileForm();
+    if (!isEventListenersAddedToFileForm) { addEventListenersToFileForm() };
+
+    inputs.forEach((input) => {
+        displayError(false, input);
+    });
+
+    [id_create_or_update, id_delete].forEach(button => {
+        displayButtonMsg(false, button, "error");
+    });
+}
+
+function updateForm(action, datasetObj = null) {
+    const id_modal_form = document.getElementById("id_modal_form");
+    const id_modal_share = document.getElementById("id_modal_share");
+    const class_keywords = document.querySelectorAll(".class-keyword");
+
+    // action: all
+    isModalOpen = true;
+    id_modal.hidden = false;
+    id_modal.setAttribute("x-data", "{ open: true }");
+    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    sessionStorage.setItem("scrollPosition", window.scrollY);
+
+    // action: create
+    if (action === "create") {
+        toggleWidthOfModalAndForm(true);
+        id_modal_form.hidden = false;
+        id_modal_share.hidden = true;
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "작성하기";
+        });
+        initForm();
+        id_create_or_update.classList.replace("hidden", "inline-flex");
+        id_delete.classList.replace("inline-flex", "hidden");
+    }
+
+    // action: adjust
+    else if (action === "adjust") {
+        const data = datasetObj.dataset;
+        let label, svg;
+
+        updateForm("create");
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "수정하기";
+        });
+        id_page_id.value = data.pageId;
+        id_title.value = data.title;
+        if (data.category === "서비스") {
+            id_category.value = "서비스";
+            id_category_serv.checked = true;
+            label = id_category_serv.closest("label");
+        } else if (data.category === "학과") {
+            id_category.value = "학과";
+            id_category_dept.checked = true;
+            label = id_category_dept.closest("label");
+        };
+        id_keyword.value = data.keyword;
+        label.classList.remove("df-ring-inset-gray");
+        label.classList.add("df-ring-inset-flamingo");
+        svg = label.querySelector("svg");
+        svg.classList.remove("invisible");
+        id_delete.classList.replace("hidden", "inline-flex");
+        id_delete_text.innerText = "삭제하기";
+        isItDoubleChecked = false;
+        clearTimeout(doubleCheckTimer);
+        setTimeout(() => { freezeCkEditor() }, 0.00001);
+        requestReadNotice();
+    }
+
+    // action: share
+    else if (action === "share") {
+        toggleWidthOfModalAndForm(false);
+        if (id_modal_form !== null) { id_modal_form.hidden = true };
+        id_modal_share.hidden = false;
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "공유하기";
+        });
+        id_copy_url_ready.classList.remove("hidden");
+        id_copy_url_done.classList.add("hidden");
+        id_copy_url_descr.hidden = true;
+        id_create_or_update.classList.replace("inline-flex", "hidden");
+        id_delete.classList.replace("inline-flex", "hidden");
+    };
+}
+
+function initModal() {
+    const class_creates = document.querySelectorAll(".class-create");
+    const class_adjusts = document.querySelectorAll(".class-adjust"); // Update or delete
+    const class_shares = document.querySelectorAll(".class-share");
+
+    class_creates.forEach(create => {
+        ["click", "keyup"].forEach(type => {
+            create.addEventListener(type, (event) => {
+                const targetTagName = event.target.tagName;
+
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "DIV" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    updateForm("create");
+                };
+            });
+        });
+    });
+
+    class_adjusts.forEach(adjust => {
+        ["click", "keyup"].forEach(type => {
+            adjust.addEventListener(type, (event) => {
+                const targetTagName = event.target.tagName;
+
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "DIV" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    updateForm("adjust", adjust);
+                };
+            });
+        });
+    });
+
+    class_shares.forEach(share => {
+        ["click", "keyup"].forEach(type => {
+            share.addEventListener(type, (event) => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("share");
+                };
+            });
+        });
+    });
+}
+
+initModal();
+
+function styleFileList() {
+    const class_downloads = document.querySelectorAll(".class-download");
+
+    if (class_downloads) {
+        class_downloads.forEach((download, index) => {
             let aTag = download.querySelector("a");
 
-            if (downloads.length == 1) {
+            if (class_downloads.length === 1) {
                 download.classList.add("rounded-md");
                 aTag.classList.add("rounded-md");
-            } else if (index == 0) {
+            } else if (index === 0) {
                 download.classList.add("rounded-t-md");
                 aTag.classList.add("rounded-t-md");
-            } else if (index == downloads.length - 1) {
+            } else if (index === class_downloads.length - 1) {
                 download.classList.add("rounded-b-md");
                 aTag.classList.add("rounded-b-md");
             };
@@ -760,129 +798,102 @@ function listFile() {
     };
 }
 
-listFile();
+styleFileList();
 
-function freezeFileForm(boolean) {
-    let detaches = document.querySelectorAll(".class-detach");
-
-    if (boolean) {
-        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
-        id_drop_file.nextElementSibling.classList.remove("hidden");
-        id_attach_file.tabIndex = -1;
-        detaches.forEach(detach => { detach.tabIndex = -1 });
-        id_file.disabled = true;
-
-        counts.forEach(count => {
-            count.innerText = `잠시만 기다려주세요.`;
+function copyUrl() {
+    if (id_copy_url !== null) {
+        id_url.addEventListener("click", () => {
+            id_url.select();
         });
-    } else if (!boolean) {
-        id_drop_file.style.backgroundColor = "transparent";
-        id_drop_file.nextElementSibling.classList.add("hidden");
-        id_attach_file.tabIndex = 0;
-        detaches.forEach(detach => { detach.tabIndex = 0 });
-        id_file.disabled = false;
 
-        counts.forEach(count => {
-            if (count.classList.contains("class-desktop")) {
-                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-            } else if (count.classList.contains("class-mobile")) {
-                count.innerText = "파일을 첨부하세요.";
+        id_copy_url.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(id_url.value);
+            } catch (e) {
+                id_url.select();
+                document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
             };
+
+            id_copy_url_ready.classList.add("hidden");
+            id_copy_url_done.classList.remove("hidden");
+            id_copy_url_descr.hidden = false;
+            id_copy_url_done.classList.add("blink");
+
+            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
         });
     };
 }
 
-function copyNoticeUrl() {
-    id_url.addEventListener("click", () => {
-        id_url.select();
-    });
-
-    id_copy_url.addEventListener("click", async () => {
-        try {
-            await navigator.clipboard.writeText(id_url.value);
-        } catch (e) {
-            id_url.select();
-            document.execCommand("copy"); // deprecated, but used for KakaoTalk in-app browser
-        };
-
-        id_copy_url_ready.classList.add("hidden");
-        id_copy_url_done.classList.remove("hidden");
-        id_copy_url_descr.hidden = false;
-        id_copy_url_done.classList.add("blink");
-
-        setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
-    });
-}
-
-if (id_copy_url !== null) { copyNoticeUrl() };
-
+copyUrl();
 
 function share() {
-    let data = id_notice_data.dataset;
-    let [
-        noticeTitle, noticeCategory, noticeKeyword, noticeUserName, noticeUserProfileImg, noticeListedDate
-    ] = [
-            data.noticeTitle, data.noticeCategory, data.noticeKeyword, data.noticeUserName, data.noticeUserProfileImg, data.noticeListedDate
-        ];
+    if (id_detail !== null) {
+        const data = id_detail.dataset;
+        const id_kakaotalk = document.getElementById("id_kakaotalk");
+        const id_x = document.getElementById("id_x");
+        const id_facebook = document.getElementById("id_facebook");
+        const id_line = document.getElementById("id_line");
 
-    Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
-    id_kakaotalk.addEventListener("click", () => {
-        Kakao.Share.sendDefault({
-            objectType: "feed",
-            itemContent: {
-                profileText: noticeUserName,
-                profileImageUrl: noticeUserProfileImg,
-            },
-            content: {
-                title: noticeTitle,
-                description: `${noticeListedDate} · ${noticeCategory}\n${noticeKeyword}`,
-                imageUrl:
-                    "https://dongguk.film/static/images/d_dot_f_logo.jpg",
-                link: {
-                    mobileWebUrl: `${originLocation}${location.pathname}`,
-                    webUrl: `${originLocation}${location.pathname}`,
+        Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+
+        id_kakaotalk.addEventListener("click", () => {
+            Kakao.Share.sendDefault({
+                objectType: "feed",
+                itemContent: {
+                    profileText: data.userName,
+                    profileImageUrl: data.userProfileImg,
                 },
-            },
-            buttons: [
-                {
-                    title: "디닷에프에서 보기",
+                content: {
+                    title: data.title,
+                    description: `${data.listedDate} · ${data.category}\n${data.keyword}`,
+                    imageUrl:
+                        "https://dongguk.film/static/images/d_dot_f_logo.jpg",
                     link: {
                         mobileWebUrl: `${originLocation}${location.pathname}`,
                         webUrl: `${originLocation}${location.pathname}`,
                     },
                 },
-            ],
+                buttons: [
+                    {
+                        title: "디닷에프에서 보기",
+                        link: {
+                            mobileWebUrl: `${originLocation}${location.pathname}`,
+                            webUrl: `${originLocation}${location.pathname}`,
+                        },
+                    },
+                ],
+            });
         });
-    });
 
-    id_x.addEventListener("click", () => {
-        let hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
-        let xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+        id_x.addEventListener("click", () => {
+            let hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
+            let xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
 
-        window.open(xUrl);
-    });
+            window.open(xUrl);
+        });
 
-    id_facebook.addEventListener("click", () => {
-        let facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+        id_facebook.addEventListener("click", () => {
+            let facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
 
-        window.open(facebookUrl);
-    });
+            window.open(facebookUrl);
+        });
 
-    id_line.addEventListener("click", () => {
-        let lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+        id_line.addEventListener("click", () => {
+            let lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
 
-        window.open(lineUrl);
-    });
+            window.open(lineUrl);
+        });
+    };
 }
 
-if (id_notice_data) { share() };
+share();
 
 function goToList() {
-    let details = document.querySelectorAll(".class-detail");
+    const class_details = document.querySelectorAll(".class-detail");
     let params = {};
 
-    if (details !== null) {
-        details.forEach((detail) => {
+    if (class_details !== null) {
+        class_details.forEach((detail) => {
             if (location.search !== "") {
                 params.previousSearch = location.search;
                 detail.href += "?" + new URLSearchParams(params).toString();
@@ -891,20 +902,21 @@ function goToList() {
     };
 
     if (id_go_to_list !== null) {
-        if (id_go_to_list.previousElementSibling == null) {
+        if (id_go_to_list.previousElementSibling === null) {
             id_go_to_list.classList.remove("mt-3");
         };
 
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, (event) => {
-                if (type == "click" || event.key == "Enter" || event.key == " ") {
-                    let previousSearch = new URLSearchParams(location.search).get("previousSearch");
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    const previousSearch = new URLSearchParams(location.search).get("previousSearch");
 
                     if (previousSearch !== null) {
                         location.href = `${originLocation}/notice${previousSearch}`;
                     } else {
                         location.href = `${originLocation}/notice`;
                     };
+
                     id_go_to_list.disabled = true;
                 };
             });
@@ -914,21 +926,17 @@ function goToList() {
 
 goToList();
 
-//
-// Main functions
-//
-
 function requestOcrNotice() {
     request.url = `${originLocation}/notice/utils/notice`;
     request.type = "POST";
     request.data = { id: "ocr_notice", content: `${id_content.value}` };
     request.async = true;
     request.headers = null;
+    displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
+    displayButtonMsg(false, id_create_or_update, "error");
+    displayNoti(false, "RDI");
     freezeForm(true);
     freezeFileForm(true);
-    displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
-    displayButtonMsg(false, id_create_or_update_notice, "error");
-    displayNoti(false, "RDI");
     makeAjaxCall(request);
     request = {};
 }
@@ -955,7 +963,7 @@ function requestCreateNotice() {
     request.data = formData;
     request.async = true;
     request.headers = null;
-    code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -997,7 +1005,7 @@ function requestUpdateNotice() {
     request.data = formData;
     request.async = true;
     request.headers = null;
-    code(id_create_or_update_notice, "_spin").classList.remove("hidden");
+    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -1010,63 +1018,35 @@ function requestDeleteNotice() {
     request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}`, file: `${attachedFiles}` };
     request.async = true;
     request.headers = null;
-    code(id_delete_notice, "_spin").classList.remove("hidden");
+    code(id_delete, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
 }
 
-function setPage() {
+function initRequest() {
     window.addEventListener("pageshow", function (event) {
-        // Detect the web browser's back/forward buttons
-        if (event.persisted) {
-            // Enable Search
-            id_notice_q.readOnly = false;
-            id_notice_q.value = urlParams.get("q");
-            id_search_notice.disabled = false;
-        };
+        if (id_modal != null) {
+            const class_firsts = document.querySelectorAll(".class-first");
 
-        if (id_notice_modal != null) {
-            // Init
-            let categoryInputs = document.querySelectorAll("input[name='id_category']");
+            initValidation(class_firsts, id_create_or_update);
 
-            categoryInputs.forEach((input) => {
-                input.addEventListener("click", () => {
-                    if (input == id_category_serv) {
-                        id_category.value = input.value;
-                    } else if (input == id_category_dept) {
-                        id_category.value = input.value;
-                    };
-                });
-            });
-
-            // Step one (first and last)
-            initValidation(stepOnes, id_create_or_update_notice);
             ["click", "keyup"].forEach(type => {
-                id_create_or_update_notice.addEventListener(type, (event) => {
-                    let target = event.target;
+                id_create_or_update.addEventListener(type, (event) => {
+                    const targetTagName = event.target.tagName;
 
-                    if ((type === "click" && target.tagName === "SPAN") ||
-                        (type === "click" && target.tagName === "BUTTON") ||
-                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                        (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                        Array.from(radios).forEach((radio) => {
-                            let idx = inputs.indexOf(radio);
-                            while (idx > -1) {
-                                inputs.splice(idx, 1);
-                                idx = inputs.indexOf(radio);
-                            };
-                        });
-                        filteredInputs = inputs.filter(isValid);
-                        if (filteredInputs.length == inputs.length) {
-                            if (id_create_or_update_notice.innerText == "작성하기") {
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        if (isItOkayToSubmitForm()) {
+                            if (id_create_or_update.innerText === "작성하기") {
                                 requestCreateNotice();
-                            } else if (id_create_or_update_notice.innerText == "수정하기") {
+                            } else if (id_create_or_update.innerText === "수정하기") {
                                 requestUpdateNotice();
                             };
-                            displayButtonMsg(true, id_create_or_update_notice, "descr", "잠시만 기다려주세요.");
-                            displayButtonMsg(false, id_create_or_update_notice, "error");
+
+                            displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
+                            displayButtonMsg(false, id_create_or_update, "error");
                             displayNoti(false, "RYS");
                             displayNoti(false, "RAT");
                             displayNoti(false, "RDI");
@@ -1080,32 +1060,33 @@ function setPage() {
                             });
                         };
                     };
+
                     ["keydown", "focusin"].forEach((type) => {
                         inputs.forEach((input) => {
                             input.addEventListener(type, () => {
-                                displayButtonMsg(false, id_create_or_update_notice, "error");
+                                displayButtonMsg(false, id_create_or_update, "error");
                             });
                         });
                     });
                 });
-                id_delete_notice.addEventListener(type, (event) => {
-                    let target = event.target;
 
-                    if ((type === "click" && target.tagName === "SPAN") ||
-                        (type === "click" && target.tagName === "BUTTON") ||
-                        (type === "keyup" && event.key === "Enter" && target.tagName !== "BUTTON") ||
-                        (type === "keyup" && event.key === " " && target.tagName !== "BUTTON")) {
-                        if (!askedTwice) {
-                            id_delete_notice_inner_text.innerText = "정말 삭제하기";
-                            askedTwice = true;
-                            askedTwiceTimer = setTimeout(() => {
-                                id_delete_notice_inner_text.innerText = "삭제하기";
-                                askedTwice = false;
+                id_delete.addEventListener(type, (event) => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        if (!isItDoubleChecked) {
+                            id_delete_text.innerText = "정말 삭제하기";
+                            isItDoubleChecked = true;
+
+                            doubleCheckTimer = setTimeout(() => {
+                                id_delete_text.innerText = "삭제하기";
+                                isItDoubleChecked = false;
                             }, 5000);
-                        } else if (askedTwice) {
-                            clearTimeout(askedTwiceTimer);
+                        } else if (isItDoubleChecked) {
+                            clearTimeout(doubleCheckTimer);
                             requestDeleteNotice();
-                            displayButtonMsg(true, id_delete_notice, "descr", "잠시만 기다려주세요.");
+                            displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
                             displayNoti(false, "RYS");
                             displayNoti(false, "RAT");
                             displayNoti(false, "RDI");
@@ -1113,7 +1094,7 @@ function setPage() {
                             displayNoti(false, "EIF");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
-                            askedTwice = false;
+                            isItDoubleChecked = false;
                         };
                     };
                 });
@@ -1122,4 +1103,4 @@ function setPage() {
     });
 }
 
-setPage();
+initRequest();

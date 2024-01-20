@@ -34,37 +34,42 @@ let lastFocusedElement;
 // Sub functions
 //
 
+/**
+ * @param {string} word Target word
+ * @param {string} josaType Type of josa
+ * - "을를"
+ * - "이가"
+ * - "은는"
+ * - "와과"
+ * - "로으로"
+ * - "라는이라는"
+ * @param {string} resultType Whether to include josa or not
+ * - "WJS": Word and josa
+ * - "OJS": Only josa
+ * @returns {string}
+ */
 function matchJosa(word, josaType, resultType) {
-    /*
-     * word: Target word
-     * josaType: "을를", "이가", "은는", "와과", "로으로", "라는이라는"
-     * resultType: "WJS", "OJS"
-     * 
-     * WJS: Word and josa
-     * OJS: Only josa
-     */
-
     let lastLetter, hasBatchim, josa, result;
-    isNaN(word) == false ? lastLetter = word.getLastNumInKor() : word.indexOf("URL") != -1 ? lastLetter = "엘" : lastLetter = word.substr(-1);
+    isNaN(word) === false ? lastLetter = word.getLastNumInKor() : word.indexOf("URL") != -1 ? lastLetter = "엘" : lastLetter = word.substr(-1);
     hasBatchim = (lastLetter.charCodeAt(0) - parseInt("ac00", 16)) % 28 > 0;
 
-    if (josaType == "을를") {
+    if (josaType === "을를") {
         josa = hasBatchim ? "을" : "를";
-    } else if (josaType == "이가") {
+    } else if (josaType === "이가") {
         josa = hasBatchim ? "이" : "가";
-    } else if (josaType == "은는") {
+    } else if (josaType === "은는") {
         josa = hasBatchim ? "은" : "는";
-    } else if (josaType == "와과") {
+    } else if (josaType === "와과") {
         josa = hasBatchim ? "과" : "와";
-    } else if (josaType == "로으로") {
+    } else if (josaType === "로으로") {
         josa = hasBatchim ? "으로" : "로";
-    } else if (josaType == "라는이라는") {
+    } else if (josaType === "라는이라는") {
         josa = hasBatchim ? "이라는" : "라는";
     };
 
-    if (resultType == "WJS") {
+    if (resultType === "WJS") {
         result = word + josa;
-    } else if (resultType == "OJS") {
+    } else if (resultType === "OJS") {
         result = josa;
     };
 
@@ -74,7 +79,7 @@ function matchJosa(word, josaType, resultType) {
 function findLabel(input) {
     let foundLabel;
     labels.forEach((label) => {
-        if (label.getAttribute("for") == String(input.id)) {
+        if (label.getAttribute("for") === String(input.id)) {
             foundLabel = label.innerText;
         };
     });
@@ -87,7 +92,7 @@ function freezeForm(bool) {
      */
 
     inputs.forEach((input) => {
-        if (input.type == "checkbox") {
+        if (input.type === "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
         } else if (input.classList.contains("alt-radio")) {
             let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
@@ -105,7 +110,7 @@ function freezeForm(bool) {
                 };
                 bool ? class_radios.forEach((radio) => { radio.disabled = true }) : class_radios.forEach((radio) => { radio.disabled = false });
             });
-        } else if (input.type == "textarea" && ckEditor) {
+        } else if (input.type === "textarea" && ckEditor) {
             bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
         } else {
             bool ? input.readOnly = true : input.readOnly = false;
@@ -116,27 +121,44 @@ function freezeForm(bool) {
     });
 }
 
+/**
+ * @param {array} array Input array to activate
+ * @param {object} button Button element to act as submit button
+ */
 function initValidation(array, button) {
-    /*
-     * array: Input array to activate
-     * button: Button element to act as submit button
-     */
-
     inputs.length = 0;
     inputs.push(...array);
+
     inputs.forEach((input) => {
         input.addEventListener("keypress", (event) => {
-            if (event.key == "Enter" && input.type == "radio") {
+            if (event.key === "Enter" && input.type === "radio") {
                 input.checked = true;
                 if (lowercaseId(input).indexOf("category") != -1) {
                     code("id_category").value = input.value;
                 };
-            } else if (event.key == "Enter") {
+            } else if (event.key === "Enter") {
                 button.click();
             };
         });
     });
+
     validation();
+}
+
+function isItOkayToSubmitForm() {
+    let filteredInputs = [];
+
+    Array.from(class_radios).forEach(radio => {
+        let idx = inputs.indexOf(radio);
+        while (idx > -1) {
+            inputs.splice(idx, 1);
+            idx = inputs.indexOf(radio);
+        };
+    });
+
+    filteredInputs = inputs.filter(isValid);
+
+    return filteredInputs.length === inputs.length;
 }
 
 function isValid(input) {
@@ -144,7 +166,7 @@ function isValid(input) {
      * input: Input that needs to be validated
      */
 
-    return input.type == "checkbox" ? input.checked : controlError(input) == false && code(input, "_descr").hidden && code(input, "_error").hidden;
+    return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
 }
 
 function trim(input) {
@@ -205,7 +227,7 @@ function validation() {
     });
 
     inputs.forEach((input) => {
-        if (input.type == "radio") {
+        if (input.type === "radio") {
             let altInput = code(input.id.replace(`_${input.id.split("_")[2]}`, ""));
             input.addEventListener("click", () => {
                 displayError(false, altInput);
@@ -243,7 +265,7 @@ function controlDescr(input, event) {
     // only-hangul
     if (input.classList.contains("only-hangul")) {
         if (regNotHangul.test(input.value) ||
-            (!event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            (!event.isComposing && allowedKeys.indexOf(inputKeyChar) === -1)) {
             displayDescr(true, input, "only hangul");
         } else {
             displayDescr(false, input);
@@ -253,7 +275,7 @@ function controlDescr(input, event) {
     // only-number
     if (input.classList.contains("only-number")) {
         if (regNotNumber.test(input.value) ||
-            (regNotNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            (regNotNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) === -1)) {
             displayDescr(true, input, "only number");
         } else {
             displayDescr(false, input);
@@ -263,7 +285,7 @@ function controlDescr(input, event) {
     // only-phone, only-date
     if (input.classList.contains("only-phone") || input.classList.contains("only-date")) {
         if (regNotNumberWithDash.test(input.value) ||
-            (regNotNumberWithDash.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            (regNotNumberWithDash.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) === -1)) {
             displayDescr(true, input, "only number");
         } else {
             displayDescr(false, input);
@@ -273,8 +295,8 @@ function controlDescr(input, event) {
     // only-slug
     if (input.classList.contains("only-slug")) {
         if (regNotLowerCaseRomanAndNumber.test(input.value) ||
-            (regNotLowerCaseRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) == -1) ||
-            (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1)) {
+            (regNotLowerCaseRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) === -1) ||
+            (event.isComposing && allowedKeys.indexOf(inputKeyChar) === -1)) {
             displayDescr(true, input, "only lower roman and number");
         } else {
             displayDescr(false, input);
@@ -283,7 +305,7 @@ function controlDescr(input, event) {
 
     // only-email
     if (input.classList.contains("only-email")) {
-        if (event.isComposing && allowedKeys.indexOf(inputKeyChar) == -1) {
+        if (event.isComposing && allowedKeys.indexOf(inputKeyChar) === -1) {
             displayDescr(true, input, "no hangul");
         } else {
             displayDescr(false, input);
@@ -293,14 +315,14 @@ function controlDescr(input, event) {
     // only-url
     if (input.classList.contains("only-url")) {
         if (input.value.length >= 8 &&
-            (input.value.indexOf("http://") == -1 && input.value.indexOf("https://") == -1)) {
+            (input.value.indexOf("http://") === -1 && input.value.indexOf("https://") === -1)) {
             input.value = `http://${input.value}`;
         };
     };
 
     // space-allowed
     if (!input.classList.contains("space-allowed")) {
-        if (inputKeyChar == " ") {
+        if (inputKeyChar === " ") {
             displayDescr(true, input, "no space");
         };
     };
@@ -315,24 +337,24 @@ function displayDescr(bool, input, descrType) {
 
     let descrMsg = code(input, "_descr");
 
-    if (bool == true) {
+    if (bool === true) {
         // Show description
         let sentence;
-        if (descrType == "only hangul") {
+        if (descrType === "only hangul") {
             sentence = "한글만 입력해주세요.";
-        } else if (descrType == "only number") {
+        } else if (descrType === "only number") {
             sentence = "숫자만 입력해주세요.";
-        } else if (descrType = "only lower roman and number") {
+        } else if (descrType === "only lower roman and number") {
             sentence = "로마자 소문자, 숫자만 입력해주세요.";
-        } else if (descrType == "no hangul") {
+        } else if (descrType === "no hangul") {
             sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
-        } else if (descrType == "no space") {
+        } else if (descrType === "no space") {
             sentence = "공백은 입력될 수 없어요.";
         };
         descrMsg.innerText = `${sentence}`;
         descrMsg.hidden = false;
 
-    } else if (bool == false) {
+    } else if (bool === false) {
         // Hide description
         descrMsg.innerText = null;
         descrMsg.hidden = true;
@@ -341,10 +363,10 @@ function displayDescr(bool, input, descrType) {
 
 function controlError(input) {
     // checkbox
-    if (input.type == "checkbox") {
-        if (input.classList.contains("agree-checkbox") && input.checked == false) {
+    if (input.type === "checkbox") {
+        if (input.classList.contains("agree-checkbox") && input.checked === false) {
             displayError(true, input, "disagree");
-        } else if (input.classList.contains("default-checkbox") && input.checked == false) {
+        } else if (input.classList.contains("default-checkbox") && input.checked === false) {
             displayError(true, input, "unchecked");
         } else {
             return false;
@@ -353,7 +375,7 @@ function controlError(input) {
 
     // alt-radio
     if (input.classList.contains("alt-radio")) {
-        if (input.value == "") {
+        if (input.value === "") {
             displayError(true, input, "unselected");
         } else {
             return false;
@@ -361,8 +383,8 @@ function controlError(input) {
     };
 
     // tel
-    if (input.type == "tel") {
-        if (input.value.length == 0) {
+    if (input.type === "tel") {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 13) {
             displayError(true, input, "insufficient");
@@ -375,7 +397,7 @@ function controlError(input) {
 
     // text (student ID)
     if (lowercaseId(input).indexOf("studentid") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
             displayError(true, input, "insufficient");
@@ -388,9 +410,9 @@ function controlError(input) {
 
     // text (name)
     if (lowercaseId(input).indexOf("name") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
-        } else if (input.value.length == 1) {
+        } else if (input.value.length === 1) {
             displayError(true, input, "insufficient");
         } else if (!input.value.match(regHangul)) {
             displayError(true, input, "invalid");
@@ -400,15 +422,15 @@ function controlError(input) {
     };
 
     // text (email)
-    if (lowercaseId(input).indexOf("email") != -1 && lowercaseId(input).indexOf("vcode") == -1) {
-        if (input.value.length == 0) {
+    if (lowercaseId(input).indexOf("email") != -1 && lowercaseId(input).indexOf("vcode") === -1) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
-        } else if (input.value.indexOf("@") == -1 ||
+        } else if (input.value.indexOf("@") === -1 ||
             input.value.split("@")[0].length <= 1 ||
-            input.value.split("@")[1].indexOf(".") == -1 ||
+            input.value.split("@")[1].indexOf(".") === -1 ||
             input.value.split("@")[1].split(".")[0].length <= 1 ||
             input.value.split("@")[1].split(".")[1].length <= 1 ||
-            (input.value.split("@")[1].split(".").length - 1 == 2 && input.value.split("@")[1].split(".")[2].length <= 1 && input.value.substr(-1) != ".")) {
+            (input.value.split("@")[1].split(".").length - 1 === 2 && input.value.split("@")[1].split(".")[2].length <= 1 && input.value.substr(-1) != ".")) {
             displayError(true, input, "insufficient");
         } else if (!input.value.match(regEmail)) {
             displayError(true, input, "invalid");
@@ -419,7 +441,7 @@ function controlError(input) {
 
     // text (vcode)
     if (lowercaseId(input).indexOf("vcode") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 6) {
             displayError(true, input, "insufficient");
@@ -430,9 +452,9 @@ function controlError(input) {
 
     // text (url)
     if (lowercaseId(input).indexOf("url") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
-        } else if (input.value.indexOf("https://") == -1 && input.value.indexOf("http://") == -1) {
+        } else if (input.value.indexOf("https://") === -1 && input.value.indexOf("http://") === -1) {
             input.value = `http://${input.value}`;
         } else if (!input.value.match(regUrl)) {
             displayError(true, input, "insufficient");
@@ -443,7 +465,7 @@ function controlError(input) {
 
     // text (slug)
     if (lowercaseId(input).indexOf("slug") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length < 2) {
             displayError(true, input, "insufficient");
@@ -454,9 +476,9 @@ function controlError(input) {
 
     // text (title)
     if (lowercaseId(input).indexOf("title") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
-        } else if (input.value.replace(/\s/g, "").length == 0) {
+        } else if (input.value.replace(/\s/g, "").length === 0) {
             displayError(true, input, "empty")
         } else if (input.value.length < 2) {
             displayError(true, input, "insufficient");
@@ -467,7 +489,7 @@ function controlError(input) {
 
     // text (date)
     if (lowercaseId(input).indexOf("date") != -1) {
-        if (input.value.length == 0) {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
             displayError(true, input, "insufficient");
@@ -482,8 +504,8 @@ function controlError(input) {
     };
 
     // textarea
-    if (input.type == "textarea") {
-        if (input.value.length == 0) {
+    if (input.type === "textarea") {
+        if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else {
             return false;
@@ -510,12 +532,12 @@ function displayError(bool, input, errorType = null) {
     let errorMsg = code(input, "_error");
 
     // Change input's style and show error
-    if (bool == true) {
+    if (bool === true) {
         let subject;
         let narrativeClause;
 
         // checkbox
-        if (input.type == "checkbox") {
+        if (input.type === "checkbox") {
             input.classList.remove("border-gray-300");
             input.classList.add("bg-flamingo-50");
             input.classList.add("border-4");
@@ -543,7 +565,7 @@ function displayError(bool, input, errorType = null) {
         }
 
         // textarea (CKEditor)
-        else if (input.type == "textarea" && input.id == "id_content") {
+        else if (input.type === "textarea" && input.id === "id_content") {
             setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF"; textboxViewRoot.style.boxShadow = "none" }, 1);
         }
 
@@ -554,28 +576,28 @@ function displayError(bool, input, errorType = null) {
             input.classList.add("ring-transparent");
         };
 
-        if (errorType == "disagree") {
+        if (errorType === "disagree") {
             subject = findLabel(input).replace(" 동의합니다.", "")
             narrativeClause = "동의해주세요.";
-        } else if (errorType == "unchecked") {
+        } else if (errorType === "unchecked") {
             subject = matchJosa(`${findLabel(input)}`, "을를", "WJS");
             narrativeClause = "체크해주세요.";
-        } else if (errorType == "unselected") {
+        } else if (errorType === "unselected") {
             subject = matchJosa(`${findLabel(input)}`, "을를", "WJS");
             narrativeClause = "선택해주세요.";
-        } else if (errorType == "empty") {
+        } else if (errorType === "empty") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
             narrativeClause = "입력해주세요.";
-        } else if (errorType == "insufficient") {
+        } else if (errorType === "insufficient") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = "덜 입력된 것 같아요.";
-        } else if (errorType == "invalid") {
+        } else if (errorType === "invalid") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = "잘못 입력된 것 같아요.";
-        } else if (errorType == "inappropriate") {
+        } else if (errorType === "inappropriate") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
             narrativeClause = "수정해주세요.";
-        } else if (errorType == "out of range") {
+        } else if (errorType === "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효 범위를 벗어났어요.`;
         };
@@ -585,9 +607,9 @@ function displayError(bool, input, errorType = null) {
     }
 
     // Init input's style and hide error
-    else if (bool == false) {
+    else if (bool === false) {
         // checkbox
-        if (input.type == "checkbox") {
+        if (input.type === "checkbox") {
             input.classList.add("border-gray-300");
             input.classList.remove("bg-flamingo-50");
             input.classList.remove("border-4");
@@ -616,7 +638,7 @@ function displayError(bool, input, errorType = null) {
 
         // textarea (CKEditor)
         // Don't need to do anything because CKEditor will initialize it.
-        else if (input.type == "textarea" && input.id == "id_content") {
+        else if (input.type === "textarea" && input.id === "id_content") {
             setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FFFFFF"; textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)" }, 1);
         }
 
@@ -643,17 +665,17 @@ function displayButtonMsg(bool, button, type, text) {
     let msg;
 
     // Get element's ID of description/error
-    if (type == "descr") {
+    if (type === "descr") {
         msg = code(button, "_descr");
-    } else if (type == "error") {
+    } else if (type === "error") {
         msg = code(button, "_error");
     };
 
     // Write and show/hide description/error
-    if (bool == true) {
+    if (bool === true) {
         msg.innerText = text;
         msg.hidden = false;
-    } else if (bool == false) {
+    } else if (bool === false) {
         msg.innerText = null;
         msg.hidden = true;
     };
@@ -698,7 +720,7 @@ function enableFocus() {
     sessionStorage.removeItem("focusableItems");
 
     if (lastFocusedElement) {
-        if (lastFocusedElement == id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
+        if (lastFocusedElement === id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
         setTimeout(() => { lastFocusedElement.focus() }, 300);
         setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
     };
@@ -746,6 +768,7 @@ function toggleFocusOnModal(isModalOpen, modal) {
             if (lastFocusedElement === id_notice_detail_option_menu) {
                 lastFocusedElement = id_notice_detail_option_button;
             }
+
             setTimeout(() => { lastFocusedElement.focus() }, 300);
             setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
         };
