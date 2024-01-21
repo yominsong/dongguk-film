@@ -1,5 +1,5 @@
 //
-// Global constants and variables
+// Global variables
 //
 
 const originLocation = location.origin;
@@ -253,21 +253,21 @@ function handleAjaxCallback(response) {
     // requestCreateVcodeForSNP()
     else if (resID === "create_vcode_for_SNP") {
         if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_vcode, "descr", resResult.msg);
-            displayButtonMsg(false, id_create_vcode, "error");
-            stepOnes.forEach((input) => {
+            displayButtonMsg(true, id_create, "descr", resResult.msg);
+            displayButtonMsg(false, id_create, "error");
+            class_firsts.forEach((input) => {
                 input.type === "checkbox" ? input.disabled = true : input.readOnly = true;
             });
-            stepTwos.forEach((input) => {
+            class_seconds.forEach((input) => {
                 input.disabled = false;
             });
-            id_confirm_vcode.disabled = false;
-            initValidation(stepTwos, id_confirm_vcode);
+            id_confirm.disabled = false;
+            initValidation(class_seconds, id_confirm);
         } else if (resResult.status === "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_create_vcode, "error", resResult.msg);
-            displayButtonMsg(false, id_create_vcode, "descr");
-            id_create_vcode.disabled = false;
+            displayButtonMsg(true, id_create, "error", resResult.msg);
+            displayButtonMsg(false, id_create, "descr");
+            id_create.disabled = false;
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");
@@ -277,19 +277,19 @@ function handleAjaxCallback(response) {
     // requestConfirmVcodeForSNP()
     else if (resID === "confirm_vcode_for_SNP") {
         if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_confirm_vcode, "descr", resResult.msg);
-            displayButtonMsg(false, id_confirm_vcode, "error");
+            displayButtonMsg(true, id_confirm, "descr", resResult.msg);
+            displayButtonMsg(false, id_confirm, "error");
             inputs = document.querySelectorAll("input");
             inputs.forEach((input) => {
                 input.disabled = false;
                 input.readOnly = true;
             });
-            id_confirm_vcode.disabled = true;
+            id_confirm.disabled = true;
             document.querySelector("form").submit();
         } else if (resResult.status === "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_confirm_vcode, "error", resResult.msg);
-            id_confirm_vcode.disabled = false;
+            displayButtonMsg(true, id_confirm, "error", resResult.msg);
+            id_confirm.disabled = false;
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");

@@ -78,12 +78,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white py-8 px-4 shadow rounded-md sm:px-10">
+                    <div class="bg-white px-4 py-5 shadow rounded-md sm:px-6">
                         <div class="space-y-5 divide-y divide-gray-200">
                             <div class="space-y-5">
                                 <div>
                                     <span class="block text-sm font-medium text-gray-700">연결된 소셜 계정</span>
-                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="mt-2 relative rounded-md shadow-sm">
                                         <div class="relative flex justify-between items-center w-full p-3 rounded-md border border-gray-300">
                                             <div class="flex truncate">
                                                 <img class="h-10 w-10 rounded-full"
@@ -94,7 +94,7 @@
                                                      id="id_picture">
                                                 <div class="ml-3">
                                                     <p class="text-sm font-medium text-gray-700">{{ form.email.value }}</p>
-                                                    <p class="text-sm text-gray-500 provider-name"></p>
+                                                    <p id="id_provider_name" class="text-sm text-gray-500"></p>
                                                 </div>
                                             </div>
                                             <a href="{% url 'account_login' %}"
@@ -114,7 +114,7 @@
                                 </div>
                                 <div>
                                     <label for="id_student_id" class="block text-sm font-medium text-gray-700">{{ form.student_id.label }}</label>
-                                    <div class="mt-1">{{ form.student_id }}</div>
+                                    <div class="mt-2">{{ form.student_id }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_student_id_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600"
                                        id="id_student_id_error"
@@ -122,41 +122,39 @@
                                 </div>
                                 <div>
                                     <label for="id_name" class="block text-sm font-medium text-gray-700">{{ form.name.label }}</label>
-                                    <div class="mt-1">{{ form.name }}</div>
+                                    <div class="mt-2">{{ form.name }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_name_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_name_error" hidden></p>
                                 </div>
                                 <div>
                                     <label for="id_email" class="block text-sm font-medium text-gray-700">이메일 주소</label>
-                                    <div class="mt-1">{{ form.email }}</div>
+                                    <div class="mt-2">{{ form.email }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_email_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_email_error" hidden></p>
                                 </div>
                                 <div>
                                     <label for="id_phone" class="block text-sm font-medium text-gray-700">{{ form.phone.label }}</label>
-                                    <div class="mt-1">{{ form.phone }}</div>
+                                    <div class="mt-2">{{ form.phone }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
                                 </div>
                                 <div>
                                     <button type="button"
                                             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-stone-600 hover:bg-stone-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
-                                            id="id_create_vcode">
+                                            id="id_create">
                                         <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                              xmlns="http://www.w3.org/2000/svg"
                                              fill="none"
                                              viewBox="0 0 24 24"
-                                             id="id_create_vcode_spin">
+                                             id="id_create_spin">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                             </path>
                                         </svg>
                                         인증번호 받기
                                     </button>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_create_vcode_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600"
-                                       id="id_create_vcode_error"
-                                       hidden></p>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_create_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_create_error" hidden></p>
                                     <p class="mt-2 text-sm text-gray-500" id="id_agree_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_agree_error" hidden></p>
                                 </div>
@@ -164,7 +162,7 @@
                             <div class="space-y-5 pt-5">
                                 <div>
                                     <label for="id_email_vcode" class="block text-sm font-medium text-gray-700">{{ form.email_vcode.label }}</label>
-                                    <div class="mt-1">{{ form.email_vcode }}</div>
+                                    <div class="mt-2">{{ form.email_vcode }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_email_vcode_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600"
                                        id="id_email_vcode_error"
@@ -172,7 +170,7 @@
                                 </div>
                                 <div>
                                     <label for="id_phone_vcode" class="block text-sm font-medium text-gray-700">{{ form.phone_vcode.label }}</label>
-                                    <div class="mt-1">{{ form.phone_vcode }}</div>
+                                    <div class="mt-2">{{ form.phone_vcode }}</div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_phone_vcode_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600"
                                        id="id_phone_vcode_error"
@@ -181,23 +179,21 @@
                                 <div>
                                     <button type="button"
                                             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                            id="id_confirm_vcode"
+                                            id="id_confirm"
                                             disabled>
                                         <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                              xmlns="http://www.w3.org/2000/svg"
                                              fill="none"
                                              viewBox="0 0 24 24"
-                                             id="id_confirm_vcode_spin">
+                                             id="id_confirm_spin">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                             </path>
                                         </svg>
                                         가입하기
                                     </button>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600"
-                                       id="id_confirm_vcode_error"
-                                       hidden></p>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_confirm_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_confirm_error" hidden></p>
                                 </div>
                             </div>
                         </div>

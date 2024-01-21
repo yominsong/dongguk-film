@@ -1,5 +1,5 @@
 //
-// Global constants and variables
+// Global variables
 //
 
 const onlyHanguls = document.querySelectorAll(".only-hangul");

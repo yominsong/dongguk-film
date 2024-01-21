@@ -1,5 +1,5 @@
 //
-// Global constants and variables
+// Global variables
 //
 
 const id_address = document.getElementById("id_address");

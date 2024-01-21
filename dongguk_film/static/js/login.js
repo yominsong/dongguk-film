@@ -1,5 +1,5 @@
 //
-// Global constants and variables
+// Global variables
 //
 
 const id_login_request_msg = document.getElementById("id_login_request_msg");

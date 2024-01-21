@@ -19,8 +19,8 @@ text_input_class = (
 text_input_focus_state_class = "focus:df-focus-ring-inset"
 text_input_read_only_state_class = "read-only:bg-gray-100 read-only:cursor-not-allowed"
 text_input_disabled_state_class = "disabled:bg-gray-100 disabled:cursor-not-allowed"
-step_one_class = "step-one"
-step_two_class = "step-two"
+first_class = "class-first"
+second_class = "class-second"
 only_hangul_class = "only-hangul"
 only_number_class = "only-number"
 only_email_class = "only-email"
@@ -38,7 +38,7 @@ class SocialSignupForm(SignupForm):
         label="개인정보 수집 및 이용에 동의합니다.",
         widget=forms.CheckboxInput(
             attrs={
-                "class": f"{checkbox_input_class} {agree_class} {step_one_class} {checkbox_input_focus_state_class} {checkbox_input_disabled_state_class}",
+                "class": f"{checkbox_input_class} {agree_class} {first_class} {checkbox_input_focus_state_class} {checkbox_input_disabled_state_class}",
                 "required": "",
             }
         ),
@@ -50,7 +50,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": f"{text_input_class} {step_one_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
+                "class": f"{text_input_class} {first_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
                 "placeholder": f"{timezone.now().year}113000",
                 "required": "",
             }
@@ -63,7 +63,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": f"{text_input_class} {step_one_class} {only_hangul_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
+                "class": f"{text_input_class} {first_class} {only_hangul_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
                 "placeholder": "홍길동",
                 "required": "",
             }
@@ -75,7 +75,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": f"{text_input_class} {step_one_class} {only_email_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
+                "class": f"{text_input_class} {first_class} {only_email_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
                 "placeholder": "gildong@example.com",
                 "required": "",
             }
@@ -88,7 +88,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "tel",
-                "class": f"{text_input_class} {step_one_class} {only_phone_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
+                "class": f"{text_input_class} {first_class} {only_phone_class} {text_input_focus_state_class} {text_input_read_only_state_class}",
                 "placeholder": "010-0000-0000",
                 "required": "",
             }
@@ -101,7 +101,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": f"{text_input_class} {step_two_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class} {text_input_disabled_state_class}",
+                "class": f"{text_input_class} {second_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class} {text_input_disabled_state_class}",
                 "placeholder": "000000",
                 "required": "",
                 "disabled": "",
@@ -115,7 +115,7 @@ class SocialSignupForm(SignupForm):
         widget=forms.TextInput(
             attrs={
                 "type": "text",
-                "class": f"{text_input_class} {step_two_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class} {text_input_disabled_state_class}",
+                "class": f"{text_input_class} {second_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class} {text_input_disabled_state_class}",
                 "placeholder": "000000",
                 "required": "",
                 "disabled": "",

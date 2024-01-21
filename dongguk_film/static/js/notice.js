@@ -800,32 +800,6 @@ function styleFileList() {
 
 styleFileList();
 
-function copyUrl() {
-    if (id_copy_url !== null) {
-        id_url.addEventListener("click", () => {
-            id_url.select();
-        });
-
-        id_copy_url.addEventListener("click", async () => {
-            try {
-                await navigator.clipboard.writeText(id_url.value);
-            } catch (e) {
-                id_url.select();
-                document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
-            };
-
-            id_copy_url_ready.classList.add("hidden");
-            id_copy_url_done.classList.remove("hidden");
-            id_copy_url_descr.hidden = false;
-            id_copy_url_done.classList.add("blink");
-
-            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
-        });
-    };
-}
-
-copyUrl();
-
 function share() {
     if (id_detail !== null) {
         const data = id_detail.dataset;
@@ -887,6 +861,32 @@ function share() {
 }
 
 share();
+
+function copyUrl() {
+    if (id_copy_url !== null) {
+        id_url.addEventListener("click", () => {
+            id_url.select();
+        });
+
+        id_copy_url.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(id_url.value);
+            } catch (e) {
+                id_url.select();
+                document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
+            };
+
+            id_copy_url_ready.classList.add("hidden");
+            id_copy_url_done.classList.remove("hidden");
+            id_copy_url_descr.hidden = false;
+            id_copy_url_done.classList.add("blink");
+
+            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
+        });
+    };
+}
+
+copyUrl();
 
 function goToList() {
     const class_details = document.querySelectorAll(".class-detail");
