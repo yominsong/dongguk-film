@@ -8,7 +8,7 @@ from utility.utils import reg_test, set_headers, chap_gpt, short_io
 import requests
 
 #
-# Global constants and variables
+# Global variables
 #
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
@@ -33,10 +33,10 @@ def delete_expired_dflinks(request):
         expiration_date = timezone.datetime.strptime(
             dflink["expiration_date"], "%Y-%m-%d"
         ).date()
-        id_string = dflink["id_string"]
+        link_id = dflink["link_id"]
         if expiration_date < timezone.now().date():
             expired_dflink_list.append(dflink)
-            url = f"https://api.short.io/links/{id_string}"
+            url = f"https://api.short.io/links/{link_id}"
             requests.delete(url, headers=set_headers("SHORT_IO"))
 
     if len(expired_dflink_list) > 0:
@@ -271,7 +271,7 @@ def validate_input_data(request):
             - create_dflink
             - update_dflink
             - delete_dflink
-        - string_id
+        - link_id
         - target_url
         - slug
         - title
@@ -324,7 +324,7 @@ def moderate_input_data(request):
             - create_dflink
             - update_dflink
             - delete_dflink
-        - string_id
+        - link_id
         - target_url
         - slug
         - title
@@ -382,7 +382,7 @@ def dflink(request):
             - create_dflink
             - update_dflink
             - delete_dflink
-        - string_id
+        - link_id
         - target_url
         - slug
         - title

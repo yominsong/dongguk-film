@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 import base64, ast
 
 #
-# Global constants and variables
+# Global variables
 #
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
