@@ -78,10 +78,7 @@ def equipment(request):
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose = {"priority": purpose, "keyword": purpose_dict.get(purpose)}
-    period = {
-        "days_from_now": days_from_now,
-        "duration": duration if duration > 0 else "당",
-    }
+    period = {"days_from_now": days_from_now, "duration": duration}
     category = {"priority": category, "keyword": category_dict.get(category)}
 
     # Search box
