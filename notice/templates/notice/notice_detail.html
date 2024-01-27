@@ -44,7 +44,6 @@
     </div>
     <!-- Detail -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <!-- Detail body -->
         <div id="id_detail"
              class="bg-white shadow rounded-md px-4 py-5 sm:px-6"
              data-page-id="{{ notice.page_id }}"
@@ -143,12 +142,12 @@
                                  @mousemove="onMouseMove($event, 1)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
                                  @click="open = false"
-                                 data-notice-page-id="{{ notice.page_id }}"
-                                 data-notice-title="{{ notice.title }}"
-                                 data-notice-category="{{ notice.category }}"
-                                 data-notice-keyword="{{ notice.keyword.string }}"
-                                 data-notice-file="{{ notice.file.string }}"
-                                 data-notice-listed-date="{{ notice.listed_date }}">수정하기</div>
+                                 data-page-id="{{ notice.page_id }}"
+                                 data-title="{{ notice.title }}"
+                                 data-category="{{ notice.category }}"
+                                 data-keyword="{{ notice.keyword.string }}"
+                                 data-file="{{ notice.file.string }}"
+                                 data-listed-date="{{ notice.listed_date }}">수정하기</div>
                         {% endif %}
                     </div>
                 </div>
@@ -196,7 +195,6 @@
                 {% endfor %}
             </div>
         </div>
-        <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 {% if user.username == notice.user.student_id %}

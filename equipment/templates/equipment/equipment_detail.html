@@ -44,11 +44,17 @@
     </div>
     <!-- Detail -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <!-- Detail body -->
-        <div id="id_equipment_detail"
-             class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8">
+        <div id="id_detail"
+             class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8"
+             data-record-id="{{ equipment.record_id }}"
+             data-collection-id="{{ equipment.collection_id }}"
+             data-thumbnail="{{ equipment.thumbnail }}"
+             data-name="{{ equipment.name }}"
+             data-category="{{ equipment.category }}"
+             data-subcategory="{{ equipment.subcategory }}">
             <!-- Title -->
-            <div id="id_equipment_detail_title" class="lg:col-start-2 lg:row-start-1 sm:h-[126px] sm:z-10">
+            <div id="id_detail_title"
+                 class="lg:col-start-2 lg:row-start-1 sm:h-[126px] sm:pb-[110px] sm:z-10">
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                     {{ equipment.category }}
                 </p>
@@ -68,7 +74,7 @@
                          class="relative ml-auto">
                         <button type="button"
                                 class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
-                                id="id_equipment_detail_option"
+                                id="id_detail_option"
                                 x-ref="button"
                                 @click="onButtonClick()"
                                 @keyup.space.prevent="onButtonEnter()"
@@ -99,13 +105,13 @@
                              x-bind:aria-activedescendant="activeDescendant"
                              role="menu"
                              aria-orientation="vertical"
-                             aria-labelledby="id_equipment_detail_option"
+                             aria-labelledby="id_detail_option"
                              tabindex="-1"
                              @keydown.arrow-up.prevent="onArrowUp()"
                              @keydown.arrow-down.prevent="onArrowDown()"
                              @keydown.tab="open = false"
-                             @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
-                             @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                             @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click()"
+                             @keyup.space.prevent="open = false; $event.target.children[activeIndex].click()"
                              style="display: none">
                             <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                                  x-state:on="Active"
@@ -113,7 +119,7 @@
                                  :class="{ 'bg-gray-100': activeIndex === 0 }"
                                  role="menuitem"
                                  tabindex="-1"
-                                 id="id_equipment_detail_share"
+                                 id="id_detail_share"
                                  @mouseenter="onMouseEnter($event); activeIndex = 0"
                                  @mousemove="onMouseMove($event, 0)"
                                  @mouseleave="onMouseLeave($event); activeIndex = -1"
@@ -130,7 +136,7 @@
                 </div>
             </div>
             <!-- Image -->
-            <div id="id_equipment_detail_image"
+            <div id="id_detail_image"
                  class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
                 <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
                     <img src="{{ equipment.thumbnail }}"
@@ -141,18 +147,18 @@
                 </div>
             </div>
             <!-- Content -->
-            <div id="id_equipment_detail_content"
+            <div id="id_detail_content"
                  class="pt-4 sm:mt-0 lg:col-start-2 lg:row-start-1 lg:self-start">
-                <div id="id_equipment_detail_content_blank" class="sm:pt-[110px]"></div>
+                 <div id="id_detail_content_padding_top" class="sm:pt-[110px]"></div>
                 <section aria-labelledby="details-heading">
                     <h2 id="details-heading" class="sr-only">기자재 정보</h2>
                     <div class="divide-y divide-gray-100 border-t border-t-gray-100 sm:border-t-0">
                         <div x-data="{ open: true }">
                             <h3>
-                                <button id="id_equipment_detail_purpose_title"
+                                <button id="id_detail_purpose"
                                         type="button"
                                         class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
-                                        aria-controls="id_equipment_detail_purpose_content"
+                                        aria-controls="id_detail_purpose_content"
                                         @click="open = !open"
                                         aria-expanded="false"
                                         x-bind:aria-expanded="open.toString()">
@@ -186,7 +192,10 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div class="pb-6" id="id_equipment_detail_purpose_content" x-show="open" style="display: none">
+                            <div class="pb-6"
+                                 id="id_detail_purpose_content"
+                                 x-show="open"
+                                 style="display: none">
                                 <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
@@ -214,10 +223,10 @@
                         </div>
                         <div x-data="{ open: false }">
                             <h3>
-                                <button id="id_equipment_detail_limit_title"
+                                <button id="id_detail_limit"
                                         type="button"
                                         class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
-                                        aria-controls="id_equipment_detail_limit_content"
+                                        aria-controls="id_detail_limit_content"
                                         @click="open = !open"
                                         aria-expanded="false"
                                         x-bind:aria-expanded="open.toString()">
@@ -251,7 +260,10 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div class="pb-6" id="id_equipment_detail_limit_content" x-show="open" style="display: none">
+                            <div class="pb-6"
+                                 id="id_detail_limit_content"
+                                 x-show="open"
+                                 style="display: none">
                                 <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
@@ -279,10 +291,10 @@
                         </div>
                         <div x-data="{ open: false }">
                             <h3>
-                                <button id="id_equipment_detail_precaution_title"
+                                <button id="id_detail_precaution"
                                         type="button"
                                         class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
-                                        aria-controls="id_equipment_detail_precaution_content"
+                                        aria-controls="id_detail_precaution_content"
                                         @click="open = !open"
                                         aria-expanded="false"
                                         x-bind:aria-expanded="open.toString()">
@@ -316,7 +328,7 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div id="id_equipment_detail_precaution_content" x-show="open" style="display: none">
+                            <div id="id_detail_precaution_content" x-show="open" style="display: none">
                                 <div class="rounded-md bg-flamingo-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-flamingo-700">
@@ -331,7 +343,7 @@
                     </div>
                 </section>
                 <section aria-labelledby="options-heading">
-                    <h2 id="options-heading" class="sr-only">Product options</h2>
+                    <h2 id="options-heading" class="sr-only">기자재 선택</h2>
                     <div class="mt-6">
                         <button type="submit"
                                 class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
@@ -341,15 +353,6 @@
                 </section>
             </div>
         </div>
-        <span id="id_equipment_data"
-              data-equipment-record-id="{{ equipment.record_id }}"
-              data-equipment-collection-id="{{ equipment.collection_id }}"
-              data-equipment-thumbnail="{{ equipment.thumbnail }}"
-              data-equipment-name="{{ equipment.name }}"
-              data-equipment-category="{{ equipment.category }}"
-              data-equipment-subcategory="{{ equipment.subcategory }}"
-              hidden></span>
-        <!-- Detail footer -->
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 <button type="button"

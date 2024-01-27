@@ -1,37 +1,64 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
-from django.http import Http404
+from django.urls import reverse
+from urllib.parse import urlencode
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import airtable
-from datetime import datetime, timedelta
-import pytz, random
+import random
 
 
 def equipment(request):
-    image_list = get_hero_img("equipment")
+    query_string = ""
+    purpose = request.GET.get("purpose")
+    period = request.GET.get("period")
+    category = request.GET.get("category")
+
     purpose_list = get_equipment_policy("purpose")
     category_list = get_equipment_policy("category")
 
-    current_date = datetime.now(pytz.timezone("Asia/Seoul"))
+    split_period = period.split(",") if period is not None else None
+    days_from_now = int(split_period[0]) if period is not None else None
+    duration = int(split_period[1]) if period is not None else None
 
-    for purpose in purpose_list:
-        if purpose["priority"] == "A":
-            default_start_date = current_date + timedelta(days=int(purpose["at_least"]))
-            default_end_date = default_start_date + timedelta(days=int(purpose["max"]))
-            default_end_date = default_end_date.date().isoformat()
-            default_start_date = default_start_date.date().isoformat()
-    
-    purpose = request.GET.get("purpose", "A")
-    category = request.GET.get("category", "A")
-    start_date = request.GET.get("startDate", default_start_date)
-    end_date = request.GET.get("endDate", default_end_date)
-    param = ""
+    if purpose is None or category is None:
+        base_url = reverse("equipment:equipment")
+        query_string = {
+            "purpose": purpose_list[0]["priority"],
+            "category": category_list[0]["priority"],
+        }
+        url = f"{base_url}?{urlencode(query_string)}"
+
+        return redirect(url)
+
+    elif period:
+        for purpose_item in purpose_list:
+            at_least = purpose_item["at_least"]
+            up_to = purpose_item["up_to"]
+            max = purpose_item["max"]
+
+            if purpose_item["priority"] == purpose:
+                if (
+                    days_from_now < at_least
+                    or days_from_now > up_to
+                    or duration < 0
+                    or duration > max
+                ):
+                    base_url = reverse("equipment:equipment")
+                    query_string = {
+                        "purpose": purpose,
+                        "category": category,
+                    }
+                    url = f"{base_url}?{urlencode(query_string)}"
+
+                    return redirect(url)
+
+    image_list = get_hero_img("equipment")
 
     # Airtable
     data = {
         "table_name": "equipment-collection",
-        "param": {
+        "params": {
             "view": "Grid view",
             "fields": [
                 "Thumbnail",
@@ -47,31 +74,35 @@ def equipment(request):
     equipment_count = len(equipment_list)
 
     # Parameter and template tag
-    param += f"purpose={purpose}&startDate={start_date}&endDate={end_date}&category={category}&"
+    query_string += f"purpose={purpose}&period={period}&category={category}&"
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose = {"priority": purpose, "keyword": purpose_dict.get(purpose)}
+    period = {
+        "days_from_now": days_from_now,
+        "duration": duration if duration > 0 else "당",
+    }
     category = {"priority": category, "keyword": category_dict.get(category)}
 
-    # Query
-    q = request.GET.get("q")
-    query_result_count = None
-    placeholder = random.choice(equipment_list)["name"]
+    # Search box
+    query = request.GET.get("q")
+    search_result_count = None
+    search_placeholder = random.choice(equipment_list)["name"]
 
-    if q:
-        q = q.lower().replace(" ", "")
+    if query:
+        query = query.lower().replace(" ", "")
         query_result_list = []
         for equipment in equipment_list:
             for k, v in equipment.items():
                 if v is not None:
                     v = v.lower().replace(" ", "")
                     if equipment not in query_result_list:
-                        if q in v:
+                        if query in v:
                             query_result_list.append(equipment)
 
         equipment_list = query_result_list
-        query_result_count = len(query_result_list)
-        param += f"q={q}&"
+        search_result_count = len(query_result_list)
+        query_string += f"q={query}&"
 
     # Pagination
     try:
@@ -86,15 +117,16 @@ def equipment(request):
         request,
         "equipment/equipment.html",
         {
+            "query_string": query_string,
             "image_list": image_list,
             "purpose_list": purpose_list,
             "category_list": category_list,
-            "param": param,
             "purpose": purpose,
+            "period": period,
             "category": category,
             "equipment_count": equipment_count,
-            "query_result_count": query_result_count,
-            "placeholder": placeholder,
+            "search_result_count": search_result_count,
+            "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
         },
@@ -108,7 +140,7 @@ def equipment_detail(request, record_id):
     # Airtable
     data = {
         "table_name": "equipment-collection",
-        "param": {
+        "params": {
             "record_id": record_id,
         },
     }

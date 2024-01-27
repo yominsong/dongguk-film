@@ -127,10 +127,23 @@ def moderate_input_data(request):
     return status, reason, msg, element
 
 
-def create_hashtag(content):
-    openai_response = chap_gpt(
-        f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
+def create_hashtag(title, content):
+    def request_hashtag_creation(plain_text):
+        return chap_gpt(
+            f"{plain_text}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
+        )
+
+    soup = BeautifulSoup(content, "html.parser")
+    content = (
+        " ".join(soup.stripped_strings)
+        .replace("\n", " ")
+        .replace("  ", " ")
+        .replace("   ", " ")
     )
+    openai_response = request_hashtag_creation(content)
+
+    if len(openai_response) == 0:
+        openai_response = request_hashtag_creation(title)
 
     return openai_response
 
@@ -486,7 +499,7 @@ def notice(request):
                 "title": title,
                 "category": category,
                 "content": content,
-                "keyword": create_hashtag(content),
+                "keyword": create_hashtag(title, content),
                 "img_key_list": img_key_list,
                 "file": file,
                 "user": request.user,
@@ -583,7 +596,7 @@ def notice(request):
                 "title": title,
                 "category": category,
                 "content": content,
-                "keyword": create_hashtag(content),
+                "keyword": create_hashtag(title, content),
                 "img_key_list": img_key_list,
                 "file": file,
             }

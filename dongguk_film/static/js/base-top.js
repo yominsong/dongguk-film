@@ -268,6 +268,7 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_create, "error", resResult.msg);
             displayButtonMsg(false, id_create, "descr");
             id_create.disabled = false;
+            id_confirm.disabled = true;
         };
         spins.forEach((spin) => {
             spin.classList.add("hidden");

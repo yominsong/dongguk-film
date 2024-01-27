@@ -12,17 +12,17 @@ import re, ast, random
 
 
 def notice(request):
+    query_string = ""
     image_list = get_hero_img("notice")
 
     # Notion
     notice_list = notion("query", "db", data={"db_name": "notice"})
     notice_count = len(notice_list)
 
-    # Query
-    q = request.GET.get("q")
-    query_result_count = None
-    query_param = None
-    default_placeholder_list = [
+    # Search box
+    query = request.GET.get("q")
+    search_result_count = None
+    default_search_placeholder_list = [
         "복학 신청",
         "희망강의 신청",
         "수강신청",
@@ -40,39 +40,39 @@ def notice(request):
         "부산국제영화제 시네필",
         "부산국제영화제",
     ]
-    placeholder = random.choice(notice_list[: min(notice_count, 7)])["title"] if notice_count > 0 else random.choice(default_placeholder_list)
+    search_placeholder = random.choice(notice_list[: min(notice_count, 7)])["title"] if notice_count > 0 else random.choice(default_search_placeholder_list)
 
-    if q:
-        q = q.lower().replace(" ", "")
-        query_result_list = []
+    if query:
+        query = query.lower().replace(" ", "")
+        search_result_list = []
         for notice in notice_list:
             for k, v in notice.items():
                 if k != "user" and v is not None:
                     if (
                         k != "img_key_list"
                         and k != "file"
-                        and q in v.lower().replace(" ", "")
+                        and query in v.lower().replace(" ", "")
                     ):
-                        if notice not in query_result_list:
-                            query_result_list.append(notice)
+                        if notice not in search_result_list:
+                            search_result_list.append(notice)
                     elif k == "img_key_list":
                         for item in v:
-                            if q in item:
-                                if notice not in query_result_list:
-                                    query_result_list.append(notice)
+                            if query in item:
+                                if notice not in search_result_list:
+                                    search_result_list.append(notice)
                                 break
                     elif k == "file":
                         for file_dict in v:
-                            if "name" in file_dict and q in file_dict[
+                            if "name" in file_dict and query in file_dict[
                                 "name"
                             ].lower().replace(" ", ""):
-                                if notice not in query_result_list:
-                                    query_result_list.append(notice)
+                                if notice not in search_result_list:
+                                    search_result_list.append(notice)
                                 break
 
-        notice_list = query_result_list
-        query_result_count = len(query_result_list)
-        query_param = f"q={q}&"
+        notice_list = search_result_list
+        search_result_count = len(search_result_list)
+        query_string += f"q={query}&"
 
     # Pagination
     try:
@@ -87,11 +87,11 @@ def notice(request):
         request,
         "notice/notice.html",
         {
+            "query_string": query_string,
             "image_list": image_list,
             "notice_count": notice_count,
-            "query_result_count": query_result_count,
-            "query_param": query_param,
-            "placeholder": placeholder,
+            "search_result_count": search_result_count,
+            "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
         },

@@ -41,14 +41,14 @@
             </div>
         </div>
     </div>
-    <!-- Query -->
+    <!-- Search bar -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow rounded-md px-4 pt-4 pb-5 sm:px-6">
             {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_query"
                            class="flex text-sm font-medium leading-6 text-gray-500">
-                        총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp;<span class="font-semibold">{{ query_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
+                        총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp;<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
                     </label>
                     <div id="id_initialize_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
@@ -84,7 +84,7 @@
                     <input type="text"
                            id="id_query"
                            class="block w-full rounded-none rounded-l-md py-1.5 pl-10 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 hover:bg-gray-50 focus:bg-white focus:df-focus-ring-inset read-only:bg-gray-100 read-only:hover:bg-gray-100 read-only:focus:bg-gray-100 read-only:cursor-not-allowed"
-                           placeholder="{{ query_placeholder }}">
+                           placeholder="{{ search_placeholder }}">
                 </div>
                 <button type="button"
                         id="id_submit_query"
@@ -217,7 +217,7 @@
                 <nav class="flex -mt-px items-center justify-between">
                     <div class="flex w-0 flex-1">
                         {% if page_value.has_previous %}
-                            <a href="?{{ search_params|default_if_none:'' }}page={{ page_value.previous_page_number }}"
+                            <a href="?{{ query_string|default_if_none:'' }}page={{ page_value.previous_page_number }}"
                                class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-bl-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
                                 <svg class="h-5 w-5 text-gray-400"
                                      viewBox="0 0 20 20"
@@ -244,18 +244,18 @@
                     <div class="flex">
                         {% for num in page_range %}
                             {% if num == page_value.number %}
-                                <a href="?{{ search_params|default_if_none:'' }}page={{ num }}"
+                                <a href="?{{ query_string|default_if_none:'' }}page={{ num }}"
                                    class="inline-flex items-center border-t-2 border-flamingo-500 px-4 py-4 text-sm font-medium text-flamingo-600 focus:df-focus-ring-inset"
                                    aria-current="page">{{ num }}</a>
                             {% else %}
-                                <a href="?{{ search_params|default_if_none:'' }}page={{ num }}"
+                                <a href="?{{ query_string|default_if_none:'' }}page={{ num }}"
                                    class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:df-focus-ring-inset">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>
                     <div class="flex w-0 flex-1 justify-end">
                         {% if page_value.has_next %}
-                            <a href="?{{ search_params|default_if_none:'' }}page={{ page_value.next_page_number }}"
+                            <a href="?{{ query_string|default_if_none:'' }}page={{ page_value.next_page_number }}"
                                class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-br-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
                                 <span class="sr-only">다음 페이지</span>
                                 <svg class="h-5 w-5 text-gray-400"

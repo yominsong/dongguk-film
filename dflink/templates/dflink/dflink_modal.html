@@ -27,7 +27,8 @@
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
-                    <button type="button"
+                    <button id="id_modal_close"
+                            type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
@@ -112,7 +113,7 @@
                                                        value="작품"
                                                        aria-describedby="id_category_work_descr"
                                                        type="radio"
-                                                       class="class-first class-radio h-4 w-4 border-gray-300 text-flamingo-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
+                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
                                             </div>
                                             <div class="pl-7 text-sm leading-6">
                                                 <label for="id_category_work" class="font-medium text-gray-900">작품 관련</label>
@@ -127,7 +128,7 @@
                                                        value="학과"
                                                        aria-describedby="id_category_dept_descr"
                                                        type="radio"
-                                                       class="class-first class-radio h-4 w-4 border-gray-300 text-flamingo-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
+                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
                                             </div>
                                             <div class="pl-7 text-sm leading-6">
                                                 <label for="id_category_dept" class="font-medium text-gray-900">학과 관련</label>

@@ -2,10 +2,8 @@
 // Global variables
 //
 
-const id_list = document.getElementById("id_list");
-
 const id_modal = document.getElementById("id_modal");
-
+const id_modal_base = code(id_modal, "_base");
 const id_page_id = document.getElementById("id_page_id");
 const id_block_id_list = document.getElementById("id_block_id_list");
 const id_title = document.getElementById("id_title");
@@ -17,11 +15,9 @@ const id_file = document.getElementById("id_file");
 const id_drop_file = document.getElementById("id_drop_file");
 const id_attach_file = document.getElementById("id_attach_file");
 const id_keyword = document.getElementById("id_keyword");
-
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
-
 const id_url = document.getElementById("id_url");
 const id_copy_url = document.getElementById("id_copy_url");
 const id_copy_url_ready = code(id_copy_url, "_ready");
@@ -29,7 +25,6 @@ const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
 
 const id_detail = document.getElementById("id_detail");
-
 const id_go_to_list = document.getElementById("id_go_to_list");
 
 const class_counts = document.querySelectorAll(".class-count");
@@ -55,106 +50,8 @@ let doubleCheckTimer;
 // Sub functions
 //
 
-function freezeCkEditor() {
-    ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
-    ckEditor.enableReadOnlyMode("id_content");
-}
-
-function freezeFileForm(boolean) {
-    const class_detaches = document.querySelectorAll(".class-detach");
-
-    if (boolean) {
-        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
-        id_drop_file.nextElementSibling.classList.remove("hidden");
-        id_attach_file.tabIndex = -1;
-        class_detaches.forEach(detach => { detach.tabIndex = -1 });
-        id_file.disabled = true;
-
-        class_counts.forEach(count => {
-            count.innerText = "잠시만 기다려주세요.";
-        });
-    } else if (!boolean) {
-        id_drop_file.style.backgroundColor = "transparent";
-        id_drop_file.nextElementSibling.classList.add("hidden");
-        id_attach_file.tabIndex = 0;
-        class_detaches.forEach(detach => { detach.tabIndex = 0 });
-        id_file.disabled = false;
-
-        class_counts.forEach(count => {
-            if (count.classList.contains("class-desktop")) {
-                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-            } else if (count.classList.contains("class-mobile")) {
-                count.innerText = "파일을 첨부하세요.";
-            };
-        });
-    };
-}
-
-function embedMediaInCkEditor() {
-    const mediaElements = document.querySelectorAll("figure.media");
-
-    if (mediaElements) {
-        mediaElements.forEach(media => {
-            const oembed = media.querySelector("oembed");
-            let div = media.querySelector("div");
-
-            if (oembed) {
-                const url = oembed.getAttribute("url");
-                const newStructure = generateNewStructure(url);
-
-                function generateNewStructure(url) {
-                    let mediaName, newStructure;
-
-                    if (url.includes("instagram.com")) {
-                        mediaName = "인스타그램";
-                    } else if (url.includes("facebook.com") || url.includes("fb.watch")) {
-                        mediaName = "페이스북";
-                    } else if (url.includes("twitter.com")) {
-                        mediaName = "트위터";
-                    } else if (url.includes("goo.gl")) {
-                        mediaName = "구글 지도";
-                    };
-
-                    newStructure = `
-                    <figure class="media ck-widget" contenteditable="false">
-                        <div class="ck-media__wrapper"
-                            data-oembed-url="${url}">
-                            <div class="ck ck-reset_all ck-media__placeholder">
-                                <div class="ck-media__placeholder__icon">
-                                    <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
-                                        viewBox="0 0 64 42">
-                                        <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <a class="ck-media__placeholder__url"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    href="${url}"
-                                    title="새 탭에서 ${mediaName} 열기">
-                                    <span class="ck-media__placeholder__url__text">${url}</span>
-                                    <span class="!sr-only">새 탭에서 ${mediaName} 열기</span>
-                                </a>
-                            </div>
-                        </div>
-                    </figure>
-                    `;
-
-                    return newStructure;
-                }
-
-                media.outerHTML = newStructure;
-            } else if (div) {
-                div.classList.add("ck-media__wrapper");
-            };
-        });
-    };
-}
-
-embedMediaInCkEditor();
-
-function matchDivWidth() {
-    const id_modal_base = document.getElementById("id_modal_base");
+function adjustModalWidth() {
+    const id_list = document.getElementById("id_list");
     const id_content_parent = code(id_content, "_parent");
     let widthBase;
 
@@ -173,16 +70,12 @@ function matchDivWidth() {
 
 function toggleWidthOfModalAndForm(bool) {
     if (bool) {
-        matchDivWidth();
-        window.addEventListener("resize", matchDivWidth);
+        adjustModalWidth();
+        window.addEventListener("resize", adjustModalWidth);
     } else if (!bool) {
         id_modal_base.style = "display: none";
-        window.removeEventListener("resize", matchDivWidth);
+        window.removeEventListener("resize", adjustModalWidth);
     };
-}
-
-function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
-    return currentDate >= start && currentDate <= end;
 }
 
 function preventGoBack() {
@@ -190,7 +83,7 @@ function preventGoBack() {
         history.pushState(null, null, location.href);
     };
 
-    document.addEventListener("click", function (event) {
+    document.addEventListener("click", event => {
         let closestAnchor = event.target.closest("a");
 
         if (closestAnchor) {
@@ -201,10 +94,11 @@ function preventGoBack() {
     window.onpopstate = () => {
         if (isModalOpen) {
             history.pushState(null, null, location.href);
+
             if (isItOkayToCloseModal()) {
-                id_modal.setAttribute("x-data", "{ open: false }");
-                enableFocus();
-                isModalOpen = false;
+                const id_modal_close = code(id_modal, "_close");
+
+                id_modal_close.click();
             };
         } else if (!isModalOpen) {
             if (!isLastSelectedAnchorHash) {
@@ -227,7 +121,6 @@ function isItOkayToCloseModal() {
 function executeWhenModalIsClosed() {
     isModalOpen = false;
     toggleFocusOnModal(false);
-    preventGoBack();
 }
 
 //
@@ -247,14 +140,14 @@ function initSearchBar() {
             };
         });
 
-        id_query.addEventListener("keyup", (event) => {
+        id_query.addEventListener("keyup", event => {
             if (event.key === "Enter") {
                 id_submit_query.click();
             };
         });
 
         ["click", "keyup"].forEach(type => {
-            id_submit_query.addEventListener(type, (event) => {
+            id_submit_query.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     location.href = `${originLocation}/notice/?q=${id_query.value}`;
                     id_query.readOnly = true;
@@ -267,8 +160,9 @@ function initSearchBar() {
             const id_initialize_query = document.getElementById("id_initialize_query");
 
             id_query.value = urlParams.get("q");
+
             ["click", "keyup"].forEach(type => {
-                id_initialize_query.addEventListener(type, (event) => {
+                id_initialize_query.addEventListener(type, event => {
                     if (type === "click" || event.key === "Enter" || event.key === " ") {
                         location.href = `${originLocation}/notice`;
                         id_query.readOnly = true;
@@ -319,7 +213,7 @@ function initCkEditor() {
 
                 ckElements.forEach((ck) => {
                     ck.addEventListener("focus", () => { displayError(false, id_content) });
-                    ck.addEventListener("blur", (event) => {
+                    ck.addEventListener("blur", event => {
                         if (!ckElements.includes(event.relatedTarget)) {
                             if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
                                 displayError(true, id_content, "empty");
@@ -328,7 +222,7 @@ function initCkEditor() {
                             };
                         };
                     });
-                    ck.addEventListener("keydown", (event) => {
+                    ck.addEventListener("keydown", event => {
                         if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
                             const id_category_error = code(id_category, "_error");
 
@@ -354,6 +248,11 @@ function initCkEditor() {
 }
 
 initCkEditor();
+
+function freezeCkEditor() {
+    ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
+    ckEditor.enableReadOnlyMode("id_content");
+}
 
 function attachFile(event = null, sudo = false) {
     let id, name, key, size, readableSize, fileElement;
@@ -522,13 +421,43 @@ function styleFileForm() {
     id_attach_file.style.backgroundColor = attachBackgroundColor;
 }
 
+function freezeFileForm(boolean) {
+    const class_detaches = document.querySelectorAll(".class-detach");
+
+    if (boolean) {
+        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
+        id_drop_file.nextElementSibling.classList.remove("hidden");
+        id_attach_file.tabIndex = -1;
+        class_detaches.forEach(detach => { detach.tabIndex = -1 });
+        id_file.disabled = true;
+
+        class_counts.forEach(count => {
+            count.innerText = "잠시만 기다려주세요.";
+        });
+    } else if (!boolean) {
+        id_drop_file.style.backgroundColor = "transparent";
+        id_drop_file.nextElementSibling.classList.add("hidden");
+        id_attach_file.tabIndex = 0;
+        class_detaches.forEach(detach => { detach.tabIndex = 0 });
+        id_file.disabled = false;
+
+        class_counts.forEach(count => {
+            if (count.classList.contains("class-desktop")) {
+                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (count.classList.contains("class-mobile")) {
+                count.innerText = "파일을 첨부하세요.";
+            };
+        });
+    };
+}
+
 function addEventListenersToFileForm() {
     isEventListenersAddedToFileForm = true;
 
     id_file.addEventListener("change", attachFile);
-    id_drop_file.addEventListener("dragover", (event) => { event.preventDefault(); id_file.focus(); isDragging = true; styleFileForm() });
+    id_drop_file.addEventListener("dragover", event => { event.preventDefault(); id_file.focus(); isDragging = true; styleFileForm() });
     id_drop_file.addEventListener("dragleave", () => { isDragging = false; styleFileForm() });
-    id_drop_file.addEventListener("drop", (event) => { event.preventDefault(); isDragging = false; styleFileForm(); attachFile(event) });
+    id_drop_file.addEventListener("drop", event => { event.preventDefault(); isDragging = false; styleFileForm(); attachFile(event) });
     id_attach_file.addEventListener("focus", () => { isFocused = true; styleFileForm() });
     id_attach_file.addEventListener("blur", () => { isFocused = false; styleFileForm() });
     id_attach_file.addEventListener("mouseenter", () => { isHovered = true; styleFileForm() });
@@ -581,7 +510,12 @@ function initForm() {
         { s: "1201", e: "1231", t: `${now.getFullYear()}학년도 2학기 캡스톤디자인 최종보고서 제출 안내` }
     ];
     const id_title_placeholder = randomItem(id_title_placeholder_array.filter(placeholder => isCurrentDateInRange(String(now.getFullYear()) + placeholder.s, String(now.getFullYear()) + placeholder.e))).t;
+    const class_categories = document.querySelectorAll(".class-category");
     const class_files = document.querySelectorAll(".class-file");
+
+    function isCurrentDateInRange(start, end, currentDate = yyyymmdd) {
+        return currentDate >= start && currentDate <= end;
+    }
 
     id_title.value = null;
     id_title.placeholder = id_title_placeholder;
@@ -589,7 +523,7 @@ function initForm() {
     id_category_serv.checked = false;
     id_category_dept.checked = false;
 
-    [id_category_serv, id_category_dept].forEach((category) => {
+    class_categories.forEach((category) => {
         const label = category.closest("label");
         const svg = label.querySelector("svg");
 
@@ -613,7 +547,7 @@ function initForm() {
         });
 
         category.addEventListener("change", () => {
-            const otherInputs = [id_category_serv, id_category_dept].filter(i => i !== category);
+            const otherInputs = [...class_categories].filter(i => i !== category);
 
             if (category.checked) {
                 label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
@@ -676,9 +610,11 @@ function updateForm(action, datasetObj = null) {
         toggleWidthOfModalAndForm(true);
         id_modal_form.hidden = false;
         id_modal_share.hidden = true;
+
         class_keywords.forEach(keyword => {
             keyword.innerText = "작성하기";
         });
+
         initForm();
         id_create_or_update.classList.replace("hidden", "inline-flex");
         id_delete.classList.replace("inline-flex", "hidden");
@@ -690,11 +626,14 @@ function updateForm(action, datasetObj = null) {
         let label, svg;
 
         updateForm("create");
+
         class_keywords.forEach(keyword => {
             keyword.innerText = "수정하기";
         });
+
         id_page_id.value = data.pageId;
         id_title.value = data.title;
+
         if (data.category === "서비스") {
             id_category.value = "서비스";
             id_category_serv.checked = true;
@@ -704,6 +643,7 @@ function updateForm(action, datasetObj = null) {
             id_category_dept.checked = true;
             label = id_category_dept.closest("label");
         };
+
         id_keyword.value = data.keyword;
         label.classList.remove("df-ring-inset-gray");
         label.classList.add("df-ring-inset-flamingo");
@@ -722,9 +662,11 @@ function updateForm(action, datasetObj = null) {
         toggleWidthOfModalAndForm(false);
         if (id_modal_form !== null) { id_modal_form.hidden = true };
         id_modal_share.hidden = false;
+
         class_keywords.forEach(keyword => {
             keyword.innerText = "공유하기";
         });
+        
         id_copy_url_ready.classList.remove("hidden");
         id_copy_url_done.classList.add("hidden");
         id_copy_url_descr.hidden = true;
@@ -740,7 +682,7 @@ function initModal() {
 
     class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
-            create.addEventListener(type, (event) => {
+            create.addEventListener(type, event => {
                 const targetTagName = event.target.tagName;
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "DIV" || targetTagName === "BUTTON")) ||
@@ -753,7 +695,7 @@ function initModal() {
 
     class_adjusts.forEach(adjust => {
         ["click", "keyup"].forEach(type => {
-            adjust.addEventListener(type, (event) => {
+            adjust.addEventListener(type, event => {
                 const targetTagName = event.target.tagName;
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "DIV" || targetTagName === "BUTTON")) ||
@@ -766,7 +708,7 @@ function initModal() {
 
     class_shares.forEach(share => {
         ["click", "keyup"].forEach(type => {
-            share.addEventListener(type, (event) => {
+            share.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     updateForm("share");
                 };
@@ -782,7 +724,7 @@ function styleFileList() {
 
     if (class_downloads) {
         class_downloads.forEach((download, index) => {
-            let aTag = download.querySelector("a");
+            const aTag = download.querySelector("a");
 
             if (class_downloads.length === 1) {
                 download.classList.add("rounded-md");
@@ -799,6 +741,95 @@ function styleFileList() {
 }
 
 styleFileList();
+
+function embedMediaInCkEditor() {
+    const mediaElements = document.querySelectorAll("figure.media");
+
+    if (mediaElements) {
+        mediaElements.forEach(media => {
+            const oembed = media.querySelector("oembed");
+            let div = media.querySelector("div");
+
+            if (oembed) {
+                const url = oembed.getAttribute("url");
+                const newStructure = generateNewStructure(url);
+
+                function generateNewStructure(url) {
+                    let mediaName, newStructure;
+
+                    if (url.includes("instagram.com")) {
+                        mediaName = "인스타그램";
+                    } else if (url.includes("facebook.com") || url.includes("fb.watch")) {
+                        mediaName = "페이스북";
+                    } else if (url.includes("twitter.com")) {
+                        mediaName = "트위터";
+                    } else if (url.includes("goo.gl")) {
+                        mediaName = "구글 지도";
+                    };
+
+                    newStructure = `
+                    <figure class="media ck-widget" contenteditable="false">
+                        <div class="ck-media__wrapper"
+                            data-oembed-url="${url}">
+                            <div class="ck ck-reset_all ck-media__placeholder">
+                                <div class="ck-media__placeholder__icon">
+                                    <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
+                                        viewBox="0 0 64 42">
+                                        <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <a class="ck-media__placeholder__url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    href="${url}"
+                                    title="새 탭에서 ${mediaName} 열기">
+                                    <span class="ck-media__placeholder__url__text">${url}</span>
+                                    <span class="!sr-only">새 탭에서 ${mediaName} 열기</span>
+                                </a>
+                            </div>
+                        </div>
+                    </figure>
+                    `;
+
+                    return newStructure;
+                }
+
+                media.outerHTML = newStructure;
+            } else if (div) {
+                div.classList.add("ck-media__wrapper");
+            };
+        });
+    };
+}
+
+embedMediaInCkEditor();
+
+function copyUrl() {
+    if (id_copy_url !== null) {
+        id_url.addEventListener("click", () => {
+            id_url.select();
+        });
+
+        id_copy_url.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(id_url.value);
+            } catch (e) {
+                id_url.select();
+                document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
+            };
+
+            id_copy_url_ready.classList.add("hidden");
+            id_copy_url_done.classList.remove("hidden");
+            id_copy_url_descr.hidden = false;
+            id_copy_url_done.classList.add("blink");
+
+            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
+        });
+    };
+}
+
+copyUrl();
 
 function share() {
     if (id_detail !== null) {
@@ -840,20 +871,20 @@ function share() {
         });
 
         id_x.addEventListener("click", () => {
-            let hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
-            let xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+            const hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
+            const xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
 
             window.open(xUrl);
         });
 
         id_facebook.addEventListener("click", () => {
-            let facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
 
             window.open(facebookUrl);
         });
 
         id_line.addEventListener("click", () => {
-            let lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+            const lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
 
             window.open(lineUrl);
         });
@@ -861,32 +892,6 @@ function share() {
 }
 
 share();
-
-function copyUrl() {
-    if (id_copy_url !== null) {
-        id_url.addEventListener("click", () => {
-            id_url.select();
-        });
-
-        id_copy_url.addEventListener("click", async () => {
-            try {
-                await navigator.clipboard.writeText(id_url.value);
-            } catch (e) {
-                id_url.select();
-                document.execCommand("copy"); // Deprecated, but used for KakaoTalk in-app browser
-            };
-
-            id_copy_url_ready.classList.add("hidden");
-            id_copy_url_done.classList.remove("hidden");
-            id_copy_url_descr.hidden = false;
-            id_copy_url_done.classList.add("blink");
-
-            setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
-        });
-    };
-}
-
-copyUrl();
 
 function goToList() {
     const class_details = document.querySelectorAll(".class-detail");
@@ -907,7 +912,7 @@ function goToList() {
         };
 
         ["click", "keyup"].forEach(type => {
-            id_go_to_list.addEventListener(type, (event) => {
+            id_go_to_list.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     const previousSearch = new URLSearchParams(location.search).get("previousSearch");
 
@@ -963,7 +968,6 @@ function requestCreateNotice() {
     request.data = formData;
     request.async = true;
     request.headers = null;
-    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -1005,7 +1009,6 @@ function requestUpdateNotice() {
     request.data = formData;
     request.async = true;
     request.headers = null;
-    code(id_create_or_update, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -1018,7 +1021,6 @@ function requestDeleteNotice() {
     request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}`, file: `${attachedFiles}` };
     request.async = true;
     request.headers = null;
-    code(id_delete, "_spin").classList.remove("hidden");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -1026,19 +1028,21 @@ function requestDeleteNotice() {
 }
 
 function initRequest() {
-    window.addEventListener("pageshow", function (event) {
+    window.addEventListener("pageshow", () => {
         if (id_modal != null) {
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);
 
             ["click", "keyup"].forEach(type => {
-                id_create_or_update.addEventListener(type, (event) => {
+                id_create_or_update.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
                         if (isItOkayToSubmitForm()) {
+                            const id_create_or_update_spin = code(id_create_or_update, "_spin");
+                            
                             if (id_create_or_update.innerText === "작성하기") {
                                 requestCreateNotice();
                             } else if (id_create_or_update.innerText === "수정하기") {
@@ -1047,6 +1051,7 @@ function initRequest() {
 
                             displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
                             displayButtonMsg(false, id_create_or_update, "error");
+                            id_create_or_update_spin.classList.remove("hidden");
                             displayNoti(false, "RYS");
                             displayNoti(false, "RAT");
                             displayNoti(false, "RDI");
@@ -1070,7 +1075,7 @@ function initRequest() {
                     });
                 });
 
-                id_delete.addEventListener(type, (event) => {
+                id_delete.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
@@ -1084,9 +1089,12 @@ function initRequest() {
                                 isItDoubleChecked = false;
                             }, 5000);
                         } else if (isItDoubleChecked) {
+                            const id_delete_spin = code(id_delete, "_spin");
+                            
                             clearTimeout(doubleCheckTimer);
                             requestDeleteNotice();
                             displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
+                            id_delete_spin.classList.remove("hidden");
                             displayNoti(false, "RYS");
                             displayNoti(false, "RAT");
                             displayNoti(false, "RDI");

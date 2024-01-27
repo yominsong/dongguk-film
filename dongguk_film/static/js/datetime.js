@@ -1,5 +1,5 @@
 //
-// Global contants and variables
+// Global variables
 //
 
 const now = new Date();
@@ -21,6 +21,39 @@ const hhmmWithColon = `${h.toTwoDigits()}:${m.toTwoDigits()}`;
 // Main functions
 //
 
+/**
+ * @param {Date} date Date to format
+ * @returns {string} "YYYY-MM-DD" formatted date
+ */
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * @param {string | Date} date Date to format 
+ * @param {string | number} daysToAdd Days to add
+ * @returns {string} "YYYY-MM-DD" formatted date
+ */
+function formatDateInFewDays(date, daysToAdd) {
+    date = new Date(date);
+    date.setDate(date.getDate() + Number(daysToAdd));
+
+    return formatDate(date);
+}
+
+function calculateDateDifference(date1, date2) {
+    date1 = new Date(date1 + "T00:00:00");
+    date2 = new Date(date2 + "T00:00:00");
+    const differenceInMilliseconds = Math.abs(date2 - date1);
+    const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+
+    return differenceInDays;
+}
+
 function getYyyymmdd(date, dash = false) {
     let year = date.getFullYear();
     let month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -28,17 +61,6 @@ function getYyyymmdd(date, dash = false) {
     let result;
     dash ? result = `${year}-${month}-${day}` : result = year + month + day;
     return result;
-}
-
-function getDateDaysLaterFormatted(startingDate, daysToAdd) {
-    const date = new Date(startingDate);
-    date.setDate(date.getDate() + daysToAdd);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
 }
 
 function validateDate(input) {

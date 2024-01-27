@@ -22,6 +22,7 @@ const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "Ha
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotLowerCaseRomanAndNumber = /[^a-z0-9]/g;
+const regUpperCaseRoman = /[A-Z]/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
 const regNotNumberWithDash = /[^0-9\-]/g;
@@ -50,7 +51,7 @@ let lastFocusedElement;
  */
 function matchJosa(word, josaType, resultType) {
     let lastLetter, hasBatchim, josa, result;
-    isNaN(word) === false ? lastLetter = word.getLastNumInKor() : word.indexOf("URL") != -1 ? lastLetter = "엘" : lastLetter = word.substr(-1);
+    isNaN(word) === false ? lastLetter = word.getLastNumInKor() : word.indexOf("URL") !== -1 ? lastLetter = "엘" : lastLetter = word.substr(-1);
     hasBatchim = (lastLetter.charCodeAt(0) - parseInt("ac00", 16)) % 28 > 0;
 
     if (josaType === "을를") {
@@ -78,7 +79,7 @@ function matchJosa(word, josaType, resultType) {
 
 function findLabel(input) {
     let foundLabel;
-    labels.forEach((label) => {
+    labels.forEach(label => {
         if (label.getAttribute("for") === String(input.id)) {
             foundLabel = label.innerText;
         };
@@ -91,15 +92,27 @@ function freezeForm(bool) {
      * bool: Freeze or Unfreeze active inputs and buttons
      */
 
-    inputs.forEach((input) => {
+    inputs.forEach(input => {
         if (input.type === "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
+        } else if (input.classList.contains("alt-calendar")) {
+            const calendar = code(input.id + "_calendar");
+
+            if (bool) {
+                calendar.classList.add("cursor-not-allowed");
+                calendar.classList.replace("bg-white", "bg-gray-100");
+            } else {
+                calendar.classList.remove("cursor-not-allowed");
+                calendar.classList.replace("bg-gray-100", "bg-white");
+            };
         } else if (input.classList.contains("alt-radio")) {
-            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
-            originalInputs.forEach((input) => {
+            const originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+
+            originalInputs.forEach(input => {
                 // invisible radio button
                 if (input.classList.contains("sr-only")) {
-                    let label = input.closest("label");
+                    const label = input.closest("label");
+
                     if (bool) {
                         label.classList.replace("hover:bg-gray-50", "bg-gray-100");
                         label.classList.replace("cursor-pointer", "cursor-not-allowed");
@@ -108,7 +121,8 @@ function freezeForm(bool) {
                         label.classList.replace("cursor-not-allowed", "cursor-pointer");
                     };
                 };
-                bool ? class_radios.forEach((radio) => { radio.disabled = true }) : class_radios.forEach((radio) => { radio.disabled = false });
+
+                bool ? class_radios.forEach(radio => { radio.disabled = true }) : class_radios.forEach(radio => { radio.disabled = false });
             });
         } else if (input.type === "textarea" && ckEditor) {
             bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
@@ -116,7 +130,8 @@ function freezeForm(bool) {
             bool ? input.readOnly = true : input.readOnly = false;
         };
     });
-    buttons.forEach((button) => {
+
+    buttons.forEach(button => {
         bool ? button.disabled = true : button.disabled = false;
     });
 }
@@ -129,11 +144,11 @@ function initValidation(array, button) {
     inputs.length = 0;
     inputs.push(...array);
 
-    inputs.forEach((input) => {
+    inputs.forEach(input => {
         input.addEventListener("keypress", (event) => {
             if (event.key === "Enter" && input.type === "radio") {
                 input.checked = true;
-                if (lowercaseId(input).indexOf("category") != -1) {
+                if (lowercaseId(input).indexOf("category") !== -1) {
                     code("id_category").value = input.value;
                 };
             } else if (event.key === "Enter") {
@@ -150,6 +165,7 @@ function isItOkayToSubmitForm() {
 
     Array.from(class_radios).forEach(radio => {
         let idx = inputs.indexOf(radio);
+
         while (idx > -1) {
             inputs.splice(idx, 1);
             idx = inputs.indexOf(radio);
@@ -186,39 +202,39 @@ function lowercaseId(input) {
 //
 
 function validation() {
-    eventTypes.forEach((type) => {
-        onlyHanguls.forEach((input) => {
+    eventTypes.forEach(type => {
+        onlyHanguls.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotHangul, "");
             });
         });
-        onlyNumbers.forEach((input) => {
+        onlyNumbers.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotNumber, "");
             });
         });
-        onlyPhones.forEach((input) => {
+        onlyPhones.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotNumber, "").replace(/(^0[0-9]{2})([0-9]+)?([0-9]{4})$/, "$1-$2-$3").replace("--", "-");
             });
         });
-        onlyDates.forEach((input) => {
+        onlyDates.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotNumber, "").replace(/(^[0-9]{4})([0-9]+)?([0-9]{2})$/, "$1-$2-$3").replace("--", "-");
             });
         });
-        onlyEmails.forEach((input) => {
+        onlyEmails.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regHangul, "");
                 input.value = input.value.replace(" ", "");
             });
         });
-        onlyUrls.forEach((input) => {
+        onlyUrls.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(" ", "");
             });
         });
-        onlySlugs.forEach((input) => {
+        onlySlugs.forEach(input => {
             input.addEventListener(type, () => {
                 input.value = input.value.replace(regNotLowerCaseRomanAndNumber, "");
                 input.value = input.value.replace(" ", "");
@@ -226,9 +242,22 @@ function validation() {
         });
     });
 
-    inputs.forEach((input) => {
-        if (input.type === "radio") {
-            let altInput = code(input.id.replace(`_${input.id.split("_")[2]}`, ""));
+    inputs.forEach(input => {
+        if (input.classList.contains("alt-calendar")) {
+            const calendar = code(input.id + "_calendar");
+
+            calendar.addEventListener("click", () => {
+                displayError(false, input);
+            });
+            calendar.addEventListener("focusout", () => {
+                controlError(input);
+            });
+            calendar.addEventListener("focusin", () => {
+                displayError(false, input);
+            });
+        } else if (input.classList.contains("class-radio")) {
+            const altInput = code(input.id.replace(`_${input.id.split("_")[2]}`, ""));
+
             input.addEventListener("click", () => {
                 displayError(false, altInput);
             });
@@ -242,7 +271,7 @@ function validation() {
             input.addEventListener("click", () => {
                 displayError(false, input);
             });
-            input.addEventListener("keydown", (event) => {
+            input.addEventListener("keydown", event => {
                 displayError(false, input);
                 controlDescr(input, event);
             });
@@ -373,6 +402,17 @@ function controlError(input) {
         };
     };
 
+    // alt-calendar
+    if (input.classList.contains("alt-calendar")) {
+        if (input.value.length === 0) {
+            displayError(true, input, "unselected");
+        } else if (input.value.indexOf(",") === -1) {
+            displayError(true, input, "unselected");
+        } else {
+            return false;
+        };
+    };
+
     // alt-radio
     if (input.classList.contains("alt-radio")) {
         if (input.value === "") {
@@ -396,7 +436,7 @@ function controlError(input) {
     };
 
     // text (student ID)
-    if (lowercaseId(input).indexOf("studentid") != -1) {
+    if (lowercaseId(input).indexOf("studentid") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
@@ -409,7 +449,7 @@ function controlError(input) {
     };
 
     // text (name)
-    if (lowercaseId(input).indexOf("name") != -1) {
+    if (lowercaseId(input).indexOf("name") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length === 1) {
@@ -422,7 +462,7 @@ function controlError(input) {
     };
 
     // text (email)
-    if (lowercaseId(input).indexOf("email") != -1 && lowercaseId(input).indexOf("vcode") === -1) {
+    if (lowercaseId(input).indexOf("email") !== -1 && lowercaseId(input).indexOf("vcode") === -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("@") === -1 ||
@@ -430,7 +470,7 @@ function controlError(input) {
             input.value.split("@")[1].indexOf(".") === -1 ||
             input.value.split("@")[1].split(".")[0].length <= 1 ||
             input.value.split("@")[1].split(".")[1].length <= 1 ||
-            (input.value.split("@")[1].split(".").length - 1 === 2 && input.value.split("@")[1].split(".")[2].length <= 1 && input.value.substr(-1) != ".")) {
+            (input.value.split("@")[1].split(".").length - 1 === 2 && input.value.split("@")[1].split(".")[2].length <= 1 && input.value.substr(-1) !== ".")) {
             displayError(true, input, "insufficient");
         } else if (!input.value.match(regEmail)) {
             displayError(true, input, "invalid");
@@ -440,7 +480,7 @@ function controlError(input) {
     };
 
     // text (vcode)
-    if (lowercaseId(input).indexOf("vcode") != -1) {
+    if (lowercaseId(input).indexOf("vcode") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 6) {
@@ -451,7 +491,7 @@ function controlError(input) {
     };
 
     // text (url)
-    if (lowercaseId(input).indexOf("url") != -1) {
+    if (lowercaseId(input).indexOf("url") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.indexOf("https://") === -1 && input.value.indexOf("http://") === -1) {
@@ -464,7 +504,7 @@ function controlError(input) {
     };
 
     // text (slug)
-    if (lowercaseId(input).indexOf("slug") != -1) {
+    if (lowercaseId(input).indexOf("slug") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length < 2) {
@@ -475,7 +515,7 @@ function controlError(input) {
     };
 
     // text (title)
-    if (lowercaseId(input).indexOf("title") != -1) {
+    if (lowercaseId(input).indexOf("title") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.replace(/\s/g, "").length === 0) {
@@ -488,7 +528,7 @@ function controlError(input) {
     };
 
     // text (date)
-    if (lowercaseId(input).indexOf("date") != -1) {
+    if (lowercaseId(input).indexOf("date") !== -1) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length !== 10) {
@@ -544,13 +584,25 @@ function displayError(bool, input, errorType = null) {
             input.classList.add("border-flamingo-300");
         }
 
+        // alt-calendar
+        else if (input.classList.contains("alt-calendar")) {
+            const calendar = code(input.id + "_calendar");
+
+            calendar.classList.remove("bg-white");
+            calendar.classList.remove("df-ring-inset-gray");
+            calendar.classList.add("bg-flamingo-50");
+            calendar.classList.add("ring-transparent");
+        }
+
         // alt-radio
         else if (input.classList.contains("alt-radio")) {
-            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
-            originalInputs.forEach((input) => {
+            const originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+
+            originalInputs.forEach(input => {
                 // invisible radio button
                 if (input.classList.contains("sr-only")) {
                     let label = input.closest("label");
+
                     label.classList.replace("df-ring-inset-gray", "bg-flamingo-50");
                     label.classList.add("hover:df-ring-inset-gray");
                 }
@@ -616,13 +668,25 @@ function displayError(bool, input, errorType = null) {
             input.classList.remove("border-flamingo-300");
         }
 
+        // alt-calendar
+        else if (input.classList.contains("alt-calendar")) {
+            const calendar = code(input.id + "_calendar");
+
+            calendar.classList.add("bg-white");
+            calendar.classList.add("df-ring-inset-gray");
+            calendar.classList.remove("bg-flamingo-50");
+            calendar.classList.remove("ring-transparent");
+        }
+
         // alt-radio
         else if (input.classList.contains("alt-radio")) {
-            let originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
-            originalInputs.forEach((input) => {
+            const originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+
+            originalInputs.forEach(input => {
                 // invisible radio button
                 if (input.classList.contains("sr-only")) {
                     let label = input.closest("label");
+
                     label.classList.replace("bg-flamingo-50", "df-ring-inset-gray");
                     label.classList.remove("hover:df-ring-inset-gray");
                 }
@@ -681,50 +745,50 @@ function displayButtonMsg(bool, button, type, text) {
     };
 }
 
-function disableFocusOutsideModal(modal) {
-    lastFocusedElement = document.activeElement;
+// function disableFocusOutsideModal(modal) {
+//     lastFocusedElement = document.activeElement;
 
-    const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])");
-    let tabIndexStorage = [];
+//     const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])");
+//     let tabIndexStorage = [];
 
-    focusableElements.forEach((element, index) => {
-        if (!modal.contains(element)) {
-            if (element.getAttribute("tabindex") === "0") {
-                element.dataset.focusIndex = index;
-                tabIndexStorage.push(index);
-            };
-            element.setAttribute("tabindex", "-1");
-        };
-    });
+//     focusableElements.forEach((element, index) => {
+//         if (!modal.contains(element)) {
+//             if (element.getAttribute("tabindex") === "0") {
+//                 element.dataset.focusIndex = index;
+//                 tabIndexStorage.push(index);
+//             };
+//             element.setAttribute("tabindex", "-1");
+//         };
+//     });
 
-    sessionStorage.setItem("focusableItems", JSON.stringify(tabIndexStorage));
-}
+//     sessionStorage.setItem("focusableItems", JSON.stringify(tabIndexStorage));
+// }
 
-function enableFocus() {
-    const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
-    const storedIndexes = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
-    let id_notice_detail_option_menu = document.getElementById("id_notice_detail_option_menu");
-    let id_notice_detail_option_button = document.getElementById("id_notice_detail_option_button");
+// function enableFocus() {
+//     const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
+//     const storedIndexes = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
+//     let id_notice_detail_option_menu = document.getElementById("id_notice_detail_option_menu");
+//     let id_notice_detail_option_button = document.getElementById("id_notice_detail_option_button");
 
-    focusableElements.forEach(element => {
-        element.removeAttribute("tabindex");
-    });
+//     focusableElements.forEach(element => {
+//         element.removeAttribute("tabindex");
+//     });
 
-    storedIndexes.forEach(index => {
-        const element = document.querySelector(`[data-focus-index='${index}']`);
-        if (element) {
-            element.setAttribute("tabindex", "0");
-        };
-    });
+//     storedIndexes.forEach(index => {
+//         const element = document.querySelector(`[data-focus-index='${index}']`);
+//         if (element) {
+//             element.setAttribute("tabindex", "0");
+//         };
+//     });
 
-    sessionStorage.removeItem("focusableItems");
+//     sessionStorage.removeItem("focusableItems");
 
-    if (lastFocusedElement) {
-        if (lastFocusedElement === id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
-        setTimeout(() => { lastFocusedElement.focus() }, 300);
-        setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
-    };
-}
+//     if (lastFocusedElement) {
+//         if (lastFocusedElement === id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
+//         setTimeout(() => { lastFocusedElement.focus() }, 300);
+//         setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
+//     };
+// }
 
 function toggleFocusOnModal(isModalOpen, modal) {
     let focusableElements;

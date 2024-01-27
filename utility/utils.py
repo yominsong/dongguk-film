@@ -325,18 +325,18 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         - records
     - data | `dict`
         - table_name
-        - param | `dict`
+        - params | `dict`
     - limit | `int`
     """
 
     if data != None:
         table_name = data.get("table_name", None)
-        param = data.get("param", None)
+        params = data.get("params", None)
 
     # action: get / target: record
     if action == "get" and target == "record":
         record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
-            param.get("record_id", None),
+            params.get("record_id", None),
         )
 
         if table_name == "equipment-collection":
@@ -359,9 +359,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
     # action: get_all / target: records
     elif action == "get_all" and target == "records":
         records = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).all(
-            view=param.get("view", None),
-            fields=param.get("fields", None),
-            formula=param.get("formula", None),
+            view=params.get("view", None),
+            fields=params.get("fields", None),
+            formula=params.get("formula", None),
             sort=["Order"],
             max_records=limit,
         )
