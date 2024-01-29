@@ -2264,10 +2264,6 @@ select {
   opacity: 0.75;
 }
 
-.opacity-30 {
-  opacity: 0.3;
-}
-
 .mix-blend-multiply {
   mix-blend-mode: multiply;
 }
@@ -2578,11 +2574,6 @@ select {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-gray-200:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-gray-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
@@ -2596,16 +2587,6 @@ select {
 .hover\:bg-stone-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(68 64 60 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-flamingo-200:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(248 175 149 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-flamingo-50:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(252 219 207 / var(--tw-bg-opacity));
 }
 
 .hover\:text-gray-300:hover {

@@ -261,12 +261,12 @@ function initCalendar() {
             };
 
             if (isInRange) {
-                buttonClasses += isSelected || isToday ? "font-semibold " : "hover:bg-gray-200 ";
+                buttonClasses += isSelected || isToday ? "font-semibold " : "hover:bg-gray-100 ";
             } else {
                 buttonClasses += "opacity-50 cursor-not-allowed ";
             };
 
-            buttonClasses += "disabled:opacity-50 disabled:cursor-not-allowed";
+            buttonClasses += "focus:df-focus-ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed";
 
             dayElement.className = "py-2";
             buttonElement.type = "button";

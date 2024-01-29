@@ -5,11 +5,13 @@ from utility.msg import send_msg
 from utility.hangul import encode_hangul_to_url, decode_url_to_hangul
 from utility.utils import (
     generate_random_string,
-    chap_gpt,
+    chat_gpt,
     notion,
     aws_s3,
     ncp_clova,
 )
+from konlpy.tag import Okt
+from collections import Counter
 from bs4 import BeautifulSoup
 import base64, ast
 
@@ -53,7 +55,7 @@ def is_description_text_included(content: str):
 
 
 def is_not_swearing(title_or_content: str):
-    openai_response = chap_gpt(
+    openai_response = chat_gpt(
         f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘."
     )
 
@@ -127,11 +129,8 @@ def moderate_input_data(request):
     return status, reason, msg, element
 
 
-def create_hashtag(title, content):
-    def request_hashtag_creation(plain_text):
-        return chap_gpt(
-            f"{plain_text}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
-        )
+def create_hashtag(content):
+    keywords = ""
 
     soup = BeautifulSoup(content, "html.parser")
     content = (
@@ -140,12 +139,19 @@ def create_hashtag(title, content):
         .replace("  ", " ")
         .replace("   ", " ")
     )
-    openai_response = request_hashtag_creation(content)
+    keywords = chat_gpt(
+        f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
+    )
 
-    if len(openai_response) == 0:
-        openai_response = request_hashtag_creation(title)
+    if keywords == "":
+        okt = Okt()
+        nouns = okt.nouns(content)
+        noun_counts = Counter(nouns)
+        keywords = noun_counts.most_common(3)
+        keywords = [word for word, count in keywords]
+        keywords = " ".join(["#" + word for word in keywords])
 
-    return openai_response
+    return keywords
 
 
 def find_in_content(target: str, content: str):
@@ -499,7 +505,7 @@ def notice(request):
                 "title": title,
                 "category": category,
                 "content": content,
-                "keyword": create_hashtag(title, content),
+                "keyword": create_hashtag(content),
                 "img_key_list": img_key_list,
                 "file": file,
                 "user": request.user,
@@ -596,7 +602,7 @@ def notice(request):
                 "title": title,
                 "category": category,
                 "content": content,
-                "keyword": create_hashtag(title, content),
+                "keyword": create_hashtag(content),
                 "img_key_list": img_key_list,
                 "file": file,
             }

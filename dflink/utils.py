@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test, set_headers, chap_gpt, short_io
+from utility.utils import reg_test, set_headers, chat_gpt, short_io
 import requests
 
 #
@@ -149,7 +149,7 @@ def is_well_known(target_url: str):
     if "://" in target_url:
         target_url = urlparse(target_url).netloc
 
-    openai_response = chap_gpt(f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+    openai_response = chat_gpt(f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
 
     if "True" in openai_response:
         result = True
@@ -169,7 +169,7 @@ def is_harmless(target_url: str):
     if "://" in target_url:
         target_url = urlparse(target_url).netloc
 
-    openai_response = chap_gpt(
+    openai_response = chat_gpt(
         f"{target_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
     )
 
@@ -222,7 +222,7 @@ def is_correct_expiration_date(expiration_date: str):
 
 
 def is_not_swearing(slug_or_title: str):
-    openai_response = chap_gpt(
+    openai_response = chat_gpt(
         f"'{slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
     )
 

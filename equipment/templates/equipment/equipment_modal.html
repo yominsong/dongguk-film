@@ -67,7 +67,7 @@
                                        @click="$refs.button.focus()">대여 목적</label>
                                 <div class="relative mt-2">
                                     <button id="id_purpose_select"
-                                            class="relative w-full cursor-default py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm rounded-md df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            class="relative w-full cursor-default py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm rounded-md df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                             type="button"
                                             x-ref="button"
                                             @keydown.arrow-up.stop.prevent="onButtonClick()"
@@ -119,8 +119,8 @@
                                                 :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter0 }}, 'text-gray-900': !(activeIndex === {{ forloop.counter0 }}) }">
                                                 <span x-state:on="Selected"
                                                       x-state:off="Not Selected"
-                                                      class="font-normal block mr-4 truncate"
-                                                      :class="{ 'font-semibold': selectedIndex === {{ forloop.counter0 }}, 'font-normal': !(selectedIndex === {{ forloop.counter0 }}) }">{{ purpose.keyword }}</span>
+                                                      class="font-semibold block mr-4 truncate"
+                                                      >{{ purpose.keyword }}</span>
                                                 <span x-state:on="Highlighted"
                                                       x-state:off="Not Highlighted"
                                                       class="font-normal block mt-1 mr-4 text-gray-500"
@@ -164,7 +164,7 @@
                                         <div class="flex">
                                             <button id="id_period_prev_month"
                                                     type="button"
-                                                    class="-my-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500">
+                                                    class="-my-1.5 flex flex-none items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed">
                                                 <span class="sr-only">지난달</span>
                                                 <svg class="h-5 w-5"
                                                      viewBox="0 0 20 20"
@@ -176,7 +176,7 @@
                                             </button>
                                             <button id="id_period_next_month"
                                                     type="button"
-                                                    class="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500">
+                                                    class="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center rounded-md p-1.5 text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed">
                                                 <span class="sr-only">다음달</span>
                                                 <svg class="h-5 w-5"
                                                      viewBox="0 0 20 20"
@@ -220,7 +220,7 @@
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_period_error" hidden></p>
                             </div>
                             <fieldset>
-                                <legend class="text-sm font-medium leading-6 text-gray-900">기자재 범주</legend>
+                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                 <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
                                     {% for category in category_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
@@ -247,7 +247,7 @@
                                         </label>
                                     {% endfor %}
                                 </div>
-                                <label for="id_category" hidden>기자재 범주</label>
+                                <label for="id_category" hidden>범주</label>
                                 <input id="id_category"
                                        class="class-first alt-radio"
                                        type="text"

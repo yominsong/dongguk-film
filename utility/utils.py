@@ -186,7 +186,7 @@ def reg_test(value: str, type: str):
     return result
 
 
-def chap_gpt(prompt: str):
+def chat_gpt(prompt: str):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
