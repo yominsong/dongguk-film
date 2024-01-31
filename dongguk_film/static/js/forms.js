@@ -11,7 +11,8 @@ const onlyUrls = document.querySelectorAll(".only-url");
 const onlySlugs = document.querySelectorAll(".only-slug");
 const labels = document.querySelectorAll("label");
 const class_radios = document.querySelectorAll(".class-radio");
-const radios = document.querySelectorAll(".radio"); // This line will be removed after all `radio` classes are changed to `class-radio`.
+const class_calendars = document.querySelectorAll(".class-calendar");
+
 let spins = document.querySelectorAll(".animate-spin");
 let buttons = document.querySelectorAll("button");
 let inputs = [];
@@ -128,6 +129,16 @@ function freezeForm(bool) {
             bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
         } else {
             bool ? input.readOnly = true : input.readOnly = false;
+        };
+    });
+
+    class_calendars.forEach(calendar => {
+        if (bool) {
+            calendar.classList.add("cursor-not-allowed");
+            calendar.classList.replace("bg-white", "bg-gray-100");
+        } else {
+            calendar.classList.remove("cursor-not-allowed");
+            calendar.classList.replace("bg-gray-100", "bg-white");
         };
     });
 
@@ -744,51 +755,6 @@ function displayButtonMsg(bool, button, type, text) {
         msg.hidden = true;
     };
 }
-
-// function disableFocusOutsideModal(modal) {
-//     lastFocusedElement = document.activeElement;
-
-//     const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details, [tabindex]:not([tabindex='-1'])");
-//     let tabIndexStorage = [];
-
-//     focusableElements.forEach((element, index) => {
-//         if (!modal.contains(element)) {
-//             if (element.getAttribute("tabindex") === "0") {
-//                 element.dataset.focusIndex = index;
-//                 tabIndexStorage.push(index);
-//             };
-//             element.setAttribute("tabindex", "-1");
-//         };
-//     });
-
-//     sessionStorage.setItem("focusableItems", JSON.stringify(tabIndexStorage));
-// }
-
-// function enableFocus() {
-//     const focusableElements = document.querySelectorAll("a, button, input, textarea, select, details");
-//     const storedIndexes = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
-//     let id_notice_detail_option_menu = document.getElementById("id_notice_detail_option_menu");
-//     let id_notice_detail_option_button = document.getElementById("id_notice_detail_option_button");
-
-//     focusableElements.forEach(element => {
-//         element.removeAttribute("tabindex");
-//     });
-
-//     storedIndexes.forEach(index => {
-//         const element = document.querySelector(`[data-focus-index='${index}']`);
-//         if (element) {
-//             element.setAttribute("tabindex", "0");
-//         };
-//     });
-
-//     sessionStorage.removeItem("focusableItems");
-
-//     if (lastFocusedElement) {
-//         if (lastFocusedElement === id_notice_detail_option_menu) { lastFocusedElement = id_notice_detail_option_button };
-//         setTimeout(() => { lastFocusedElement.focus() }, 300);
-//         setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);
-//     };
-// }
 
 function toggleFocusOnModal(isModalOpen, modal) {
     let focusableElements;

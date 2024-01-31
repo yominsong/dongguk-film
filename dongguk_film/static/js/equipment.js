@@ -17,10 +17,10 @@ const id_filter = document.getElementById("id_filter");
 const id_detail = document.getElementById("id_detail");
 const id_go_to_list = document.getElementById("id_go_to_list");
 
+let class_firsts = document.querySelectorAll(".class-first");
+
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
-
-let class_firsts = document.querySelectorAll(".class-first");
 
 let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
@@ -96,18 +96,18 @@ function isItOkayToCloseModal() {
     return id_filter_descr.hidden;
 }
 
-function executePurposeAction(purpose = null) {
+function executePurposeAction(selectedPurpose = null) {
     id_period.value = null;
     displayError(false, id_period);
 
-    if (purpose) {
-        id_purpose.value = purpose.priority;
+    if (selectedPurpose) {
+        id_purpose.value = selectedPurpose.priority;
         id_initialize_purpose.hidden = false;
         id_period.classList.add("class-first");
         id_period.classList.add("alt-calendar");
-        data_purpose.atLeast = purpose.at_least;
-        data_purpose.upTo = purpose.up_to;
-        data_purpose.max = purpose.max;
+        data_purpose.atLeast = selectedPurpose.at_least;
+        data_purpose.upTo = selectedPurpose.up_to;
+        data_purpose.max = selectedPurpose.max;
         data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
         data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
     } else {
@@ -122,50 +122,10 @@ function executePurposeAction(purpose = null) {
         data_period.startDateMax = "";
     };
 
+    initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter);
-    initCalendar();
 }
-
-// function executeWhenPurposeIsSelected(purpose) {
-//     id_purpose.value = purpose.priority;
-//     id_initialize_purpose.hidden = false;
-
-//     id_period.value = null;
-//     displayError(false, id_period);
-//     id_period.classList.add("class-first");
-//     id_period.classList.add("alt-calendar");
-
-//     class_firsts = document.querySelectorAll(".class-first");
-//     initValidation(class_firsts, id_filter);
-
-//     data_purpose.atLeast = purpose.at_least;
-//     data_purpose.upTo = purpose.up_to;
-//     data_purpose.max = purpose.max;
-//     data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
-//     data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
-//     initCalendar();
-// }
-
-// function executeToInitializePurpose() {
-//     id_purpose.value = null;
-//     id_initialize_purpose.hidden = true;
-
-//     id_period.value = null;
-//     displayError(false, id_period);
-//     id_period.classList.remove("class-first");
-//     id_period.classList.remove("alt-calendar");
-
-//     class_firsts = document.querySelectorAll(".class-first");
-//     initValidation(class_firsts, id_filter);
-
-//     data_purpose.atLeast = "";
-//     data_purpose.upTo = "";
-//     data_purpose.max = "";
-//     data_period.startDateMin = "";
-//     data_period.startDateMax = "";
-//     initCalendar();
-// }
 
 function executeWhenModalIsClosed() {
     isModalOpen = false;
@@ -429,6 +389,7 @@ function initCalendar() {
 
 function initForm() {
     const class_categories = document.querySelectorAll(".class-category");
+    const firstPurpose = document.getElementById("id_purpose_A");
 
     id_category.value = null;
 
@@ -497,6 +458,7 @@ function initForm() {
     };
 
     id_purpose.value = null;
+    firstPurpose.style.setProperty("border-top", "none", "important");
 
     if (urlParams.get("purpose") !== null &&
         urlParams.get("purpose") !== "") {
@@ -506,7 +468,6 @@ function initForm() {
     };
 
     id_period.value = null;
-
     initCalendar();
 
     inputs.forEach((input) => {
@@ -793,7 +754,6 @@ function initRequest() {
     window.addEventListener("pageshow", () => {
         if (id_modal != null) {
             class_firsts = document.querySelectorAll(".class-first");
-
             initValidation(class_firsts, id_filter);
 
             ["click", "keyup"].forEach(type => {
@@ -806,7 +766,6 @@ function initRequest() {
                             const id_filter_spin = code(id_filter, "_spin");
 
                             requestFilterEquipment();
-
                             displayButtonMsg(true, id_filter, "descr", "잠시만 기다려주세요.");
                             displayButtonMsg(false, id_filter, "error");
                             id_filter_spin.classList.remove("hidden");

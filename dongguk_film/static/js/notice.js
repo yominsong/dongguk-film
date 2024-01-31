@@ -595,7 +595,7 @@ function initForm() {
 }
 
 function updateForm(action, datasetObj = null) {
-    const id_modal_form = document.getElementById("id_modal_form");
+    const id_modal_notice = document.getElementById("id_modal_notice");
     const id_modal_share = document.getElementById("id_modal_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
@@ -609,7 +609,7 @@ function updateForm(action, datasetObj = null) {
     // action: create
     if (action === "create") {
         toggleWidthOfModalAndForm(true);
-        id_modal_form.hidden = false;
+        id_modal_notice.hidden = false;
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
@@ -661,7 +661,7 @@ function updateForm(action, datasetObj = null) {
     // action: share
     else if (action === "share") {
         toggleWidthOfModalAndForm(false);
-        if (id_modal_form !== null) { id_modal_form.hidden = true };
+        if (id_modal_notice !== null) { id_modal_notice.hidden = true };
         id_modal_share.hidden = false;
 
         class_keywords.forEach(keyword => {
