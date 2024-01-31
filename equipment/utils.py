@@ -4,7 +4,11 @@ from utility.utils import airtable
 from utility.msg import send_msg
 import json
 
-json_path = (
+#
+# Global variables
+#
+
+JSON_PATH = (
     "dongguk_film/static/json/equipment.json"
     if settings.DEBUG
     else "dongguk_film/staticfiles/json/equipment.json"
@@ -16,38 +20,46 @@ json_path = (
 
 
 def update_equipment_policy(request):
-    target_list = ["purpose", "limit", "category"]
+    target_list = ["category", "purpose", "limit"]
     result_list = []
 
     for target in target_list:
-        if target == "purpose":
+        if target == "category":
+            data = {
+                "table_name": "equipment-category",
+                "params": {
+                    "view": "Grid view",
+                    "fields": ["Name", "Priority", "Keyword"],
+                },
+            }
+        elif target == "purpose":
             data = {
                 "table_name": "equipment-purpose",
-                "param": {
+                "params": {
                     "view": "Grid view",
-                    "fields": ["Name", "Priority", "Keyword", "Up to", "At least", "Max", "In a nutshell"],
+                    "fields": [
+                        "Name",
+                        "Priority",
+                        "Keyword",
+                        "Up to",
+                        "At least",
+                        "Max",
+                        "In a nutshell",
+                    ],
                 },
             }
         elif target == "limit":
             data = {
                 "table_name": "equipment-limit",
-                "param": {
+                "params": {
                     "view": "Grid view",
-                },
-            }
-        elif target == "category":
-            data = {
-                "table_name": "equipment-category",
-                "param": {
-                    "view": "Grid view",
-                    "fields": ["Name", "Priority", "Keyword"],
                 },
             }
 
         record_list = airtable("get_all", "records", data=data)
         result_list.append({target: record_list})
 
-        with open(json_path, "r+") as f:
+        with open(JSON_PATH, "r+") as f:
             data = json.load(f)
             data[target] = record_list
             f.seek(0)
@@ -65,7 +77,7 @@ def update_equipment_policy(request):
 
 
 def get_equipment_policy(category_or_purpose: str):
-    with open(json_path, "r") as f:
+    with open(JSON_PATH, "r") as f:
         item_list = json.load(f)[category_or_purpose]
         f.close()
 

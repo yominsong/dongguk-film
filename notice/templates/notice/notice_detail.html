@@ -187,11 +187,12 @@
                 </ul>
             {% endif %}
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
-            <div class="mt-5 mb-3">
+            <div class="flex justify-start gap-2 mt-5 mb-3">
+                <span class="sr-only">해시태그:</span>
                 {% for keyword in notice.keyword.list %}
-                    <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
                         {{ keyword }}
-                    </p>
+                    </span>
                 {% endfor %}
             </div>
         </div>

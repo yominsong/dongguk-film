@@ -10,28 +10,35 @@ import random
 
 def equipment(request):
     query_string = ""
-    purpose = request.GET.get("purpose")
-    period = request.GET.get("period")
-    category = request.GET.get("category")
+    category = request.GET.get("category", "")
+    purpose = request.GET.get("purpose", "")
+    period = request.GET.get("period", "")
 
-    purpose_list = get_equipment_policy("purpose")
     category_list = get_equipment_policy("category")
 
-    split_period = period.split(",") if period is not None else None
-    days_from_now = int(split_period[0]) if period is not None else None
-    duration = int(split_period[1]) if period is not None else None
-
-    if purpose is None or category is None:
+    if (
+        (category is None or category == "")
+        or (
+            (purpose is not None and purpose != "") and (period is None or period == "")
+        )
+        or (
+            (purpose is None or purpose == "") and (period is not None and period != "")
+        )
+    ):
         base_url = reverse("equipment:equipment")
         query_string = {
-            "purpose": purpose_list[0]["priority"],
             "category": category_list[0]["priority"],
         }
         url = f"{base_url}?{urlencode(query_string)}"
 
         return redirect(url)
 
-    elif period:
+    purpose_list = get_equipment_policy("purpose")
+    split_period = period.split(",") if period is not None and period != "" else None
+    days_from_now = int(split_period[0]) if period is not None and period != "" else None
+    duration = int(split_period[1]) if period is not None and period != "" else None
+
+    if period:
         for purpose_item in purpose_list:
             at_least = purpose_item["at_least"]
             up_to = purpose_item["up_to"]
@@ -52,7 +59,7 @@ def equipment(request):
                     url = f"{base_url}?{urlencode(query_string)}"
 
                     return redirect(url)
-
+    
     image_list = get_hero_img("equipment")
 
     # Airtable
@@ -61,15 +68,23 @@ def equipment(request):
         "params": {
             "view": "Grid view",
             "fields": [
+                "ID",
                 "Thumbnail",
                 "Name",
                 "Subcategory keyword",
                 "Brand name",
                 "Model",
             ],
-            "formula": f"AND(FIND('{purpose}', {{Item purpose}} & ''), FIND('{category}', {{Category name}} & ''))",
         },
     }
+
+    if purpose is None or purpose == "":
+        data["params"]["formula"] = f"FIND('{category}', {{Category name}} & '')"
+    else:
+        data["params"][
+            "formula"
+        ] = f"AND(FIND('{category}', {{Category name}} & ''), FIND('{purpose}', {{Item purpose}} & ''))"
+
     equipment_list = airtable("get_all", "records", data=data)
     equipment_count = len(equipment_list)
 

@@ -1016,6 +1016,10 @@ select {
   margin-left: 1.5rem;
 }
 
+.ml-7 {
+  margin-left: 1.75rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }
@@ -1140,6 +1144,10 @@ select {
   height: 3rem;
 }
 
+.h-2 {
+  height: 0.5rem;
+}
+
 .h-4 {
   height: 1rem;
 }
@@ -1212,6 +1220,10 @@ select {
   width: 4rem;
 }
 
+.w-2 {
+  width: 0.5rem;
+}
+
 .w-32 {
   width: 8rem;
 }
@@ -1278,6 +1290,10 @@ select {
 
 .flex-1 {
   flex: 1 1 0%;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
 }
 
 .flex-none {
@@ -1480,6 +1496,11 @@ select {
        column-gap: 0.5rem;
 }
 
+.gap-x-3 {
+  -moz-column-gap: 0.75rem;
+       column-gap: 0.75rem;
+}
+
 .gap-y-4 {
   row-gap: 1rem;
 }
@@ -1492,6 +1513,12 @@ select {
   --tw-space-x-reverse: 0;
   margin-right: calc(2.5rem * var(--tw-space-x-reverse));
   margin-left: calc(2.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-x-6 > :not([hidden]) ~ :not([hidden]) {
@@ -1555,6 +1582,10 @@ select {
 .divide-gray-50 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(249 250 251 / var(--tw-divide-opacity));
+}
+
+.divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(255 255 255 / 0.05);
 }
 
 .justify-self-end {
@@ -1735,6 +1766,14 @@ select {
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
+.bg-current {
+  background-color: currentColor;
+}
+
+.bg-flamingo-400\/10 {
+  background-color: rgb(243 118 72 / 0.1);
+}
+
 .bg-flamingo-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(252 219 207 / var(--tw-bg-opacity));
@@ -1774,6 +1813,10 @@ select {
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
+.bg-gray-400\/10 {
+  background-color: rgb(156 163 175 / 0.1);
+}
+
 .bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
@@ -1792,6 +1835,11 @@ select {
 .bg-red-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity));
+}
+
+.bg-slate-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 245 249 / var(--tw-bg-opacity));
 }
 
 .bg-slate-50 {
@@ -1928,6 +1976,11 @@ select {
 .py-2\.5 {
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .py-4 {

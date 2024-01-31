@@ -3,14 +3,15 @@
 //
 
 const id_modal = document.getElementById("id_modal");
+const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
+const id_initialize_purpose = document.getElementById("id_initialize_purpose");
 const id_period = document.getElementById("id_period");
 const id_period_current_month = code(id_period, "_current_month");
 const id_period_prev_month = code(id_period, "_prev_month");
 const id_period_next_month = code(id_period, "_next_month");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_error = code(id_period, "_error");
-const id_category = document.getElementById("id_category");
 const id_filter = document.getElementById("id_filter");
 
 const id_detail = document.getElementById("id_detail");
@@ -19,7 +20,7 @@ const id_go_to_list = document.getElementById("id_go_to_list");
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
 
-const radioInputs = document.querySelectorAll("input[name='id_category']");
+let class_firsts = document.querySelectorAll(".class-first");
 
 let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
@@ -29,6 +30,18 @@ let currentHistoryLength = history.length;
 //
 // Sub functions
 //
+
+function hideNullBadge() {
+    const class_badges = document.querySelectorAll(".class-badge");
+
+    class_badges.forEach((badge) => {
+        if (badge.innerText.indexOf("None") !== -1) {
+            badge.classList.add("hidden");
+        };
+    });
+}
+
+hideNullBadge();
 
 function adjustDetailHeight() {
     if (id_detail !== null) {
@@ -83,17 +96,76 @@ function isItOkayToCloseModal() {
     return id_filter_descr.hidden;
 }
 
-function executeWhenPurposeIsSelected(purpose) {
-    id_purpose.value = purpose.priority;
+function executePurposeAction(purpose = null) {
     id_period.value = null;
-    data_purpose.atLeast = purpose.at_least;
-    data_purpose.upTo = purpose.up_to;
-    data_purpose.max = purpose.max;
-    data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
-    data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
+    displayError(false, id_period);
 
+    if (purpose) {
+        id_purpose.value = purpose.priority;
+        id_initialize_purpose.hidden = false;
+        id_period.classList.add("class-first");
+        id_period.classList.add("alt-calendar");
+        data_purpose.atLeast = purpose.at_least;
+        data_purpose.upTo = purpose.up_to;
+        data_purpose.max = purpose.max;
+        data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
+        data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
+    } else {
+        id_purpose.value = null;
+        id_initialize_purpose.hidden = true;
+        id_period.classList.remove("class-first");
+        id_period.classList.remove("alt-calendar");
+        data_purpose.atLeast = "";
+        data_purpose.upTo = "";
+        data_purpose.max = "";
+        data_period.startDateMin = "";
+        data_period.startDateMax = "";
+    };
+
+    class_firsts = document.querySelectorAll(".class-first");
+    initValidation(class_firsts, id_filter);
     initCalendar();
 }
+
+// function executeWhenPurposeIsSelected(purpose) {
+//     id_purpose.value = purpose.priority;
+//     id_initialize_purpose.hidden = false;
+
+//     id_period.value = null;
+//     displayError(false, id_period);
+//     id_period.classList.add("class-first");
+//     id_period.classList.add("alt-calendar");
+
+//     class_firsts = document.querySelectorAll(".class-first");
+//     initValidation(class_firsts, id_filter);
+
+//     data_purpose.atLeast = purpose.at_least;
+//     data_purpose.upTo = purpose.up_to;
+//     data_purpose.max = purpose.max;
+//     data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
+//     data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
+//     initCalendar();
+// }
+
+// function executeToInitializePurpose() {
+//     id_purpose.value = null;
+//     id_initialize_purpose.hidden = true;
+
+//     id_period.value = null;
+//     displayError(false, id_period);
+//     id_period.classList.remove("class-first");
+//     id_period.classList.remove("alt-calendar");
+
+//     class_firsts = document.querySelectorAll(".class-first");
+//     initValidation(class_firsts, id_filter);
+
+//     data_purpose.atLeast = "";
+//     data_purpose.upTo = "";
+//     data_purpose.max = "";
+//     data_period.startDateMin = "";
+//     data_period.startDateMax = "";
+//     initCalendar();
+// }
 
 function executeWhenModalIsClosed() {
     isModalOpen = false;
@@ -119,8 +191,7 @@ function initSearchBar() {
             id_submit_query.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     urlParams.delete("page");
-                    urlParams.delete("q");
-                    urlParams.append("q", id_query.value);
+                    urlParams.set("q", id_query.value);
                     location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
                     id_query.readOnly = true;
                     id_submit_query.disabled = true;
@@ -158,6 +229,7 @@ function initCalendar() {
     let currentDate;
     let startDate = null;
     let endDate = null;
+    let durationToDisplay;
 
     data_period.startDate = "";
     data_period.endDate = "";
@@ -298,7 +370,8 @@ function initCalendar() {
             data_period.endDate = "";
             endDate = null;
             data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
-            id_period_help.innerText = `희망 반납일을 ${data_period.startDate}부터 ${data_period.endDateMax}까지의 범위 내에서 선택해주세요.`;
+            id_period_help.hidden = false;
+            id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
             id_period_error.hidden = true;
             id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
         } else {
@@ -308,15 +381,19 @@ function initCalendar() {
                 data_period.endDate = "";
                 endDate = null;
                 data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
-                id_period_help.innerText = `희망 반납일을 ${data_period.startDate}부터 ${data_period.endDateMax}까지의 범위 내에서 선택해주세요.`;
+                id_period_help.hidden = false;
+                id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
                 id_period_error.hidden = true;
                 id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
             } else {
                 endDate = date;
                 data_period.endDate = formatDate(endDate);
-                id_period_help.innerText = `희망 대여일이 ${data_period.startDate}, 희망 반납일이 ${data_period.endDate}으로 선택되었어요.`;
+                durationToDisplay = calculateDateDifference(data_period.startDate, data_period.endDate);
+                id_period.value += `,${durationToDisplay}`;
+                durationToDisplay === 0 ? durationToDisplay = "당" : null;
+                id_period_help.hidden = false;
+                id_period_help.innerText = `대여 기간이 ${durationToDisplay}일(${data_period.startDate} ~ ${data_period.endDate})로 선택되었어요.`;
                 id_period_error.hidden = true;
-                id_period.value += `,${calculateDateDifference(data_period.startDate, data_period.endDate)}`;
             };
         };
 
@@ -337,27 +414,21 @@ function initCalendar() {
 
     updateCalendar();
 
-    if (data_period.startDate === "") {
-        id_period_help.innerText = `희망 대여일을 ${data_period.startDateMin}부터 ${data_period.startDateMax}까지의 범위 내에서 선택해주세요.`;
+    if (data_period.startDateMin === "") {
+        id_period_help.hidden = true;
+    } else if (data_period.startDate === "") {
+        id_period_help.hidden = false;
+        id_period_help.innerText = `희망 대여일을 ${data_period.startDateMin} ~ ${data_period.startDateMax} 범위 내에서 선택해주세요.`;
     } else {
-        id_period_help.innerText = `희망 대여일이 ${data_period.startDate}, 희망 반납일이 ${data_period.endDate}으로 선택되었어요.`;
+        durationToDisplay = duration
+        durationToDisplay === 0 ? durationToDisplay = "당" : null;
+        id_period_help.hidden = false;
+        id_period_help.innerText = `대여 기간이 ${durationToDisplay}일(${data_period.startDate} ~ ${data_period.endDate})로 선택되었어요.`;
     };
 }
 
 function initForm() {
     const class_categories = document.querySelectorAll(".class-category");
-
-    id_purpose.value = null;
-
-    if (urlParams.get("purpose") !== null) {
-        const currentPurpose = code("id_purpose_", urlParams.get("purpose"));
-
-        currentPurpose.click();
-    };
-
-    id_period.value = null;
-
-    initCalendar();
 
     id_category.value = null;
 
@@ -425,6 +496,19 @@ function initForm() {
         currentCategory.click();
     };
 
+    id_purpose.value = null;
+
+    if (urlParams.get("purpose") !== null &&
+        urlParams.get("purpose") !== "") {
+        const currentPurpose = code("id_purpose_", urlParams.get("purpose"));
+
+        currentPurpose.click();
+    };
+
+    id_period.value = null;
+
+    initCalendar();
+
     inputs.forEach((input) => {
         displayError(false, input);
     });
@@ -433,8 +517,9 @@ function initForm() {
 }
 
 function updateForm(action) {
-    const id_modal_form = document.getElementById("id_modal_form");
-    const id_modal_share = document.getElementById("id_modal_share");
+    const id_modal_filter = code(id_modal, "_filter");
+    const id_modal_cart = code(id_modal, "_cart");
+    const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
     // action: all
@@ -446,7 +531,8 @@ function updateForm(action) {
 
     // action: filter
     if (action === "filter") {
-        id_modal_form.hidden = false;
+        id_modal_filter.hidden = false;
+        id_modal_cart.hidden = true;
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
@@ -457,9 +543,23 @@ function updateForm(action) {
         id_filter.classList.replace("hidden", "inline-flex");
     }
 
+    // action: cart
+    else if (action === "cart") {
+        if (id_modal_filter !== null) { id_modal_filter.hidden = true };
+        if (id_modal_share !== null) { id_modal_share.hidden = true };
+        id_modal_cart.hidden = false;
+
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "장바구니";
+        });
+
+        id_filter.classList.replace("inline-flex", "hidden");
+    }
+
     // action: share
     else if (action === "share") {
-        if (id_modal_form !== null) { id_modal_form.hidden = true };
+        if (id_modal_filter !== null) { id_modal_filter.hidden = true };
+        if (id_modal_cart !== null) { id_modal_cart.hidden = true };
         id_modal_share.hidden = false;
 
         class_keywords.forEach(keyword => {
@@ -475,6 +575,7 @@ function updateForm(action) {
 
 function initModal() {
     const class_filters = document.querySelectorAll(".class-filter");
+    const class_carts = document.querySelectorAll(".class-cart");
     const class_shares = document.querySelectorAll(".class-share");
 
     class_filters.forEach(filter => {
@@ -482,6 +583,16 @@ function initModal() {
             filter.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     updateForm("filter");
+                };
+            });
+        });
+    });
+
+    class_carts.forEach(cart => {
+        ["click", "keyup"].forEach(type => {
+            cart.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("cart");
                 };
             });
         });
@@ -660,13 +771,28 @@ goToList();
 
 function requestFilterEquipment() {
     freezeForm(true);
-    location.href = `${originLocation}/equipment/?purpose=${id_purpose.value}&period=${id_period.value}&category=${id_category.value}`;
+
+    if (id_purpose.value !== "" && id_period.value !== "") {
+        urlParams.set("category", id_category.value);
+        urlParams.set("purpose", id_purpose.value);
+        urlParams.set("period", id_period.value);
+    } else if (id_purpose.value !== "") {
+        urlParams.set("category", id_category.value);
+        urlParams.set("purpose", id_purpose.value);
+        urlParams.delete("period");
+    } else {
+        urlParams.set("category", id_category.value);
+        urlParams.delete("purpose");
+        urlParams.delete("period");
+    };
+
+    location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
 }
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
         if (id_modal != null) {
-            const class_firsts = document.querySelectorAll(".class-first");
+            class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_filter);
 

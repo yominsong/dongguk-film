@@ -59,27 +59,25 @@
                     검색 필터
                 </div>
                 <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
+                    <span class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                        <span class="sr-only">범주:</span>
+                        {{ category.keyword }}
+                    </span>
+                    <span class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
                         <span class="sr-only">대여 목적:</span>
                         {{ purpose.keyword }}
                     </span>
-                    {% if period.duration is not None %}
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
-                            <span class="sr-only">대여 기간:</span>
-                            {% if period.duration == 0 %}
-                                당일
-                            {% else %}
-                                {{ period.duration }}일
-                            {% endif %}
-                        </span>
-                    {% endif %}
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
-                        <span class="sr-only">기자재 범주:</span>
-                        {{ category.keyword }}
+                    <span class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                        <span class="sr-only">대여 기간:</span>
+                        {% if period.duration == 0 %}
+                            당일
+                        {% else %}
+                            {{ period.duration }}일
+                        {% endif %}
                     </span>
                 </div>
             </div>
-            <div class="flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+            <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                  tabindex="0">
                 <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                 <div class="flex justify-start items-center gap-x-2">
@@ -94,7 +92,7 @@
                     장바구니
                 </div>
                 <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">0개</span>
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
                 </div>
             </div>
         </div>
@@ -198,8 +196,9 @@
                                             재고 없음
                                         </span>
                                     {% endif %} -->
+                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.collection_id }}</span>
                                     {% if equipment.subcategory != None %}
-                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">{{ equipment.subcategory }}</span>
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.subcategory }}</span>
                                     {% endif %}
                                 </div>
                             </a>

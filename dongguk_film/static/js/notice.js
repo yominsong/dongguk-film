@@ -149,7 +149,8 @@ function initSearchBar() {
         ["click", "keyup"].forEach(type => {
             id_submit_query.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    location.href = `${originLocation}/notice/?q=${id_query.value}`;
+                    urlParams.set("q", id_query.value);
+                    location.href = `${originLocation}/notice/?${urlParams.toString()}`;
                     id_query.readOnly = true;
                     id_submit_query.disabled = true;
                 };

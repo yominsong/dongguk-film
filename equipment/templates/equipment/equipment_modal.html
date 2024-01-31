@@ -54,17 +54,73 @@
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
-                        <div id="id_modal_form" class="space-y-5">
-                            <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [
+                        <div id="id_modal_filter" class="space-y-5">
+                            <fieldset>
+                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
+                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                    {% for category in category_list %}
+                                        <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                            <input id="id_category_{{ category.priority }}"
+                                                   name="id_category"
+                                                   type="radio"
+                                                   value="{{ category.priority }}"
+                                                   class="sr-only class-first class-radio class-category"
+                                                   aria-labelledby="id_category_{{ category.priority }}_label">
+                                            <span class="flex flex-1">
+                                                <span id="id_category_{{ category.priority }}_label"
+                                                      class="radio-title block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline }}</span>
+                                            </span>
+                                            <span id="id_category_{{ category.priority }}_descr" hidden></span>
+                                            <span id="id_category_{{ category.priority }}_error" hidden></span>
+                                            <svg class="h-5 w-5 ml-2 text-flamingo"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="pointer-events-none absolute -inset-px rounded-md"
+                                                  aria-hidden="true"></span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                <label for="id_category" hidden>범주</label>
+                                <input id="id_category"
+                                       class="class-first alt-radio"
+                                       type="text"
+                                       value=""
+                                       required
+                                       hidden>
+                                <p class="mt-2 text-sm text-gray-500" id="id_category_descr" hidden></p>
+                                <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
+                            </fieldset>
+                            <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '대여 목적을 선택하세요.', 'at_least': '', 'up_to': '', 'max': '' },
                                 {% for purpose in purpose_list %}
                                     { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'at_least': '{{ purpose.at_least }}', 'up_to': '{{ purpose.up_to }}', 'max': '{{ purpose.max }}' }
                                     {% if not forloop.last %},&nbsp;{% endif %}
                                 {% endfor %}
                                 ] })" x-init="init()">
-                                <label id="id_purpose_label"
-                                       for="id_purpose"
-                                       class="block text-sm font-medium leading-6 text-gray-900"
-                                       @click="$refs.button.focus()">대여 목적</label>
+                                <div class="flex justify-between items-center">
+                                    <label id="id_purpose_label"
+                                           for="id_purpose"
+                                           class="block text-sm font-medium leading-6 text-gray-900"
+                                           @click="$refs.button.focus()">대여 목적</label>
+                                    <div id="id_initialize_purpose"
+                                         class="text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                                         tabindex="0"
+                                         @click="choose(0); executePurposeAction()"
+                                         hidden>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             class="w-4 h-4"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                        </svg>
+                                        <span class="sr-only">선택 초기화</span>
+                                    </div>
+                                </div>
                                 <div class="relative mt-2">
                                     <button id="id_purpose_select"
                                             class="relative w-full cursor-default py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm rounded-md df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -95,8 +151,8 @@
                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto divide-y divide-gray-100 rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                         x-max="1"
                                         @click.away="open = false"
-                                        @keydown.enter.stop.prevent="onOptionSelect(); executeWhenPurposeIsSelected(selected)"
-                                        @keydown.space.stop.prevent="onOptionSelect(); executeWhenPurposeIsSelected(selected)"
+                                        @keydown.enter.stop.prevent="onOptionSelect(); executePurposeAction(selected)"
+                                        @keydown.space.stop.prevent="onOptionSelect(); executePurposeAction(selected)"
                                         @keydown.escape="onEscape()"
                                         @keydown.arrow-up.prevent="onArrowUp()"
                                         @keydown.arrow-down.prevent="onArrowDown()"
@@ -106,30 +162,33 @@
                                         aria-labelledby="id_purpose_label"
                                         :aria-activedescendant="activeDescendant"
                                         aria-activedescendant="">
+                                        <li class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hidden"
+                                            role="option">
+                                            <span class="font-semibold block mr-4 truncate">대여 목적을 선택하세요.</span>
+                                        </li>
                                         {% for purpose in purpose_list %}
                                             <li x-state:on="Highlighted"
                                                 x-state:off="Not Highlighted"
                                                 class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
                                                 id="id_purpose_{{ purpose.priority }}"
                                                 role="option"
-                                                @click="choose({{ forloop.counter0 }}); executeWhenPurposeIsSelected(selected)"
+                                                @click="choose({{ forloop.counter }}); executePurposeAction(selected)"
                                                 @mouseenter="onMouseEnter($event)"
-                                                @mousemove="onMouseMove($event, {{ forloop.counter0 }})"
+                                                @mousemove="onMouseMove($event, {{ forloop.counter }})"
                                                 @mouseleave="onMouseLeave($event)"
-                                                :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter0 }}, 'text-gray-900': !(activeIndex === {{ forloop.counter0 }}) }">
+                                                :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter }}, 'text-gray-900': !(activeIndex === {{ forloop.counter }}) }">
                                                 <span x-state:on="Selected"
                                                       x-state:off="Not Selected"
-                                                      class="font-semibold block mr-4 truncate"
-                                                      >{{ purpose.keyword }}</span>
+                                                      class="font-semibold block mr-4 truncate">{{ purpose.keyword }}</span>
                                                 <span x-state:on="Highlighted"
                                                       x-state:off="Not Highlighted"
                                                       class="font-normal block mt-1 mr-4 text-gray-500"
-                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter0 }}, 'text-gray-500': !(activeIndex === {{ forloop.counter0 }}) }">{{ purpose.in_a_nutshell }}</span>
+                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ purpose.in_a_nutshell }}</span>
                                                 <span x-state:on="Highlighted"
                                                       x-state:off="Not Highlighted"
                                                       class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
-                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter0 }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter0 }}) }"
-                                                      x-show="selectedIndex === {{ forloop.counter0 }}"
+                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
+                                                      x-show="selectedIndex === {{ forloop.counter }}"
                                                       style="display: none">
                                                     <svg class="h-5 w-5"
                                                          viewBox="0 0 20 20"
@@ -201,11 +260,15 @@
                                     </div>
                                     <div id="id_period_calendar"
                                          class="grid grid-cols-7 text-sm rounded-md df-ring-inset-gray bg-white"></div>
-                                        <p class="mt-2 text-sm text-gray-500" id="id_period_calendar_descr" hidden></p>
-                                        <p class="mt-2 text-sm text-flamingo-600" id="id_period_calendar_error" hidden></p>
+                                    <p class="mt-2 text-sm text-gray-500"
+                                       id="id_period_calendar_descr"
+                                       hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_period_calendar_error"
+                                       hidden></p>
                                 </div>
                                 <input id="id_period"
-                                       class="class-first alt-calendar"
+                                       class=""
                                        type="text"
                                        value=""
                                        data-start-date=""
@@ -219,45 +282,8 @@
                                 <p class="mt-2 text-sm text-gray-500" id="id_period_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_period_error" hidden></p>
                             </div>
-                            <fieldset>
-                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
-                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                    {% for category in category_list %}
-                                        <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
-                                            <input id="id_category_{{ category.priority }}"
-                                                   name="id_category"
-                                                   type="radio"
-                                                   value="{{ category.priority }}"
-                                                   class="sr-only class-first class-radio class-category"
-                                                   aria-labelledby="id_category_{{ category.priority }}_label">
-                                            <span class="flex flex-1">
-                                                <span id="id_category_{{ category.priority }}_label"
-                                                      class="radio-title block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline }}</span>
-                                            </span>
-                                            <span id="id_category_{{ category.priority }}_descr" hidden></span>
-                                            <span id="id_category_{{ category.priority }}_error" hidden></span>
-                                            <svg class="h-5 w-5 ml-2 text-flamingo"
-                                                 viewBox="0 0 20 20"
-                                                 fill="currentColor"
-                                                 aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="pointer-events-none absolute -inset-px rounded-md"
-                                                  aria-hidden="true"></span>
-                                        </label>
-                                    {% endfor %}
-                                </div>
-                                <label for="id_category" hidden>범주</label>
-                                <input id="id_category"
-                                       class="class-first alt-radio"
-                                       type="text"
-                                       value=""
-                                       required
-                                       hidden>
-                                <p class="mt-2 text-sm text-gray-500" id="id_category_descr" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
-                            </fieldset>
                         </div>
+                        <div id="id_modal_cart" class="mt-3 -mb-5" hidden>장바구니 영역</div>
                         <div id="id_modal_share" class="mt-3 -mb-5" hidden>
                             <div class="flex relative shadow-sm">
                                 <label for="id_url"

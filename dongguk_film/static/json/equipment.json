@@ -1,4 +1,61 @@
 {
+    "category": [
+        {
+            "name": "A \uce74\uba54\ub77c",
+            "priority": "A",
+            "keyword": "\uce74\uba54\ub77c"
+        },
+        {
+            "name": "B \uce74\uba54\ub77c \uc561\uc138\uc11c\ub9ac",
+            "priority": "B",
+            "keyword": "\uce74\uba54\ub77c \uc561\uc138\uc11c\ub9ac"
+        },
+        {
+            "name": "C \uce74\uba54\ub77c \uc11c\ud3ec\ud2b8",
+            "priority": "C",
+            "keyword": "\uce74\uba54\ub77c \uc11c\ud3ec\ud2b8"
+        },
+        {
+            "name": "D \ub80c\uc988",
+            "priority": "D",
+            "keyword": "\ub80c\uc988"
+        },
+        {
+            "name": "E \ud544\ud130",
+            "priority": "E",
+            "keyword": "\ud544\ud130"
+        },
+        {
+            "name": "F \uc870\uba85",
+            "priority": "F",
+            "keyword": "\uc870\uba85"
+        },
+        {
+            "name": "G \uc870\uba85 \uc561\uc138\uc11c\ub9ac",
+            "priority": "G",
+            "keyword": "\uc870\uba85 \uc561\uc138\uc11c\ub9ac"
+        },
+        {
+            "name": "H \uc624\ub514\uc624 \ub808\ucf54\ub354",
+            "priority": "H",
+            "keyword": "\uc624\ub514\uc624 \ub808\ucf54\ub354"
+        },
+        {
+            "name": "I \ub9c8\uc774\ud06c",
+            "priority": "I",
+            "keyword": "\ub9c8\uc774\ud06c"
+        },
+        {
+            "name": "J \ub9c8\uc774\ud06c \uc561\uc138\uc11c\ub9ac",
+            "priority": "J",
+            "keyword": "\ub9c8\uc774\ud06c \uc561\uc138\uc11c\ub9ac"
+        },
+        {
+            "name": "K \uadf8\ub9bd",
+            "priority": "K",
+            "keyword": "\uadf8\ub9bd"
+        }
+    ],
     "purpose": [
         {
             "name": "A \uad50\uc218",
@@ -7,7 +64,7 @@
             "at_least": 3,
             "up_to": 7,
             "max": 2,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 7\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 2\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 7\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 2\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "B \uc878\uc5c5",
@@ -16,7 +73,7 @@
             "at_least": 3,
             "up_to": 18,
             "max": 8,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 18\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 8\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 18\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 8\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "C \ucea1\uc2a4\ud1a4 \ub514\uc790\uc778",
@@ -25,7 +82,7 @@
             "at_least": 3,
             "up_to": 14,
             "max": 7,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 14\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 14\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "D \ucd2c\uc601",
@@ -34,7 +91,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 5,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "E \uc81c\uc791 \uc6cc\ud06c\uc20d",
@@ -43,7 +100,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 5,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "F \uac1c\uc778",
@@ -52,7 +109,7 @@
             "at_least": 3,
             "up_to": 5,
             "max": 5,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 5\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 5\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 5\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "G 4\ud559\ub144 \ubc29\ud559",
@@ -61,7 +118,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 7,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "H 3\ud559\ub144 \ubc29\ud559",
@@ -70,7 +127,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 7,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "I 2\ud559\ub144 \ubc29\ud559",
@@ -79,7 +136,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 7,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "J 1\ud559\ub144 \ubc29\ud559",
@@ -88,7 +145,7 @@
             "at_least": 3,
             "up_to": 10,
             "max": 7,
-            "in_a_nutshell": "\ud76c\ub9dd \ub300\uc5ec\uc77c\ub85c\ubd80\ud130 \ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c \ub3d9\uc548 \ub300\uc5ec \uac00\ub2a5"
+            "in_a_nutshell": "\ucd5c\uc18c 3\uc77c ~ \ucd5c\ub300 10\uc77c \uc804 \uc2e0\uccad \uac00\ub2a5, \ucd5c\ub300 7\uc77c\uac04 \ub300\uc5ec \uac00\ub2a5"
         }
     ],
     "limit": [
@@ -259,8 +316,8 @@
             "brand_name": null,
             "group_collection_id": [
                 "F3AA104",
-                "F3Aa106",
-                "F3Aa107",
+                "F3AA106",
+                "F3AA107",
                 "F3AM113",
                 "F3L1117",
                 "F3L2118",
@@ -276,7 +333,7 @@
             "subcategory priority": null,
             "brand_name": null,
             "group_collection_id": [
-                "F3Aa105",
+                "F3AA105",
                 "F3AL109",
                 "F3AL110",
                 "F3AL111",
@@ -508,63 +565,6 @@
                 "G0UT128"
             ],
             "limit": 1
-        }
-    ],
-    "category": [
-        {
-            "name": "A \uce74\uba54\ub77c",
-            "priority": "A",
-            "keyword": "\uce74\uba54\ub77c"
-        },
-        {
-            "name": "B \uce74\uba54\ub77c \uc561\uc138\uc11c\ub9ac",
-            "priority": "B",
-            "keyword": "\uce74\uba54\ub77c \uc561\uc138\uc11c\ub9ac"
-        },
-        {
-            "name": "C \uce74\uba54\ub77c \uc11c\ud3ec\ud2b8",
-            "priority": "C",
-            "keyword": "\uce74\uba54\ub77c \uc11c\ud3ec\ud2b8"
-        },
-        {
-            "name": "D \ub80c\uc988",
-            "priority": "D",
-            "keyword": "\ub80c\uc988"
-        },
-        {
-            "name": "E \ud544\ud130",
-            "priority": "E",
-            "keyword": "\ud544\ud130"
-        },
-        {
-            "name": "F \uc870\uba85",
-            "priority": "F",
-            "keyword": "\uc870\uba85"
-        },
-        {
-            "name": "G \uc870\uba85 \uc561\uc138\uc11c\ub9ac",
-            "priority": "G",
-            "keyword": "\uc870\uba85 \uc561\uc138\uc11c\ub9ac"
-        },
-        {
-            "name": "H \uc624\ub514\uc624 \ub808\ucf54\ub354",
-            "priority": "H",
-            "keyword": "\uc624\ub514\uc624 \ub808\ucf54\ub354"
-        },
-        {
-            "name": "I \ub9c8\uc774\ud06c",
-            "priority": "I",
-            "keyword": "\ub9c8\uc774\ud06c"
-        },
-        {
-            "name": "J \ub9c8\uc774\ud06c \uc561\uc138\uc11c\ub9ac",
-            "priority": "J",
-            "keyword": "\ub9c8\uc774\ud06c \uc561\uc138\uc11c\ub9ac"
-        },
-        {
-            "name": "K \uadf8\ub9bd",
-            "priority": "K",
-            "keyword": "\uadf8\ub9bd"
         }
     ]
 }

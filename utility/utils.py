@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
-# Global constants and variables
+# Global variables
 #
 
 NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
@@ -298,9 +298,7 @@ def short_io(action: str, request=None, limit: int = None):
         link_id = request.GET["link_id"]
         slug = request.GET["slug"]
 
-        url = (
-            f"https://api.short.io/links/expand?domain=dgufilm.link&path={slug}"
-        )
+        url = f"https://api.short.io/links/expand?domain=dgufilm.link&path={slug}"
         response = requests.get(url, headers=set_headers("SHORT_IO")).json()
         target_url = response["originalURL"]
         title = response["title"]
@@ -367,7 +365,22 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         )
         record_list = []
 
-        if table_name == "equipment-purpose":
+        if table_name == "equipment-category":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    category = {
+                        "name": fields["Name"],
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                    }
+
+                    record_list.append(category)
+            except:
+                pass
+
+        elif table_name == "equipment-purpose":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -408,21 +421,6 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             except:
                 pass
 
-        elif table_name == "equipment-category":
-            try:
-                for record in records:
-                    fields = record["fields"]
-
-                    category = {
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
-                    }
-
-                    record_list.append(category)
-            except:
-                pass
-
         elif table_name == "equipment-collection":
             try:
                 for record in records:
@@ -430,6 +428,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
 
                     collection = {
                         "record_id": record["id"],
+                        "collection_id": fields["ID"],
                         "thumbnail": fields["Thumbnail"][0]["url"],
                         "name": fields["Name"],
                         "subcategory": fields.get("Subcategory keyword", [None])[0],

@@ -149,16 +149,16 @@ def send_msg(request, type: str, channel: str, extra=None):
     # type: "UEP"
     elif type == "UEP":
         sub_content = ""
-        for i, item in enumerate(extra[0]["purpose"]):
-            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
-            sub_content += new_line
-        sub_content += "\n"
-        sub_content += f"\nㆍ[한도] {len(extra[1]['limit'])}개"
-        sub_content += "\n"
-        for i, item in enumerate(extra[2]["category"]):
+        for i, item in enumerate(extra[0]["category"]):
             new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
+        sub_content += "\n"
+        for i, item in enumerate(extra[1]["purpose"]):
+            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
+            sub_content += new_line
+        sub_content += "\n"
+        sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개 정책"
         main_content = {
             "important": False,
             "picture_url": default_picture_url,

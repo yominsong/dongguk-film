@@ -149,7 +149,7 @@
             <!-- Content -->
             <div id="id_detail_content"
                  class="pt-4 sm:mt-0 lg:col-start-2 lg:row-start-1 lg:self-start">
-                 <div id="id_detail_content_padding_top" class="sm:pt-[110px]"></div>
+                <div id="id_detail_content_padding_top" class="sm:pt-[110px]"></div>
                 <section aria-labelledby="details-heading">
                     <h2 id="details-heading" class="sr-only">기자재 정보</h2>
                     <div class="divide-y divide-gray-100 border-t border-t-gray-100 sm:border-t-0">
@@ -199,16 +199,31 @@
                                 <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
-                                        <ul role="list" class="list-disc space-y-4 pl-5">
+                                        <ul role="list" class="divide-y space-y-6 divide-white/5">
                                             {% for purpose in purpose_list %}
-                                                <li>
-                                                    <div class="relative flex items-center">
-                                                        <div class="min-w-0 flex-1">
-                                                            <p class="text-sm font-medium">{{ purpose.keyword }}</p>
-                                                            <p class="text-sm text-gray-500">
+                                                <li class="relative flex items-center space-x-4">
+                                                    <div class="min-w-0 flex-auto">
+                                                        <div class="flex items-center gap-x-3">
+                                                            {% if purpose.available %}
+                                                                <div class="flex-none rounded-full p-1 text-flamingo-400 bg-flamingo-400/10">
+                                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="flex-none rounded-full p-1 text-gray-400 bg-gray-400/10">
+                                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                                </div>
+                                                            {% endif %}
+                                                            <h2 class="min-w-0 text-sm font-semibold leading-6">
+                                                                <div class="flex">
+                                                                    <span class="truncate">{{ purpose.keyword }}</span>
+                                                                </div>
+                                                            </h2>
+                                                        </div>
+                                                        <div class="ml-7 mt-1 flex items-center text-sm text-gray-500">
+                                                            <p>
                                                                 {% if purpose.available %}
                                                                     {{ purpose.in_a_nutshell }}
-                                                                {% elif not purpose.available %}
+                                                                {% else %}
                                                                     대여 불가
                                                                 {% endif %}
                                                             </p>
@@ -346,7 +361,7 @@
                     <h2 id="options-heading" class="sr-only">기자재 선택</h2>
                     <div class="mt-6">
                         <button type="submit"
-                                class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                             장바구니에 담기
                         </button>
                     </div>
