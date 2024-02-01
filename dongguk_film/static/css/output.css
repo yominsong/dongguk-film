@@ -1712,10 +1712,6 @@ select {
   border-top-width: 2px;
 }
 
-.border-t-0 {
-  border-top-width: 0px;
-}
-
 .border-flamingo-300 {
   --tw-border-opacity: 1;
   border-color: rgb(246 147 111 / var(--tw-border-opacity));

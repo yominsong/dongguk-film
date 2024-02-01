@@ -97,7 +97,6 @@ function isItOkayToCloseModal() {
 }
 
 function executePurposeAction(selectedPurpose = null) {
-    id_period.value = null;
     displayError(false, id_period);
 
     if (selectedPurpose) {
@@ -388,6 +387,7 @@ function initCalendar() {
 }
 
 function initForm() {
+    const id_purpose_placeholder = code(id_purpose, "_placeholder");
     const class_categories = document.querySelectorAll(".class-category");
     const firstPurpose = document.getElementById("id_purpose_A");
 
@@ -458,6 +458,7 @@ function initForm() {
     };
 
     id_purpose.value = null;
+    id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
     if (urlParams.get("purpose") !== null &&

@@ -16,6 +16,8 @@ def equipment(request):
 
     category_list = get_equipment_policy("category")
 
+    # 쿼리 스트링 유효성 검사 후 결과에 따라 리다이렉트 될 수 있어야 함
+
     if (
         (category is None or category == "")
         or (

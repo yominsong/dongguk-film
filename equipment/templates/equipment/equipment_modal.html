@@ -162,8 +162,10 @@
                                         aria-labelledby="id_purpose_label"
                                         :aria-activedescendant="activeDescendant"
                                         aria-activedescendant="">
-                                        <li class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hidden"
-                                            role="option">
+                                        <li id="id_purpose_placeholder"
+                                            class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hidden"
+                                            role="option"
+                                            @click="choose(0)">
                                             <span class="font-semibold block mr-4 truncate">대여 목적을 선택하세요.</span>
                                         </li>
                                         {% for purpose in purpose_list %}
