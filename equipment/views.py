@@ -7,6 +7,21 @@ from utility.img import get_hero_img
 from utility.utils import airtable
 import random
 
+#
+# Sub functions
+#
+
+
+def is_not_two_numeric_format(period):
+    parts = period.split(",")
+
+    return not (len(parts) == 2 and all(part.isnumeric() for part in parts))
+
+
+#
+# Main functions
+#
+
 
 def equipment(request):
     query_string = ""
@@ -20,7 +35,10 @@ def equipment(request):
     if (
         (not category or (bool(purpose) != bool(period)))
         or (category not in [item["priority"] for item in category_list])
-        or (bool(purpose) and purpose not in [item["priority"] for item in purpose_list])
+        or (
+            bool(purpose) and purpose not in [item["priority"] for item in purpose_list]
+        )
+        or (bool(period) and is_not_two_numeric_format(period))
     ):
         base_url = reverse("equipment:equipment")
         query_string = {
