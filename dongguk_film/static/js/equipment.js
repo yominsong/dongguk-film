@@ -3,24 +3,20 @@
 //
 
 const id_modal = document.getElementById("id_modal");
+const id_modal_filter = code(id_modal, "_filter");
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
-const id_initialize_purpose = document.getElementById("id_initialize_purpose");
 const id_period = document.getElementById("id_period");
-const id_period_current_month = code(id_period, "_current_month");
-const id_period_prev_month = code(id_period, "_prev_month");
-const id_period_next_month = code(id_period, "_next_month");
-const id_period_calendar = code(id_period, "_calendar");
-const id_period_error = code(id_period, "_error");
+const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
 
 const id_detail = document.getElementById("id_detail");
 const id_go_to_list = document.getElementById("id_go_to_list");
 
-let class_firsts = document.querySelectorAll(".class-first");
-
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
+
+let class_firsts = document.querySelectorAll(".class-first");
 
 let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
@@ -42,6 +38,15 @@ function hideNullBadge() {
 }
 
 hideNullBadge();
+
+function adjustModalWidth() {
+    const id_grid = document.getElementById("id_grid");
+    const id_modal_base = code(id_modal, "_base");
+
+    if (id_grid !== null && this.window.innerWidth < 640) {
+        id_modal_base.style.setProperty("width", id_grid.offsetWidth + "px", "important");
+    };
+}
 
 function adjustDetailHeight() {
     if (id_detail !== null) {
@@ -97,6 +102,8 @@ function isItOkayToCloseModal() {
 }
 
 function executePurposeAction(selectedPurpose = null) {
+    const id_initialize_purpose = document.getElementById("id_initialize_purpose");
+
     displayError(false, id_period);
 
     if (selectedPurpose) {
@@ -180,7 +187,8 @@ function initSearchBar() {
 initSearchBar();
 
 function initCalendar() {
-    const id_period_help = code(id_period, "_help");
+    const id_period_prev_month = code(id_period, "_prev_month");
+    const id_period_next_month = code(id_period, "_next_month");
     const purposeQuery = urlParams.get("purpose");
     const periodQuery = urlParams.get("period");
     const daysFromNow = periodQuery ? periodQuery.split(",")[0] : null;
@@ -233,6 +241,8 @@ function initCalendar() {
     }
 
     function updateCalendar() {
+        const id_period_current_month = code(id_period, "_current_month");
+        const id_period_calendar = code(id_period, "_calendar");
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -321,6 +331,7 @@ function initCalendar() {
     function handleDateSelection(date) {
         if (!isDateInRange(date)) return;
 
+        const id_period_error = code(id_period, "_error");
         const formattedDate = formatDate(date);
 
         if (!startDate || endDate) {
@@ -330,7 +341,7 @@ function initCalendar() {
             endDate = null;
             data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
             id_period_help.hidden = false;
-            id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
+            id_period_help.innerText = `이제 희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
             id_period_error.hidden = true;
             id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
         } else {
@@ -341,7 +352,7 @@ function initCalendar() {
                 endDate = null;
                 data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
                 id_period_help.hidden = false;
-                id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
+                id_period_help.innerText = `이제 희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
                 id_period_error.hidden = true;
                 id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
             } else {
@@ -377,7 +388,7 @@ function initCalendar() {
         id_period_help.hidden = true;
     } else if (data_period.startDate === "") {
         id_period_help.hidden = false;
-        id_period_help.innerText = `희망 대여일을 ${data_period.startDateMin} ~ ${data_period.startDateMax} 범위 내에서 선택해주세요.`;
+        id_period_help.innerText = `먼저 희망 대여일을 ${data_period.startDateMin} ~ ${data_period.startDateMax} 범위 내에서 선택해주세요.`;
     } else {
         durationToDisplay = duration
         durationToDisplay === 0 ? durationToDisplay = "당" : null;
@@ -479,7 +490,6 @@ function initForm() {
 }
 
 function updateForm(action) {
-    const id_modal_filter = code(id_modal, "_filter");
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
@@ -488,6 +498,7 @@ function updateForm(action) {
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
+    adjustModalWidth();
     toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
