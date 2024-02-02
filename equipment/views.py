@@ -10,22 +10,17 @@ import random
 
 def equipment(request):
     query_string = ""
-    category = request.GET.get("category", "")
-    purpose = request.GET.get("purpose", "")
-    period = request.GET.get("period", "")
+    category = request.GET.get("category", "").strip()
+    purpose = request.GET.get("purpose", "").strip()
+    period = request.GET.get("period", "").strip()
 
     category_list = get_equipment_policy("category")
-
-    # 쿼리 스트링 유효성 검사 후 결과에 따라 리다이렉트 될 수 있어야 함
+    purpose_list = get_equipment_policy("purpose")
 
     if (
-        (category is None or category == "")
-        or (
-            (purpose is not None and purpose != "") and (period is None or period == "")
-        )
-        or (
-            (purpose is None or purpose == "") and (period is not None and period != "")
-        )
+        (not category or (bool(purpose) != bool(period)))
+        or (category not in [item["priority"] for item in category_list])
+        or (bool(purpose) and purpose not in [item["priority"] for item in purpose_list])
     ):
         base_url = reverse("equipment:equipment")
         query_string = {
@@ -35,9 +30,10 @@ def equipment(request):
 
         return redirect(url)
 
-    purpose_list = get_equipment_policy("purpose")
     split_period = period.split(",") if period is not None and period != "" else None
-    days_from_now = int(split_period[0]) if period is not None and period != "" else None
+    days_from_now = (
+        int(split_period[0]) if period is not None and period != "" else None
+    )
     duration = int(split_period[1]) if period is not None and period != "" else None
 
     if period:
@@ -61,7 +57,7 @@ def equipment(request):
                     url = f"{base_url}?{urlencode(query_string)}"
 
                     return redirect(url)
-    
+
     image_list = get_hero_img("equipment")
 
     # Airtable

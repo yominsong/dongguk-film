@@ -341,7 +341,7 @@ function initCalendar() {
             endDate = null;
             data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
             id_period_help.hidden = false;
-            id_period_help.innerText = `이제 희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
+            id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
             id_period_error.hidden = true;
             id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
         } else {
@@ -352,7 +352,7 @@ function initCalendar() {
                 endDate = null;
                 data_period.endDateMax = formatDateInFewDays(data_period.startDate, data_purpose.max);
                 id_period_help.hidden = false;
-                id_period_help.innerText = `이제 희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
+                id_period_help.innerText = `희망 반납일을 ${data_period.startDate} ~ ${data_period.endDateMax} 범위 내에서 선택해주세요.`;
                 id_period_error.hidden = true;
                 id_period.value = calculateDateDifference(formatDate(now), data_period.startDate);
             } else {
@@ -388,7 +388,7 @@ function initCalendar() {
         id_period_help.hidden = true;
     } else if (data_period.startDate === "") {
         id_period_help.hidden = false;
-        id_period_help.innerText = `먼저 희망 대여일을 ${data_period.startDateMin} ~ ${data_period.startDateMax} 범위 내에서 선택해주세요.`;
+        id_period_help.innerText = `희망 대여일을 ${data_period.startDateMin} ~ ${data_period.startDateMax} 범위 내에서 선택해주세요.`;
     } else {
         durationToDisplay = duration
         durationToDisplay === 0 ? durationToDisplay = "당" : null;
