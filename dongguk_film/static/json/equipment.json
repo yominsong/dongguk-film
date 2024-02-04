@@ -153,167 +153,176 @@
             "name": "ACA000101",
             "depth": "Category",
             "category_priority": "A",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "\uce74\uba54\ub77c \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACD000102",
             "depth": "Category",
             "category_priority": "D",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "\ub80c\uc988 \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACE000703",
             "depth": "Category",
             "category_priority": "E",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 7
+            "limit": 7,
+            "in_a_nutshell": "\ud544\ud130 \ucd5c\ub300 7\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACF000604",
             "depth": "Category",
             "category_priority": "F",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 6
+            "limit": 6,
+            "in_a_nutshell": "\uc870\uba85 \ucd5c\ub300 6\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACG000305",
             "depth": "Category",
             "category_priority": "G",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 3
+            "limit": 3,
+            "in_a_nutshell": "\uc870\uba85 \uc561\uc138\uc11c\ub9ac \ucd5c\ub300 3\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACH000106",
             "depth": "Category",
             "category_priority": "H",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "\uc624\ub514\uc624 \ub808\ucf54\ub354 \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ACK002507",
             "depth": "Category",
             "category_priority": "K",
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 25
+            "limit": 25,
+            "in_a_nutshell": "\uadf8\ub9bd \ucd5c\ub300 25\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "BSC100108",
             "depth": "Subcategory",
             "category_priority": null,
-            "subcategory priority": "1",
-            "brand_name": null,
+            "subcategory_order": "C1",
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Tripod \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "BSI100109",
             "depth": "Subcategory",
             "category_priority": null,
-            "subcategory priority": "1",
-            "brand_name": null,
+            "subcategory_order": "I1",
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Shotgun \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "BSI200110",
             "depth": "Subcategory",
             "category_priority": null,
-            "subcategory priority": "2",
-            "brand_name": null,
+            "subcategory_order": "I2",
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Wireless \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "BSJ100111",
             "depth": "Subcategory",
             "category_priority": null,
-            "subcategory priority": "1",
-            "brand_name": null,
+            "subcategory_order": "J1",
+            "brand": null,
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Boom Pole \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "CBDY00112",
             "depth": "Brand",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": [
-                "Dynacore"
-            ],
+            "subcategory_order": null,
+            "brand": "Dynacore",
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Dynacore \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "CBGE00113",
             "depth": "Brand",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": [
-                "Gen Energy"
-            ],
+            "subcategory_order": null,
+            "brand": "Gen Energy",
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Gen Energy \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "CBLA00414",
             "depth": "Brand",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": [
-                "Laysion"
-            ],
+            "subcategory_order": null,
+            "brand": "Laysion",
             "group_collection_id": [],
             "collection_id": null,
-            "limit": 4
+            "limit": 4,
+            "in_a_nutshell": "Laysion \ucd5c\ub300 4\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG010215",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "F3AB102",
                 "F3FF116"
             ],
             "collection_id": null,
-            "limit": 2
+            "limit": 2,
+            "in_a_nutshell": "Aladdin BI-FLEX M7, Fomex Flexible FL600 \ub3c4\ud569 \ucd5c\ub300 2\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG020316",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "F3AA104",
                 "F3AA106",
@@ -324,14 +333,15 @@
                 "F3L4119"
             ],
             "collection_id": null,
-            "limit": 3
+            "limit": 3,
+            "in_a_nutshell": "Aputure Accent B7c Kit, Aputure amaran F21c, Aputure amaran T2c, Aputure MC RGB, Laysion 1' Tube, Laysion 2' Tube, Laysion 4' Tube \ub3c4\ud569 \ucd5c\ub300 3\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG030317",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "F3AA105",
                 "F3AL109",
@@ -343,228 +353,219 @@
                 "F3AS115"
             ],
             "collection_id": null,
-            "limit": 3
+            "limit": 3,
+            "in_a_nutshell": "Aputure amaran 200x, Aputure LS 300d II, Aputure LS 300x, Aputure LS 600d, Aputure LS 600d Pro, Aputure LS 60x, Aputure Nova P300c, ARRI SkyPanel S60-C \ub3c4\ud569 \ucd5c\ub300 3\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG040218",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "F3AL109",
                 "F3AL110"
             ],
             "collection_id": null,
-            "limit": 2
+            "limit": 2,
+            "in_a_nutshell": "Aputure LS 300d II, Aputure LS 300x \ub3c4\ud569 \ucd5c\ub300 2\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG050119",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "F3AL111",
                 "F3AL112"
             ],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Aputure LS 600d, Aputure LS 600d Pro \ub3c4\ud569 \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG060620",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "K0U2146",
                 "K0U4147",
                 "K0UE152"
             ],
             "collection_id": null,
-            "limit": 6
+            "limit": 6,
+            "in_a_nutshell": "2-Socket Cable Reel, 4-Socket Cable Reel, Extension Cord \ub3c4\ud569 \ucd5c\ub300 6\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "DGG070121",
             "depth": "Group",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [
                 "K0BM149",
                 "K0UC150"
             ],
             "collection_id": null,
-            "limit": 1
+            "limit": 1,
+            "in_a_nutshell": "Backstage Equipment Magliner Junior, Collapsible Wagon \ub3c4\ud569 \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAL00122",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "F3AA101"
-            ],
-            "limit": 1
+            "collection_id": "F3AA101",
+            "limit": 1,
+            "in_a_nutshell": "Aladdin A-LITE AMS-08T/D \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAL00123",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AB120"
-            ],
-            "limit": 1
+            "collection_id": "G0AB120",
+            "limit": 1,
+            "in_a_nutshell": "Aladdin BI-FLEX M7 Extension Cable \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAL00124",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "F3AD103"
-            ],
-            "limit": 1
+            "collection_id": "F3AD103",
+            "limit": 1,
+            "in_a_nutshell": "Aladdin DESKLITE AMS-20T/D \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00125",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0A3121"
-            ],
-            "limit": 1
+            "collection_id": "G0A3121",
+            "limit": 1,
+            "in_a_nutshell": "Aputure 36\u00b0 Spotlight Mount \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00126",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AF122"
-            ],
-            "limit": 1
+            "collection_id": "G0AF122",
+            "limit": 1,
+            "in_a_nutshell": "Aputure F10 Barn Doors \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00127",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AF123"
-            ],
-            "limit": 1
+            "collection_id": "G0AF123",
+            "limit": 1,
+            "in_a_nutshell": "Aputure F10 Fresnel \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00128",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AL124"
-            ],
-            "limit": 1
+            "collection_id": "G0AL124",
+            "limit": 1,
+            "in_a_nutshell": "Aputure Lantern \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00129",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AL125"
-            ],
-            "limit": 1
+            "collection_id": "G0AL125",
+            "limit": 1,
+            "in_a_nutshell": "Aputure Light Dome SE \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00130",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "F3AM113"
-            ],
-            "limit": 1
+            "collection_id": "F3AM113",
+            "limit": 1,
+            "in_a_nutshell": "Aputure MC RGB \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00131",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "F3AN114"
-            ],
-            "limit": 1
+            "collection_id": "F3AN114",
+            "limit": 1,
+            "in_a_nutshell": "Aputure Nova P300c \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAP00132",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0AN126"
-            ],
-            "limit": 1
+            "collection_id": "G0AN126",
+            "limit": 1,
+            "in_a_nutshell": "Aputure Nova P600c Softbox \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECAR00133",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "F3AS115"
-            ],
-            "limit": 1
+            "collection_id": "F3AS115",
+            "limit": 1,
+            "in_a_nutshell": "ARRI SkyPanel S60-C \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECJE00134",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0JF127"
-            ],
-            "limit": 1
+            "collection_id": "G0JF127",
+            "limit": 1,
+            "in_a_nutshell": "JEC Freevoler \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         },
         {
             "name": "ECTU00135",
             "depth": "Collection",
             "category_priority": null,
-            "subcategory priority": null,
-            "brand_name": null,
+            "subcategory_order": null,
+            "brand": null,
             "group_collection_id": [],
-            "collection_id": [
-                "G0UT128"
-            ],
-            "limit": 1
+            "collection_id": "G0UT128",
+            "limit": 1,
+            "in_a_nutshell": "Tube Egg Crate Grid \ucd5c\ub300 1\uac1c \ub300\uc5ec \uac00\ub2a5"
         }
     ]
 }

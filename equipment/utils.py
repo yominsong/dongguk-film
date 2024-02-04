@@ -76,9 +76,9 @@ def update_equipment_policy(request):
 #
 
 
-def get_equipment_policy(category_or_purpose: str):
+def get_equipment_policy(policy: str):
     with open(JSON_PATH, "r") as f:
-        item_list = json.load(f)[category_or_purpose]
+        item_list = json.load(f)[policy]
         f.close()
 
     return item_list

@@ -50,19 +50,19 @@
              data-collection-id="{{ equipment.collection_id }}"
              data-thumbnail="{{ equipment.thumbnail }}"
              data-name="{{ equipment.name }}"
-             data-category="{{ equipment.category }}"
-             data-subcategory="{{ equipment.subcategory }}">
+             data-category="{{ equipment.category.keyword }}"
+             data-subcategory="{{ equipment.subcategory.keyword }}">
             <!-- Title -->
             <div id="id_detail_title"
                  class="lg:col-start-2 lg:row-start-1 sm:h-[126px] sm:pb-[110px] sm:z-10">
                 <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                    {{ equipment.category }}
+                    {{ equipment.category.keyword }}
                 </p>
                 <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.name }}</h2>
                 <div class="flex justify-between items-center mt-3 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
-                        {% if equipment.subcategory != None %}
-                            <span>{{ equipment.subcategory }}</span>
+                        {% if equipment.subcategory.keyword != None %}
+                            <span>{{ equipment.subcategory.keyword }}</span>
                             <span>·</span>
                         {% endif %}
                         <span>{{ equipment.collection_id }}</span>
@@ -73,7 +73,7 @@
                          @click.away="onClickAway($event)"
                          class="relative ml-auto">
                         <button type="button"
-                                class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white"
+                                class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed"
                                 id="id_detail_option"
                                 x-ref="button"
                                 @click="onButtonClick()"
@@ -196,58 +196,38 @@
                                  id="id_detail_purpose_content"
                                  x-show="open"
                                  style="display: none">
-                                <!-- <div class="rounded-md bg-gray-50 p-4">
-                                    <h3 class="text-sm font-medium text-gray-800">제목</h3>
-                                    <div class="text-sm text-gray-700">
-                                        <ul role="list" class="divide-y space-y-6 divide-white/5">
-                                            {% for purpose in purpose_list %}
-                                                <li class="relative flex items-center space-x-4">
-                                                    <div class="min-w-0 flex-auto">
-                                                        <div class="flex items-center gap-x-3">
-                                                            {% if purpose.available %}
-                                                                <div class="flex-none rounded-full p-1 text-flamingo-400 bg-flamingo-400/10">
-                                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
-                                                                </div>
-                                                            {% else %}
-                                                                <div class="flex-none rounded-full p-1 text-gray-400 bg-gray-400/10">
-                                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
-                                                                </div>
-                                                            {% endif %}
-                                                            <h2 class="min-w-0 text-sm font-semibold leading-6">
-                                                                <div class="flex">
-                                                                    <span class="truncate">{{ purpose.keyword }}</span>
-                                                                </div>
-                                                            </h2>
-                                                        </div>
-                                                        <div class="ml-7 mt-1 flex items-center text-sm text-gray-500">
-                                                            <p>
-                                                                {% if purpose.available %}
-                                                                    {{ purpose.in_a_nutshell }}
-                                                                {% else %}
-                                                                    대여 불가
-                                                                {% endif %}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div> -->
-                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
                                     {% for purpose in purpose_list %}
-                                        <label class="relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
-                                            <span class="flex flex-1">
-                                                <span class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ purpose.keyword|replace_space_with_newline }}</span>
+                                        <label class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} df-ring-inset-flamingo {% else %} df-ring-inset-gray {% endif %} ">
+                                            <span class="flex flex-col space-y-1">
+                                                <div class="flex items-center">
+                                                    <span class="block text-sm font-medium text-gray-900">{{ purpose.keyword }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-x-1 text-sm text-gray-500">
+                                                    {% if purpose.available %}
+                                                        <div class="flex-none rounded-full p-1 text-flamingo-400 bg-flamingo-400/10">
+                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                        </div>
+                                                        <span>대여 가능</span>
+                                                    {% else %}
+                                                        <div class="flex-none rounded-full p-1 text-gray-400 bg-gray-400/10">
+                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                        </div>
+                                                        <span>대여 불가</span>
+                                                    {% endif %}
+                                                </div>
                                             </span>
-                                            <svg class="h-5 w-5 ml-2 text-flamingo"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                    aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                            </svg>
+                                            {% if purpose.priority == purpose_priority %}
+                                                <span class="sr-only">선택된 대여 목적</span>
+                                                <svg class="h-5 w-5 ml-2 text-flamingo"
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor"
+                                                     aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                </svg>
+                                            {% endif %}
                                             <span class="pointer-events-none absolute -inset-px rounded-md"
-                                                    aria-hidden="true"></span>
+                                                  aria-hidden="true"></span>
                                         </label>
                                     {% endfor %}
                                 </div>
@@ -299,22 +279,9 @@
                                 <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
-                                        <ul role="list" class="list-disc space-y-4 pl-5">
-                                            {% for purpose in purpose_list %}
-                                                <li>
-                                                    <div class="relative flex items-center">
-                                                        <div class="min-w-0 flex-1">
-                                                            <p class="text-sm font-medium">{{ purpose.keyword }}</p>
-                                                            <p class="text-sm text-gray-500">
-                                                                {% if purpose.available %}
-                                                                    {{ purpose.in_a_nutshell }}
-                                                                {% elif not purpose.available %}
-                                                                    대여 불가
-                                                                {% endif %}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </li>
+                                        <ul role="list" class="list-disc space-y-1 pl-5">
+                                            {% for limit in limit_list %}
+                                                <li>{{ limit.in_a_nutshell }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>

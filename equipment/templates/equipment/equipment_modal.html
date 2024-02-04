@@ -69,7 +69,7 @@
                                                    aria-labelledby="id_category_{{ category.priority }}_label">
                                             <span class="flex flex-1">
                                                 <span id="id_category_{{ category.priority }}_label"
-                                                      class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline }}</span>
+                                                      class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline:8 }}</span>
                                             </span>
                                             <span id="id_category_{{ category.priority }}_descr" hidden></span>
                                             <span id="id_category_{{ category.priority }}_error" hidden></span>

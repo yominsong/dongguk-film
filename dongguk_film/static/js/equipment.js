@@ -11,7 +11,6 @@ const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
 
 const id_detail = document.getElementById("id_detail");
-const id_go_to_list = document.getElementById("id_go_to_list");
 
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
@@ -128,6 +127,7 @@ function executePurposeAction(selectedPurpose = null) {
         data_period.startDateMax = "";
     };
 
+    id_period.value = "";
     initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter);
@@ -479,7 +479,7 @@ function initForm() {
         currentPurpose.click();
     };
 
-    id_period.value = null;
+    id_period.value = "";
     initCalendar();
 
     inputs.forEach((input) => {
@@ -705,6 +705,7 @@ function share() {
 share();
 
 function goToList() {
+    const id_go_to_list = document.getElementById("id_go_to_list");
     const class_details = document.querySelectorAll(".class-detail");
     let params = {};
 
@@ -733,7 +734,7 @@ function goToList() {
                         location.href = `${originLocation}/equipment`;
                     };
 
-                    id_go_to_list.disabled = true;
+                    freezeForm(true);
                 };
             });
         });

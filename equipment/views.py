@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.urls import reverse
-from urllib.parse import urlencode
+from urllib.parse import urlencode, parse_qs
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import airtable
@@ -162,8 +162,14 @@ def equipment(request):
 
 
 def equipment_detail(request, record_id):
+    previous_search = request.GET.get("previousSearch", "")
+    parsed_query = parse_qs(previous_search[1:])
+    purpose_priority = parsed_query.get("purpose", [""])[0]
+
     image_list = get_hero_img("equipment")
     purpose_list = get_equipment_policy("purpose")
+    limit_list = get_equipment_policy("limit")
+    filtered_limit_list = []
 
     # Airtable
     data = {
@@ -179,6 +185,20 @@ def equipment_detail(request, record_id):
             purpose["available"] = True
         else:
             purpose["available"] = False
+    
+    for limit in limit_list:
+        if limit["category_priority"] is not None and equipment["category"]["priority"] == limit["category_priority"]:
+            filtered_limit_list.append(limit)
+        if limit["subcategory_order"] is not None and equipment["subcategory"]["order"] == limit["subcategory_order"]:
+            filtered_limit_list.append(limit)
+        if limit["brand"] is not None and equipment["brand"] == limit["brand"]:
+            filtered_limit_list.append(limit)
+        if limit["group_collection_id"] is not None and equipment["collection_id"] in limit["group_collection_id"]:
+            filtered_limit_list.append(limit)
+        if limit["collection_id"] is not None and equipment["collection_id"] == limit["collection_id"]:
+            filtered_limit_list.append(limit)
+    
+    limit_list = filtered_limit_list
 
     return render(
         request,
@@ -186,6 +206,8 @@ def equipment_detail(request, record_id):
         {
             "image_list": image_list,
             "purpose_list": purpose_list,
+            "purpose_priority": purpose_priority,
+            "limit_list": limit_list,
             "equipment": equipment,
         },
     )

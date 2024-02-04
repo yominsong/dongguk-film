@@ -25,7 +25,6 @@ const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
 
 const id_detail = document.getElementById("id_detail");
-const id_go_to_list = document.getElementById("id_go_to_list");
 
 const class_counts = document.querySelectorAll(".class-count");
 const class_measures = document.querySelectorAll(".class-measure");
@@ -895,6 +894,7 @@ function share() {
 share();
 
 function goToList() {
+    const id_go_to_list = document.getElementById("id_go_to_list");
     const class_details = document.querySelectorAll(".class-detail");
     let params = {};
 
@@ -923,7 +923,7 @@ function goToList() {
                         location.href = `${originLocation}/notice`;
                     };
 
-                    id_go_to_list.disabled = true;
+                    freezeForm(true);
                 };
             });
         });

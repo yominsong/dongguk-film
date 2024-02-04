@@ -345,8 +345,14 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "collection_id": fields["ID"],
                 "thumbnail": fields["Thumbnail"][0]["url"],
                 "name": fields["Name"],
-                "category": fields["Category keyword"][0],
-                "subcategory": fields.get("Subcategory keyword", [None])[0],
+                "category": {
+                    "priority": fields.get("Category priority", [None])[0],
+                    "keyword": fields.get("Category keyword", [None])[0],
+                },
+                "subcategory": {
+                    "keyword": fields.get("Subcategory keyword", [None])[0],
+                    "order": fields.get("Subcategory order", [None])[0],
+                },
                 "brand": fields["Brand name"][0],
                 "model": fields["Model"],
                 "item_purpose": sorted(set(fields["Item purpose"].split(", "))),
@@ -408,13 +414,12 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "name": fields.get("Name", None),
                         "depth": fields.get("Depth", None),
                         "category_priority": fields.get("Category priority", [None])[0],
-                        "subcategory priority": fields.get(
-                            "Subcategory priority", [None]
-                        )[0],
-                        "brand_name": fields.get("Brand name", None),
+                        "subcategory_order": fields.get("Subcategory order", [None])[0],
+                        "brand": fields.get("Brand name", [None])[0],
                         "group_collection_id": fields.get("Group collection ID", None),
-                        "collection_id": fields.get("Collection ID", None),
+                        "collection_id": fields.get("Collection ID", [None])[0],
                         "limit": fields.get("Limit", None),
+                        "in_a_nutshell": fields["In a nutshell"],
                     }
 
                     record_list.append(limit)
