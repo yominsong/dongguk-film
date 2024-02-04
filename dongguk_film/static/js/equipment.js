@@ -191,8 +191,8 @@ function initCalendar() {
     const id_period_next_month = code(id_period, "_next_month");
     const purposeQuery = urlParams.get("purpose");
     const periodQuery = urlParams.get("period");
-    const daysFromNow = periodQuery ? periodQuery.split(",")[0] : null;
-    const duration = periodQuery ? periodQuery.split(",")[1] : null;
+    const daysFromNow = periodQuery ? Number(periodQuery.split(",")[0]) : null;
+    const duration = periodQuery ? Number(periodQuery.split(",")[1]) : null;
     let currentDate;
     let startDate = null;
     let endDate = null;
@@ -202,10 +202,10 @@ function initCalendar() {
     data_period.endDate = "";
 
     if (id_purpose.value === purposeQuery && periodQuery !== null) {
-        if (Number(data_purpose.atLeast) <= Number(daysFromNow) &&
-            Number(daysFromNow) <= Number(data_purpose.upTo) &&
-            0 <= Number(duration) &&
-            Number(duration) <= Number(data_purpose.max)) {
+        if (Number(data_purpose.atLeast) <= daysFromNow &&
+            daysFromNow <= Number(data_purpose.upTo) &&
+            0 <= duration &&
+            duration <= Number(data_purpose.max)) {
             id_period.value = `${daysFromNow},${duration}`;
             displayError(false, id_period);
             data_period.startDate = formatDateInFewDays(now, daysFromNow);
