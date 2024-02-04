@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.naver",
     "home",
     "equipment",
+    "project",
     "dflink",
     "notice",
     "users",
