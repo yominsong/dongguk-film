@@ -203,37 +203,39 @@
                                                 <div class="flex items-center">
                                                     <span class="block text-sm font-medium text-gray-900">{{ purpose.keyword }}</span>
                                                 </div>
-                                                <div class="flex items-center gap-x-1 text-sm text-gray-500">
+                                                <div class="flex items-center text-sm text-gray-500">
                                                     {% if purpose.available %}
-                                                        <div class="flex-none rounded-full p-1 text-flamingo-400 bg-flamingo-400/10">
-                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
-                                                        </div>
-                                                        <span>대여 가능</span>
+                                                        대여 가능
                                                     {% else %}
-                                                        <div class="flex-none rounded-full p-1 text-gray-400 bg-gray-400/10">
-                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
-                                                        </div>
-                                                        <span>대여 불가</span>
+                                                        대여 불가
                                                     {% endif %}
                                                 </div>
                                             </span>
                                             {% if purpose.priority == purpose_priority %}
-                                                <span class="sr-only">선택된 대여 목적</span>
-                                                <svg class="h-5 w-5 ml-2 text-flamingo"
-                                                     viewBox="0 0 20 20"
-                                                     fill="currentColor"
-                                                     aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                </svg>
+                                                <div class="flex-none">
+                                                    <span class="sr-only">선택된 대여 목적</span>
+                                                    <svg class="h-5 w-5 ml-1 text-flamingo"
+                                                        viewBox="0 0 16 20"
+                                                        fill="currentColor"
+                                                        aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            {% elif purpose.available %}
+                                                <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
+                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                </div>
+                                            {% else %}
+                                                <div class="flex-none ml-2 rounded-full p-1 text-gray-400 bg-gray-400/20">
+                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                </div>
                                             {% endif %}
-                                            <span class="pointer-events-none absolute -inset-px rounded-md"
-                                                  aria-hidden="true"></span>
                                         </label>
                                     {% endfor %}
                                 </div>
                             </div>
                         </div>
-                        <div x-data="{ open: false }">
+                        <div x-data="{ open: true }">
                             <h3>
                                 <button id="id_detail_limit"
                                         type="button"
