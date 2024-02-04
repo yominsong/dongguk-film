@@ -61,11 +61,11 @@
                 <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.name }}</h2>
                 <div class="flex justify-between items-center mt-3 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
-                        {% if equipment.subcategory.keyword != None %}
-                            <span>{{ equipment.subcategory.keyword }}</span>
-                            <span>·</span>
-                        {% endif %}
                         <span>{{ equipment.collection_id }}</span>
+                        {% if equipment.subcategory.keyword != None %}
+                            <span>·</span>
+                            <span>{{ equipment.subcategory.keyword }}</span>
+                        {% endif %}
                     </div>
                     <div x-data="Components.menu({ open: false })"
                          x-init="init()"

@@ -1000,6 +1000,10 @@ select {
   margin-bottom: auto;
 }
 
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -1070,10 +1074,6 @@ select {
 
 .mt-\[14px\] {
   margin-top: 14px;
-}
-
-.ml-1 {
-  margin-left: 0.25rem;
 }
 
 .block {
@@ -1727,8 +1727,8 @@ select {
   background-color: currentColor;
 }
 
-.bg-flamingo-400\/10 {
-  background-color: rgb(243 118 72 / 0.1);
+.bg-flamingo-400\/20 {
+  background-color: rgb(243 118 72 / 0.2);
 }
 
 .bg-flamingo-50 {
@@ -1770,8 +1770,8 @@ select {
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
-.bg-gray-400\/10 {
-  background-color: rgb(156 163 175 / 0.1);
+.bg-gray-400\/20 {
+  background-color: rgb(156 163 175 / 0.2);
 }
 
 .bg-gray-50 {
@@ -1807,22 +1807,6 @@ select {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
-}
-
-.bg-flamingo-400\/30 {
-  background-color: rgb(243 118 72 / 0.3);
-}
-
-.bg-gray-400\/30 {
-  background-color: rgb(156 163 175 / 0.3);
-}
-
-.bg-flamingo-400\/20 {
-  background-color: rgb(243 118 72 / 0.2);
-}
-
-.bg-gray-400\/20 {
-  background-color: rgb(156 163 175 / 0.2);
 }
 
 .bg-opacity-75 {
