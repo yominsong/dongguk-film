@@ -41,9 +41,12 @@ hideNullBadge();
 function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
     const id_modal_base = code(id_modal, "_base");
-
-    if (id_grid !== null && this.window.innerWidth < 640) {
-        id_modal_base.style.setProperty("width", id_grid.offsetWidth + "px", "important");
+    if (this.window.innerWidth < 640) {
+        if (id_grid !== null) {
+            id_modal_base.style.setProperty("width", id_grid.offsetWidth + "px", "important");
+        } else if (id_detail !== null) {
+            id_modal_base.style.setProperty("width", id_detail.offsetWidth + "px", "important");
+        }
     };
 }
 
