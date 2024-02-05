@@ -25,6 +25,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("", include("home.urls")),
     path("equipment/", include("equipment.urls")),
+    path("project/", include("project.urls")),
     path("dflink/", include("dflink.urls")),
     path("notice/", include("notice.urls")),
     path("users/", include("users.urls")),

@@ -128,7 +128,7 @@ function requestWeather({ coords }) {
     dfsXyConv = dfs_xy_conv("toXY", longitude, latitude);
     x = dfsXyConv.x;
     y = dfsXyConv.y;
-    request.url = `${originLocation}/home/utils/weather`;
+    request.url = `${originLocation}/home/utils/weather/`;
     request.type = "GET";
     request.data = { id: "weather", lng: longitude, lat: latitude, x: x, y: y, acc: accuracy };
     request.async = true;

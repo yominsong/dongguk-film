@@ -257,7 +257,7 @@ function initModal() {
 initModal();
 
 function requestCreateDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink`;
+    request.url = `${originLocation}/dflink/utils/dflink/`;
     request.type = "GET";
     request.data = { id: "create_dflink", target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
@@ -268,7 +268,7 @@ function requestCreateDflink() {
 }
 
 function requestUpdateDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink`;
+    request.url = `${originLocation}/dflink/utils/dflink/`;
     request.type = "GET";
     request.data = { id: "update_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
@@ -279,7 +279,7 @@ function requestUpdateDflink() {
 }
 
 function requestDeleteDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink`;
+    request.url = `${originLocation}/dflink/utils/dflink/`;
     request.type = "GET";
     request.data = { id: "delete_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url_original.value}`, slug: `${id_slug_original.value}`, title: `${id_title_original.value}`, category: `${id_category_original.value}`, expiration_date: `${id_expiration_date_original.value}` };
     request.async = true;

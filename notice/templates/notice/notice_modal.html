@@ -221,7 +221,7 @@
                                            id="id_url"
                                            class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 sm:text-sm sm:leading-6 focus:df-focus-ring-inset focus:z-10"
                                            placeholder="https://dongguk.film/notice/..."
-                                           value="https://dongguk.film/notice/{{ notice.page_id }}"
+                                           value="https://dongguk.film{% url 'notice:notice_detail' notice.page_id %}"
                                            readonly>
                                 </div>
                                 <button type="button"

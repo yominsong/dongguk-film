@@ -666,7 +666,7 @@ function updateForm(action, datasetObj = null) {
         class_keywords.forEach(keyword => {
             keyword.innerText = "공유하기";
         });
-        
+
         id_copy_url_ready.classList.remove("hidden");
         id_copy_url_done.classList.add("hidden");
         id_copy_url_descr.hidden = true;
@@ -896,13 +896,11 @@ share();
 function goToList() {
     const id_go_to_list = document.getElementById("id_go_to_list");
     const class_details = document.querySelectorAll(".class-detail");
-    let params = {};
 
     if (class_details !== null) {
         class_details.forEach((detail) => {
             if (location.search !== "") {
-                params.previousSearch = location.search;
-                detail.href += "?" + new URLSearchParams(params).toString();
+                detail.href += `${location.search}`;
             };
         });
     };
@@ -915,12 +913,10 @@ function goToList() {
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    const previousSearch = new URLSearchParams(location.search).get("previousSearch");
-
-                    if (previousSearch !== null) {
-                        location.href = `${originLocation}/notice${previousSearch}`;
+                    if (location.search !== "") {
+                        location.href = `${originLocation}/notice${location.search}`;
                     } else {
-                        location.href = `${originLocation}/notice`;
+                        location.href = `${originLocation}/notice/`;
                     };
 
                     freezeForm(true);
@@ -933,7 +929,7 @@ function goToList() {
 goToList();
 
 function requestOcrNotice() {
-    request.url = `${originLocation}/notice/utils/notice`;
+    request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "ocr_notice", content: `${id_content.value}` };
     request.async = true;
@@ -964,7 +960,7 @@ function requestCreateNotice() {
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
 
-    request.url = `${originLocation}/notice/utils/notice`;
+    request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -976,7 +972,7 @@ function requestCreateNotice() {
 }
 
 function requestReadNotice() {
-    request.url = `${originLocation}/notice/utils/notice`;
+    request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "read_notice", page_id: `${id_page_id.value}` };
     request.async = true;
@@ -1005,7 +1001,7 @@ function requestUpdateNotice() {
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
 
-    request.url = `${originLocation}/notice/utils/notice`;
+    request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -1017,7 +1013,7 @@ function requestUpdateNotice() {
 }
 
 function requestDeleteNotice() {
-    request.url = `${originLocation}/notice/utils/notice`;
+    request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}`, file: `${attachedFiles}` };
     request.async = true;
@@ -1043,7 +1039,7 @@ function initRequest() {
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
                         if (isItOkayToSubmitForm()) {
                             const id_create_or_update_spin = code(id_create_or_update, "_spin");
-                            
+
                             if (id_create_or_update.innerText === "작성하기") {
                                 requestCreateNotice();
                             } else if (id_create_or_update.innerText === "수정하기") {
@@ -1091,7 +1087,7 @@ function initRequest() {
                             }, 5000);
                         } else if (isItDoubleChecked) {
                             const id_delete_spin = code(id_delete, "_spin");
-                            
+
                             clearTimeout(doubleCheckTimer);
                             requestDeleteNotice();
                             displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");

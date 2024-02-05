@@ -189,7 +189,7 @@ initSearchBar();
 function initCalendar() {
     const id_period_prev_month = code(id_period, "_prev_month");
     const id_period_next_month = code(id_period, "_next_month");
-    const purposeQuery = urlParams.get("purpose");
+    const purposeQuery = urlParams.get("purposePriority");
     const periodQuery = urlParams.get("period");
     const daysFromNow = periodQuery ? Number(periodQuery.split(",")[0]) : null;
     const duration = periodQuery ? Number(periodQuery.split(",")[1]) : null;
@@ -408,7 +408,7 @@ function initForm() {
         const label = category.closest("label");
         const svg = label.querySelector("svg");
 
-        if (category.id.indexOf("category") != -1 && category.value === urlParams.get("category")) {
+        if (category.id.indexOf("category") != -1 && category.value === urlParams.get("categoryPriority")) {
             category.click();
         };
 
@@ -462,8 +462,8 @@ function initForm() {
         };
     });
 
-    if (urlParams.get("category") !== null) {
-        const currentCategory = code("id_category_", urlParams.get("category"));
+    if (urlParams.get("categoryPriority") !== null) {
+        const currentCategory = code("id_category_", urlParams.get("categoryPriority"));
 
         currentCategory.click();
     };
@@ -472,9 +472,9 @@ function initForm() {
     id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
-    if (urlParams.get("purpose") !== null &&
-        urlParams.get("purpose") !== "") {
-        const currentPurpose = code("id_purpose_", urlParams.get("purpose"));
+    if (urlParams.get("purposePriority") !== null &&
+        urlParams.get("purposePriority") !== "") {
+        const currentPurpose = code("id_purpose_", urlParams.get("purposePriority"));
 
         currentPurpose.click();
     };
@@ -707,13 +707,11 @@ share();
 function goToList() {
     const id_go_to_list = document.getElementById("id_go_to_list");
     const class_details = document.querySelectorAll(".class-detail");
-    let params = {};
 
     if (class_details !== null) {
         class_details.forEach((detail) => {
             if (location.search !== "") {
-                params.previousSearch = location.search;
-                detail.href += "?" + new URLSearchParams(params).toString();
+                detail.href += `${location.search}`;
             };
         });
     };
@@ -726,12 +724,10 @@ function goToList() {
         ["click", "keyup"].forEach(type => {
             id_go_to_list.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    const previousSearch = new URLSearchParams(location.search).get("previousSearch");
-
-                    if (previousSearch !== null) {
-                        location.href = `${originLocation}/equipment${previousSearch}`;
+                    if (location.search !== "") {
+                        location.href = `${originLocation}/equipment${location.search}`;
                     } else {
-                        location.href = `${originLocation}/equipment`;
+                        location.href = `${originLocation}/equipment/`;
                     };
 
                     freezeForm(true);
@@ -747,18 +743,21 @@ function requestFilterEquipment() {
     freezeForm(true);
 
     if (id_purpose.value !== "" && id_period.value !== "") {
-        urlParams.set("category", id_category.value);
-        urlParams.set("purpose", id_purpose.value);
+        urlParams.set("categoryPriority", id_category.value);
+        urlParams.set("purposePriority", id_purpose.value);
         urlParams.set("period", id_period.value);
     } else if (id_purpose.value !== "") {
-        urlParams.set("category", id_category.value);
-        urlParams.set("purpose", id_purpose.value);
+        urlParams.set("categoryPriority", id_category.value);
+        urlParams.set("purposePriority", id_purpose.value);
         urlParams.delete("period");
     } else {
-        urlParams.set("category", id_category.value);
-        urlParams.delete("purpose");
+        urlParams.set("categoryPriority", id_category.value);
+        urlParams.delete("purposePriority");
         urlParams.delete("period");
     };
+    
+    urlParams.delete("q");
+    urlParams.delete("page");
 
     location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
 }

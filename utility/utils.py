@@ -74,10 +74,17 @@ def update_dmd_cookie(request):
 def update_hero_img(request):
     home_img = save_hero_img("video-camera", "home")
     equipment_img = save_hero_img("cinema-lens", "equipment")
+    project_img = save_hero_img("film-production", "project")
     dflink_img = save_hero_img("keyboard", "dflink")
     notice_img = save_hero_img("office", "notice")
 
-    img_list_for_msg = home_img + equipment_img + dflink_img + notice_img
+    img_list_for_msg = {
+        "home": home_img,
+        "equipment": equipment_img,
+        "project": project_img,
+        "dflink": dflink_img,
+        "notice": notice_img
+    }
 
     send_msg(request, "UIG", "DEV", img_list_for_msg)
 

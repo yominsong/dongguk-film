@@ -187,6 +187,16 @@
                                     {% endif %}
                                 </div>
                             </a>
+                        {% empty %}
+                            <div class="col-span-4 flex justify-between">
+                                <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
+                                    {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
+                                        검색된 기자재가 없어요.
+                                    {% else %}
+                                        등록된 기자재가 없어요.
+                                    {% endif %}
+                                </div>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -262,9 +272,8 @@
             </div>
         </div>
     </div>
-</input>
-<!-- Modal -->
-{% include "equipment/equipment_modal.html" %}
-<script src="{% static 'js/forms.js' %}"></script>
-<script src="{% static 'js/equipment.js' %}"></script>
+    <!-- Modal -->
+    {% include "equipment/equipment_modal.html" %}
+    <script src="{% static 'js/forms.js' %}"></script>
+    <script src="{% static 'js/equipment.js' %}"></script>
 {% endblock body %}

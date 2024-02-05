@@ -132,10 +132,16 @@ def send_msg(request, type: str, channel: str, extra=None):
     # type: "UIG"
     elif type == "UIG":
         sub_content = ""
-        for i in range(len(extra)):
-            new_line = f"\nㆍ[{extra[i]['app_name']}] {extra[i]['image_url']}"
-            new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
+        sub_content += f"\nㆍ[home] 총 {len(extra['home'])}개 이미지"
+        sub_content += "\n"
+        sub_content += f"\nㆍ[equipment] 총 {len(extra['equipment'])}개 이미지"
+        sub_content += "\n"
+        sub_content += f"\nㆍ[project] 총 {len(extra['project'])}개 이미지"
+        sub_content += "\n"
+        sub_content += f"\nㆍ[dflink] 총 {len(extra['dflink'])}개 이미지"
+        sub_content += "\n"
+        sub_content += f"\nㆍ[notice] 총 {len(extra['notice'])}개 이미지"
+        
         main_content = {
             "important": False,
             "picture_url": default_picture_url,

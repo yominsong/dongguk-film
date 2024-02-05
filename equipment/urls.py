@@ -6,7 +6,7 @@ app_name = "equipment"
 urlpatterns = [
     # views.py
     path("", views.equipment, name="equipment"),
-    path("<str:record_id>", views.equipment_detail, name="equipment_detail"),
+    path("<str:record_id>/", views.equipment_detail, name="equipment_detail"),
     # utils.py
-    path("utils/update-equipment-policy", utils.update_equipment_policy, name="update_equipment_policy"),
+    path("utils/update-equipment-policy/", utils.update_equipment_policy, name="update_equipment_policy"),
 ]

@@ -25,24 +25,24 @@ def is_not_two_numeric_format(period):
 
 def equipment(request):
     query_string = ""
-    category = request.GET.get("category", "").strip()
-    purpose = request.GET.get("purpose", "").strip()
+    category_priority = request.GET.get("categoryPriority", "").strip()
+    purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
 
     category_list = get_equipment_policy("category")
     purpose_list = get_equipment_policy("purpose")
 
     if (
-        (not category or (bool(purpose) != bool(period)))
-        or (category not in [item["priority"] for item in category_list])
+        (not category_priority or (bool(purpose_priority) != bool(period)))
+        or (category_priority not in [item["priority"] for item in category_list])
         or (
-            bool(purpose) and purpose not in [item["priority"] for item in purpose_list]
+            bool(purpose_priority) and purpose_priority not in [item["priority"] for item in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
         base_url = reverse("equipment:equipment")
         query_string = {
-            "category": category_list[0]["priority"],
+            "categoryPriority": category_list[0]["priority"],
         }
         url = f"{base_url}?{urlencode(query_string)}"
 
@@ -60,7 +60,7 @@ def equipment(request):
             up_to = purpose_item["up_to"]
             max = purpose_item["max"]
 
-            if purpose_item["priority"] == purpose:
+            if purpose_item["priority"] == purpose_priority:
                 if (
                     days_from_now < at_least
                     or days_from_now > up_to
@@ -69,8 +69,8 @@ def equipment(request):
                 ):
                     base_url = reverse("equipment:equipment")
                     query_string = {
-                        "purpose": purpose,
-                        "category": category,
+                        "categoryPriority": category_priority,
+                        "purposePriority": purpose_priority,
                     }
                     url = f"{base_url}?{urlencode(query_string)}"
 
@@ -94,23 +94,23 @@ def equipment(request):
         },
     }
 
-    if purpose is None or purpose == "":
-        data["params"]["formula"] = f"FIND('{category}', {{Category name}} & '')"
+    if purpose_priority is None or purpose_priority == "":
+        data["params"]["formula"] = f"FIND('{category_priority}', {{Category name}} & '')"
     else:
         data["params"][
             "formula"
-        ] = f"AND(FIND('{category}', {{Category name}} & ''), FIND('{purpose}', {{Item purpose}} & ''))"
+        ] = f"AND(FIND('{category_priority}', {{Category name}} & ''), FIND('{purpose_priority}', {{Item purpose}} & ''))"
 
     equipment_list = airtable("get_all", "records", data=data)
     equipment_count = len(equipment_list)
 
     # Parameter and template tag
-    query_string += f"purpose={purpose}&period={period}&category={category}&"
-    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
+    query_string += f"categoryPriority={category_priority}&purposePriority={purpose_priority}&period={period}&"
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
-    purpose = {"priority": purpose, "keyword": purpose_dict.get(purpose)}
+    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
+    category = {"priority": category_priority, "keyword": category_dict.get(category_priority)}
+    purpose = {"priority": purpose_priority, "keyword": purpose_dict.get(purpose_priority)}
     period = {"days_from_now": days_from_now, "duration": duration}
-    category = {"priority": category, "keyword": category_dict.get(category)}
 
     # Search box
     query = request.GET.get("q")
@@ -147,11 +147,11 @@ def equipment(request):
         {
             "query_string": query_string,
             "image_list": image_list,
-            "purpose_list": purpose_list,
             "category_list": category_list,
+            "purpose_list": purpose_list,
+            "category": category,
             "purpose": purpose,
             "period": period,
-            "category": category,
             "equipment_count": equipment_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
@@ -162,11 +162,12 @@ def equipment(request):
 
 
 def equipment_detail(request, record_id):
-    previous_search = request.GET.get("previousSearch", "")
-    parsed_query = parse_qs(previous_search[1:])
-    purpose_priority = parsed_query.get("purpose", [""])[0]
+    category_priority = request.GET.get("categoryPriority", "").strip()
+    purpose_priority = request.GET.get("purposePriority", "").strip()
+    period = request.GET.get("period", "").strip()
 
     image_list = get_hero_img("equipment")
+    category_list = get_equipment_policy("category")
     purpose_list = get_equipment_policy("purpose")
     limit_list = get_equipment_policy("limit")
     filtered_limit_list = []
@@ -200,14 +201,30 @@ def equipment_detail(request, record_id):
     
     limit_list = filtered_limit_list
 
+    # Parameter and template tag
+    category_dict = {item["priority"]: item["keyword"] for item in category_list}
+    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
+    split_period = period.split(",") if period is not None and period != "" else None
+    days_from_now = (
+        int(split_period[0]) if period is not None and period != "" else None
+    )
+    duration = int(split_period[1]) if period is not None and period != "" else None
+    category = {"priority": category_priority, "keyword": category_dict.get(category_priority)}
+    purpose = {"priority": purpose_priority, "keyword": purpose_dict.get(purpose_priority)}
+    period = {"days_from_now": days_from_now, "duration": duration}
+
     return render(
         request,
         "equipment/equipment_detail.html",
         {
             "image_list": image_list,
+            "category_list": category_list,
             "purpose_list": purpose_list,
-            "purpose_priority": purpose_priority,
             "limit_list": limit_list,
+            "category": category,
+            "purpose": purpose,
+            "purpose_priority": purpose_priority,
+            "period": period,
             "equipment": equipment,
         },
     )

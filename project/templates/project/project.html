@@ -2,12 +2,12 @@
 {% load static %}
 {% load tags %}
 {% block meta %}
-    <meta property="og:title" content="공지사항 - 디닷에프 | D-dot-f">
-    <meta property="og:url" content="{% url 'notice:notice' %}">
+    <meta property="og:title" content="프로젝트 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'project:project' %}">
     <meta name="robots" content="index,follow">
 {% endblock meta %}
 {% block title %}
-    공지사항 - 디닷에프
+    프로젝트 - 디닷에프
 {% endblock title %}
 {% block body %}
     <!-- Hero -->
@@ -34,10 +34,61 @@
                     <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
                 </div>
                 <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
-                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">공지사항</h1>
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">프로젝트</h1>
                     <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
-                        디닷에프 서비스 및 학과 관련 공지사항
+                        영화 프로덕션을 위한 온라인 워크스페이스
                     </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Filter and Cart -->
+    <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row bg-white shadow rounded-md divide-y sm:divide-x sm:divide-y-0 divide-gray-100">
+            <div class="class-filter flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-tl-md rounded-tr-md sm:rounded-tr-none sm:rounded-bl-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                 tabindex="0">
+                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                <div class="flex justify-start items-center gap-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20"
+                         fill="currentColor"
+                         class="w-5 h-5">
+                        <path d="M9 6a.75.75 0 01.75.75v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5A.75.75 0 019 6z" />
+                        <path fill-rule="evenodd" d="M2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9zm7-5.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" clip-rule="evenodd" />
+                    </svg>
+                    검색 필터
+                </div>
+                <div class="flex justify-end">
+                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                        <span class="sr-only">목적:</span>
+                        {{ purpose.keyword }}
+                    </span>
+                </div>
+            </div>
+            <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                 tabindex="0">
+                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                <div class="flex justify-start items-center gap-x-2">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.7"
+                         stroke="currentColor"
+                         class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg> -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.4"
+                         stroke="currentColor"
+                         class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />
+                    </svg>
+                    내 프로젝트
+                </div>
+                <div class="flex justify-end gap-2">
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
                 </div>
             </div>
         </div>
@@ -45,11 +96,11 @@
     <!-- Search bar -->
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow rounded-md px-4 pt-4 pb-5 sm:px-6">
-            {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
+            {% if "?q=" in request.get_full_path %}
                 <div class="flex justify-between items-center">
                     <label for="id_query"
                            class="flex text-sm font-medium leading-6 text-gray-500">
-                        총&nbsp<span class="font-semibold">{{ notice_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 공지사항 검색됨
+                        총&nbsp<span class="font-semibold">{{ project_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 공지사항 검색됨
                     </label>
                     <div id="id_initialize_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
@@ -67,9 +118,8 @@
                     </div>
                 </div>
             {% else %}
-                <label for="id_query"
-                       class="text-sm font-medium leading-6 text-gray-500">
-                    총&nbsp<span class="font-semibold">{{ notice_count }}개</span>의 공지사항 검색
+                <label for="id_query" class="text-sm font-medium leading-6 text-gray-500">
+                    총&nbsp<span class="font-semibold">{{ project_count }}개</span>의 프로젝트 검색
                 </label>
             {% endif %}
             <div class="mt-2 flex rounded-md shadow-sm">
@@ -105,123 +155,40 @@
             </div>
         </div>
     </div>
-    <!-- List -->
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <ul id="id_list"
-            role="list"
-            class="divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
-            {% for notice in page_value %}
-                <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
-                    <div class="flex justify-between items-center gap-x-2">
-                        <div class="flex justify-start items-center gap-x-2">
-                            <!-- notice.title -->
-                            <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="{% url 'notice:notice_detail' notice.page_id %}"
-                                   class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
-                                    <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                    {{ notice.title }}
-                                </a>
-                            </p>
-                            <!-- notice.file -->
-                            {% if notice.file|stringformat:"s" != "[]" and notice.file != None %}
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke-width="1.5"
-                                     stroke="currentColor"
-                                     class="w-4 h-4 text-gray-500"
-                                     aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                                </svg>
-                                <span class="sr-only">첨부파일 있음</span>
-                            {% endif %}
-                        </div>
-                        <!-- notice.category -->
-                        {% if notice.category == "서비스" %}
-                            <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                {{ notice.category }}
-                            </p>
-                        {% elif notice.category == "학과" %}
-                            <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                                {{ notice.category }}
-                            </p>
-                        {% endif %}
+        <div class="divide-y divide-gray-100 bg-white shadow rounded-md">
+            <!-- Grid -->
+            <div id="id_grid" class="overflow-hidden px-4 py-5 sm:p-6">
+                <div aria-labelledby="products-heading"
+                     class="mx-auto max-w-2xl lg:max-w-7xl">
+                    <h2 id="products-heading" class="sr-only">기자재 목록</h2>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                        {% for equipment in page_value %}
+                            <a href="{% url 'equipment:equipment_detail' equipment.record_id %}"
+                               class="class-detail rounded-md group focus:df-focus-ring-offset-white-2"
+                               alt="">
+                                <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
+                                    <img src="{{ equipment.thumbnail }}"
+                                         width=""
+                                         height=""
+                                         alt=""
+                                         class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
+                                </div>
+                                <h3 class="mt-4 text-sm text-gray-500">{{ equipment.brand }}</h3>
+                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ equipment.model }}</p>
+                                <div class="inline-flex mt-2 gap-2">
+                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.collection_id }}</span>
+                                    {% if equipment.subcategory != None %}
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.subcategory }}</span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
                     </div>
-                    <div class="flex justify-between items-center gap-x-2">
-                        <!-- notice.keyword -->
-                        <p class="mt-1 flex text-sm leading-5 text-gray-500">{{ notice.keyword }}</p>
-                        <!-- notice.listed_date(>sm) -->
-                        <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                            <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                        </p>
-                    </div>
-                    {% if user.username == notice.user %}
-                        <div class="flex justify-between items-center gap-x-2">
-                            <!-- notice.listed_date(<=sm ) -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                                <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                            </p>
-                            {% if user.username == notice.user %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-page-id="{{ notice.page_id }}"
-                                          data-title="{{ notice.title }}"
-                                          data-category="{{ notice.category }}"
-                                          data-keyword="{{ notice.keyword }}"
-                                          data-file="{{ notice.file }}"
-                                          data-listed-date="{{ notice.listed_date }}"
-                                          class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                          tabindex="0">수정하기</span>
-                                </p>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="flex justify-start">
-                            <!-- notice.listed_date(<=sm ) -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                            </p>
-                        </div>
-                    {% endif %}
-                </li>
-            {% empty %}
-                <li class="relative flex flex-col justify-between px-4 py-5 sm:p-6">
-                    <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
-                        {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
-                            검색된 공지사항이 없어요.
-                        {% else %}
-                            등록된 공지사항이 없어요.
-                        {% endif %}
-                    </div>
-                </li>
-            {% endfor %}
-            {% if user.is_authenticated %}
-                <li class="class-create relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                    tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 20 20"
-                         fill="currentColor"
-                         class="w-5 h-5">
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                    새로 작성하기
-                </li>
-            {% else %}
-                <li class="relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6">
-                    <a href="{% url 'account_login' %}"
-                       class="login-button absolute inset-x-0 -top-px bottom-0 focus:df-focus-ring-inset"
-                       data-login-request-msg="notice"></a>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 20 20"
-                         fill="currentColor"
-                         class="w-5 h-5">
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                    새로 작성하기
-                </li>
-            {% endif %}
+                </div>
+            </div>
             <!-- Pagination -->
-            <li class="mx-auto max-w-7xl">
+            <div class="mx-auto max-w-7xl">
                 <nav class="flex -mt-px items-center justify-between">
                     <div class="flex w-0 flex-1">
                         {% if page_value.has_previous %}
@@ -288,14 +255,13 @@
                         {% endif %}
                     </div>
                 </nav>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
     <!-- Modal -->
     {% if user.is_authenticated %}
-        {% include "notice/notice_modal.html" %}
+        {% include "project/project_modal.html" %}
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
-    <script src="{% static 'js/ckeditor.js' %}"></script>
-    <script src="{% static 'js/notice.js' %}"></script>
+    <script src="{% static 'js/project.js' %}"></script>
 {% endblock body %}

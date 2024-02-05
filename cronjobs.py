@@ -9,31 +9,31 @@ If the time is not specified with an if statement, it is executed every 30 minut
 # users
 #
 
-requests.get("https://dongguk.film/users/utils/delete-expired-vcodes")
+requests.get("https://dongguk.film/users/utils/delete-expired-vcodes/")
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "08:00":
-    requests.get("https://dongguk.film/users/utils/delete-inactive-users")
+    requests.get("https://dongguk.film/users/utils/delete-inactive-users/")
 
 #
 # equipment
 #
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "22:30":
-    requests.get("https://dongguk.film/equipment/utils/update-equipment-policy")
+    requests.get("https://dongguk.film/equipment/utils/update-equipment-policy/")
 
 #
 # dflink
 #
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "00:00":
-    requests.get("https://dongguk.film/dflink/utils/delete-expired-dflinks")
+    requests.get("https://dongguk.film/dflink/utils/delete-expired-dflinks/")
 
 #
 # utility
 #
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "23:00":
-    requests.get("https://dongguk.film/utility/utils/update-hero-img")
+    requests.get("https://dongguk.film/utility/utils/update-hero-img/")
 
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "23:30":
-    requests.get("https://dongguk.film/utility/utils/update-dmd-cookie")
+    requests.get("https://dongguk.film/utility/utils/update-dmd-cookie/")
