@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.urls import reverse
-from urllib.parse import urlencode, parse_qs
+from urllib.parse import urlencode
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import airtable
@@ -18,13 +18,19 @@ def is_not_two_numeric_format(period):
     return not (len(parts) == 2 and all(part.isnumeric() for part in parts))
 
 
+def redirect_with_query_string(base_url, query_string):
+    url = f"{base_url}?{urlencode(query_string)}"
+
+    return redirect(url)
+
+
 #
 # Main functions
 #
 
 
 def equipment(request):
-    query_string = ""
+    query_string = None
     category_priority = request.GET.get("categoryPriority", "").strip()
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
@@ -34,10 +40,10 @@ def equipment(request):
 
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (category_priority not in [item["priority"] for item in category_list])
+        or (category_priority not in [category["priority"] for category in category_list])
         or (
             bool(purpose_priority)
-            and purpose_priority not in [item["priority"] for item in purpose_list]
+            and purpose_priority not in [purpose["priority"] for purpose in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
@@ -45,17 +51,16 @@ def equipment(request):
         query_string = {
             "categoryPriority": category_list[0]["priority"],
         }
-        url = f"{base_url}?{urlencode(query_string)}"
+        
+        return redirect_with_query_string(base_url, query_string)
 
-        return redirect(url)
-
-    split_period = period.split(",") if period is not None and period != "" else None
+    split_period = period.split(",") if bool(period) else None
     days_from_now = (
-        int(split_period[0]) if period is not None and period != "" else None
+        int(split_period[0]) if bool(period) else None
     )
-    duration = int(split_period[1]) if period is not None and period != "" else None
+    duration = int(split_period[1]) if bool(period) else None
 
-    if period:
+    if bool(period):
         for purpose_item in purpose_list:
             at_least = purpose_item["at_least"]
             up_to = purpose_item["up_to"]
@@ -71,11 +76,9 @@ def equipment(request):
                     base_url = reverse("equipment:equipment")
                     query_string = {
                         "categoryPriority": category_priority,
-                        # "purposePriority": purpose_priority,
                     }
-                    url = f"{base_url}?{urlencode(query_string)}"
 
-                    return redirect(url)
+                    return redirect_with_query_string(base_url, query_string)
 
     image_list = get_hero_img("equipment")
 
@@ -95,7 +98,7 @@ def equipment(request):
         },
     }
 
-    if purpose_priority is None or purpose_priority == "":
+    if not purpose_priority:
         data["params"][
             "formula"
         ] = f"FIND('{category_priority}', {{Category name}} & '')"
@@ -107,8 +110,12 @@ def equipment(request):
     equipment_list = airtable("get_all", "records", data=data)
     equipment_count = len(equipment_list)
 
-    # Parameter and template tag
-    query_string += f"categoryPriority={category_priority}&purposePriority={purpose_priority}&period={period}&"
+    # Query string and template tag
+    query_string = f"categoryPriority={category_priority}&"
+    
+    if bool(purpose_priority) and bool(period):
+        query_string += f"purposePriority={purpose_priority}&period={period}&"
+        
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category = {
@@ -156,21 +163,21 @@ def equipment(request):
         {
             "query_string": query_string,
             "image_list": image_list,
-            "category_list": category_list,
-            "purpose_list": purpose_list,
-            "category": category,
-            "purpose": purpose,
-            "period": period,
             "equipment_count": equipment_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
+            "category_list": category_list,
+            "purpose_list": purpose_list,
+            "category": category,
+            "purpose": purpose,
+            "period": period,
         },
     )
 
 
-def equipment_detail(request, record_id):
+def equipment_detail(request, collection_id):
     category_priority = request.GET.get("categoryPriority", "").strip()
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
@@ -182,22 +189,31 @@ def equipment_detail(request, record_id):
     data = {
         "table_name": "equipment-collection",
         "params": {
-            "record_id": record_id,
+            "view": "Grid view",
+            "formula": f"{{ID}} = '{collection_id}'",
+        },
+    }
+    equipment = airtable("get_all", "records", data=data)[0]
+
+    data = {
+        "table_name": "equipment-collection",
+        "params": {
+            "record_id": equipment["record_id"],
         },
     }
     equipment = airtable("get", "record", data=data)
-
+    
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (category_priority not in [item["priority"] for item in category_list])
+        or (category_priority not in [category["priority"] for category in category_list])
         or (
             bool(purpose_priority)
-            and purpose_priority not in [item["priority"] for item in purpose_list]
+            and purpose_priority not in [purpose["priority"] for purpose in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
         base_url = reverse(
-            "equipment:equipment_detail", kwargs={"record_id": record_id}
+            "equipment:equipment_detail", kwargs={"collection_id": collection_id}
         )
         query_string = {"categoryPriority": equipment["category"]["priority"]}
         url = f"{base_url}?{urlencode(query_string)}"
@@ -209,6 +225,15 @@ def equipment_detail(request, record_id):
         int(split_period[0]) if period is not None and period != "" else None
     )
     duration = int(split_period[1]) if period is not None and period != "" else None
+
+    if purpose_priority and purpose_priority not in [item_purpose[0] for item_purpose in equipment["item_purpose"]]:
+        base_url = reverse(
+            "equipment:equipment_detail", kwargs={"collection_id": collection_id}
+        )
+        query_string = {"categoryPriority": equipment["category"]["priority"]}
+        url = f"{base_url}?{urlencode(query_string)}"
+
+        return redirect(url)
 
     if period:
         for purpose_item in purpose_list:
@@ -238,7 +263,7 @@ def equipment_detail(request, record_id):
             purpose["available"] = True
         else:
             purpose["available"] = False
-    
+
     image_list = get_hero_img("equipment")
     limit_list = get_equipment_policy("limit")
     filtered_limit_list = []

@@ -168,7 +168,7 @@
                     <h2 id="products-heading" class="sr-only">기자재 목록</h2>
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                         {% for equipment in page_value %}
-                            <a href="{% url 'equipment:equipment_detail' equipment.record_id %}"
+                            <a href="{% url 'equipment:equipment_detail' equipment.collection_id %}"
                                class="class-detail rounded-md group focus:df-focus-ring-offset-white-2"
                                alt="">
                                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">

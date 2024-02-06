@@ -336,6 +336,8 @@
                                         <ul role="list" class="list-disc space-y-1 pl-5">
                                             {% for limit in limit_list %}
                                                 <li>{{ limit.in_a_nutshell }}</li>
+                                            {% empty %}
+                                                <li>대여 수량 한도가 없어요.</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
