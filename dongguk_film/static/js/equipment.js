@@ -654,9 +654,9 @@ function share() {
         let description;
 
         if (data.subcategory !== "None") {
-            description = `${data.category} · ${data.subcategory} · ${data.collectionId}`
+            description = `${data.category} · ${data.collectionId} · ${data.subcategory}`;
         } else {
-            description = `${data.category} · ${data.collectionId}`
+            description = `${data.category} · ${data.collectionId}`;
         };
 
         Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
@@ -758,7 +758,7 @@ function requestFilterEquipment() {
         urlParams.delete("purposePriority");
         urlParams.delete("period");
     };
-    
+
     urlParams.delete("q");
     urlParams.delete("page");
 

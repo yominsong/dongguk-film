@@ -40,10 +40,14 @@ def equipment(request):
 
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (category_priority not in [category["priority"] for category in category_list])
+        or (
+            category_priority
+            not in [category["priority"] for category in category_list]
+        )
         or (
             bool(purpose_priority)
-            and purpose_priority not in [purpose["priority"] for purpose in purpose_list]
+            and purpose_priority
+            not in [purpose["priority"] for purpose in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
@@ -51,13 +55,11 @@ def equipment(request):
         query_string = {
             "categoryPriority": category_list[0]["priority"],
         }
-        
+
         return redirect_with_query_string(base_url, query_string)
 
     split_period = period.split(",") if bool(period) else None
-    days_from_now = (
-        int(split_period[0]) if bool(period) else None
-    )
+    days_from_now = int(split_period[0]) if bool(period) else None
     duration = int(split_period[1]) if bool(period) else None
 
     if bool(period):
@@ -112,10 +114,10 @@ def equipment(request):
 
     # Query string and template tag
     query_string = f"categoryPriority={category_priority}&"
-    
+
     if bool(purpose_priority) and bool(period):
         query_string += f"purposePriority={purpose_priority}&period={period}&"
-        
+
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
     category = {
@@ -202,13 +204,17 @@ def equipment_detail(request, collection_id):
         },
     }
     equipment = airtable("get", "record", data=data)
-    
+
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (category_priority not in [category["priority"] for category in category_list])
+        or (
+            category_priority
+            not in [category["priority"] for category in category_list]
+        )
         or (
             bool(purpose_priority)
-            and purpose_priority not in [purpose["priority"] for purpose in purpose_list]
+            and purpose_priority
+            not in [purpose["priority"] for purpose in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
@@ -216,32 +222,30 @@ def equipment_detail(request, collection_id):
             "equipment:equipment_detail", kwargs={"collection_id": collection_id}
         )
         query_string = {"categoryPriority": equipment["category"]["priority"]}
-        url = f"{base_url}?{urlencode(query_string)}"
 
-        return redirect(url)
+        return redirect_with_query_string(base_url, query_string)
 
-    split_period = period.split(",") if period is not None and period != "" else None
-    days_from_now = (
-        int(split_period[0]) if period is not None and period != "" else None
-    )
-    duration = int(split_period[1]) if period is not None and period != "" else None
-
-    if purpose_priority and purpose_priority not in [item_purpose[0] for item_purpose in equipment["item_purpose"]]:
+    if bool(purpose_priority) and purpose_priority not in [
+        item_purpose[0] for item_purpose in equipment["item_purpose"]
+    ]:
         base_url = reverse(
             "equipment:equipment_detail", kwargs={"collection_id": collection_id}
         )
         query_string = {"categoryPriority": equipment["category"]["priority"]}
-        url = f"{base_url}?{urlencode(query_string)}"
 
-        return redirect(url)
+        return redirect_with_query_string(base_url, query_string)
 
-    if period:
-        for purpose_item in purpose_list:
-            at_least = purpose_item["at_least"]
-            up_to = purpose_item["up_to"]
-            max = purpose_item["max"]
+    split_period = period.split(",") if bool(period) else None
+    days_from_now = int(split_period[0]) if bool(period) else None
+    duration = int(split_period[1]) if bool(period) else None
 
-            if purpose_item["priority"] == purpose_priority:
+    for purpose in purpose_list:
+        if period:
+            at_least = purpose["at_least"]
+            up_to = purpose["up_to"]
+            max = purpose["max"]
+
+            if purpose["priority"] == purpose_priority:
                 if (
                     days_from_now < at_least
                     or days_from_now > up_to
@@ -249,16 +253,15 @@ def equipment_detail(request, collection_id):
                     or duration > max
                 ):
                     base_url = reverse(
-                        "equipment:equipment_detail", kwargs={"record_id": record_id}
+                        "equipment:equipment_detail",
+                        kwargs={"collection_id": collection_id},
                     )
                     query_string = {
                         "categoryPriority": equipment["category"]["priority"]
                     }
-                    url = f"{base_url}?{urlencode(query_string)}"
 
-                    return redirect(url)
+                    return redirect_with_query_string(base_url, query_string)
 
-    for purpose in purpose_list:
         if purpose["name"] in equipment["item_purpose"]:
             purpose["available"] = True
         else:
@@ -294,14 +297,9 @@ def equipment_detail(request, collection_id):
 
     limit_list = filtered_limit_list
 
-    # Parameter and template tag
+    # Query string and template tag
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
-    split_period = period.split(",") if period is not None and period != "" else None
-    days_from_now = (
-        int(split_period[0]) if period is not None and period != "" else None
-    )
-    duration = int(split_period[1]) if period is not None and period != "" else None
     category = {
         "priority": category_priority,
         "keyword": category_dict.get(category_priority),
