@@ -53,102 +53,106 @@
              data-user-name="{{ notice.user.name }}"
              data-user-profile-img="{{ notice.user.profile_img }}"
              data-listed-date="{{ notice.listed_date }}">
-            {% if notice.category == "서비스" %}
-                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                    {{ notice.category }}
-                </p>
-            {% elif notice.category == "학과" %}
-                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                    {{ notice.category }}
-                </p>
-            {% endif %}
-            <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ notice.title }}</h2>
-            <div class="flex justify-between items-center mt-3">
-                <div class="flex items-center text-sm text-gray-500 gap-x-2">
-                    <img src="{{ notice.user.profile_img }}"
-                         class="h-6 w-6 rounded-full"
-                         alt="{{ notice.user.name }}님의 프로필 사진"
-                         height=""
-                         width="">
-                    <span class="font-semibold">{{ notice.user.name }}</span>
-                    <span>·</span>
-                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
+            <div class="flex flex-col">
+                <div class="flex justify-start items-center">
+                    {% if notice.category == "서비스" %}
+                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            {{ notice.category }}
+                        </span>
+                    {% elif notice.category == "학과" %}
+                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
+                            {{ notice.category }}
+                        </span>
+                    {% endif %}
                 </div>
-                <div x-data="Components.menu({ open: false })"
-                     x-init="init()"
-                     @keydown.escape.stop="open = false; focusButton()"
-                     @click.away="onClickAway($event)"
-                     class="relative ml-auto">
-                    <button type="button"
-                            class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed"
-                            id="id_detail_option"
-                            x-ref="button"
-                            @click="onButtonClick()"
-                            @keyup.space.prevent="onButtonEnter()"
-                            @keydown.enter.prevent="onButtonEnter()"
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            x-bind:aria-expanded="open.toString()"
+                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ notice.title }}</h2>
+                <div class="flex justify-between items-center mt-3">
+                    <div class="flex items-center text-sm text-gray-500 gap-x-2">
+                        <img src="{{ notice.user.profile_img }}"
+                            class="h-6 w-6 rounded-full"
+                            alt="{{ notice.user.name }}님의 프로필 사진"
+                            height=""
+                            width="">
+                        <span class="font-semibold">{{ notice.user.name }}</span>
+                        <span>·</span>
+                        <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
+                    </div>
+                    <div x-data="Components.menu({ open: false })"
+                        x-init="init()"
+                        @keydown.escape.stop="open = false; focusButton()"
+                        @click.away="onClickAway($event)"
+                        class="relative ml-auto">
+                        <button type="button"
+                                class="-m-2 block p-2 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed"
+                                id="id_detail_option"
+                                x-ref="button"
+                                @click="onButtonClick()"
+                                @keyup.space.prevent="onButtonEnter()"
+                                @keydown.enter.prevent="onButtonEnter()"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                x-bind:aria-expanded="open.toString()"
+                                @keydown.arrow-up.prevent="onArrowUp()"
+                                @keydown.arrow-down.prevent="onArrowDown()">
+                            <span class="sr-only">옵션 열기</span>
+                            <svg class="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true">
+                                <path d="M3 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
+                                </path>
+                            </svg>
+                        </button>
+                        <div x-show="open"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-1 shadow-md ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
+                            x-ref="menu-items"
+                            x-description="Dropdown menu, show/hide based on menu state."
+                            x-bind:aria-activedescendant="activeDescendant"
+                            role="menu"
+                            aria-orientation="vertical"
+                            aria-labelledby="id_detail_option"
+                            tabindex="-1"
                             @keydown.arrow-up.prevent="onArrowUp()"
-                            @keydown.arrow-down.prevent="onArrowDown()">
-                        <span class="sr-only">옵션 열기</span>
-                        <svg class="h-5 w-5"
-                             viewBox="0 0 20 20"
-                             fill="currentColor"
-                             aria-hidden="true">
-                            <path d="M3 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 8.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z">
-                            </path>
-                        </svg>
-                    </button>
-                    <div x-show="open"
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="transform opacity-0 scale-95"
-                         x-transition:enter-end="transform opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="transform opacity-100 scale-100"
-                         x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 z-10 mt-0.5 w-32 origin-top-right rounded-md bg-white py-1 shadow-md ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-flamingo-500"
-                         x-ref="menu-items"
-                         x-description="Dropdown menu, show/hide based on menu state."
-                         x-bind:aria-activedescendant="activeDescendant"
-                         role="menu"
-                         aria-orientation="vertical"
-                         aria-labelledby="id_detail_option"
-                         tabindex="-1"
-                         @keydown.arrow-up.prevent="onArrowUp()"
-                         @keydown.arrow-down.prevent="onArrowDown()"
-                         @keydown.tab="open = false"
-                         @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
-                         @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
-                         style="display: none">
-                        <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                             x-state:on="Active"
-                             x-state:off="Not Active"
-                             :class="{ 'bg-gray-100': activeIndex === 0 }"
-                             role="menuitem"
-                             tabindex="-1"
-                             id="id_detail_share"
-                             @mouseenter="onMouseEnter($event); activeIndex = 0"
-                             @mousemove="onMouseMove($event, 0)"
-                             @mouseleave="onMouseLeave($event); activeIndex = -1"
-                             @click="open = false">공유하기</div>
-                        {% if user.username == notice.user.student_id %}
-                            <div class="class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
-                                 :class="{ 'bg-gray-100': activeIndex === 1 }"
-                                 role="menuitem"
-                                 tabindex="-1"
-                                 id="id_detail_adjust"
-                                 @mouseenter="onMouseEnter($event); activeIndex = 1"
-                                 @mousemove="onMouseMove($event, 1)"
-                                 @mouseleave="onMouseLeave($event); activeIndex = -1"
-                                 @click="open = false"
-                                 data-page-id="{{ notice.page_id }}"
-                                 data-title="{{ notice.title }}"
-                                 data-category="{{ notice.category }}"
-                                 data-keyword="{{ notice.keyword.string }}"
-                                 data-file="{{ notice.file.string }}"
-                                 data-listed-date="{{ notice.listed_date }}">수정하기</div>
-                        {% endif %}
+                            @keydown.arrow-down.prevent="onArrowDown()"
+                            @keydown.tab="open = false"
+                            @keydown.enter.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                            @keyup.space.prevent="open = false; $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                            style="display: none">
+                            <div class="class-share block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                x-state:on="Active"
+                                x-state:off="Not Active"
+                                :class="{ 'bg-gray-100': activeIndex === 0 }"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="id_detail_share"
+                                @mouseenter="onMouseEnter($event); activeIndex = 0"
+                                @mousemove="onMouseMove($event, 0)"
+                                @mouseleave="onMouseLeave($event); activeIndex = -1"
+                                @click="open = false">공유하기</div>
+                            {% if user.username == notice.user.student_id %}
+                                <div class="class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
+                                    :class="{ 'bg-gray-100': activeIndex === 1 }"
+                                    role="menuitem"
+                                    tabindex="-1"
+                                    id="id_detail_adjust"
+                                    @mouseenter="onMouseEnter($event); activeIndex = 1"
+                                    @mousemove="onMouseMove($event, 1)"
+                                    @mouseleave="onMouseLeave($event); activeIndex = -1"
+                                    @click="open = false"
+                                    data-page-id="{{ notice.page_id }}"
+                                    data-title="{{ notice.title }}"
+                                    data-category="{{ notice.category }}"
+                                    data-keyword="{{ notice.keyword.string }}"
+                                    data-file="{{ notice.file.string }}"
+                                    data-listed-date="{{ notice.listed_date }}">수정하기</div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -187,10 +191,10 @@
                 </ul>
             {% endif %}
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
-            <div class="flex justify-start gap-2 mt-5 mb-3">
+            <div class="flex justify-start gap-2 mt-5 mb-2.5">
                 <span class="sr-only">해시태그:</span>
                 {% for keyword in notice.keyword.list %}
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
+                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
                         {{ keyword }}
                     </span>
                 {% endfor %}

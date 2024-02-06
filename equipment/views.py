@@ -36,7 +36,8 @@ def equipment(request):
         (not category_priority or (bool(purpose_priority) != bool(period)))
         or (category_priority not in [item["priority"] for item in category_list])
         or (
-            bool(purpose_priority) and purpose_priority not in [item["priority"] for item in purpose_list]
+            bool(purpose_priority)
+            and purpose_priority not in [item["priority"] for item in purpose_list]
         )
         or (bool(period) and is_not_two_numeric_format(period))
     ):
@@ -70,7 +71,7 @@ def equipment(request):
                     base_url = reverse("equipment:equipment")
                     query_string = {
                         "categoryPriority": category_priority,
-                        "purposePriority": purpose_priority,
+                        # "purposePriority": purpose_priority,
                     }
                     url = f"{base_url}?{urlencode(query_string)}"
 
@@ -95,7 +96,9 @@ def equipment(request):
     }
 
     if purpose_priority is None or purpose_priority == "":
-        data["params"]["formula"] = f"FIND('{category_priority}', {{Category name}} & '')"
+        data["params"][
+            "formula"
+        ] = f"FIND('{category_priority}', {{Category name}} & '')"
     else:
         data["params"][
             "formula"
@@ -108,8 +111,14 @@ def equipment(request):
     query_string += f"categoryPriority={category_priority}&purposePriority={purpose_priority}&period={period}&"
     category_dict = {item["priority"]: item["keyword"] for item in category_list}
     purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
-    category = {"priority": category_priority, "keyword": category_dict.get(category_priority)}
-    purpose = {"priority": purpose_priority, "keyword": purpose_dict.get(purpose_priority)}
+    category = {
+        "priority": category_priority,
+        "keyword": category_dict.get(category_priority),
+    }
+    purpose = {
+        "priority": purpose_priority,
+        "keyword": purpose_dict.get(purpose_priority),
+    }
     period = {"days_from_now": days_from_now, "duration": duration}
 
     # Search box
@@ -166,11 +175,8 @@ def equipment_detail(request, record_id):
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
 
-    image_list = get_hero_img("equipment")
     category_list = get_equipment_policy("category")
     purpose_list = get_equipment_policy("purpose")
-    limit_list = get_equipment_policy("limit")
-    filtered_limit_list = []
 
     # Airtable
     data = {
@@ -181,24 +187,86 @@ def equipment_detail(request, record_id):
     }
     equipment = airtable("get", "record", data=data)
 
+    if (
+        (not category_priority or (bool(purpose_priority) != bool(period)))
+        or (category_priority not in [item["priority"] for item in category_list])
+        or (
+            bool(purpose_priority)
+            and purpose_priority not in [item["priority"] for item in purpose_list]
+        )
+        or (bool(period) and is_not_two_numeric_format(period))
+    ):
+        base_url = reverse(
+            "equipment:equipment_detail", kwargs={"record_id": record_id}
+        )
+        query_string = {"categoryPriority": equipment["category"]["priority"]}
+        url = f"{base_url}?{urlencode(query_string)}"
+
+        return redirect(url)
+
+    split_period = period.split(",") if period is not None and period != "" else None
+    days_from_now = (
+        int(split_period[0]) if period is not None and period != "" else None
+    )
+    duration = int(split_period[1]) if period is not None and period != "" else None
+
+    if period:
+        for purpose_item in purpose_list:
+            at_least = purpose_item["at_least"]
+            up_to = purpose_item["up_to"]
+            max = purpose_item["max"]
+
+            if purpose_item["priority"] == purpose_priority:
+                if (
+                    days_from_now < at_least
+                    or days_from_now > up_to
+                    or duration < 0
+                    or duration > max
+                ):
+                    base_url = reverse(
+                        "equipment:equipment_detail", kwargs={"record_id": record_id}
+                    )
+                    query_string = {
+                        "categoryPriority": equipment["category"]["priority"]
+                    }
+                    url = f"{base_url}?{urlencode(query_string)}"
+
+                    return redirect(url)
+
     for purpose in purpose_list:
         if purpose["name"] in equipment["item_purpose"]:
             purpose["available"] = True
         else:
             purpose["available"] = False
     
+    image_list = get_hero_img("equipment")
+    limit_list = get_equipment_policy("limit")
+    filtered_limit_list = []
+
     for limit in limit_list:
-        if limit["category_priority"] is not None and equipment["category"]["priority"] == limit["category_priority"]:
+        if (
+            limit["category_priority"] is not None
+            and equipment["category"]["priority"] == limit["category_priority"]
+        ):
             filtered_limit_list.append(limit)
-        if limit["subcategory_order"] is not None and equipment["subcategory"]["order"] == limit["subcategory_order"]:
+        if (
+            limit["subcategory_order"] is not None
+            and equipment["subcategory"]["order"] == limit["subcategory_order"]
+        ):
             filtered_limit_list.append(limit)
         if limit["brand"] is not None and equipment["brand"] == limit["brand"]:
             filtered_limit_list.append(limit)
-        if limit["group_collection_id"] is not None and equipment["collection_id"] in limit["group_collection_id"]:
+        if (
+            limit["group_collection_id"] is not None
+            and equipment["collection_id"] in limit["group_collection_id"]
+        ):
             filtered_limit_list.append(limit)
-        if limit["collection_id"] is not None and equipment["collection_id"] == limit["collection_id"]:
+        if (
+            limit["collection_id"] is not None
+            and equipment["collection_id"] == limit["collection_id"]
+        ):
             filtered_limit_list.append(limit)
-    
+
     limit_list = filtered_limit_list
 
     # Parameter and template tag
@@ -209,8 +277,14 @@ def equipment_detail(request, record_id):
         int(split_period[0]) if period is not None and period != "" else None
     )
     duration = int(split_period[1]) if period is not None and period != "" else None
-    category = {"priority": category_priority, "keyword": category_dict.get(category_priority)}
-    purpose = {"priority": purpose_priority, "keyword": purpose_dict.get(purpose_priority)}
+    category = {
+        "priority": category_priority,
+        "keyword": category_dict.get(category_priority),
+    }
+    purpose = {
+        "priority": purpose_priority,
+        "keyword": purpose_dict.get(purpose_priority),
+    }
     period = {"days_from_now": days_from_now, "duration": duration}
 
     return render(

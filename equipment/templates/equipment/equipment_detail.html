@@ -59,15 +59,15 @@
                     검색 필터
                 </div>
                 <div class="flex justify-end gap-2">
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">범주:</span>
                         {{ category.keyword }}
                     </span>
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">대여 목적:</span>
                         {{ purpose.keyword }}
                     </span>
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">대여 기간:</span>
                         {% if period.duration == 0 %}
                             당일
@@ -92,7 +92,7 @@
                     장바구니
                 </div>
                 <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">0개</span>
                 </div>
             </div>
         </div>
@@ -109,12 +109,9 @@
              data-subcategory="{{ equipment.subcategory.keyword }}">
             <!-- Title -->
             <div id="id_detail_title"
-                 class="lg:col-start-2 lg:row-start-1 sm:h-[126px] sm:pb-[110px] sm:z-10">
-                <p class="inline-block rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                    {{ equipment.category.keyword }}
-                </p>
+                 class="lg:col-start-2 lg:row-start-1 sm:h-[98px] sm:z-10">
                 <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.name }}</h2>
-                <div class="flex justify-between items-center mt-3 h-[24px]">
+                <div class="flex justify-between items-center mt-2 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
                         <span>{{ equipment.collection_id }}</span>
                         {% if equipment.subcategory.keyword != None %}
@@ -204,7 +201,7 @@
             <!-- Content -->
             <div id="id_detail_content"
                  class="pt-4 sm:mt-0 lg:col-start-2 lg:row-start-1 lg:self-start">
-                <div id="id_detail_content_padding_top" class="sm:pt-[110px]"></div>
+                <div id="id_detail_content_padding_top" class="sm:pt-[82px]"></div>
                 <section aria-labelledby="details-heading">
                     <h2 id="details-heading" class="sr-only">기자재 정보</h2>
                     <div class="divide-y divide-gray-100 border-t border-t-gray-100 sm:border-t-0">
