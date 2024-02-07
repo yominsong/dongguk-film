@@ -83,7 +83,7 @@ def update_hero_img(request):
         "equipment": equipment_img,
         "project": project_img,
         "dflink": dflink_img,
-        "notice": notice_img
+        "notice": notice_img,
     }
 
     send_msg(request, "UIG", "DEV", img_list_for_msg)
@@ -573,6 +573,42 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     notice["file"] = ast.literal_eval(file) if file else None
 
                     item_list.append(notice)
+            except:
+                pass
+
+        elif db_name == "project":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in item_list:
+                    properties = item["properties"]
+
+                    created_time = properties["Created time"]["created_time"]
+                    created_time = convert_datetime(created_time)
+
+                    title = properties["Title"]["title"][0]["plain_text"]
+                    user = str(properties["User"]["number"])
+
+                    project = {
+                        "page_id": item["id"],
+                        "title": title,
+                        "user": user,
+                        "created_date": created_time.strftime("%Y-%m-%d"),
+                    }
+
+                    staff = (
+                        properties.get("Staff", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
+                    )
+
+                    project["staff"] = ast.literal_eval(staff) if staff else None
+
+                    item_list.append(project)
             except:
                 pass
 

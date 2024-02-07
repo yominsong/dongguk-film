@@ -30,7 +30,6 @@ def redirect_with_query_string(base_url, query_string):
 
 
 def equipment(request):
-    query_string = None
     category_priority = request.GET.get("categoryPriority", "").strip()
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
@@ -38,6 +37,7 @@ def equipment(request):
     category_list = get_equipment_policy("category")
     purpose_list = get_equipment_policy("purpose")
 
+    # Query string validation
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
         or (
@@ -82,6 +82,7 @@ def equipment(request):
 
                     return redirect_with_query_string(base_url, query_string)
 
+    query_string = ""
     image_list = get_hero_img("equipment")
 
     # Airtable
@@ -205,6 +206,7 @@ def equipment_detail(request, collection_id):
     }
     equipment = airtable("get", "record", data=data)
 
+    # Query string validation
     if (
         (not category_priority or (bool(purpose_priority) != bool(period)))
         or (
