@@ -95,6 +95,7 @@ def send_msg(request, type: str, channel: str, extra=None):
         - UDC: Update DMD Cookie
         - UIG: Update images
         - UEP: Update Equipment Policy
+        - UPP: Update Project Position
         - DSA: Duplicate signup attempt
         - AIV: Attempting to skip identity verification
         - UXR: Unexpected request
@@ -170,6 +171,23 @@ def send_msg(request, type: str, channel: str, extra=None):
             "picture_url": default_picture_url,
             "author_url": "",
             "title": "기자재 정책 업데이트됨",
+            "url": "",
+            "thumbnail_url": "",
+            "description": sub_content,
+        }
+    
+    # type: "UPR"
+    elif type == "UPP":
+        sub_content = ""
+        for i, item in enumerate(extra):
+            new_line = f"\nㆍ{item['priority']} {item['keyword']} ({item['in_english']})"
+            new_line.replace("\n", "") if i == 0 else None
+            sub_content += new_line
+        main_content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": "프로젝트 직책 업데이트됨",
             "url": "",
             "thumbnail_url": "",
             "description": sub_content,

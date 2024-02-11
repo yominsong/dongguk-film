@@ -378,6 +378,8 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         )
         record_list = []
 
+        print(records)
+
         if table_name == "equipment-category":
             try:
                 for record in records:
@@ -451,6 +453,23 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     record_list.append(collection)
             except:
                 pass
+        
+        elif table_name == "project-position":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    position = {
+                        "name": fields["Name"],
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                        "in_english": fields["In English"],
+                        "required": fields.get("Required", False),
+                    }
+
+                    record_list.append(position)
+            except:
+                pass
 
         result = record_list
 
@@ -502,6 +521,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         category = data.get("category", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
+        staff = data.get("staff", None)
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
         user = data.get("user", None)
@@ -584,7 +604,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             item_list = []
 
             try:
-                for item in item_list:
+                for item in items:
                     properties = item["properties"]
 
                     created_time = properties["Created time"]["created_time"]

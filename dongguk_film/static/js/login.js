@@ -35,13 +35,15 @@ function blockInAppBrowser() {
 blockInAppBrowser();
 
 function displayLoginRequestMsg() {
-    let urlParams = new URLSearchParams(window.location.search);
-    let loginRequestMsg = urlParams.get("loginRequestMsg");
+    const loginRequestMsg = urlParams.get("loginRequestMsg");
+
     if (loginRequestMsg) {
-        if (loginRequestMsg.includes("dflink")) {
+        if (loginRequestMsg === "createDflink") {
             id_login_request_msg.innerText = "동영링크를 새로 만들려면";
-        } else if (loginRequestMsg.includes("notice")) {
+        } else if (loginRequestMsg === "createNotice") {
             id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
+        } else if (loginRequestMsg === "createProject") {
+            id_login_request_msg.innerText = "프로젝트를 새로 만들려면";
         };
     };
 }

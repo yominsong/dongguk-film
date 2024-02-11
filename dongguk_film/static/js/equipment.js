@@ -9,6 +9,11 @@ const id_purpose = document.getElementById("id_purpose");
 const id_period = document.getElementById("id_period");
 const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
+const id_url = document.getElementById("id_url");
+const id_copy_url = document.getElementById("id_copy_url");
+const id_copy_url_ready = code(id_copy_url, "_ready");
+const id_copy_url_done = code(id_copy_url, "_done");
+const id_copy_url_descr = code(id_copy_url, "_descr");
 
 const id_detail = document.getElementById("id_detail");
 

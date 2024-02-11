@@ -24,14 +24,18 @@ function hideNavbarAndFooter() {
 hideNavbarAndFooter();
 
 function redirectAfterLoginLogout() {
-    let loginsLogouts = document.querySelectorAll(".login-button, .logout-button");
+    const loginsLogouts = document.querySelectorAll(".login-button, .logout-button");
     let params = {};
 
     loginsLogouts.forEach((loginLogout) => {
+        const loginRequestMsg = loginLogout.dataset.loginRequestMsg;
+
         params.next = `${location.pathname}${location.search}`;
-        if (typeof loginLogout.dataset.loginRequestMsg !== "undefined") {
-            params.loginRequestMsg = location.pathname;
+
+        if (loginRequestMsg !== "" && typeof loginRequestMsg !== "undefined") {
+            params.loginRequestMsg = loginRequestMsg;
         };
+
         loginLogout.href += "?" + new URLSearchParams(params).toString();
     });
 }

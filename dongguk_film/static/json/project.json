@@ -1,0 +1,184 @@
+[
+    {
+        "name": "A \uac10\ub3c5",
+        "priority": "A",
+        "keyword": "\uac10\ub3c5",
+        "in_english": "Director",
+        "required": true
+    },
+    {
+        "name": "B \uac01\ubcf8",
+        "priority": "B",
+        "keyword": "\uac01\ubcf8",
+        "in_english": "Screenwriter",
+        "required": false
+    },
+    {
+        "name": "C \uc81c\uc791",
+        "priority": "C",
+        "keyword": "\uc81c\uc791",
+        "in_english": "Producer",
+        "required": true
+    },
+    {
+        "name": "D \ucd2c\uc601",
+        "priority": "D",
+        "keyword": "\ucd2c\uc601",
+        "in_english": "Director of Photography",
+        "required": true
+    },
+    {
+        "name": "E \uc870\uba85",
+        "priority": "E",
+        "keyword": "\uc870\uba85",
+        "in_english": "Chief Lighting Technician",
+        "required": false
+    },
+    {
+        "name": "F \ubbf8\uc220",
+        "priority": "F",
+        "keyword": "\ubbf8\uc220",
+        "in_english": "Production Designer",
+        "required": false
+    },
+    {
+        "name": "G \uc758\uc0c1",
+        "priority": "G",
+        "keyword": "\uc758\uc0c1",
+        "in_english": "Costume Designer",
+        "required": false
+    },
+    {
+        "name": "H \ud3b8\uc9d1",
+        "priority": "H",
+        "keyword": "\ud3b8\uc9d1",
+        "in_english": "Editor",
+        "required": true
+    },
+    {
+        "name": "I \uc2dc\uac01\ud6a8\uacfc",
+        "priority": "I",
+        "keyword": "\uc2dc\uac01\ud6a8\uacfc",
+        "in_english": "Visual Effects Supervisor",
+        "required": false
+    },
+    {
+        "name": "J \ud2b9\uc218\ud6a8\uacfc",
+        "priority": "J",
+        "keyword": "\ud2b9\uc218\ud6a8\uacfc",
+        "in_english": "Special Effects Supervisor",
+        "required": false
+    },
+    {
+        "name": "K \ubb34\uc220",
+        "priority": "K",
+        "keyword": "\ubb34\uc220",
+        "in_english": "Stunt Coordinator",
+        "required": false
+    },
+    {
+        "name": "L \uc74c\uc545",
+        "priority": "L",
+        "keyword": "\uc74c\uc545",
+        "in_english": "Music Supervisor",
+        "required": false
+    },
+    {
+        "name": "M \ub3d9\uc2dc\ub179\uc74c",
+        "priority": "M",
+        "keyword": "\ub3d9\uc2dc\ub179\uc74c",
+        "in_english": "Production Sound Mixer",
+        "required": true
+    },
+    {
+        "name": "N \uc870\uc5f0\ucd9c",
+        "priority": "N",
+        "keyword": "\uc870\uc5f0\ucd9c",
+        "in_english": "Assistant Director",
+        "required": false
+    },
+    {
+        "name": "O \uc5f0\ucd9c\ubd80",
+        "priority": "O",
+        "keyword": "\uc5f0\ucd9c\ubd80",
+        "in_english": "Directing Department",
+        "required": false
+    },
+    {
+        "name": "P \uc81c\uc791\ubd80",
+        "priority": "P",
+        "keyword": "\uc81c\uc791\ubd80",
+        "in_english": "Production Department",
+        "required": false
+    },
+    {
+        "name": "Q B \uce74\uba54\ub77c",
+        "priority": "Q",
+        "keyword": "B \uce74\uba54\ub77c",
+        "in_english": "B Camera Operator",
+        "required": false
+    },
+    {
+        "name": "R \ucd2c\uc601 \uc81c1\uc870\uc218",
+        "priority": "R",
+        "keyword": "\ucd2c\uc601 \uc81c1\uc870\uc218",
+        "in_english": "First Assistant Camera",
+        "required": false
+    },
+    {
+        "name": "S \ucd2c\uc601 \uc81c2\uc870\uc218",
+        "priority": "S",
+        "keyword": "\ucd2c\uc601 \uc81c2\uc870\uc218",
+        "in_english": "Second Assistant Camera",
+        "required": false
+    },
+    {
+        "name": "T \ucd2c\uc601\ubd80",
+        "priority": "T",
+        "keyword": "\ucd2c\uc601\ubd80",
+        "in_english": "Camera Department",
+        "required": false
+    },
+    {
+        "name": "U \uc870\uba85\ubd80",
+        "priority": "U",
+        "keyword": "\uc870\uba85\ubd80",
+        "in_english": "Lighting Department",
+        "required": false
+    },
+    {
+        "name": "V \ubd84\uc7a5",
+        "priority": "V",
+        "keyword": "\ubd84\uc7a5",
+        "in_english": "Makeup Artist",
+        "required": false
+    },
+    {
+        "name": "W \ud5e4\uc5b4",
+        "priority": "W",
+        "keyword": "\ud5e4\uc5b4",
+        "in_english": "Hair Stylist",
+        "required": false
+    },
+    {
+        "name": "X \ubbf8\uc220\ubd80",
+        "priority": "X",
+        "keyword": "\ubbf8\uc220\ubd80",
+        "in_english": "Art Department",
+        "required": false
+    },
+    {
+        "name": "Y \ubd90 \uc624\ud37c\ub808\uc774\ud130",
+        "priority": "Y",
+        "keyword": "\ubd90 \uc624\ud37c\ub808\uc774\ud130",
+        "in_english": "Boom Operator",
+        "required": false
+    },
+    {
+        "name": "Z \ub179\uc74c\ubd80",
+        "priority": "Z",
+        "keyword": "\ub179\uc74c\ubd80",
+        "in_english": "Sound Department",
+        "required": false
+    }
+]
