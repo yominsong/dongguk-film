@@ -378,8 +378,6 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         )
         record_list = []
 
-        print(records)
-
         if table_name == "equipment-category":
             try:
                 for record in records:
@@ -460,10 +458,13 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     position = {
+                        "function": fields["Function"],
+                        "function_priority": fields["Function priority"],
                         "name": fields["Name"],
                         "priority": fields["Priority"],
                         "keyword": fields["Keyword"],
                         "in_english": fields["In English"],
+                        "note": fields.get("Note", None),
                         "required": fields.get("Required", False),
                     }
 

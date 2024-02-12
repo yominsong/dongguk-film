@@ -123,7 +123,7 @@ function initSearchBar() {
         ["click", "keyup"].forEach(type => {
             id_initialize_query.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    location.href = `${originLocation}/dflink`;
+                    location.href = `${originLocation}/dflink/`;
                     id_query.readOnly = true;
                     id_submit_query.disabled = true;
                 };

@@ -134,13 +134,9 @@ def send_msg(request, type: str, channel: str, extra=None):
     elif type == "UIG":
         sub_content = ""
         sub_content += f"\nㆍ[home] 총 {len(extra['home'])}개 이미지"
-        sub_content += "\n"
         sub_content += f"\nㆍ[equipment] 총 {len(extra['equipment'])}개 이미지"
-        sub_content += "\n"
         sub_content += f"\nㆍ[project] 총 {len(extra['project'])}개 이미지"
-        sub_content += "\n"
         sub_content += f"\nㆍ[dflink] 총 {len(extra['dflink'])}개 이미지"
-        sub_content += "\n"
         sub_content += f"\nㆍ[notice] 총 {len(extra['notice'])}개 이미지"
         
         main_content = {
@@ -160,11 +156,9 @@ def send_msg(request, type: str, channel: str, extra=None):
             new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
-        sub_content += "\n"
         for i, item in enumerate(extra[1]["purpose"]):
             new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
             sub_content += new_line
-        sub_content += "\n"
         sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개 정책"
         main_content = {
             "important": False,
@@ -180,14 +174,14 @@ def send_msg(request, type: str, channel: str, extra=None):
     elif type == "UPP":
         sub_content = ""
         for i, item in enumerate(extra):
-            new_line = f"\nㆍ{item['priority']} {item['keyword']} ({item['in_english']})"
+            new_line = f"\nㆍ[{item['function']}] {item['keyword']} | {item['in_english']}"
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
         main_content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "프로젝트 직책 업데이트됨",
+            "title": "프로젝트 담당 업데이트됨",
             "url": "",
             "thumbnail_url": "",
             "description": sub_content,
