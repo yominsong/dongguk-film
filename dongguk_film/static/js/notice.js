@@ -644,11 +644,11 @@ function updateForm(action, datasetObj = null) {
             label = id_category_dept.closest("label");
         };
 
-        id_keyword.value = data.keyword;
         label.classList.remove("df-ring-inset-gray");
         label.classList.add("df-ring-inset-flamingo");
         svg = label.querySelector("svg");
         svg.classList.remove("invisible");
+        id_keyword.value = data.keyword;
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;

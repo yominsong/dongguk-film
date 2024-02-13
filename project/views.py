@@ -29,8 +29,6 @@ def project(request):
         search_result_list = []
         for project in project_list:
             for k, v in project.items():
-                k = k.lower().replace(" ", "")
-                v = v.lower().replace(" ", "")
                 if k != "user" and query in v and project not in search_result_list:
                     search_result_list.append(project)
 

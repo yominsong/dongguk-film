@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from fake_useragent import UserAgent
@@ -549,7 +550,53 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         if limit:
             payload["page_size"] = limit
 
-        if db_name == "notice":
+        if db_name == "project":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
+                    created_time = properties["Created time"]["created_time"]
+                    created_time = convert_datetime(created_time)
+
+                    category = properties["Category"]["select"]["name"]
+                    title = properties["Title"]["title"][0]["plain_text"]
+                    user = str(properties["User"]["number"])
+
+                    project = {
+                        "page_id": item["id"],
+                        "category": category,
+                        "title": title,
+                        "user": user,
+                        "created_date": created_time.strftime("%Y-%m-%d"),
+                    }
+
+                    crew = (
+                        properties.get("Crew", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
+                    )
+
+                    crew_list = ast.literal_eval(crew) if crew else None
+
+                    for crew in crew_list:
+                        student_id = crew["user"]
+                        user = User.objects.get(username=student_id)
+                        crew["name"] = user.metadata.name
+                        crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+
+                    project["crew"] = crew_list
+
+                    item_list.append(project)
+            except:
+                pass
+
+        elif db_name == "notice":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -594,42 +641,6 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     notice["file"] = ast.literal_eval(file) if file else None
 
                     item_list.append(notice)
-            except:
-                pass
-
-        elif db_name == "project":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-
-                    created_time = properties["Created time"]["created_time"]
-                    created_time = convert_datetime(created_time)
-
-                    title = properties["Title"]["title"][0]["plain_text"]
-                    user = str(properties["User"]["number"])
-
-                    project = {
-                        "page_id": item["id"],
-                        "title": title,
-                        "user": user,
-                        "created_date": created_time.strftime("%Y-%m-%d"),
-                    }
-
-                    staff = (
-                        properties.get("Staff", {})
-                        .get("rich_text", [{}])[0]
-                        .get("plain_text", None)
-                    )
-
-                    project["staff"] = ast.literal_eval(staff) if staff else None
-
-                    item_list.append(project)
             except:
                 pass
 
