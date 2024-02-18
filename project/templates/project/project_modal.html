@@ -162,7 +162,7 @@
                                             </select>
                                         </div>
                                         <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
-                                            <input class="w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md"
+                                            <input class="w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md"
                                                    id="id_name"
                                                    role="combobox"
                                                    type="text"
@@ -171,6 +171,9 @@
                                                    aria-labelledby="id_position"
                                                    spellcheck="false"
                                                    readonly>
+                                            <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                                                <kbd class="inline-flex items-center rounded border border-gray-200 px-1 font-sans text-xs text-gray-400">↵ Enter</kbd>
+                                            </div>
                                             <ul class="absolute divide-y divide-gray-100 z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm hidden"
                                                 aria-labelledby="id_position"
                                                 role="listbox"
