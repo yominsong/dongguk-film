@@ -523,9 +523,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         category = data.get("category", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
-        staff = data.get("staff", None)
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
+        crew = data.get("crew", None)
         user = data.get("user", None)
 
     # action: query / target: db
@@ -588,7 +588,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         student_id = crew["user"]
                         user = User.objects.get(username=student_id)
                         crew["name"] = user.metadata.name
-                        # crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
 
                     project["crew"] = crew_list
 
@@ -688,6 +688,22 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     "User": {"number": int(str(user))},
                 },
                 "children": paragraph_list,
+            }
+            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
+        
+        elif db_name == "project":
+            payload = {
+                "parent": {"database_id": NOTION_DB_ID[db_name]},
+                "properties": {
+                    "Category": {
+                        "select": {
+                            "name": category,
+                        },
+                    },
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Crew": {"rich_text": [{"text": {"content": str(crew)}}]},
+                    "User": {"number": int(str(user))},
+                },
             }
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 

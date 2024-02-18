@@ -14,8 +14,6 @@ const id_position = document.getElementById("id_position");
 const id_name = document.getElementById("id_name");
 const id_user_list = document.getElementById("id_user_list");
 const id_crew_list = document.getElementById("id_crew_list");
-const id_crew = document.getElementById("id_crew");
-const id_crew_original = code(id_crew, "_original");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
@@ -29,6 +27,7 @@ let isLastSelectedAnchorHash = false;
 let isItDoubleChecked = false;
 
 let prevInputNameValue;
+let addedCrews = [];
 let currentHistoryLength = history.length;
 let doubleCheckTimer;
 
@@ -127,6 +126,43 @@ function isItOkayToCloseModal() {
     return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
 }
 
+function areArraysIdentical(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    };
+
+    return true;
+}
+
+function isItOkayToSubmitProjectForm() {
+    let requiredPositions = [];
+    let addedPositions = [];
+
+    [...id_position.options].forEach(option => {
+        if (option.dataset.required === "True") {
+            requiredPositions.push(option.value);
+            requiredPositions.sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+            });
+        };
+    });
+
+    [...id_crew_list.children].forEach(crew => {
+        if (crew.dataset.required === "True") {
+            addedPositions.push(crew.dataset.positionPriority);
+            addedPositions.sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+            });
+        };
+    });
+
+    return isItOkayToSubmitForm() && requiredPositions.length !== 0 && addedPositions.length !== 0 && areArraysIdentical(requiredPositions, addedPositions);
+}
+
 function hasTwoHangulChars(input) {
     const validHangulOrNonHangulRegex = /^([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+$/;
     const hangulSyllableRegex = /[\uAC00-\uD7A3]/g;
@@ -199,6 +235,18 @@ function initSearchBar() {
 
 initSearchBar();
 
+function addCrew(crew) {
+    const data_crew = crew.dataset;
+    const crewObj = {
+        user: data_crew.user,
+        name: data_crew.name,
+        position: data_crew.positionPriority,
+        required: data_crew.required
+    };
+
+    addedCrews.push(crewObj);
+}
+
 function initCrewBox() {
     const charEventTypes = ["compositionstart", "compositionupdate", "compositionend"];
     const controlEventTypes = ["paste", "blur", "click", "keyup", "focus"];
@@ -262,6 +310,7 @@ function initCrewBox() {
                                     crewElement.dataset.avatarUrl = user.dataset.avatarUrl;
                                     crewElement.dataset.positionPriority = id_position.value;
                                     crewElement.dataset.positionKeyword = id_position.selectedOptions[0].dataset.keyword;
+                                    crewElement.dataset.required = id_position.selectedOptions[0].dataset.required;
 
                                     crewElement.innerHTML = `<div class="flex items-center min-w-0 gap-x-3">
                                             <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
@@ -296,6 +345,7 @@ function initCrewBox() {
                                     id_name.focus();
                                     id_user_list.classList.add("hidden");
                                     sortCrewListItems();
+                                    addCrew(crewElement);
                                 };
                             });
                         });
@@ -418,7 +468,6 @@ function initForm() {
     id_name.value = null;
     id_user_list.innerHTML = null;
     id_crew_list.innerHTML = null;
-    id_crew.value = null;
 
     inputs.forEach((input) => {
         displayError(false, input);
@@ -523,10 +572,34 @@ function requestFindUser() {
     request = {};
 }
 
+// function requestCreateProject() {
+//     request.url = `${originLocation}/project/utils/project/`;
+//     request.type = "GET";
+//     request.data = { id: "create_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${addedCrews}` };
+//     request.async = true;
+//     request.headers = null;
+//     freezeForm(true);
+//     makeAjaxCall(request);
+//     request = {};
+// }
+
 function requestCreateProject() {
+    let formData = new FormData();
+
+    formData.append("id", "create_project");
+    formData.append("title", id_title.value);
+    formData.append("category", id_category.value);
+
+    addedCrews.forEach((crewObj, index) => {
+        formData.append(`crewUser_${index}`, crewObj.user);
+        formData.append(`crewName_${index}`, crewObj.name);
+        formData.append(`crewPosition_${index}`, crewObj.position);
+        formData.append(`crewRequired_${index}`, crewObj.required);
+    });
+
     request.url = `${originLocation}/project/utils/project/`;
-    request.type = "GET";
-    request.data = { id: "create_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${id_crew.value}` };
+    request.type = "POST";
+    request.data = formData;
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -537,7 +610,7 @@ function requestCreateProject() {
 function requestUpdateProject() {
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "GET";
-    request.data = { id: "update_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${id_crew.value}` };
+    request.data = { id: "update_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${addedCrews}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -548,7 +621,7 @@ function requestUpdateProject() {
 function requestDeleteProject() {
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "GET";
-    request.data = { id: "delete_project", title: `${id_title_original.value}`, category: `${id_category_original.value}`, crew: `${id_crew_original.value}` };
+    request.data = { id: "delete_project", title: `${id_title_original.value}`, category: `${id_category_original.value}`, crew: `${addedCrews}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -579,7 +652,7 @@ function initRequest() {
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (isItOkayToSubmitForm()) {
+                        if (isItOkayToSubmitProjectForm()) {
                             const id_create_or_update_spin = code(id_create_or_update, "_spin");
 
                             if (id_create_or_update.innerText === "만들기") {

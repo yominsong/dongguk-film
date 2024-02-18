@@ -1015,7 +1015,7 @@ function requestUpdateNotice() {
 function requestDeleteNotice() {
     request.url = `${originLocation}/notice/utils/notice/`;
     request.type = "POST";
-    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}`, file: `${attachedFiles}` };
+    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

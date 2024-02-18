@@ -134,8 +134,8 @@
                     <div class="flex justify-between items-center gap-x-2">
                         <!-- project.crew -->
                         {% for crew in project.crew %}
-                            {% if crew.position == "Director" %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500">연출 {{ crew.name }}</p>
+                            {% if crew.position == "A01" %}
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">연출 {{ crew.name }} ({{ crew.user }})</p>
                             {% endif %}
                         {% endfor %}
                         <!-- project.created_date(>sm) -->

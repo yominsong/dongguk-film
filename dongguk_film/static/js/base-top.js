@@ -338,6 +338,25 @@ function handleAjaxCallback(response) {
         };
     }
 
+    // requestCreateProject()
+    else if (resID === "create_project") {
+        if (resResult.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+            displayButtonMsg(false, id_create_or_update, "error");
+            location.href = `${originLocation}${location.pathname}`;
+        } else if (resResult.status === "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            displayButtonMsg(false, id_create_or_update, "descr");
+            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestCreateDflink()
     else if (resID === "create_dflink") {
         if (resResult.status === "DONE") {

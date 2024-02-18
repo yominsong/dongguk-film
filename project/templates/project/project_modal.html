@@ -64,7 +64,7 @@
                                     <div class="mt-2">
                                         <input type="text"
                                                id="id_title"
-                                               class="class-first space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
@@ -145,14 +145,16 @@
                                                     {% if position.priority == "01" %}
                                                         <option class="bg-flamingo-50 text-flamingo-800 font-semibold" disabled>{{ position.function }}</option>
                                                         <option value="{{ position.function_priority }}{{ position.priority }}"
-                                                                data-keyword="{{ position.keyword }}">
+                                                                data-keyword="{{ position.keyword }}"
+                                                                data-required="{{ position.required }}">
                                                             {{ position.keyword }}
                                                             {% if position.note %}({{ position.note }}){% endif %}
                                                             | {{ position.in_english }}
                                                         </option>
                                                     {% else %}
                                                         <option value="{{ position.function_priority }}{{ position.priority }}"
-                                                                data-keyword="{{ position.keyword }}">
+                                                                data-keyword="{{ position.keyword }}"
+                                                                data-required="{{ position.required }}">
                                                             {{ position.keyword }}
                                                             {% if position.note %}({{ position.note }}){% endif %}
                                                             | {{ position.in_english }}
@@ -162,20 +164,19 @@
                                             </select>
                                         </div>
                                         <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
+                                            <label for="id_name" class="sr-only">이름</label>
                                             <input class="w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md"
                                                    id="id_name"
                                                    role="combobox"
                                                    type="text"
                                                    value=""
                                                    placeholder="홍길동"
-                                                   aria-labelledby="id_position"
                                                    spellcheck="false"
                                                    readonly>
                                             <div class="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
                                                 <kbd class="inline-flex items-center rounded border border-gray-200 px-1 font-sans text-xs text-gray-400">↵ Enter</kbd>
                                             </div>
                                             <ul class="absolute divide-y divide-gray-100 z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm hidden"
-                                                aria-labelledby="id_position"
                                                 role="listbox"
                                                 id="id_user_list">
                                                 <li class="relative outline-none cursor-default select-none py-2 pl-3 text-gray-900 focus:bg-flamingo-600 focus:text-white hover:bg-flamingo-600 hover:text-white"
@@ -223,8 +224,6 @@
                                         </ul>
                                     </div>
                                 </fieldset>
-                                <input id="id_crew" value="" hidden>
-                                <input id="id_crew_original" value="" hidden>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">
                                         <div class="flex">

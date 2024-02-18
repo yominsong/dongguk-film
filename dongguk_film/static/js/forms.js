@@ -446,6 +446,19 @@ function controlError(input) {
         };
     };
 
+    // film-title
+    if (input.classList.contains("film-title")) {
+        if (input.value.length === 0) {
+            displayError(true, input, "empty");
+        } else if (!(input.value.startsWith("<") && input.value.endsWith(">"))) {
+            displayError(true, input, "no parentheses");
+        } else if (input.value.length < 4) {
+            displayError(true, input, "insufficient");
+        } else {
+            return false;
+        };
+    };
+
     // text (student ID)
     if (lowercaseId(input).indexOf("studentid") !== -1) {
         if (input.value.length === 0) {
@@ -660,6 +673,9 @@ function displayError(bool, input, errorType = null) {
         } else if (errorType === "inappropriate") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
             narrativeClause = "수정해주세요.";
+        } else if (errorType === "no parentheses") {
+            subject = matchJosa(findLabel(input), "을를", "WJS");
+            narrativeClause = `괄호 <, >로 감싸주세요.`;
         } else if (errorType === "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효 범위를 벗어났어요.`;
