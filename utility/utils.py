@@ -588,7 +588,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         student_id = crew["user"]
                         user = User.objects.get(username=student_id)
                         crew["name"] = user.metadata.name
-                        crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        # crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
 
                     project["crew"] = crew_list
 

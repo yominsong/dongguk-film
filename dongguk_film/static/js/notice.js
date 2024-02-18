@@ -1026,7 +1026,7 @@ function requestDeleteNotice() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        if (id_modal != null) {
+        if (id_modal !== null) {
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);

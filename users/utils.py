@@ -209,10 +209,14 @@ def vcode(request):
             }
             mail_response = send_mail(data)
             sms_response = json.loads(send_sms(data))
-            if mail_response == 1 and sms_response["statusCode"] == "202":
-                status = "DONE"
-                msg = "인증번호가 전송되었어요!"
-            else:
+            try:
+                if mail_response == 1 and sms_response["statusCode"] == "202":
+                    status = "DONE"
+                    msg = "인증번호가 전송되었어요!"
+                else:
+                    status = "FAIL"
+                    msg = "앗, 다시 한 번 시도해주세요!"
+            except:
                 status = "FAIL"
                 msg = "앗, 다시 한 번 시도해주세요!"
 

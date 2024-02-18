@@ -1,10 +1,10 @@
-{% load tags %}
+{% load static %}
 <div id="id_modal"
      x-data="{ open: false }"
      @keydown.window.escape="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
      x-show="open"
      class="relative z-20"
-     aria-labelledby="modal-title"
+     aria-labelledby="id_modal_title"
      x-ref="dialog"
      aria-modal="true"
      hidden>
@@ -48,7 +48,8 @@
                 <div class="flex flex-col">
                     <div class="flex mb-5">
                         <div class="mt-0 text-left">
-                            <h3 class="text-base font-semibold leading-6 text-gray-900">
+                            <h3 id="id_modal_title"
+                                class="text-base font-semibold leading-6 text-gray-900">
                                 프로젝트 <span class="class-keyword">만들기</span>
                             </h3>
                         </div>
@@ -63,7 +64,7 @@
                                     <div class="mt-2">
                                         <input type="text"
                                                id="id_title"
-                                               class="class-first space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="class-first space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
@@ -138,18 +139,20 @@
                                         <div>
                                             <label for="id_position" class="sr-only">담당</label>
                                             <select id="id_position"
-                                                    class="relative block w-full rounded-none rounded-t-md border-0 bg-transparent py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                                    class="relative block w-full rounded-none rounded-t-md border-0 bg-transparent py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset focus:z-10 sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed">
                                                 <option selected hidden>담당을 선택하세요.</option>
                                                 {% for position in position_list %}
                                                     {% if position.priority == "01" %}
                                                         <option class="bg-flamingo-50 text-flamingo-800 font-semibold" disabled>{{ position.function }}</option>
-                                                        <option>
+                                                        <option value="{{ position.function_priority }}{{ position.priority }}"
+                                                                data-keyword="{{ position.keyword }}">
                                                             {{ position.keyword }}
                                                             {% if position.note %}({{ position.note }}){% endif %}
                                                             | {{ position.in_english }}
                                                         </option>
                                                     {% else %}
-                                                        <option>
+                                                        <option value="{{ position.function_priority }}{{ position.priority }}"
+                                                                data-keyword="{{ position.keyword }}">
                                                             {{ position.keyword }}
                                                             {% if position.note %}({{ position.note }}){% endif %}
                                                             | {{ position.in_english }}
@@ -158,53 +161,66 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div>
-                                            <label for="id_crew" class="sr-only">이름</label>
-                                            <div class="flex df-ring-inset-gray hover:bg-gray-50">
-                                                <input type="text"
-                                                    id="id_crew"
-                                                    class="relative block w-full rounded-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed"
-                                                    placeholder="홍길동">
-                                                <button type="button"
-                                                        id="id_find_crew"
-                                                        class="relative -ml-px px-3 py-2 text-sm text-gray-400 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="1.5"
-                                                        stroke="currentColor"
-                                                        class="w-5 h-5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                    </svg>
-                                                    <span class="sr-only">추가</span>
-                                                </button>
-                                            </div>
+                                        <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
+                                            <input class="w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md"
+                                                   id="id_name"
+                                                   role="combobox"
+                                                   type="text"
+                                                   value=""
+                                                   placeholder="홍길동"
+                                                   aria-labelledby="id_position"
+                                                   spellcheck="false"
+                                                   readonly>
+                                            <ul class="absolute divide-y divide-gray-100 z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm hidden"
+                                                aria-labelledby="id_position"
+                                                role="listbox"
+                                                id="id_user_list">
+                                                <li class="relative outline-none cursor-default select-none py-2 pl-3 text-gray-900 focus:bg-flamingo-600 focus:text-white hover:bg-flamingo-600 hover:text-white"
+                                                    role="option"
+                                                    tabindex="-1">
+                                                    <div class="flex items-center">
+                                                        <img class="h-6 w-6 flex-shrink-0 rounded-full"
+                                                             src="{% static 'images/d_dot_f_logo.jpg' %}"
+                                                             alt=""
+                                                             height=""
+                                                             width="">
+                                                        <span class="font-semibold ml-3 truncate">홍길동</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <ul role="list" class="divide-y divide-gray-100 px-3">
+                                        <ul id="id_crew_list" role="list" class="divide-y divide-gray-100 px-3">
                                             <li class="relative flex justify-between gap-x-4 py-3">
                                                 <div class="flex items-center min-w-0 gap-x-3">
                                                     <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
-                                                         src="{{ user.socialaccount_set.all.0.get_avatar_url }}"
-                                                         alt="{{ user.metadata.name }}님의 프로필 사진">
+                                                         src="{% static 'images/d_dot_f_logo.jpg' %}"
+                                                         alt="홍길동님의 프로필 사진"
+                                                         height=""
+                                                         width="">
                                                     <div class="min-w-0 flex-auto">
-                                                        <p class="text-sm text-gray-500">연출 | Director</p>
-                                                        <p class="text-sm font-semibold leading-6 text-gray-900">{{ user.metadata.name }} <span class="font-normal">({{ user.metadata.student_id|mask_student_id }})</span></p>
+                                                        <p class="text-sm text-gray-500">예시</p>
+                                                        <p class="text-sm font-semibold leading-6 text-gray-900">
+                                                            홍길동 <span class="font-normal">(20*****000)</span>
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div class="flex shrink-0 items-center">
-                                                    <svg class="w-5 h-5 flex-none text-gray-400"
-                                                         xmlns="http://www.w3.org/2000/svg"
-                                                         fill="none"
-                                                         viewBox="0 0 24 24"
-                                                         stroke-width="1.5"
-                                                         stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                                    </svg>
+                                                    <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
+                                                        <svg class="w-5 h-5 flex-none"
+                                                             xmlns="http://www.w3.org/2000/svg"
+                                                             fill="none"
+                                                             viewBox="0 0 24 24"
+                                                             stroke-width="1.5"
+                                                             stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </li>
                                         </ul>
                                     </div>
                                 </fieldset>
+                                <input id="id_crew" value="" hidden>
                                 <input id="id_crew_original" value="" hidden>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">

@@ -297,6 +297,47 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestFindUser()
+    else if (resID === "find_user") {
+        if (resResult.status === "DONE") {
+            isUserFound = true;
+
+            resResult.user_list.forEach(user => {
+                const addedUsers = id_user_list.querySelectorAll("li");
+
+                addedUsers.forEach(addedUser => {
+                    if (addedUser.dataset.name !== user.name) {
+                        id_user_list.removeChild(addedUser);
+                    };
+                });
+
+                if (!document.getElementById(user.user)) {
+                    const userElement = document.createElement("li");
+
+                    userElement.id = user.user;
+                    userElement.classList.add("class-user", "relative", "outline-none", "cursor-default", "select-none", "py-2", "pl-3", "text-gray-900", "focus:bg-flamingo-600", "focus:text-white", "hover:bg-flamingo-600", "hover:text-white");
+                    userElement.dataset.user = user.user;
+                    userElement.dataset.name = user.name;
+                    userElement.dataset.studentId = user.student_id;
+                    userElement.dataset.avatarUrl = user.avatar_url;
+                    userElement.setAttribute("role", "option");
+
+                    userElement.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${user.avatar_url}" alt="${user.name}님의 프로필 사진" class="h-6 w-6 flex-shrink-0 rounded-full">
+                            <span class="font-semibold ml-3 truncate">${user.name}</span>
+                            <span>&nbsp(${user.student_id})</span>
+                        </div>
+                    `;
+                    
+                    id_user_list.appendChild(userElement);
+                };
+            });
+        } else if (resResult.status === "FAIL") {
+            isUserFound = false;
+        };
+    }
+
     // requestCreateDflink()
     else if (resID === "create_dflink") {
         if (resResult.status === "DONE") {

@@ -29,8 +29,13 @@ def project(request):
         search_result_list = []
         for project in project_list:
             for k, v in project.items():
-                if k != "user" and query in v and project not in search_result_list:
+                if k != "crew" and query in v and project not in search_result_list:
                     search_result_list.append(project)
+                elif k == "crew":
+                    for crew in v:
+                        for k, v in crew.items():
+                            if query in v and project not in search_result_list:
+                                search_result_list.append(project)
 
         project_list = search_result_list
         search_result_count = len(search_result_list)

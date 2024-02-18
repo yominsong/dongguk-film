@@ -12,4 +12,5 @@ urlpatterns = [
         utils.update_project_position,
         name="update_project_position",
     ),
+    path("utils/project/", utils.project),
 ]

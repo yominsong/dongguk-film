@@ -72,7 +72,7 @@ def update_equipment_policy(request):
 
 
 #
-# Main functions
+# Sub functions
 #
 
 

@@ -416,12 +416,12 @@ function initForm() {
         const label = category.closest("label");
         const svg = label.querySelector("svg");
 
-        if (category.id.indexOf("category") != -1 && category.value === urlParams.get("categoryPriority")) {
+        if (category.id.indexOf("category") !== -1 && category.value === urlParams.get("categoryPriority")) {
             category.click();
         };
 
         category.addEventListener("click", () => {
-            if (category.id.indexOf("category") != -1) {
+            if (category.id.indexOf("category") !== -1) {
                 id_category.value = category.value;
             };
         });
@@ -772,7 +772,7 @@ function requestFilterEquipment() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        if (id_modal != null) {
+        if (id_modal !== null) {
             class_firsts = document.querySelectorAll(".class-first");
             initValidation(class_firsts, id_filter);
 
