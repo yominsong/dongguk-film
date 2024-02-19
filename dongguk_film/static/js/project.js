@@ -14,6 +14,8 @@ const id_position = document.getElementById("id_position");
 const id_name = document.getElementById("id_name");
 const id_user_list = document.getElementById("id_user_list");
 const id_crew_list = document.getElementById("id_crew_list");
+const id_crew_list_descr = code(id_crew_list, "_descr");
+const id_crew_list_error = code(id_crew_list, "_error");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
@@ -26,6 +28,8 @@ let isInteractingWithList = false;
 let isLastSelectedAnchorHash = false;
 let isItDoubleChecked = false;
 
+let requiredPositions = [];
+let addedRequiredPositions = [];
 let prevInputNameValue;
 let addedCrews = [];
 let currentHistoryLength = history.length;
@@ -35,7 +39,7 @@ let doubleCheckTimer;
 // Sub functions
 //
 
-function controlUserListWithArrowKeys() {
+function controlArrowKeysForUserList() {
     const items = id_user_list.querySelectorAll("li");
 
     items.forEach((item, index) => {
@@ -67,23 +71,6 @@ function controlUserListWithArrowKeys() {
             };
         });
     });
-}
-
-function sortCrewListItems() {
-    let crews = Array.from(id_crew_list.querySelectorAll("li"));
-
-    crews.sort((a, b) => {
-        let priorityA = a.dataset.positionPriority;
-        let priorityB = b.dataset.positionPriority;
-
-        return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
-    });
-
-    while (id_crew_list.firstChild) {
-        id_crew_list.removeChild(id_crew_list.firstChild);
-    };
-
-    crews.forEach(crew => id_crew_list.appendChild(crew));
 }
 
 function preventGoBack() {
@@ -126,43 +113,6 @@ function isItOkayToCloseModal() {
     return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
 }
 
-function areArraysIdentical(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
-
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) return false;
-    };
-
-    return true;
-}
-
-function isItOkayToSubmitProjectForm() {
-    let requiredPositions = [];
-    let addedPositions = [];
-
-    [...id_position.options].forEach(option => {
-        if (option.dataset.required === "True") {
-            requiredPositions.push(option.value);
-            requiredPositions.sort((a, b) => {
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-            });
-        };
-    });
-
-    [...id_crew_list.children].forEach(crew => {
-        if (crew.dataset.required === "True") {
-            addedPositions.push(crew.dataset.positionPriority);
-            addedPositions.sort((a, b) => {
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-            });
-        };
-    });
-
-    return isItOkayToSubmitForm() && requiredPositions.length !== 0 && addedPositions.length !== 0 && areArraysIdentical(requiredPositions, addedPositions);
-}
-
 function hasTwoHangulChars(input) {
     const validHangulOrNonHangulRegex = /^([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+$/;
     const hangulSyllableRegex = /[\uAC00-\uD7A3]/g;
@@ -176,9 +126,91 @@ function hasTwoHangulChars(input) {
     return matches;
 }
 
+function areArraysIdentical(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    };
+
+    return true;
+}
+
+function isItOkayToSubmitProjectForm() {
+    [...id_position.options].forEach(option => {
+        if (option.dataset.required === "True" && !requiredPositions.includes(option.value)) {
+            requiredPositions.push(option.value);
+            requiredPositions.sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+            });
+        };
+    });
+
+    [...id_crew_list.children].forEach(crew => {
+        if (crew.dataset.required === "True" && !addedRequiredPositions.includes(crew.dataset.positionPriority)) {
+            addedRequiredPositions.push(crew.dataset.positionPriority);
+            addedRequiredPositions.sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+            });
+        };
+    });
+
+    const inputs = [id_position, id_name];
+    const areCrewsAdded = addedCrews.length !== 0;
+    const areAllRequiredPositionsAdded = areArraysIdentical(requiredPositions, addedRequiredPositions);
+    const namesOfRequiredPositions = requiredPositions.map(position => id_position.querySelector(`option[value="${position}"]`).dataset.keyword).join(", ");
+
+    if (!areCrewsAdded) {
+        id_crew_list_error.innerText = "제작진을 추가해주세요.";
+        id_crew_list_error.hidden = false;
+        inputs.forEach(input => { input.classList.remove("bg-transparent") });
+        inputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
+    } else if (!areAllRequiredPositionsAdded) {
+        id_crew_list_error.innerText = `${namesOfRequiredPositions} 담당을 전부 빠짐없이 지정해주세요.`;
+        id_crew_list_error.hidden = false;
+        id_position.classList.remove("bg-transparent");
+        id_position.classList.add("bg-flamingo-50", "ring-transparent");
+    } else {
+        id_crew_list_error.hidden = true;
+    };
+
+    return isItOkayToSubmitForm() && areCrewsAdded && areAllRequiredPositionsAdded;
+}
+
 function executeWhenModalIsClosed() {
     isModalOpen = false;
     toggleFocusOnModal(false);
+}
+
+function validationForCrewList() {
+    const inputs = [id_position, id_name];
+
+    ["click", "focusin"].forEach(type => {
+        inputs.forEach(input => {
+            input.addEventListener(type, () => {
+                displayError(false, id_crew_list);
+                inputs.forEach(input => { input.classList.add("bg-transparent") });
+                inputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
+            });
+
+            input.addEventListener("blur", () => {
+                if (id_crew_list.childElementCount === 0) {
+                    id_crew_list_error.innerText = "제작진을 추가해주세요.";
+                    id_crew_list_error.hidden = false;
+                    inputs.forEach(input => { input.classList.remove("bg-transparent") });
+                    inputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
+                };
+            });
+
+            if (input === id_name) {
+                input.addEventListener("keydown", event => {
+                    controlDescr(input, event);
+                });
+            };
+        });
+    });
 }
 
 //
@@ -235,156 +267,201 @@ function initSearchBar() {
 
 initSearchBar();
 
-function addCrew(crew) {
-    const data_crew = crew.dataset;
-    const crewObj = {
-        user: data_crew.user,
-        name: data_crew.name,
-        position: data_crew.positionPriority,
-        required: data_crew.required
-    };
-
-    addedCrews.push(crewObj);
-}
-
 function initCrewBox() {
-    const charEventTypes = ["compositionstart", "compositionupdate", "compositionend"];
-    const controlEventTypes = ["paste", "blur", "click", "keyup", "focus"];
-    const mouseEventTypes = ["mouseenter", "mouseleave"];
+    if (id_modal !== null) {
+        const compositionEventTypes = ["compositionstart", "compositionupdate", "compositionend"];
+        const inputControlEventTypes = ["paste", "blur", "click", "keyup", "focus"];
+        const mouseControlEventTypes = ["mouseenter", "mouseleave"];
 
-    charEventTypes.forEach(type => {
-        id_name.addEventListener(type, () => {
-            if (type === "compositionstart") {
-                isComposing = true;
-            } else if (type === "compositionupdate") {
-                isComposing = false;
-            } else if (type === "compositionend") {
-                isComposing = false;
-            };
-        });
-    });
-
-    controlEventTypes.forEach(type => {
-        id_name.addEventListener(type, event => {
-            if (type === "paste") {
-                prevInputNameValue = null;
-            } else if (type === "blur") {
-                if (!isInteractingWithList) { id_user_list.classList.add("hidden") };
-            } else {
-                if (isUserFound) {
-                    id_user_list.classList.remove("hidden");
-
-                    if (type === "keyup" && event.key === "ArrowDown") {
-                        isInteractingWithList = true;
-                        id_user_list.firstElementChild.setAttribute("tabindex", "0");
-                        id_user_list.firstElementChild.focus();
-                        controlUserListWithArrowKeys();
-                        setTimeout(() => { isInteractingWithList = false }, 100);
-                    };
-
-                    const class_users = id_user_list.querySelectorAll(".class-user");
-
-                    class_users.forEach(user => {
-                        ["click", "keyup"].forEach(type => {
-                            user.addEventListener(type, event => {
-                                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                    const class_crews = id_crew_list.querySelectorAll(".class-crew");
-                                    let isCrewAlreadyAdded = false;
-
-                                    class_crews.forEach(crew => {
-                                        if (crew.dataset.user === user.dataset.user && crew.dataset.positionPriority === id_position.value) {
-                                            isCrewAlreadyAdded = true;
-                                        };
-                                    });
-
-                                    if (isCrewAlreadyAdded) {
-                                        return;
-                                    };
-
-                                    const crewElement = document.createElement("li");
-
-                                    crewElement.classList.add("class-crew", "relative", "flex", "justify-between", "gap-x-4", "py-3");
-                                    crewElement.dataset.user = user.dataset.user;
-                                    crewElement.dataset.name = user.dataset.name;
-                                    crewElement.dataset.studentId = user.dataset.studentId;
-                                    crewElement.dataset.avatarUrl = user.dataset.avatarUrl;
-                                    crewElement.dataset.positionPriority = id_position.value;
-                                    crewElement.dataset.positionKeyword = id_position.selectedOptions[0].dataset.keyword;
-                                    crewElement.dataset.required = id_position.selectedOptions[0].dataset.required;
-
-                                    crewElement.innerHTML = `<div class="flex items-center min-w-0 gap-x-3">
-                                            <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
-                                                src="${crewElement.dataset.avatarUrl}"
-                                                alt="${crewElement.dataset.name}님의 프로필 사진"
-                                                height=""
-                                                width="">
-                                            <div class="min-w-0 flex-auto">
-                                                <p class="text-sm text-gray-500">${crewElement.dataset.positionKeyword}</p>
-                                                <p class="text-sm font-semibold leading-6 text-gray-900">
-                                                    ${crewElement.dataset.name} <span class="font-normal">(${crewElement.dataset.studentId})</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="flex shrink-0 items-center">
-                                            <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
-                                                <svg class="w-5 h-5 flex-none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke-width="1.5"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    `;
-
-                                    id_crew_list.appendChild(crewElement);
-                                    id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                    id_name.parentElement.classList.remove("rounded-b-md");
-                                    id_name.focus();
-                                    id_user_list.classList.add("hidden");
-                                    sortCrewListItems();
-                                    addCrew(crewElement);
-                                };
-                            });
-                        });
-                    });
-
-                    const class_removes = id_crew_list.querySelectorAll(".class-remove");
-
-                    class_removes.forEach(remove => {
-                        ["click", "keyup"].forEach(type => {
-                            remove.addEventListener(type, event => {
-                                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                    remove.parentElement.parentElement.remove();
-
-                                    if (id_crew_list.childElementCount === 0) {
-                                        id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                        id_name.parentElement.classList.add("rounded-b-md");
-                                    };
-
-                                    id_name.focus();
-                                };
-                            });
-                        });
-                    });
-                } else {
-                    id_user_list.classList.add("hidden");
+        // id_name
+        compositionEventTypes.forEach(type => {
+            id_name.addEventListener(type, () => {
+                if (type === "compositionstart") {
+                    isComposing = true;
+                } else if (type === "compositionupdate") {
+                    isComposing = false;
+                } else if (type === "compositionend") {
+                    isComposing = false;
                 };
-            };
+            });
         });
-    });
 
-    mouseEventTypes.forEach(type => {
-        id_user_list.addEventListener(type, () => {
-            if (type === "mouseenter") {
-                isInteractingWithList = true;
-            } else if (type === "mouseleave") {
-                isInteractingWithList = false;
-            };
+        inputControlEventTypes.forEach(type => {
+            id_name.addEventListener(type, event => {
+                if (type === "paste") {
+                    prevInputNameValue = null;
+                } else if (type === "blur") {
+                    if (!isInteractingWithList) { id_user_list.classList.add("hidden") };
+                } else {
+                    if (isUserFound) {
+                        id_user_list.classList.remove("hidden");
+
+                        if (type === "keyup") {
+                            if (event.key === "Enter") {
+                                id_user_list.firstElementChild.click();
+                            } else if (event.key === "ArrowDown") {
+                                isInteractingWithList = true;
+                                id_user_list.firstElementChild.setAttribute("tabindex", "0");
+                                id_user_list.firstElementChild.focus();
+                                controlArrowKeysForUserList();
+                                setTimeout(() => { isInteractingWithList = false }, 100);
+                            };
+                        };
+
+                        const class_users = id_user_list.querySelectorAll(".class-user");
+
+                        class_users.forEach(user => {
+                            ["click", "keyup"].forEach(type => {
+                                user.addEventListener(type, event => {
+                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
+                                        // Check if the user is already added to the crew list
+                                        const class_crews = id_crew_list.querySelectorAll(".class-crew");
+                                        let isCrewAlreadyAdded = false;
+
+                                        class_crews.forEach(crew => {
+                                            if (crew.dataset.user === user.dataset.user &&
+                                                crew.dataset.positionPriority === id_position.value) {
+                                                isCrewAlreadyAdded = true;
+                                            };
+                                        });
+
+                                        if (isCrewAlreadyAdded) {
+                                            return;
+                                        };
+
+                                        // Add the user to the crew list
+                                        const crewElement = document.createElement("li");
+
+                                        crewElement.classList.add("class-crew", "relative", "flex", "justify-between", "gap-x-4", "py-3");
+                                        crewElement.dataset.user = user.dataset.user;
+                                        crewElement.dataset.name = user.dataset.name;
+                                        crewElement.dataset.studentId = user.dataset.studentId;
+                                        crewElement.dataset.avatarUrl = user.dataset.avatarUrl;
+                                        crewElement.dataset.positionPriority = id_position.value;
+                                        crewElement.dataset.positionKeyword = id_position.selectedOptions[0].dataset.keyword;
+                                        crewElement.dataset.required = id_position.selectedOptions[0].dataset.required;
+
+                                        crewElement.innerHTML = `<div class="flex items-center min-w-0 gap-x-3">
+                                                <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
+                                                    src="${crewElement.dataset.avatarUrl}"
+                                                    alt="${crewElement.dataset.name}님의 프로필 사진"
+                                                    height=""
+                                                    width="">
+                                                <div class="min-w-0 flex-auto">
+                                                    <p class="class-blink text-sm text-gray-500">${crewElement.dataset.positionKeyword}</p>
+                                                    <p class="class-blink text-sm font-semibold leading-6 text-gray-900">
+                                                        ${crewElement.dataset.name} <span class="font-normal">(${crewElement.dataset.studentId})</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="flex shrink-0 items-center">
+                                                <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
+                                                    <svg class="w-5 h-5 flex-none"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="1.5"
+                                                        stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        `;
+
+                                        id_crew_list.appendChild(crewElement);
+
+                                        // Add the crew to the addedCrews array
+                                        const data_crew = crewElement.dataset;
+                                        const crewObj = {
+                                            user: data_crew.user,
+                                            name: data_crew.name,
+                                            position: data_crew.positionPriority,
+                                            required: data_crew.required
+                                        };
+
+                                        addedCrews.push(crewObj);
+
+                                        // Sort the crew list by position priority
+                                        const crews = Array.from(id_crew_list.querySelectorAll("li"));
+
+                                        crews.sort((a, b) => {
+                                            const priorityA = a.dataset.positionPriority;
+                                            const priorityB = b.dataset.positionPriority;
+
+                                            return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
+                                        });
+
+                                        while (id_crew_list.firstChild) {
+                                            id_crew_list.removeChild(id_crew_list.firstChild);
+                                        };
+
+                                        crews.forEach(crew => id_crew_list.appendChild(crew));
+
+                                        // Blink the added crew
+                                        const class_blinks = crewElement.querySelectorAll(".class-blink");
+
+                                        class_blinks.forEach(blink => {
+                                            blink.classList.add("blink");
+                                            setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                                        });
+
+                                        // Reset the input field
+                                        id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                                        id_name.parentElement.classList.remove("rounded-b-md");
+                                        id_name.focus();
+                                        id_user_list.classList.add("hidden");
+                                    };
+                                });
+                            });
+                        });
+
+                        const class_removes = id_crew_list.querySelectorAll(".class-remove");
+
+                        class_removes.forEach(remove => {
+                            ["click", "keyup"].forEach(type => {
+                                remove.addEventListener(type, event => {
+                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
+                                        remove.parentElement.parentElement.remove();
+
+                                        // Remove the position from the addedRequiredPositions array
+                                        addedRequiredPositions = addedRequiredPositions.filter(position => {
+                                            return position !== remove.parentElement.parentElement.dataset.positionPriority;
+                                        });
+
+                                        // Remove the crew from the addedCrews array
+                                        addedCrews = addedCrews.filter(crew => {
+                                            return crew.user !== remove.parentElement.parentElement.dataset.user;
+                                        });
+
+                                        // Reset the input field
+                                        if (id_crew_list.childElementCount === 0) {
+                                            id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                                            id_name.parentElement.classList.add("rounded-b-md");
+                                        };
+
+                                        // id_name.focus();
+                                    };
+                                });
+                            });
+                        });
+                    } else {
+                        id_user_list.classList.add("hidden");
+                    };
+                };
+            });
         });
-    });
+
+        // id_user_list
+        mouseControlEventTypes.forEach(type => {
+            id_user_list.addEventListener(type, () => {
+                if (type === "mouseenter") {
+                    isInteractingWithList = true;
+                } else if (type === "mouseleave") {
+                    isInteractingWithList = false;
+                };
+            });
+        });
+    };
 }
 
 initCrewBox();
@@ -452,14 +529,36 @@ function initForm() {
         };
     });
 
+    window.lastKeyWasArrow = false;
+
+    document.addEventListener("keydown", (event) => {
+        if (document.activeElement === id_position) {
+            if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+                window.lastKeyWasArrow = true;
+            } else {
+                window.lastKeyWasArrow = false;
+            };
+        };
+    });
+    
+    document.addEventListener("keyup", (event) => {
+        if (document.activeElement === id_position) {
+            if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+                window.lastKeyWasArrow = false;
+            };
+        };
+    });
+    
     id_position.addEventListener("change", () => {
         if (id_position.selectedOptions[0].disabled) {
             id_position.selectedIndex = 0;
         };
-
+    
         if (id_position.selectedIndex !== 0) {
             id_name.readOnly = false;
-            id_name.focus();
+            if (!window.lastKeyWasArrow) {
+                id_name.focus();
+            };
         } else {
             id_name.readOnly = true;
         };
@@ -633,7 +732,9 @@ function initRequest() {
     window.addEventListener("pageshow", () => {
         if (id_modal !== null) {
             const class_firsts = document.querySelectorAll(".class-first");
+
             initValidation(class_firsts, id_create_or_update);
+            validationForCrewList();
 
             id_name.addEventListener("input", () => {
                 if (!isComposing) {

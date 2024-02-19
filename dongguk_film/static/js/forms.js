@@ -17,7 +17,7 @@ let spins = document.querySelectorAll(".animate-spin");
 let buttons = document.querySelectorAll("button");
 let inputs = [];
 
-const eventTypes = ["focusin", "focusout", "compositionstart", "compositionupdate", "compositionend", "keydown", "keypress", "keyup", "mouseenter", "mouseover", "mousemove", "mousedown", "mouseup", "click", "contextmenu", "mouseleave", "mouseout", "select"];
+const eventTypes = ["focusin", "focusout", "blur", "compositionstart", "compositionupdate", "compositionend", "keydown", "keypress", "keyup", "mouseenter", "mouseover", "mousemove", "mousedown", "mouseup", "click", "contextmenu", "mouseleave", "mouseout", "select"];
 const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
 
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
