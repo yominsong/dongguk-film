@@ -21,6 +21,8 @@ const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 
+const crewBoxInputs = [id_position, id_name];
+
 let isModalOpen = false;
 let isComposing = false;
 let isUserFound = false;
@@ -185,22 +187,21 @@ function executeWhenModalIsClosed() {
 }
 
 function validationForCrewList() {
-    const inputs = [id_position, id_name];
-
     ["click", "focusin"].forEach(type => {
-        inputs.forEach(input => {
+        crewBoxInputs.forEach(input => {
             input.addEventListener(type, () => {
-                displayError(false, id_crew_list);
-                inputs.forEach(input => { input.classList.add("bg-transparent") });
-                inputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
+                id_crew_list_error.innerText = null;
+                id_crew_list_error.hidden = true;
+                crewBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
+                crewBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
             });
 
             input.addEventListener("blur", () => {
                 if (id_crew_list.childElementCount === 0) {
                     id_crew_list_error.innerText = "제작진을 추가해주세요.";
                     id_crew_list_error.hidden = false;
-                    inputs.forEach(input => { input.classList.remove("bg-transparent") });
-                    inputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
+                    crewBoxInputs.forEach(input => { input.classList.remove("bg-transparent") });
+                    crewBoxInputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
                 };
             });
 
@@ -272,6 +273,9 @@ function initCrewBox() {
         const compositionEventTypes = ["compositionstart", "compositionupdate", "compositionend"];
         const inputControlEventTypes = ["paste", "blur", "click", "keyup", "focus"];
         const mouseControlEventTypes = ["mouseenter", "mouseleave"];
+
+        addedRequiredPositions = [];
+        addedCrews = [];
 
         // id_name
         compositionEventTypes.forEach(type => {
@@ -405,41 +409,42 @@ function initCrewBox() {
                                             setTimeout(() => { blink.classList.remove("blink") }, 3000);
                                         });
 
+                                        // Activate the remove button
+                                        const class_removes = id_crew_list.querySelectorAll(".class-remove");
+
+                                        class_removes.forEach(remove => {
+                                            ["click", "keyup"].forEach(type => {
+                                                remove.addEventListener(type, event => {
+                                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
+                                                        remove.parentElement.parentElement.remove();
+
+                                                        // Remove the position from the addedRequiredPositions array
+                                                        addedRequiredPositions = addedRequiredPositions.filter(position => {
+                                                            return position !== remove.parentElement.parentElement.dataset.positionPriority;
+                                                        });
+
+                                                        // Remove the crew from the addedCrews array
+                                                        addedCrews = addedCrews.filter(crew => {
+                                                            return crew.user !== remove.parentElement.parentElement.dataset.user;
+                                                        });
+
+                                                        // Reset the input field
+                                                        if (id_crew_list.childElementCount === 0) {
+                                                            id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                                                            id_name.parentElement.classList.add("rounded-b-md");
+                                                        };
+
+                                                        // id_name.focus();
+                                                    };
+                                                });
+                                            });
+                                        });
+
                                         // Reset the input field
                                         id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
                                         id_name.parentElement.classList.remove("rounded-b-md");
                                         id_name.focus();
                                         id_user_list.classList.add("hidden");
-                                    };
-                                });
-                            });
-                        });
-
-                        const class_removes = id_crew_list.querySelectorAll(".class-remove");
-
-                        class_removes.forEach(remove => {
-                            ["click", "keyup"].forEach(type => {
-                                remove.addEventListener(type, event => {
-                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                        remove.parentElement.parentElement.remove();
-
-                                        // Remove the position from the addedRequiredPositions array
-                                        addedRequiredPositions = addedRequiredPositions.filter(position => {
-                                            return position !== remove.parentElement.parentElement.dataset.positionPriority;
-                                        });
-
-                                        // Remove the crew from the addedCrews array
-                                        addedCrews = addedCrews.filter(crew => {
-                                            return crew.user !== remove.parentElement.parentElement.dataset.user;
-                                        });
-
-                                        // Reset the input field
-                                        if (id_crew_list.childElementCount === 0) {
-                                            id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                            id_name.parentElement.classList.add("rounded-b-md");
-                                        };
-
-                                        // id_name.focus();
                                     };
                                 });
                             });
@@ -463,8 +468,6 @@ function initCrewBox() {
         });
     };
 }
-
-initCrewBox();
 
 function initForm() {
     const id_title_placeholder_array = new Array("<피아골>", "<속 돌아온 외다리>", "<초대받은 사람들>", "<불나비>", "<만선>", "<서편제>", "<자유부인>", "<안개마을>", "<축제>", "<낙동강>", "<민며느리>", "<장희빈>", "<청춘의 십자로>", "<쇠사슬을 끊어라>", "<와룡선생 이야기>", "<사의 찬미>", "<월급쟁이>");
@@ -564,9 +567,16 @@ function initForm() {
         };
     });
 
+    initCrewBox();
     id_name.value = null;
+    id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+    id_name.parentElement.classList.add("rounded-b-md");
     id_user_list.innerHTML = null;
     id_crew_list.innerHTML = null;
+    id_crew_list_error.innerText = null;
+    id_crew_list_error.hidden = true;
+    crewBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
+    crewBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
 
     inputs.forEach((input) => {
         displayError(false, input);
@@ -670,17 +680,6 @@ function requestFindUser() {
     makeAjaxCall(request);
     request = {};
 }
-
-// function requestCreateProject() {
-//     request.url = `${originLocation}/project/utils/project/`;
-//     request.type = "GET";
-//     request.data = { id: "create_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${addedCrews}` };
-//     request.async = true;
-//     request.headers = null;
-//     freezeForm(true);
-//     makeAjaxCall(request);
-//     request = {};
-// }
 
 function requestCreateProject() {
     let formData = new FormData();
