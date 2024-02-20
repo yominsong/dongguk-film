@@ -568,6 +568,7 @@ function initForm() {
     });
 
     initCrewBox();
+    id_position.selectedIndex = 0;
     id_name.value = null;
     id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
     id_name.parentElement.classList.add("rounded-b-md");
