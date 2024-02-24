@@ -23,12 +23,14 @@ const id_delete_text = code(id_delete, "_text");
 
 const staffBoxInputs = [id_position, id_name];
 
+let isAuthenticated = false;
 let isModalOpen = false;
 let isUserFound = false;
 let isInteractingWithList = false;
 let isLastSelectedAnchorHash = false;
 let isItDoubleChecked = false;
 
+let userPk, userName, userStudentId;
 let requiredPositions = [];
 let addedRequiredPositions = [];  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
 let addedStaffs = [];
@@ -129,6 +131,8 @@ function controlErrorInStaffBox() {
         displayErrorInStaffBox(true, "empty");
     } else if (!areArraysIdentical(requiredPositions, addedRequiredPositions)) {
         displayErrorInStaffBox(true, "insufficient");
+    } else if (!isItOkayToSubmitProjectForm()) {
+        displayButtonMsg(true, id_create_or_update, "error", "제작(Procuder) 담당만 프로젝트를 생성할 수 있어요.");
     } else {
         return false;
     };
@@ -221,19 +225,11 @@ function isItOkayToFindUser() {
 }
 
 function isItOkayToSubmitProjectForm() {
-    [...id_staff_list.children].forEach(staff => {
-        if (staff.dataset.required === "True" && !addedRequiredPositions.includes(staff.dataset.positionPriority)) {
-            addedRequiredPositions.push(staff.dataset.positionPriority);
-            addedRequiredPositions.sort((a, b) => {
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-            });
-        };
-    });
-
+    const isProcuder = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
     const areStaffsAdded = addedStaffs.length !== 0;
     const areAllRequiredPositionsAdded = areArraysIdentical(requiredPositions, addedRequiredPositions);
 
-    return isItOkayToSubmitForm() && areStaffsAdded && areAllRequiredPositionsAdded;
+    return isProcuder && areStaffsAdded && areAllRequiredPositionsAdded && isItOkayToSubmitForm();
 }
 
 function executeWhenModalIsClosed() {
@@ -432,19 +428,23 @@ function initStaffBox() {
                                                     };
                                                 });
 
-                                                staffData.position.push(positionData);
+                                                if (staffData.pk === userData.pk) {
+                                                    staffData.position.push(positionData);
 
-                                                staffData.position.sort((a, b) => {
-                                                    return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
-                                                });
+                                                    staffData.position.sort((a, b) => {
+                                                        return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+                                                    });
 
-                                                staff.dataset.position = JSON.stringify(staffData.position);
-                                                staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
+                                                    staff.dataset.position = JSON.stringify(staffData.position);
+                                                    staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
+                                                    console.log(staffData.pk);
+                                                    console.log(staff.dataset.pk);
+                                                };
                                             };
                                         });
                                     };
 
-                                    if (positionData.required === "True" && !addedRequiredPositions.includes(positionData)) {
+                                    if (positionData.required === "True" && !addedRequiredPositions.some(position => position.priority === positionData.priority)) {
                                         addedRequiredPositions.push(positionData);
 
                                         addedRequiredPositions.sort((a, b) => {
@@ -728,6 +728,16 @@ function initModal() {
 
 initModal();
 
+function requestVerifyAuthentication() {
+    request.url = `${originLocation}/users/utils/verify-authentication/`;
+    request.type = "POST";
+    request.data = { id: "verify_authentication" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestFindUser() {
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "POST";
@@ -745,10 +755,13 @@ function requestCreateProject() {
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
 
+    let index = 0;
+
     addedStaffs.forEach((staff) => {
-        staff.position.forEach((position, index) => {
+        staff.position.forEach((position) => {
             formData.append(`staffPk_${index}`, staff.pk);
             formData.append(`staffPositionPriority_${index}`, position.priority);
+            index++;
         });
     });
 
@@ -787,6 +800,8 @@ function requestDeleteProject() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         if (id_modal !== null) {
+            requestVerifyAuthentication();
+
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);
@@ -828,6 +843,12 @@ function initRequest() {
 
                     ["keydown", "focusin"].forEach(type => {
                         inputs.forEach(input => {
+                            input.addEventListener(type, () => {
+                                displayButtonMsg(false, id_create_or_update, "error");
+                            });
+                        });
+
+                        staffBoxInputs.forEach(input => {
                             input.addEventListener(type, () => {
                                 displayButtonMsg(false, id_create_or_update, "error");
                             });

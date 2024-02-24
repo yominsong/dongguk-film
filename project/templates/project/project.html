@@ -133,11 +133,17 @@
                     </div>
                     <div class="flex justify-between items-center gap-x-2">
                         <!-- project.staff -->
-                        {% for staff in project.staff %}
-                            {% if staff.position_priority == "A01" %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500">연출 {{ staff.name }} ({{ staff.student_id }})</p>
-                            {% endif %}
-                        {% endfor %}
+                        
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500">
+                                연출
+                                {% for staff in project.director %}
+                                    {% if not forloop.last %}
+                                        {{ staff.name }} ({{ staff.student_id }}),
+                                    {% else %}
+                                        {{ staff.name }} ({{ staff.student_id }})
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
                         <!-- project.created_date(>sm) -->
                         <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
                             <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
@@ -149,20 +155,18 @@
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                             </p>
-                            {% if user.username == project.user %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-page-id="{{ project.page_id }}"
-                                          data-title="{{ project.title }}"
-                                          data-title-original="{{ project.title }}"
-                                          data-category="{{ project.category }}"
-                                          data-category-original="{{ project.category }}"
-                                          data-staff = "{{ project.staff }}"
-                                          data-staff-original = "{{ project.staff }}"
-                                          data-created-date="{{ project.created_date }}"
-                                          class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                          tabindex="0">수정하기</span>
-                                </p>
-                            {% endif %}
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                                <span data-page-id="{{ project.page_id }}"
+                                        data-title="{{ project.title }}"
+                                        data-title-original="{{ project.title }}"
+                                        data-category="{{ project.category }}"
+                                        data-category-original="{{ project.category }}"
+                                        data-staff = "{{ project.staff }}"
+                                        data-staff-original = "{{ project.staff }}"
+                                        data-created-date="{{ project.created_date }}"
+                                        class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                        tabindex="0">수정하기</span>
+                            </p>
                         </div>
                     {% else %}
                         <div class="flex justify-start">

@@ -154,6 +154,37 @@ def validation(data: dict):
     return status, msg
 
 
+def verify_authentication(request):
+    if request.POST["id"] == "verify_authentication":
+        id = request.POST["id"]
+        
+        if request.user.is_authenticated:
+            status = "DONE"
+            reason = "사용자 인증 확인 성공"
+            pk = request.user.pk
+            name = request.user.metadata.name
+            student_id = request.user.username
+        else:
+            status = "FAIL"
+            reason = "사용자 인증 확인 실패"
+            pk = None
+            name = None
+            student_id = None
+
+    response = {
+        "id": id,
+        "result": {
+            "status": status,
+            "reason": reason,
+            "pk": pk,
+            "name": name,
+            "student_id": student_id,
+            }
+        }
+
+    return JsonResponse(response)
+
+
 #
 # Main functions
 #

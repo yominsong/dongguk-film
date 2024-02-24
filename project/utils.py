@@ -91,6 +91,7 @@ def get_staff(request):
             "position_priority": staff_position_priority,
             "student_id": User.objects.get(id=staff_pk).username,
         }
+        
         staff_list.append(staff_dict)
         index += 1
 

@@ -162,18 +162,16 @@
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
-                            {% if user.username == notice.user %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-page-id="{{ notice.page_id }}"
-                                          data-title="{{ notice.title }}"
-                                          data-category="{{ notice.category }}"
-                                          data-keyword="{{ notice.keyword }}"
-                                          data-file="{{ notice.file }}"
-                                          data-listed-date="{{ notice.listed_date }}"
-                                          class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                          tabindex="0">수정하기</span>
-                                </p>
-                            {% endif %}
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                                <span data-page-id="{{ notice.page_id }}"
+                                        data-title="{{ notice.title }}"
+                                        data-category="{{ notice.category }}"
+                                        data-keyword="{{ notice.keyword }}"
+                                        data-file="{{ notice.file }}"
+                                        data-listed-date="{{ notice.listed_date }}"
+                                        class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                        tabindex="0">수정하기</span>
+                            </p>
                         </div>
                     {% else %}
                         <div class="flex justify-start">

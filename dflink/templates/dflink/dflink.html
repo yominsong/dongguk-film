@@ -149,23 +149,21 @@
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp;만료
                             </p>
-                            {% if user.username == dflink.user %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                    <span data-link-id="{{ dflink.link_id }}"
-                                          data-target-url="{{ dflink.target_url }}"
-                                          data-target-url-original="{{ dflink.target_url }}"
-                                          data-slug="{{ dflink.slug }}"
-                                          data-slug-original="{{ dflink.slug }}"
-                                          data-title="{{ dflink.title }}"
-                                          data-title-original="{{ dflink.title }}"
-                                          data-category="{{ dflink.category }}"
-                                          data-category-original="{{ dflink.category }}"
-                                          data-expiration-date="{{ dflink.expiration_date }}"
-                                          data-expiration-date-original="{{ dflink.expiration_date }}"
-                                          class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                          tabindex="0">수정하기</span>
-                                </p>
-                            {% endif %}
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                                <span data-link-id="{{ dflink.link_id }}"
+                                        data-target-url="{{ dflink.target_url }}"
+                                        data-target-url-original="{{ dflink.target_url }}"
+                                        data-slug="{{ dflink.slug }}"
+                                        data-slug-original="{{ dflink.slug }}"
+                                        data-title="{{ dflink.title }}"
+                                        data-title-original="{{ dflink.title }}"
+                                        data-category="{{ dflink.category }}"
+                                        data-category-original="{{ dflink.category }}"
+                                        data-expiration-date="{{ dflink.expiration_date }}"
+                                        data-expiration-date-original="{{ dflink.expiration_date }}"
+                                        class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                        tabindex="0">수정하기</span>
+                            </p>
                         </div>
                     {% else %}
                         <div class="flex justify-start">

@@ -204,8 +204,23 @@ function handleAjaxCallback(response) {
     let resID = response.id
     let resResult = response.result;
 
+    // requestVerifyAuthentication()
+    if (resID === "verify_authentication") {
+        if (resResult.status === "DONE") {
+            isAuthenticated = true;
+            userPk = String(resResult.pk);
+            userName = resResult.name;
+            userStudentId = resResult.student_id;
+        } else if (resResult.status === "FAIL") {
+            isAuthenticated = false;
+            userPk = null;
+            userName = null;
+            userStudentId = null;
+        };
+    }
+
     // requestWeather()
-    if (resID === "weather") {
+    else if (resID === "weather") {
         let notified = false;
 
         pulseOn.forEach((item) => {

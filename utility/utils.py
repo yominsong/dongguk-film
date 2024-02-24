@@ -584,13 +584,19 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
                     staff_list = ast.literal_eval(staff) if staff else None
 
+                    director_list = []
+
                     for staff in staff_list:
                         student_id = staff["student_id"]
                         user = User.objects.get(username=student_id)
                         staff["name"] = user.metadata.name
                         staff["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        
+                        if (staff["position_priority"] == "A01"):
+                            director_list.append(staff)
 
                     project["staff"] = staff_list
+                    project["director"] = director_list
 
                     item_list.append(project)
             except:
