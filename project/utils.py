@@ -67,7 +67,7 @@ def get_project_position():
         return item_list
 
 
-def has_two_hangul_chars(input_str):
+def has_hangul_chars(input_str):
     valid_hangul_or_non_hangul_regex = re.compile(r"([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+")
     hangul_syllable_regex = re.compile(r"[\uAC00-\uD7A3]")
 
@@ -83,13 +83,13 @@ def get_crew(request):
     crew_list = []
     index = 0
 
-    while request.POST.get(f"crewUser_{index}") is not None:
-        crew_user = request.POST.get(f"crewUser_{index}")
+    while request.POST.get(f"crewPk_{index}") is not None:
+        crew_pk = request.POST.get(f"crewPk_{index}")
         crew_position = request.POST.get(f"crewPosition_{index}")
 
         crew_dict = {
             "position": crew_position,
-            "user": User.objects.get(id=crew_user).username,
+            "student_id": User.objects.get(id=crew_pk).username,
         }
         crew_list.append(crew_dict)
         index += 1
@@ -113,14 +113,14 @@ def project(request):
 
     # id: find_user
     if id == "find_user":
-        if has_two_hangul_chars(name):
-            user_query_set = Metadata.objects.filter(name=name).values(
+        if has_hangul_chars(name):
+            found_user_query_set = Metadata.objects.filter(name__icontains=name).values(
                 "user", "name", "student_id"
             )
-            user_list = list(user_query_set)
+            found_user_list = list(found_user_query_set)
 
-        if user_list:
-            for found_user in user_list:
+        if found_user_list:
+            for found_user in found_user_list:
                 student_id = found_user["student_id"]
                 found_user["student_id"] = (
                     student_id[:2] + "*" * (len(student_id) - 5) + student_id[-3:]
@@ -129,6 +129,7 @@ def project(request):
                 found_user["avatar_url"] = user.socialaccount_set.all()[
                     0
                 ].get_avatar_url()
+                found_user["pk"] = found_user.pop("user")
 
             status = "DONE"
             reason = "사용자 검색 성공"
@@ -141,7 +142,7 @@ def project(request):
             "result": {
                 "status": status,
                 "reason": reason,
-                "user_list": user_list,
+                "found_user_list": found_user_list,
             },
         }
 

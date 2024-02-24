@@ -64,7 +64,7 @@
                                     <div class="mt-2">
                                         <input type="text"
                                                id="id_title"
-                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset sm:text-sm sm:leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
@@ -134,12 +134,12 @@
                                 </fieldset>
                                 <input id="id_category_original" value="" hidden>
                                 <fieldset>
-                                    <legend class="block text-sm font-medium leading-6 text-gray-900">제작진</legend>
+                                    <legend class="block text-sm font-medium leading-6 text-gray-900">스태프</legend>
                                     <div class="mt-2 -space-y-px rounded-md shadow-sm df-ring-inset-gray">
                                         <div>
                                             <label for="id_position" class="sr-only">담당</label>
                                             <select id="id_position"
-                                                    class="relative block w-full rounded-none rounded-t-md border-0 bg-transparent py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 focus:df-focus-ring-inset focus:z-10 sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                                    class="relative block w-full rounded-none rounded-t-md border-0 bg-transparent py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed">
                                                 <option selected hidden>담당을 선택하세요.</option>
                                                 {% for position in position_list %}
                                                     {% if position.priority == "01" %}
@@ -165,7 +165,7 @@
                                         </div>
                                         <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
                                             <label for="id_name" class="sr-only">이름</label>
-                                            <input class="only-hangul w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md"
+                                            <input class="only-hangul w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md sm:text-sm sm:leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md read-only:hover:bg-gray-100"
                                                    id="id_name"
                                                    role="combobox"
                                                    type="text"
@@ -178,7 +178,7 @@
                                             </div>
                                             <ul class="absolute divide-y divide-gray-100 z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm hidden"
                                                 role="listbox"
-                                                id="id_user_list">
+                                                id="id_found_user_list">
                                                 <li class="relative outline-none cursor-default select-none py-2 pl-3 text-gray-900 focus:bg-flamingo-600 focus:text-white hover:bg-flamingo-600 hover:text-white"
                                                     role="option"
                                                     tabindex="-1">
@@ -193,7 +193,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <ul id="id_crew_list" role="list" class="divide-y divide-gray-100 px-3">
+                                        <ul id="id_staff_list" role="list" class="divide-y divide-gray-100 px-3">
                                             <li class="relative flex justify-between gap-x-4 py-3">
                                                 <div class="flex items-center min-w-0 gap-x-3">
                                                     <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
@@ -227,8 +227,8 @@
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_position_error" hidden></p>
                                     <p class="mt-2 text-sm text-gray-500" id="id_name_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_name_error" hidden></p>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_crew_list_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600" id="id_crew_list_error" hidden></p>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_staff_list_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_staff_list_error" hidden></p>
                                 </fieldset>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">
@@ -246,7 +246,7 @@
                                                 <h3 class="text-sm font-medium text-flamingo-800">프로젝트 관련 안내사항</h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
-                                                        <li>프로젝트 생성 및 수정 권한은 연출자와 제작자에게 있습니다.</li>
+                                                        <li>프로젝트 생성 및 수정 권한은 제작자에게 있습니다.</li>
                                                         <li>안전한 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 생성 및 수정 내역을 조회할 수 있습니다.</li>
                                                     </ul>
                                                 </div>

@@ -168,7 +168,7 @@ function initValidation(array, button) {
         });
     });
 
-    validation();
+    validate();
 }
 
 function isItOkayToSubmitForm() {
@@ -188,11 +188,11 @@ function isItOkayToSubmitForm() {
     return filteredInputs.length === inputs.length;
 }
 
+/**
+ * @param {HTMLInputElement} input Input that needs to be validated
+ * @returns {boolean}
+ */
 function isValid(input) {
-    /* 
-     * input: Input that needs to be validated
-     */
-
     return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
 }
 
@@ -212,7 +212,7 @@ function lowercaseId(input) {
 // Main functions
 //
 
-function validation() {
+function validate() {
     eventTypes.forEach(type => {
         onlyHanguls.forEach(input => {
             input.addEventListener(type, () => {
@@ -642,7 +642,14 @@ function displayError(bool, input, errorType = null) {
 
         // textarea (CKEditor)
         else if (input.type === "textarea" && input.id === "id_content") {
-            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FCDBCF"; textboxViewRoot.style.boxShadow = "none" }, 1);
+            setTimeout(() => {
+                textboxViewRoot.style.backgroundColor = "#FCDBCF";
+                textboxViewRoot.style.boxShadow = "none";
+                textboxViewRoot.addEventListener("mouseenter", () => {adjustTextboxStyle(true, "mouseenter")});
+                textboxViewRoot.addEventListener("mouseleave", () => {adjustTextboxStyle(true, "mouseleave")});
+                textboxViewRoot.removeEventListener("mouseenter", () => {adjustTextboxStyle(false, "mouseenter")});
+                textboxViewRoot.removeEventListener("mouseleave", () => {adjustTextboxStyle(false, "mouseleave")});
+            }, 1);
         }
 
         // else
@@ -728,9 +735,16 @@ function displayError(bool, input, errorType = null) {
         }
 
         // textarea (CKEditor)
-        // Don't need to do anything because CKEditor will initialize it.
+        // Don't need to do anything because CKEditor will initialize its style
         else if (input.type === "textarea" && input.id === "id_content") {
-            setTimeout(() => { textboxViewRoot.style.backgroundColor = "#FFFFFF"; textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)" }, 1);
+            setTimeout(() => {
+                textboxViewRoot.style.backgroundColor = "#FFFFFF";
+                textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
+                textboxViewRoot.addEventListener("mouseenter", () => {adjustTextboxStyle(false, "mouseenter")});
+                textboxViewRoot.addEventListener("mouseleave", () => {adjustTextboxStyle(false, "mouseleave")});
+                textboxViewRoot.removeEventListener("mouseenter", () => {adjustTextboxStyle(true, "mouseenter")});
+                textboxViewRoot.removeEventListener("mouseleave", () => {adjustTextboxStyle(true, "mouseleave")});
+            }, 1);
         }
 
         // else

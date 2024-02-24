@@ -585,10 +585,10 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     crew_list = ast.literal_eval(crew) if crew else None
 
                     for crew in crew_list:
-                        student_id = crew["user"]
+                        student_id = crew["student_id"]
                         user = User.objects.get(username=student_id)
                         crew["name"] = user.metadata.name
-                        crew["user"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        crew["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
 
                     project["crew"] = crew_list
 
@@ -650,7 +650,23 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "notice":
+        if db_name == "project":
+            payload = {
+                "parent": {"database_id": NOTION_DB_ID[db_name]},
+                "properties": {
+                    "Category": {
+                        "select": {
+                            "name": category,
+                        },
+                    },
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Crew": {"rich_text": [{"text": {"content": str(crew)}}]},
+                    "User": {"number": int(str(user))},
+                },
+            }
+            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
+
+        elif db_name == "notice":
             content_chunks = [
                 content[i : i + 2000] for i in range(0, len(content), 2000)
             ]
@@ -688,22 +704,6 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     "User": {"number": int(str(user))},
                 },
                 "children": paragraph_list,
-            }
-            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
-        
-        elif db_name == "project":
-            payload = {
-                "parent": {"database_id": NOTION_DB_ID[db_name]},
-                "properties": {
-                    "Category": {
-                        "select": {
-                            "name": category,
-                        },
-                    },
-                    "Title": {"title": [{"text": {"content": title}}]},
-                    "Crew": {"rich_text": [{"text": {"content": str(crew)}}]},
-                    "User": {"number": int(str(user))},
-                },
             }
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 

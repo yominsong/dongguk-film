@@ -31,18 +31,6 @@ let currentHistoryLength = history.length;
 // Sub functions
 //
 
-function hideNullBadge() {
-    const class_badges = document.querySelectorAll(".class-badge");
-
-    class_badges.forEach((badge) => {
-        if (badge.innerText.indexOf("None") !== -1) {
-            badge.classList.add("hidden");
-        };
-    });
-}
-
-hideNullBadge();
-
 function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
     const id_modal_base = code(id_modal, "_base");
@@ -51,7 +39,7 @@ function adjustModalWidth() {
             id_modal_base.style.setProperty("width", id_grid.offsetWidth + "px", "important");
         } else if (id_detail !== null) {
             id_modal_base.style.setProperty("width", id_detail.offsetWidth + "px", "important");
-        }
+        };
     };
 }
 

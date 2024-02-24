@@ -2630,6 +2630,10 @@ select {
   z-index: 10;
 }
 
+.hover\:z-10:hover {
+  z-index: 10;
+}
+
 .hover\:cursor-not-allowed:hover {
   cursor: not-allowed;
 }
@@ -2857,11 +2861,6 @@ select {
 .disabled\:hover\:bg-flamingo-600:hover:disabled {
   --tw-bg-opacity: 1;
   background-color: rgb(206 64 13 / var(--tw-bg-opacity));
-}
-
-.disabled\:hover\:bg-gray-100:hover:disabled {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
 .disabled\:hover\:bg-stone-600:hover:disabled {

@@ -67,13 +67,37 @@ function adjustModalWidth() {
     };
 }
 
-function toggleWidthOfModalAndForm(bool) {
+function resizeWidthOfModalAndForm(bool) {
     if (bool) {
         adjustModalWidth();
         window.addEventListener("resize", adjustModalWidth);
     } else if (!bool) {
         id_modal_base.style = "display: none";
         window.removeEventListener("resize", adjustModalWidth);
+    };
+}
+
+function adjustTextboxStyle(bool, type) {  // Adding and removing event listeners for this is covered in forms.js
+    if (bool) {
+        if (type === "mouseenter") {
+            textboxViewRoot.style.backgroundColor = "rgb(249 250 251)";
+            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
+        };
+
+        if (type === "mouseleave") {
+            textboxViewRoot.style.backgroundColor = "#FCDBCF";
+            textboxViewRoot.style.boxShadow = "none";
+        };
+    } else {
+        if (type === "mouseenter") {
+            textboxViewRoot.style.backgroundColor = "rgb(249 250 251)";
+            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
+        };
+
+        if (type === "mouseleave") {
+            textboxViewRoot.style.backgroundColor = "#FFFFFF";
+            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
+        };
     };
 }
 
@@ -239,6 +263,9 @@ function initCkEditor() {
                         };
                     });
                     ck.addEventListener("click", () => { displayError(false, id_content) });
+                    eventTypes.forEach(type => {
+                        ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
+                    });
                 });
             })
             .catch(err => {
@@ -607,7 +634,7 @@ function updateForm(action, datasetObj = null) {
 
     // action: create
     if (action === "create") {
-        toggleWidthOfModalAndForm(true);
+        resizeWidthOfModalAndForm(true);
         id_modal_notice.hidden = false;
         id_modal_share.hidden = true;
 
@@ -659,7 +686,7 @@ function updateForm(action, datasetObj = null) {
 
     // action: share
     else if (action === "share") {
-        toggleWidthOfModalAndForm(false);
+        resizeWidthOfModalAndForm(false);
         if (id_modal_notice !== null) { id_modal_notice.hidden = true };
         id_modal_share.hidden = false;
 

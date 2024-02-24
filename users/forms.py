@@ -7,14 +7,14 @@ from users.models import Vcode
 from utility.msg import send_msg
 
 
-checkbox_input_class = "h-4 w-4 text-flamingo-600 rounded border-gray-300"
+checkbox_input_class = "h-4 w-4 text-flamingo-600 rounded border-gray-300 hover:bg-gray-50"
 checkbox_input_focus_state_class = (
     "focus:ring-offset-flamingo-50 focus:ring-flamingo-500"
 )
 checkbox_input_disabled_state_class = "disabled:opacity-75 disabled:cursor-not-allowed"
 agree_class = "agree-checkbox"
 text_input_class = (
-    "block w-full sm:text-sm placeholder-gray-400 shadow-sm rounded-md df-ring-inset-gray"
+    "block w-full sm:text-sm placeholder-gray-400 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50 hover:df-ring-inset-gray"
 )
 text_input_focus_state_class = "focus:df-focus-ring-inset"
 text_input_read_only_state_class = "read-only:bg-gray-100 read-only:cursor-not-allowed"

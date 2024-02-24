@@ -302,35 +302,37 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             isUserFound = true;
 
-            resResult.user_list.forEach(user => {
-                const addedUsers = id_user_list.querySelectorAll("li");
+            resResult.found_user_list.forEach(newlyFoundUser => {
+                const alreadyFoundUsers = id_found_user_list.querySelectorAll("li");
 
-                addedUsers.forEach(addedUser => {
-                    if (addedUser.dataset.name !== user.name) {
-                        id_user_list.removeChild(addedUser);
+                alreadyFoundUsers.forEach(alreadyFoundUser => {
+                    if (alreadyFoundUser.dataset.name !== newlyFoundUser.name) {
+                        id_found_user_list.removeChild(alreadyFoundUser);
                     };
                 });
 
-                if (!document.getElementById(user.user)) {
-                    const userElement = document.createElement("li");
+                if (!document.getElementById(`id_found_user_${newlyFoundUser.pk}`)) {
+                    const newlyFoundUserElement = document.createElement("li");
+                    const data_user = newlyFoundUserElement.dataset;
+                    
+                    data_user.pk = newlyFoundUser.pk;
+                    data_user.name = newlyFoundUser.name;
+                    data_user.studentId = newlyFoundUser.student_id;
+                    data_user.avatarUrl = newlyFoundUser.avatar_url;
 
-                    userElement.id = user.user;
-                    userElement.classList.add("class-user", "relative", "outline-none", "cursor-default", "select-none", "py-2", "pl-3", "text-gray-900", "focus:bg-flamingo-600", "focus:text-white", "hover:bg-flamingo-600", "hover:text-white");
-                    userElement.dataset.user = user.user;
-                    userElement.dataset.name = user.name;
-                    userElement.dataset.studentId = user.student_id;
-                    userElement.dataset.avatarUrl = user.avatar_url;
-                    userElement.setAttribute("role", "option");
+                    newlyFoundUserElement.id = `id_found_user_${data_user.pk}`;
+                    newlyFoundUserElement.classList.add("class-user", "relative", "outline-none", "cursor-default", "select-none", "py-2", "pl-3", "text-gray-900", "focus:bg-flamingo-600", "focus:text-white", "hover:bg-flamingo-600", "hover:text-white");
+                    newlyFoundUserElement.setAttribute("role", "option");
 
-                    userElement.innerHTML = `
+                    newlyFoundUserElement.innerHTML = `
                         <div class="flex items-center">
-                            <img src="${user.avatar_url}" alt="${user.name}님의 프로필 사진" class="h-6 w-6 flex-shrink-0 rounded-full">
-                            <span class="font-semibold ml-3 truncate">${user.name}</span>
-                            <span>&nbsp(${user.student_id})</span>
+                            <img src="${data_user.avatarUrl}" alt="${data_user.name}님의 프로필 사진" class="h-6 w-6 flex-shrink-0 rounded-full">
+                            <span class="font-semibold ml-3 truncate">${data_user.name}</span>
+                            <span>&nbsp(${data_user.studentId})</span>
                         </div>
                     `;
-                    
-                    id_user_list.appendChild(userElement);
+
+                    id_found_user_list.appendChild(newlyFoundUserElement);
                 };
             });
         } else if (resResult.status === "FAIL") {

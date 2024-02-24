@@ -12,28 +12,26 @@ const id_category_dram = document.getElementById("id_category_dram");
 const id_category_docu = document.getElementById("id_category_docu");
 const id_position = document.getElementById("id_position");
 const id_name = document.getElementById("id_name");
-const id_user_list = document.getElementById("id_user_list");
-const id_crew_list = document.getElementById("id_crew_list");
-const id_crew_list_descr = code(id_crew_list, "_descr");
-const id_crew_list_error = code(id_crew_list, "_error");
+const id_found_user_list = document.getElementById("id_found_user_list");
+const id_staff_list = document.getElementById("id_staff_list");
+const id_staff_list_descr = code(id_staff_list, "_descr");
+const id_staff_list_error = code(id_staff_list, "_error");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 
-const crewBoxInputs = [id_position, id_name];
+const staffBoxInputs = [id_position, id_name];
 
 let isModalOpen = false;
-let isComposing = false;
 let isUserFound = false;
 let isInteractingWithList = false;
 let isLastSelectedAnchorHash = false;
 let isItDoubleChecked = false;
 
 let requiredPositions = [];
-let addedRequiredPositions = [];
-let prevInputNameValue;
-let addedCrews = [];
+let addedRequiredPositions = [];  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
+let addedStaffs = [];
 let currentHistoryLength = history.length;
 let doubleCheckTimer;
 
@@ -41,31 +39,24 @@ let doubleCheckTimer;
 // Sub functions
 //
 
-function controlArrowKeysForUserList() {
-    const items = id_user_list.querySelectorAll("li");
+function allowArrowKeysForNavigatingFoundUserList() {
+    const users = id_found_user_list.querySelectorAll("li");
 
-    items.forEach((item, index) => {
-        item.setAttribute("tabindex", "0");
+    users.forEach((user, index) => {
+        user.setAttribute("tabindex", "0");
 
-        if (index === 0) {
-            item.addEventListener("keydown", event => {
-                if (event.key === "ArrowUp") {
-                    id_name.focus();
-                };
-            });
-        };
-
-        item.addEventListener("keydown", event => {
+        user.addEventListener("keydown", event => {
             if (event.key === "Tab") {
-                items.forEach(item => { item.setAttribute("tabindex", "-1") });
-            } else if (event.key === "ArrowDown" && index < items.length - 1) {
-                items[index + 1].focus();
+                users.forEach(user => { user.setAttribute("tabindex", "-1") });
+            } else if (event.key === "ArrowDown" && index < users.length - 1) {
+                users[index + 1].focus();
             } else if (event.key === "ArrowUp") {
                 if (index > 0) {
-                    items[index - 1].focus();
+                    users[index - 1].focus();
                 } else {
-                    items.forEach(item => { item.setAttribute("tabindex", "-1") });
+                    users.forEach(user => { user.setAttribute("tabindex", "-1") });
                     id_name.focus();
+
                     requestAnimationFrame(() => {
                         id_name.setSelectionRange(id_name.value.length, id_name.value.length);
                     });
@@ -107,6 +98,109 @@ function preventGoBack() {
 
 preventGoBack();
 
+function displayErrorInStaffBox(bool, errorType = null) {
+    const keywordsOfRequiredPositions = requiredPositions.map(position => position.keyword).join(", ");
+
+    if (bool) {
+        if (errorType === "empty") {
+            id_staff_list_error.innerText = "스태프를 추가해주세요.";
+        } else if (errorType === "insufficient") {
+            id_staff_list_error.innerText = `${keywordsOfRequiredPositions} 담당을 전부 빠짐없이 지정해주세요.`;
+        };
+
+        id_staff_list_error.hidden = false;
+        staffBoxInputs.forEach(input => { input.classList.remove("bg-transparent") });
+        staffBoxInputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
+        id_position.classList.add("hover:z-10");
+        id_name.classList.add("hover:bg-gray-50", "hover:df-ring-inset-gray");
+        id_found_user_list.classList.add("hidden");
+    } else {
+        id_staff_list_error.innerText = null;
+        id_staff_list_error.hidden = true;
+        staffBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
+        staffBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
+        id_position.classList.remove("hover:z-10");
+        id_name.classList.remove("hover:bg-gray-50", "hover:df-ring-inset-gray");
+    };
+}
+
+function controlErrorInStaffBox() {
+    if (addedStaffs.length === 0) {
+        displayErrorInStaffBox(true, "empty");
+    } else if (!areArraysIdentical(requiredPositions, addedRequiredPositions)) {
+        displayErrorInStaffBox(true, "insufficient");
+    } else {
+        return false;
+    };
+}
+
+function validateStaffBox() {
+    staffBoxInputs.forEach(input => {
+        input.addEventListener("click", () => {
+            displayErrorInStaffBox(false);
+        });
+
+        if (input === id_name) {
+            input.addEventListener("keydown", event => {
+                displayErrorInStaffBox(false);
+                controlDescr(input, event);
+            });
+        };
+
+        input.addEventListener("focusout", () => {
+            if (!isInteractingWithList) { controlErrorInStaffBox() };
+        });
+
+        input.addEventListener("focusin", () => {
+            displayErrorInStaffBox(false);
+        });
+    });
+}
+
+function initStaffBoxValidation() {
+    [...id_position.options].forEach(position => {
+        if (position.dataset.required === "True" &&
+            !requiredPositions.some(requiredPosition => requiredPosition.priority === position.value)) {
+            requiredPositions.push({
+                priority: position.value,
+                keyword: position.dataset.keyword,
+                required: position.dataset.required,
+            });
+
+            requiredPositions.sort((a, b) => {
+                return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+            });
+        };
+    });
+
+    validateStaffBox();
+}
+
+function areObjectsEqual(obj1, obj2) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) return false;
+
+    for (const key of keys1) {
+        if (obj1[key] !== obj2[key]) return false;
+    };
+
+    return true;
+}
+
+function areArraysIdentical(a, b) {
+    if (a === b) return true; // Check if same reference
+    if (a == null || b == null) return false; // Check for null
+    if (a.length !== b.length) return false; // Different lengths, not identical
+
+    for (let i = 0; i < a.length; i++) {
+        if (!areObjectsEqual(a[i], b[i])) return false; // Use areObjectsEqual to compare objects
+    };
+
+    return true;
+}
+
 function isItOkayToCloseModal() {
     const id_create_or_update_descr = code(id_create_or_update, "_descr");
     const id_delete_descr = code(id_delete, "_descr");
@@ -115,103 +209,36 @@ function isItOkayToCloseModal() {
     return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
 }
 
-function hasTwoHangulChars(input) {
+function isItOkayToFindUser() {
     const validHangulOrNonHangulRegex = /^([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+$/;
     const hangulSyllableRegex = /[\uAC00-\uD7A3]/g;
 
-    if (!validHangulOrNonHangulRegex.test(input)) {
+    if (!validHangulOrNonHangulRegex.test(id_name.value)) {
         return false;
     };
 
-    const matches = input.match(hangulSyllableRegex);
-
-    return matches;
-}
-
-function areArraysIdentical(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
-
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] !== b[i]) return false;
-    };
-
-    return true;
+    return id_name.value.match(hangulSyllableRegex);
 }
 
 function isItOkayToSubmitProjectForm() {
-    [...id_position.options].forEach(option => {
-        if (option.dataset.required === "True" && !requiredPositions.includes(option.value)) {
-            requiredPositions.push(option.value);
-            requiredPositions.sort((a, b) => {
-                return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-            });
-        };
-    });
-
-    [...id_crew_list.children].forEach(crew => {
-        if (crew.dataset.required === "True" && !addedRequiredPositions.includes(crew.dataset.positionPriority)) {
-            addedRequiredPositions.push(crew.dataset.positionPriority);
+    [...id_staff_list.children].forEach(staff => {
+        if (staff.dataset.required === "True" && !addedRequiredPositions.includes(staff.dataset.positionPriority)) {
+            addedRequiredPositions.push(staff.dataset.positionPriority);
             addedRequiredPositions.sort((a, b) => {
                 return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
             });
         };
     });
 
-    const inputs = [id_position, id_name];
-    const areCrewsAdded = addedCrews.length !== 0;
+    const areStaffsAdded = addedStaffs.length !== 0;
     const areAllRequiredPositionsAdded = areArraysIdentical(requiredPositions, addedRequiredPositions);
-    const namesOfRequiredPositions = requiredPositions.map(position => id_position.querySelector(`option[value="${position}"]`).dataset.keyword).join(", ");
 
-    if (!areCrewsAdded) {
-        id_crew_list_error.innerText = "제작진을 추가해주세요.";
-        id_crew_list_error.hidden = false;
-        inputs.forEach(input => { input.classList.remove("bg-transparent") });
-        inputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
-    } else if (!areAllRequiredPositionsAdded) {
-        id_crew_list_error.innerText = `${namesOfRequiredPositions} 담당을 전부 빠짐없이 지정해주세요.`;
-        id_crew_list_error.hidden = false;
-        id_position.classList.remove("bg-transparent");
-        id_position.classList.add("bg-flamingo-50", "ring-transparent");
-    } else {
-        id_crew_list_error.hidden = true;
-    };
-
-    return isItOkayToSubmitForm() && areCrewsAdded && areAllRequiredPositionsAdded;
+    return isItOkayToSubmitForm() && areStaffsAdded && areAllRequiredPositionsAdded;
 }
 
 function executeWhenModalIsClosed() {
     isModalOpen = false;
     toggleFocusOnModal(false);
-}
-
-function validationForCrewList() {
-    ["click", "focusin"].forEach(type => {
-        crewBoxInputs.forEach(input => {
-            input.addEventListener(type, () => {
-                id_crew_list_error.innerText = null;
-                id_crew_list_error.hidden = true;
-                crewBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
-                crewBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
-            });
-
-            input.addEventListener("blur", () => {
-                if (id_crew_list.childElementCount === 0) {
-                    id_crew_list_error.innerText = "제작진을 추가해주세요.";
-                    id_crew_list_error.hidden = false;
-                    crewBoxInputs.forEach(input => { input.classList.remove("bg-transparent") });
-                    crewBoxInputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
-                };
-            });
-
-            if (input === id_name) {
-                input.addEventListener("keydown", event => {
-                    controlDescr(input, event);
-                });
-            };
-        });
-    });
 }
 
 //
@@ -268,197 +295,68 @@ function initSearchBar() {
 
 initSearchBar();
 
-function initCrewBox() {
+function initStaffBox() {
     if (id_modal !== null) {
-        const compositionEventTypes = ["compositionstart", "compositionupdate", "compositionend"];
-        const inputControlEventTypes = ["paste", "blur", "click", "keyup", "focus"];
-        const mouseControlEventTypes = ["mouseenter", "mouseleave"];
+        let positionData;
 
         addedRequiredPositions = [];
-        addedCrews = [];
+        addedStaffs = [];
 
-        // id_name
-        compositionEventTypes.forEach(type => {
-            id_name.addEventListener(type, () => {
-                if (type === "compositionstart") {
-                    isComposing = true;
-                } else if (type === "compositionupdate") {
-                    isComposing = false;
-                } else if (type === "compositionend") {
-                    isComposing = false;
-                };
-            });
-        });
+        window.lastKeyWasArrow = false;
 
-        inputControlEventTypes.forEach(type => {
-            id_name.addEventListener(type, event => {
-                if (type === "paste") {
-                    prevInputNameValue = null;
-                } else if (type === "blur") {
-                    if (!isInteractingWithList) { id_user_list.classList.add("hidden") };
+        document.addEventListener("keydown", (event) => {
+            if (document.activeElement === id_position) {
+                if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+                    window.lastKeyWasArrow = true;
                 } else {
-                    if (isUserFound) {
-                        id_user_list.classList.remove("hidden");
-
-                        if (type === "keyup") {
-                            if (event.key === "Enter") {
-                                id_user_list.firstElementChild.click();
-                            } else if (event.key === "ArrowDown") {
-                                isInteractingWithList = true;
-                                id_user_list.firstElementChild.setAttribute("tabindex", "0");
-                                id_user_list.firstElementChild.focus();
-                                controlArrowKeysForUserList();
-                                setTimeout(() => { isInteractingWithList = false }, 100);
-                            };
-                        };
-
-                        const class_users = id_user_list.querySelectorAll(".class-user");
-
-                        class_users.forEach(user => {
-                            ["click", "keyup"].forEach(type => {
-                                user.addEventListener(type, event => {
-                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                        // Check if the user is already added to the crew list
-                                        const class_crews = id_crew_list.querySelectorAll(".class-crew");
-                                        let isCrewAlreadyAdded = false;
-
-                                        class_crews.forEach(crew => {
-                                            if (crew.dataset.user === user.dataset.user &&
-                                                crew.dataset.positionPriority === id_position.value) {
-                                                isCrewAlreadyAdded = true;
-                                            };
-                                        });
-
-                                        if (isCrewAlreadyAdded) {
-                                            return;
-                                        };
-
-                                        // Add the user to the crew list
-                                        const crewElement = document.createElement("li");
-
-                                        crewElement.classList.add("class-crew", "relative", "flex", "justify-between", "gap-x-4", "py-3");
-                                        crewElement.dataset.user = user.dataset.user;
-                                        crewElement.dataset.name = user.dataset.name;
-                                        crewElement.dataset.studentId = user.dataset.studentId;
-                                        crewElement.dataset.avatarUrl = user.dataset.avatarUrl;
-                                        crewElement.dataset.positionPriority = id_position.value;
-                                        crewElement.dataset.positionKeyword = id_position.selectedOptions[0].dataset.keyword;
-                                        crewElement.dataset.required = id_position.selectedOptions[0].dataset.required;
-
-                                        crewElement.innerHTML = `<div class="flex items-center min-w-0 gap-x-3">
-                                                <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
-                                                    src="${crewElement.dataset.avatarUrl}"
-                                                    alt="${crewElement.dataset.name}님의 프로필 사진"
-                                                    height=""
-                                                    width="">
-                                                <div class="min-w-0 flex-auto">
-                                                    <p class="class-blink text-sm text-gray-500">${crewElement.dataset.positionKeyword}</p>
-                                                    <p class="class-blink text-sm font-semibold leading-6 text-gray-900">
-                                                        ${crewElement.dataset.name} <span class="font-normal">(${crewElement.dataset.studentId})</span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="flex shrink-0 items-center">
-                                                <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
-                                                    <svg class="w-5 h-5 flex-none"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="1.5"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        `;
-
-                                        id_crew_list.appendChild(crewElement);
-
-                                        // Add the crew to the addedCrews array
-                                        const data_crew = crewElement.dataset;
-                                        const crewObj = {
-                                            user: data_crew.user,
-                                            name: data_crew.name,
-                                            position: data_crew.positionPriority,
-                                            required: data_crew.required
-                                        };
-
-                                        addedCrews.push(crewObj);
-
-                                        // Sort the crew list by position priority
-                                        const crews = Array.from(id_crew_list.querySelectorAll("li"));
-
-                                        crews.sort((a, b) => {
-                                            const priorityA = a.dataset.positionPriority;
-                                            const priorityB = b.dataset.positionPriority;
-
-                                            return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
-                                        });
-
-                                        while (id_crew_list.firstChild) {
-                                            id_crew_list.removeChild(id_crew_list.firstChild);
-                                        };
-
-                                        crews.forEach(crew => id_crew_list.appendChild(crew));
-
-                                        // Blink the added crew
-                                        const class_blinks = crewElement.querySelectorAll(".class-blink");
-
-                                        class_blinks.forEach(blink => {
-                                            blink.classList.add("blink");
-                                            setTimeout(() => { blink.classList.remove("blink") }, 3000);
-                                        });
-
-                                        // Activate the remove button
-                                        const class_removes = id_crew_list.querySelectorAll(".class-remove");
-
-                                        class_removes.forEach(remove => {
-                                            ["click", "keyup"].forEach(type => {
-                                                remove.addEventListener(type, event => {
-                                                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                                        remove.parentElement.parentElement.remove();
-
-                                                        // Remove the position from the addedRequiredPositions array
-                                                        addedRequiredPositions = addedRequiredPositions.filter(position => {
-                                                            return position !== remove.parentElement.parentElement.dataset.positionPriority;
-                                                        });
-
-                                                        // Remove the crew from the addedCrews array
-                                                        addedCrews = addedCrews.filter(crew => {
-                                                            return crew.user !== remove.parentElement.parentElement.dataset.user;
-                                                        });
-
-                                                        // Reset the input field
-                                                        if (id_crew_list.childElementCount === 0) {
-                                                            id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                                            id_name.parentElement.classList.add("rounded-b-md");
-                                                        };
-
-                                                        // id_name.focus();
-                                                    };
-                                                });
-                                            });
-                                        });
-
-                                        // Reset the input field
-                                        id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                        id_name.parentElement.classList.remove("rounded-b-md");
-                                        id_name.focus();
-                                        id_user_list.classList.add("hidden");
-                                    };
-                                });
-                            });
-                        });
-                    } else {
-                        id_user_list.classList.add("hidden");
-                    };
+                    window.lastKeyWasArrow = false;
                 };
-            });
+            };
         });
 
-        // id_user_list
-        mouseControlEventTypes.forEach(type => {
-            id_user_list.addEventListener(type, () => {
+        document.addEventListener("keyup", (event) => {
+            if (document.activeElement === id_position) {
+                if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+                    window.lastKeyWasArrow = false;
+                };
+            };
+        });
+
+        id_position.selectedIndex = 0;
+
+        id_position.addEventListener("change", () => {
+            if (id_position.selectedOptions[0].disabled) {
+                id_position.selectedIndex = 0;
+            };
+
+            if (id_position.selectedIndex !== 0) {
+                id_name.readOnly = false;
+                if (!window.lastKeyWasArrow) { id_name.focus() };
+            } else {
+                id_name.readOnly = true;
+            };
+
+            positionData = {
+                priority: id_position.value,
+                keyword: id_position.selectedOptions[0].dataset.keyword,
+                required: id_position.selectedOptions[0].dataset.required,
+            };
+        });
+
+        id_name.value = null;
+        id_name.readOnly = true;
+        id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+        // id_name.classList.remove("hover:bg-gray-50");  // I don't know why this is here
+        id_name.parentElement.classList.add("rounded-b-md");
+
+        id_name.addEventListener("blur", () => {
+            if (!isInteractingWithList) { id_found_user_list.classList.add("hidden") };
+        });
+
+        id_found_user_list.innerHTML = null;
+
+        ["mouseenter", "mouseleave"].forEach(type => {
+            id_found_user_list.addEventListener(type, () => {
                 if (type === "mouseenter") {
                     isInteractingWithList = true;
                 } else if (type === "mouseleave") {
@@ -466,6 +364,209 @@ function initCrewBox() {
                 };
             });
         });
+
+        id_staff_list.innerHTML = null;
+        id_staff_list_error.innerText = null;
+        id_staff_list_error.hidden = true;
+
+        ["click", "keyup", "focus"].forEach(type => {
+            id_name.addEventListener(type, event => {
+                if (isUserFound) {
+                    id_found_user_list.classList.remove("hidden");
+
+                    if (event.key === "Enter") {
+                        id_found_user_list.firstElementChild.click();
+                    } else if (event.key === "ArrowDown") {
+                        isInteractingWithList = true;
+                        id_found_user_list.firstElementChild.setAttribute("tabindex", "0");
+                        id_found_user_list.firstElementChild.focus();
+                        allowArrowKeysForNavigatingFoundUserList();
+                        setTimeout(() => { isInteractingWithList = false }, 100);
+                    };
+
+                    const class_users = id_found_user_list.querySelectorAll(".class-user");
+
+                    ["click", "keyup"].forEach(type => {
+                        class_users.forEach(user => {
+                            user.addEventListener(type, event => {
+                                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                                    const userData = {
+                                        pk: user.dataset.pk,
+                                        name: user.dataset.name,
+                                        studentId: user.dataset.studentId,
+                                        avatarUrl: user.dataset.avatarUrl,
+                                    };
+
+                                    let isUserAlreadyAddedToStaffList = false;
+                                    let isPositionAlreadyAssignedToStaff = false;
+
+                                    const class_staffs = id_staff_list.querySelectorAll(".class-staff");
+
+                                    if (class_staffs.length > 0) {
+                                        class_staffs.forEach(staff => {
+                                            const staffData = {
+                                                pk: staff.dataset.pk,
+                                                position: JSON.parse(staff.dataset.position),  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "A02", "keyword": "각본", "required": "False"}]
+                                            };
+
+                                            if (staffData.pk === userData.pk) {
+                                                isUserAlreadyAddedToStaffList = true;
+                                            };
+
+                                            if (staffData.pk === userData.pk && staffData.position.some(position => position.priority === positionData.priority)) {
+                                                isPositionAlreadyAssignedToStaff = true;
+                                            };
+
+                                            if (isUserAlreadyAddedToStaffList && !isPositionAlreadyAssignedToStaff) {
+                                                addedStaffs.some(staff => {
+                                                    if (staff.pk === userData.pk &&
+                                                        !staff.position.some(position => position.priority === positionData.priority)) {
+                                                        staff.position.push(positionData);
+                                                    };
+                                                });
+
+                                                staffData.position.push(positionData);
+
+                                                staffData.position.sort((a, b) => {
+                                                    return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+                                                });
+
+                                                staff.dataset.position = JSON.stringify(staffData.position);
+                                                staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
+
+                                                const class_blinks = staff.querySelectorAll(".class-blink");
+
+                                                class_blinks.forEach(blink => {
+                                                    blink.classList.add("blink");
+                                                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                                                });
+                                            };
+                                        });
+                                    };
+
+                                    if (positionData.required === "True" && !addedRequiredPositions.includes(positionData)) {
+                                        addedRequiredPositions.push(positionData);
+
+                                        addedRequiredPositions.sort((a, b) => {
+                                            return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+                                        });
+                                    };
+
+                                    id_name.focus();
+                                    id_found_user_list.classList.add("hidden");
+
+                                    if (isUserAlreadyAddedToStaffList) {
+                                        return
+                                    };
+
+                                    const staffElement = document.createElement("li");
+
+                                    staffElement.classList.add("class-staff", "relative", "flex", "justify-between", "gap-x-4", "py-3");
+                                    staffElement.dataset.pk = userData.pk;
+                                    staffElement.dataset.position = JSON.stringify([positionData]);
+
+                                    addedStaffs.push({
+                                        pk: userData.pk,
+                                        position: [positionData],
+                                    });
+
+                                    staffElement.innerHTML = `
+                                        <div class="flex items-center min-w-0 gap-x-3">
+                                            <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
+                                                src="${userData.avatarUrl}"
+                                                alt="${userData.name}님의 프로필 사진"
+                                                height=""
+                                                width="">
+                                            <div class="min-w-0 flex-auto">
+                                                <p class="class-blink class-position text-sm text-gray-500">${positionData.keyword}</p>
+                                                <p class="class-blink text-sm font-semibold leading-6 text-gray-900">
+                                                    ${userData.name} <span class="font-normal">(${userData.studentId})</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex shrink-0 items-center">
+                                            <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
+                                                <svg class="w-5 h-5 flex-none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="1.5"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    `;
+
+                                    id_staff_list.appendChild(staffElement);
+
+                                    const class_blinks = staffElement.querySelectorAll(".class-blink");
+
+                                    class_blinks.forEach(blink => {
+                                        blink.classList.add("blink");
+                                        setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                                    });
+
+                                    const temporaryArrayForStaffList = Array.from(id_staff_list.querySelectorAll("li"));
+
+                                    temporaryArrayForStaffList.sort((a, b) => {
+                                        const priorityA = JSON.parse(a.dataset.position)[0].priority;
+                                        const priorityB = JSON.parse(b.dataset.position)[0].priority;
+
+                                        return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
+                                    });
+
+                                    while (id_staff_list.firstChild) {
+                                        id_staff_list.removeChild(id_staff_list.firstChild);
+                                    };
+
+                                    temporaryArrayForStaffList.forEach(staffElement => id_staff_list.appendChild(staffElement));
+
+                                    const class_removes = id_staff_list.querySelectorAll(".class-remove");
+
+                                    ["click", "keyup"].forEach(type => {
+                                        class_removes.forEach(remove => {
+                                            remove.addEventListener(type, event => {
+                                                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                                                    const staffElement = remove.parentElement.parentElement;
+
+                                                    JSON.parse(staffElement.dataset.position).some(elementPosition => {
+                                                        if (elementPosition.required === "True") {
+                                                            addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
+                                                                return arrayPosition.priority !== elementPosition.priority;
+                                                            });
+                                                        };
+                                                    });
+
+                                                    addedStaffs = addedStaffs.filter(staff => {
+                                                        return staff.pk !== staffElement.dataset.pk;
+                                                    });
+
+                                                    if (id_staff_list.childElementCount === 0) {
+                                                        id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                                                        id_name.parentElement.classList.add("rounded-b-md");
+                                                    };
+
+                                                    staffElement.remove();
+                                                };
+                                            });
+                                        });
+                                    });
+
+                                    id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                                    id_name.parentElement.classList.remove("rounded-b-md");
+                                };
+                            });
+                        });
+                    });
+                } else {
+                    id_found_user_list.classList.add("hidden");
+                };
+            });
+        });
+
+        staffBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
+        staffBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
     };
 }
 
@@ -532,52 +633,7 @@ function initForm() {
         };
     });
 
-    window.lastKeyWasArrow = false;
-
-    document.addEventListener("keydown", (event) => {
-        if (document.activeElement === id_position) {
-            if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-                window.lastKeyWasArrow = true;
-            } else {
-                window.lastKeyWasArrow = false;
-            };
-        };
-    });
-    
-    document.addEventListener("keyup", (event) => {
-        if (document.activeElement === id_position) {
-            if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-                window.lastKeyWasArrow = false;
-            };
-        };
-    });
-    
-    id_position.addEventListener("change", () => {
-        if (id_position.selectedOptions[0].disabled) {
-            id_position.selectedIndex = 0;
-        };
-    
-        if (id_position.selectedIndex !== 0) {
-            id_name.readOnly = false;
-            if (!window.lastKeyWasArrow) {
-                id_name.focus();
-            };
-        } else {
-            id_name.readOnly = true;
-        };
-    });
-
-    initCrewBox();
-    id_position.selectedIndex = 0;
-    id_name.value = null;
-    id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-    id_name.parentElement.classList.add("rounded-b-md");
-    id_user_list.innerHTML = null;
-    id_crew_list.innerHTML = null;
-    id_crew_list_error.innerText = null;
-    id_crew_list_error.hidden = true;
-    crewBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
-    crewBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
+    initStaffBox();
 
     inputs.forEach((input) => {
         displayError(false, input);
@@ -689,11 +745,9 @@ function requestCreateProject() {
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
 
-    addedCrews.forEach((crewObj, index) => {
-        formData.append(`crewUser_${index}`, crewObj.user);
-        formData.append(`crewName_${index}`, crewObj.name);
-        formData.append(`crewPosition_${index}`, crewObj.position);
-        formData.append(`crewRequired_${index}`, crewObj.required);
+    addedStaffs.forEach((staffObj, index) => {
+        formData.append(`staffPk_${index}`, staffObj.pk);
+        formData.append(`staffPosition_${index}`, staffObj.position);
     });
 
     request.url = `${originLocation}/project/utils/project/`;
@@ -709,7 +763,7 @@ function requestCreateProject() {
 function requestUpdateProject() {
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "GET";
-    request.data = { id: "update_project", title: `${id_title.value}`, category: `${id_category.value}`, crew: `${addedCrews}` };
+    request.data = { id: "update_project", title: `${id_title.value}`, category: `${id_category.value}`, staff: `${addedStaffs}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -720,7 +774,7 @@ function requestUpdateProject() {
 function requestDeleteProject() {
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "GET";
-    request.data = { id: "delete_project", title: `${id_title_original.value}`, category: `${id_category_original.value}`, crew: `${addedCrews}` };
+    request.data = { id: "delete_project", title: `${id_title_original.value}`, category: `${id_category_original.value}`, staff: `${addedStaffs}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -734,16 +788,13 @@ function initRequest() {
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);
-            validationForCrewList();
+            initStaffBoxValidation();
 
             id_name.addEventListener("input", () => {
-                if (!isComposing) {
-                    if (prevInputNameValue !== id_name.value && hasTwoHangulChars(id_name.value)) {
-                        prevInputNameValue = id_name.value;
-                        requestFindUser();
-                    } else if (!hasTwoHangulChars(id_name.value)) {
-                        isUserFound = false;
-                    };
+                if (isItOkayToFindUser()) {
+                    requestFindUser();
+                } else {
+                    isUserFound = false;
                 };
             });
 
@@ -768,6 +819,7 @@ function initRequest() {
                         } else {
                             inputs.forEach(input => {
                                 controlError(input);
+                                controlErrorInStaffBox();
                             });
                         };
                     };
