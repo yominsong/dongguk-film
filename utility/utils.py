@@ -585,6 +585,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     staff_list = ast.literal_eval(staff) if staff else None
 
                     director_list = []
+                    producer_list = []
+                    producer_name_list = []
+                    producer_student_id_list = []
 
                     for staff in staff_list:
                         student_id = staff["student_id"]
@@ -594,9 +597,17 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         
                         if (staff["position_priority"] == "A01"):
                             director_list.append(staff)
+                        
+                        if (staff["position_priority"] == "B01"):
+                            producer_list.append(staff)
+                            producer_name_list.append(staff["name"])
+                            producer_student_id_list.append(staff["student_id"])
 
                     project["staff"] = staff_list
                     project["director"] = director_list
+                    project["producer"] = producer_list
+                    project["producer_name"] = producer_name_list
+                    project["producer_student_id"] = producer_student_id_list
 
                     item_list.append(project)
             except:

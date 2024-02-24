@@ -132,15 +132,22 @@
                         {% endif %}
                     </div>
                     <div class="flex justify-between items-center gap-x-2">
-                        <!-- project.staff -->
-                        
+                        <!-- project.director & project.producer -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                                연출
-                                {% for staff in project.director %}
+                                <span class="font-semibold">연출&nbsp</span>
+                                {% for director in project.director %}
                                     {% if not forloop.last %}
-                                        {{ staff.name }} ({{ staff.student_id }}),
+                                        {{ director.name }},
                                     {% else %}
-                                        {{ staff.name }} ({{ staff.student_id }})
+                                        {{ director.name }}
+                                    {% endif %}
+                                {% endfor %}
+                                ·&nbsp<span class="font-semibold">제작&nbsp</span>
+                                {% for producer in project.producer %}
+                                    {% if not forloop.last %}
+                                        {{ producer.name }},
+                                    {% else %}
+                                        {{ producer.name }}
                                     {% endif %}
                                 {% endfor %}
                             </p>
@@ -149,7 +156,7 @@
                             <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                         </p>
                     </div>
-                    {% if user.username == project.user %}
+                    {% if user.metadata.name in project.producer_name and user.username|mask_student_id in project.producer_student_id %}
                         <div class="flex justify-between items-center gap-x-2">
                             <!-- project.created_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
