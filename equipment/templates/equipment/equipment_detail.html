@@ -59,14 +59,19 @@
                     검색 필터
                 </div>
                 <div class="flex justify-end gap-2">
+                    {% if category.keyword != None %}
                     <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">범주:</span>
                         {{ category.keyword }}
                     </span>
+                    {% endif %}
+                    {% if purpose.keyword != None %}
                     <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">대여 목적:</span>
                         {{ purpose.keyword }}
                     </span>
+                    {% endif %}
+                    {% if period.duration != None %}
                     <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                         <span class="sr-only">대여 기간:</span>
                         {% if period.duration == 0 %}
@@ -75,6 +80,7 @@
                             {{ period.duration }}일
                         {% endif %}
                     </span>
+                    {% endif %}
                 </div>
             </div>
             <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
