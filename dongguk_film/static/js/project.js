@@ -411,6 +411,13 @@ function initStaffBox() {
 
                                             if (staffData.pk === userData.pk) {
                                                 isUserAlreadyAddedToStaffList = true;
+
+                                                const class_blinks = staff.querySelectorAll(".class-blink");
+
+                                                class_blinks.forEach(blink => {
+                                                    blink.classList.add("blink");
+                                                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                                                });
                                             };
 
                                             if (staffData.pk === userData.pk && staffData.position.some(position => position.priority === positionData.priority)) {
@@ -433,13 +440,6 @@ function initStaffBox() {
 
                                                 staff.dataset.position = JSON.stringify(staffData.position);
                                                 staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
-
-                                                const class_blinks = staff.querySelectorAll(".class-blink");
-
-                                                class_blinks.forEach(blink => {
-                                                    blink.classList.add("blink");
-                                                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
-                                                });
                                             };
                                         });
                                     };
@@ -456,7 +456,7 @@ function initStaffBox() {
                                     id_found_user_list.classList.add("hidden");
 
                                     if (isUserAlreadyAddedToStaffList) {
-                                        return
+                                        return;
                                     };
 
                                     const staffElement = document.createElement("li");
