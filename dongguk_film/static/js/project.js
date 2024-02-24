@@ -542,12 +542,12 @@ function initStaffBox() {
                                                         return staff.pk !== staffElement.dataset.pk;
                                                     });
 
+                                                    staffElement.remove();
+
                                                     if (id_staff_list.childElementCount === 0) {
                                                         id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
                                                         id_name.parentElement.classList.add("rounded-b-md");
                                                     };
-
-                                                    staffElement.remove();
                                                 };
                                             });
                                         });
