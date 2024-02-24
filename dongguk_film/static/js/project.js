@@ -105,7 +105,7 @@ function displayErrorInStaffBox(bool, errorType = null) {
         if (errorType === "empty") {
             id_staff_list_error.innerText = "스태프를 추가해주세요.";
         } else if (errorType === "insufficient") {
-            id_staff_list_error.innerText = `${keywordsOfRequiredPositions} 담당을 전부 빠짐없이 지정해주세요.`;
+            id_staff_list_error.innerText = `${keywordsOfRequiredPositions} 담당을 모두 지정해주세요.`;
         };
 
         id_staff_list_error.hidden = false;
@@ -745,9 +745,11 @@ function requestCreateProject() {
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
 
-    addedStaffs.forEach((staffObj, index) => {
-        formData.append(`staffPk_${index}`, staffObj.pk);
-        formData.append(`staffPosition_${index}`, staffObj.position);
+    addedStaffs.forEach((staff) => {
+        staff.position.forEach((position, index) => {
+            formData.append(`staffPk_${index}`, staff.pk);
+            formData.append(`staffPositionPriority_${index}`, position.priority);
+        });
     });
 
     request.url = `${originLocation}/project/utils/project/`;

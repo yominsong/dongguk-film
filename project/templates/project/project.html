@@ -132,10 +132,10 @@
                         {% endif %}
                     </div>
                     <div class="flex justify-between items-center gap-x-2">
-                        <!-- project.crew -->
-                        {% for crew in project.crew %}
-                            {% if crew.position == "A01" %}
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500">연출 {{ crew.name }} ({{ crew.student_id }})</p>
+                        <!-- project.staff -->
+                        {% for staff in project.staff %}
+                            {% if staff.position_priority == "A01" %}
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">연출 {{ staff.name }} ({{ staff.student_id }})</p>
                             {% endif %}
                         {% endfor %}
                         <!-- project.created_date(>sm) -->
@@ -156,8 +156,8 @@
                                           data-title-original="{{ project.title }}"
                                           data-category="{{ project.category }}"
                                           data-category-original="{{ project.category }}"
-                                          data-crew = "{{ project.crew }}"
-                                          data-crew-original = "{{ project.crew }}"
+                                          data-staff = "{{ project.staff }}"
+                                          data-staff-original = "{{ project.staff }}"
                                           data-created-date="{{ project.created_date }}"
                                           class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                           tabindex="0">수정하기</span>

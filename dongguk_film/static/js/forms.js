@@ -682,7 +682,7 @@ function displayError(bool, input, errorType = null) {
             narrativeClause = "수정해주세요.";
         } else if (errorType === "no parentheses") {
             subject = matchJosa(findLabel(input), "을를", "WJS");
-            narrativeClause = `괄호 <, >로 감싸주세요.`;
+            narrativeClause = `화살괄호 <, >로 감싸주세요.`;
         } else if (errorType === "out of range") {
             subject = matchJosa(findLabel(input), "이가", "WJS");
             narrativeClause = `유효 범위를 벗어났어요.`;

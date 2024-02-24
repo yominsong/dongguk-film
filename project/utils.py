@@ -79,22 +79,22 @@ def has_hangul_chars(input_str):
     return matches
 
 
-def get_crew(request):
-    crew_list = []
+def get_staff(request):
+    staff_list = []
     index = 0
 
-    while request.POST.get(f"crewPk_{index}") is not None:
-        crew_pk = request.POST.get(f"crewPk_{index}")
-        crew_position = request.POST.get(f"crewPosition_{index}")
+    while request.POST.get(f"staffPk_{index}") is not None:
+        staff_pk = request.POST.get(f"staffPk_{index}")
+        staff_position_priority = request.POST.get(f"staffPositionPriority_{index}")
 
-        crew_dict = {
-            "position": crew_position,
-            "student_id": User.objects.get(id=crew_pk).username,
+        staff_dict = {
+            "position_priority": staff_position_priority,
+            "student_id": User.objects.get(id=staff_pk).username,
         }
-        crew_list.append(crew_dict)
+        staff_list.append(staff_dict)
         index += 1
 
-    return crew_list
+    return staff_list
 
 
 #
@@ -132,10 +132,10 @@ def project(request):
                 found_user["pk"] = found_user.pop("user")
 
             status = "DONE"
-            reason = "사용자 검색 성공"
+            reason = "사용자 찾기 성공"
         else:
             status = "FAIL"
-            reason = "사용자 검색 실패"
+            reason = "사용자 찾기 실패"
 
         response = {
             "id": id,
@@ -146,14 +146,15 @@ def project(request):
             },
         }
 
+    # id: create_project
     elif id == "create_project":
-        crew = get_crew(request)
+        staff = get_staff(request)
 
         data = {
             "db_name": "project",
             "title": title,
             "category": category,
-            "crew": crew,
+            "staff": staff,
             "user": request.user,
         }
         response = notion("create", "page", data=data)

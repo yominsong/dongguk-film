@@ -525,7 +525,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         keyword = data.get("keyword", None)
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
-        crew = data.get("crew", None)
+        staff = data.get("staff", None)
         user = data.get("user", None)
 
     # action: query / target: db
@@ -576,21 +576,21 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "created_date": created_time.strftime("%Y-%m-%d"),
                     }
 
-                    crew = (
-                        properties.get("Crew", {})
+                    staff = (
+                        properties.get("Staff", {})
                         .get("rich_text", [{}])[0]
                         .get("plain_text", None)
                     )
 
-                    crew_list = ast.literal_eval(crew) if crew else None
+                    staff_list = ast.literal_eval(staff) if staff else None
 
-                    for crew in crew_list:
-                        student_id = crew["student_id"]
+                    for staff in staff_list:
+                        student_id = staff["student_id"]
                         user = User.objects.get(username=student_id)
-                        crew["name"] = user.metadata.name
-                        crew["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        staff["name"] = user.metadata.name
+                        staff["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
 
-                    project["crew"] = crew_list
+                    project["staff"] = staff_list
 
                     item_list.append(project)
             except:
@@ -660,7 +660,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         },
                     },
                     "Title": {"title": [{"text": {"content": title}}]},
-                    "Crew": {"rich_text": [{"text": {"content": str(crew)}}]},
+                    "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "User": {"number": int(str(user))},
                 },
             }
