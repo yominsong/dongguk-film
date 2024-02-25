@@ -147,16 +147,22 @@
                                                         <option value="{{ position.function_priority }}{{ position.priority }}"
                                                                 data-keyword="{{ position.keyword }}"
                                                                 data-required="{{ position.required }}">
-                                                            {{ position.keyword }}
-                                                            {% if position.note %}({{ position.note }}){% endif %}
+                                                            {% if position.note %}
+                                                                {{ position.keyword }}({{ position.note }})
+                                                            {% else %}
+                                                                {{ position.keyword }}
+                                                            {% endif %}
                                                             | {{ position.in_english }}
                                                         </option>
                                                     {% else %}
                                                         <option value="{{ position.function_priority }}{{ position.priority }}"
                                                                 data-keyword="{{ position.keyword }}"
                                                                 data-required="{{ position.required }}">
-                                                            {{ position.keyword }}
-                                                            {% if position.note %}({{ position.note }}){% endif %}
+                                                            {% if position.note %}
+                                                                {{ position.keyword }}({{ position.note }})
+                                                            {% else %}
+                                                                {{ position.keyword }}
+                                                            {% endif %}
                                                             | {{ position.in_english }}
                                                         </option>
                                                     {% endif %}
@@ -228,7 +234,9 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_name_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_name_error" hidden></p>
                                     <p class="mt-2 text-sm text-gray-500" id="id_staff_list_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600" id="id_staff_list_error" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_staff_list_error"
+                                       hidden></p>
                                 </fieldset>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">
@@ -246,7 +254,7 @@
                                                 <h3 class="text-sm font-medium text-flamingo-800">프로젝트 관련 안내사항</h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
-                                                        <li>프로젝트 생성 및 수정 권한은 제작(Producer) 담당에게 있습니다.</li>
+                                                        <li>프로젝트 생성 및 수정 권한은 제작자(Producer)에게 있습니다.</li>
                                                         <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 생성 및 수정 내역을 조회할 수 있습니다.</li>
                                                     </ul>
                                                 </div>

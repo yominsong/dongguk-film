@@ -28,9 +28,11 @@ let isModalOpen = false;
 let isUserFound = false;
 let isInteractingWithList = false;
 let isLastSelectedAnchorHash = false;
+let isProducer = false;
 let isItDoubleChecked = false;
 
-let userPk, userName, userStudentId;
+let userPk, userName, userStudentId;  // User authentication verification results
+let positionData;  // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
 let requiredPositions = [];
 let addedRequiredPositions = [];  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
 let addedStaffs = [];
@@ -131,8 +133,6 @@ function controlErrorInStaffBox() {
         displayErrorInStaffBox(true, "empty");
     } else if (!areArraysIdentical(requiredPositions, addedRequiredPositions)) {
         displayErrorInStaffBox(true, "insufficient");
-    } else if (!isItOkayToSubmitProjectForm()) {
-        displayButtonMsg(true, id_create_or_update, "error", "제작(Procuder) 담당만 프로젝트를 생성할 수 있어요.");
     } else {
         return false;
     };
@@ -225,11 +225,12 @@ function isItOkayToFindUser() {
 }
 
 function isItOkayToSubmitProjectForm() {
-    const isProcuder = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
     const areStaffsAdded = addedStaffs.length !== 0;
     const areAllRequiredPositionsAdded = areArraysIdentical(requiredPositions, addedRequiredPositions);
 
-    return isProcuder && areStaffsAdded && areAllRequiredPositionsAdded && isItOkayToSubmitForm();
+    isProducer = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
+
+    return isProducer && areStaffsAdded && areAllRequiredPositionsAdded && isItOkayToSubmitForm();
 }
 
 function executeWhenModalIsClosed() {
@@ -291,10 +292,176 @@ function initSearchBar() {
 
 initSearchBar();
 
+function sortStaffList() {
+    const temporaryArrayForStaffList = Array.from(id_staff_list.querySelectorAll("li"));
+
+    temporaryArrayForStaffList.sort((a, b) => {
+        const priorityA = JSON.parse(a.dataset.position)[0].priority;
+        const priorityB = JSON.parse(b.dataset.position)[0].priority;
+
+        return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
+    });
+
+    while (id_staff_list.firstChild) {
+        id_staff_list.removeChild(id_staff_list.firstChild);
+    };
+
+    temporaryArrayForStaffList.forEach(staffElement => id_staff_list.appendChild(staffElement));
+};
+
+function addStaff(userData) {
+    let isUserAlreadyAddedToStaffList = false;
+    let isPositionAlreadyAssignedToStaff = false;
+
+    const class_staffs = id_staff_list.querySelectorAll(".class-staff");
+
+    if (class_staffs.length > 0) {
+        class_staffs.forEach(staff => {
+            const staffData = {
+                pk: staff.dataset.pk,
+                position: JSON.parse(staff.dataset.position),  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "A02", "keyword": "각본", "required": "False"}]
+            };
+
+            if (staffData.pk === userData.pk) {
+                isUserAlreadyAddedToStaffList = true;
+
+                const class_blinks = staff.querySelectorAll(".class-blink");
+
+                class_blinks.forEach(blink => {
+                    blink.classList.add("blink");
+                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                });
+            };
+
+            if (staffData.pk === userData.pk && staffData.position.some(position => position.priority === positionData.priority)) {
+                isPositionAlreadyAssignedToStaff = true;
+            };
+
+            if (isUserAlreadyAddedToStaffList && !isPositionAlreadyAssignedToStaff) {
+                addedStaffs.some(staff => {
+                    if (staff.pk === userData.pk &&
+                        !staff.position.some(position => position.priority === positionData.priority)) {
+                        staff.position.push(positionData);
+                    };
+                });
+
+                if (staffData.pk === userData.pk) {
+                    staffData.position.push(positionData);
+
+                    staffData.position.sort((a, b) => {
+                        return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+                    });
+
+                    staff.dataset.position = JSON.stringify(staffData.position);
+                    staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
+                    sortStaffList();
+                };
+            };
+        });
+    };
+
+    if (positionData.required === "True" && !addedRequiredPositions.some(position => position.priority === positionData.priority)) {
+        addedRequiredPositions.push(positionData);
+
+        addedRequiredPositions.sort((a, b) => {
+            return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
+        });
+    };
+
+    id_name.focus();
+    id_found_user_list.classList.add("hidden");
+
+    if (isUserAlreadyAddedToStaffList) {
+        return;
+    };
+
+    const staffElement = document.createElement("li");
+
+    staffElement.classList.add("class-staff", "relative", "flex", "justify-between", "gap-x-4", "py-3");
+    staffElement.dataset.pk = userData.pk;
+    staffElement.dataset.position = JSON.stringify([positionData]);
+
+    addedStaffs.push({
+        pk: userData.pk,
+        position: [positionData],
+    });
+
+    staffElement.innerHTML = `
+        <div class="flex items-center min-w-0 gap-x-3">
+            <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
+                src="${userData.avatarUrl}"
+                alt="${userData.name}님의 프로필 사진"
+                height=""
+                width="">
+            <div class="min-w-0 flex-auto">
+                <p class="class-blink class-position text-sm text-gray-500">${positionData.keyword}</p>
+                <p class="class-blink text-sm font-semibold leading-6 text-gray-900">
+                    ${userData.name} <span class="font-normal">(${userData.studentId})</span>
+                </p>
+            </div>
+        </div>
+        <div class="flex shrink-0 items-center">
+            <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
+                <svg class="w-5 h-5 flex-none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    `;
+
+    id_staff_list.appendChild(staffElement);
+
+    const class_blinks = staffElement.querySelectorAll(".class-blink");
+
+    class_blinks.forEach(blink => {
+        blink.classList.add("blink");
+        setTimeout(() => { blink.classList.remove("blink") }, 3000);
+    });
+
+    sortStaffList();
+
+    const class_removes = id_staff_list.querySelectorAll(".class-remove");
+
+    ["click", "keyup"].forEach(type => {
+        class_removes.forEach(remove => {
+            remove.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    const staffElement = remove.parentElement.parentElement;
+
+                    JSON.parse(staffElement.dataset.position).some(elementPosition => {
+                        if (elementPosition.required === "True") {
+                            addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
+                                return arrayPosition.priority !== elementPosition.priority;
+                            });
+                        };
+                    });
+
+                    addedStaffs = addedStaffs.filter(staff => {
+                        return staff.pk !== staffElement.dataset.pk;
+                    });
+
+                    staffElement.remove();
+
+                    if (id_staff_list.childElementCount === 0) {
+                        id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+                        id_name.parentElement.classList.add("rounded-b-md");
+                    };
+                };
+            });
+        });
+    });
+
+    id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
+    id_name.parentElement.classList.remove("rounded-b-md");
+}
+
 function initStaffBox() {
     if (id_modal !== null) {
-        let positionData;
-
         addedRequiredPositions = [];
         addedStaffs = [];
 
@@ -393,168 +560,7 @@ function initStaffBox() {
                                         avatarUrl: user.dataset.avatarUrl,
                                     };
 
-                                    let isUserAlreadyAddedToStaffList = false;
-                                    let isPositionAlreadyAssignedToStaff = false;
-
-                                    const class_staffs = id_staff_list.querySelectorAll(".class-staff");
-
-                                    if (class_staffs.length > 0) {
-                                        class_staffs.forEach(staff => {
-                                            const staffData = {
-                                                pk: staff.dataset.pk,
-                                                position: JSON.parse(staff.dataset.position),  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "A02", "keyword": "각본", "required": "False"}]
-                                            };
-
-                                            if (staffData.pk === userData.pk) {
-                                                isUserAlreadyAddedToStaffList = true;
-
-                                                const class_blinks = staff.querySelectorAll(".class-blink");
-
-                                                class_blinks.forEach(blink => {
-                                                    blink.classList.add("blink");
-                                                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
-                                                });
-                                            };
-
-                                            if (staffData.pk === userData.pk && staffData.position.some(position => position.priority === positionData.priority)) {
-                                                isPositionAlreadyAssignedToStaff = true;
-                                            };
-
-                                            if (isUserAlreadyAddedToStaffList && !isPositionAlreadyAssignedToStaff) {
-                                                addedStaffs.some(staff => {
-                                                    if (staff.pk === userData.pk &&
-                                                        !staff.position.some(position => position.priority === positionData.priority)) {
-                                                        staff.position.push(positionData);
-                                                    };
-                                                });
-
-                                                if (staffData.pk === userData.pk) {
-                                                    staffData.position.push(positionData);
-
-                                                    staffData.position.sort((a, b) => {
-                                                        return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
-                                                    });
-
-                                                    staff.dataset.position = JSON.stringify(staffData.position);
-                                                    staff.querySelector(".class-position").innerText = staffData.position.map(position => position.keyword).join(", ");
-                                                    console.log(staffData.pk);
-                                                    console.log(staff.dataset.pk);
-                                                };
-                                            };
-                                        });
-                                    };
-
-                                    if (positionData.required === "True" && !addedRequiredPositions.some(position => position.priority === positionData.priority)) {
-                                        addedRequiredPositions.push(positionData);
-
-                                        addedRequiredPositions.sort((a, b) => {
-                                            return a.priority.localeCompare(b.priority, undefined, { numeric: true, sensitivity: "base" });
-                                        });
-                                    };
-
-                                    id_name.focus();
-                                    id_found_user_list.classList.add("hidden");
-
-                                    if (isUserAlreadyAddedToStaffList) {
-                                        return;
-                                    };
-
-                                    const staffElement = document.createElement("li");
-
-                                    staffElement.classList.add("class-staff", "relative", "flex", "justify-between", "gap-x-4", "py-3");
-                                    staffElement.dataset.pk = userData.pk;
-                                    staffElement.dataset.position = JSON.stringify([positionData]);
-
-                                    addedStaffs.push({
-                                        pk: userData.pk,
-                                        position: [positionData],
-                                    });
-
-                                    staffElement.innerHTML = `
-                                        <div class="flex items-center min-w-0 gap-x-3">
-                                            <img class="h-10 w-10 flex-none rounded-full bg-gray-50"
-                                                src="${userData.avatarUrl}"
-                                                alt="${userData.name}님의 프로필 사진"
-                                                height=""
-                                                width="">
-                                            <div class="min-w-0 flex-auto">
-                                                <p class="class-blink class-position text-sm text-gray-500">${positionData.keyword}</p>
-                                                <p class="class-blink text-sm font-semibold leading-6 text-gray-900">
-                                                    ${userData.name} <span class="font-normal">(${userData.studentId})</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="flex shrink-0 items-center">
-                                            <button class="class-remove rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed">
-                                                <svg class="w-5 h-5 flex-none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke-width="1.5"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    `;
-
-                                    id_staff_list.appendChild(staffElement);
-
-                                    const class_blinks = staffElement.querySelectorAll(".class-blink");
-
-                                    class_blinks.forEach(blink => {
-                                        blink.classList.add("blink");
-                                        setTimeout(() => { blink.classList.remove("blink") }, 3000);
-                                    });
-
-                                    const temporaryArrayForStaffList = Array.from(id_staff_list.querySelectorAll("li"));
-
-                                    temporaryArrayForStaffList.sort((a, b) => {
-                                        const priorityA = JSON.parse(a.dataset.position)[0].priority;
-                                        const priorityB = JSON.parse(b.dataset.position)[0].priority;
-
-                                        return priorityA.localeCompare(priorityB, undefined, { numeric: true, sensitivity: "base" });
-                                    });
-
-                                    while (id_staff_list.firstChild) {
-                                        id_staff_list.removeChild(id_staff_list.firstChild);
-                                    };
-
-                                    temporaryArrayForStaffList.forEach(staffElement => id_staff_list.appendChild(staffElement));
-
-                                    const class_removes = id_staff_list.querySelectorAll(".class-remove");
-
-                                    ["click", "keyup"].forEach(type => {
-                                        class_removes.forEach(remove => {
-                                            remove.addEventListener(type, event => {
-                                                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                                                    const staffElement = remove.parentElement.parentElement;
-
-                                                    JSON.parse(staffElement.dataset.position).some(elementPosition => {
-                                                        if (elementPosition.required === "True") {
-                                                            addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
-                                                                return arrayPosition.priority !== elementPosition.priority;
-                                                            });
-                                                        };
-                                                    });
-
-                                                    addedStaffs = addedStaffs.filter(staff => {
-                                                        return staff.pk !== staffElement.dataset.pk;
-                                                    });
-
-                                                    staffElement.remove();
-
-                                                    if (id_staff_list.childElementCount === 0) {
-                                                        id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                                        id_name.parentElement.classList.add("rounded-b-md");
-                                                    };
-                                                };
-                                            });
-                                        });
-                                    });
-
-                                    id_name.classList.remove("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-                                    id_name.parentElement.classList.remove("rounded-b-md");
+                                    addStaff(userData);
                                 };
                             });
                         });
@@ -694,6 +700,30 @@ function updateForm(action, datasetObj = null) {
         label.classList.add("df-ring-inset-flamingo");
         svg = label.querySelector("svg");
         svg.classList.remove("invisible");
+
+        const staffArray = JSON.parse(data.staff.replace(/'/g, '"'));
+
+        staffArray.forEach(user => {
+            user.position_priority.forEach(priority => {
+                const position = id_position.querySelector(`option[value="${priority}"]`);
+
+                positionData = {
+                    priority: position.value,
+                    keyword: position.dataset.keyword,
+                    required: position.dataset.required,
+                };
+
+                const userData = {
+                    pk: String(user.pk),
+                    name: user.name,
+                    studentId: user.student_id,
+                    avatarUrl: user.avatar_url,
+                };
+
+                addStaff(userData);
+            });
+        });
+
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;
@@ -755,14 +785,16 @@ function requestCreateProject() {
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
 
-    let index = 0;
+    addedStaffs.forEach((staff, index) => {
+        formData.append(`staffPk_${index}`, staff.pk);
 
-    addedStaffs.forEach((staff) => {
-        staff.position.forEach((position) => {
-            formData.append(`staffPk_${index}`, staff.pk);
-            formData.append(`staffPositionPriority_${index}`, position.priority);
-            index++;
+        let staffPositionPriority = staff.position.map(position => position.priority);
+
+        staffPositionPriority.sort((a, b) => {
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
         });
+
+        formData.append(`staffPositionPriority_${index}`, JSON.stringify(staffPositionPriority));
     });
 
     request.url = `${originLocation}/project/utils/project/`;
@@ -837,6 +869,7 @@ function initRequest() {
                             inputs.forEach(input => {
                                 controlError(input);
                                 controlErrorInStaffBox();
+                                if (addedStaffs.length > 0 && !isProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
                             });
                         };
                     };

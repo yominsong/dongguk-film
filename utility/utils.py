@@ -592,16 +592,19 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     for staff in staff_list:
                         student_id = staff["student_id"]
                         user = User.objects.get(username=student_id)
+                        staff["pk"] = user.pk
                         staff["name"] = user.metadata.name
                         staff["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
+                        staff["avatar_url"] = user.socialaccount_set.all()[0].get_avatar_url()
                         
-                        if (staff["position_priority"] == "A01"):
-                            director_list.append(staff)
-                        
-                        if (staff["position_priority"] == "B01"):
-                            producer_list.append(staff)
-                            producer_name_list.append(staff["name"])
-                            producer_student_id_list.append(staff["student_id"])
+                        for priority in staff["position_priority"]:
+                            if (priority == "A01"):  # A01: 연출
+                                director_list.append(staff)
+                            
+                            if (priority == "B01"):  # B01: 제작
+                                producer_list.append(staff)
+                                producer_name_list.append(staff["name"])
+                                producer_student_id_list.append(staff["student_id"])
 
                     project["staff"] = staff_list
                     project["director"] = director_list

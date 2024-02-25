@@ -85,7 +85,7 @@ def get_staff(request):
 
     while request.POST.get(f"staffPk_{index}") is not None:
         staff_pk = request.POST.get(f"staffPk_{index}")
-        staff_position_priority = request.POST.get(f"staffPositionPriority_{index}")
+        staff_position_priority = json.loads(request.POST.get(f"staffPositionPriority_{index}"))
 
         staff_dict = {
             "position_priority": staff_position_priority,
@@ -176,7 +176,7 @@ def project(request):
             status = "FAIL"
             reason = response.json()
             msg = "앗, 알 수 없는 오류가 발생했어요!"
-        
+
         response = {
             "id": id,
             "result": {

@@ -133,24 +133,24 @@
                     </div>
                     <div class="flex justify-between items-center gap-x-2">
                         <!-- project.director & project.producer -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                                <span class="font-semibold">연출&nbsp</span>
-                                {% for director in project.director %}
-                                    {% if not forloop.last %}
-                                        {{ director.name }},
-                                    {% else %}
-                                        {{ director.name }}
-                                    {% endif %}
-                                {% endfor %}
-                                ·&nbsp<span class="font-semibold">제작&nbsp</span>
-                                {% for producer in project.producer %}
-                                    {% if not forloop.last %}
-                                        {{ producer.name }},
-                                    {% else %}
-                                        {{ producer.name }}
-                                    {% endif %}
-                                {% endfor %}
-                            </p>
+                        <p class="mt-1 flex text-sm leading-5 text-gray-500">
+                            <span class="font-semibold">연출&nbsp</span>
+                            {% for director in project.director %}
+                                {% if not forloop.last %}
+                                    {{ director.name }},
+                                {% else %}
+                                    {{ director.name }}
+                                {% endif %}
+                            {% endfor %}
+                            ·&nbsp<span class="font-semibold">제작&nbsp</span>
+                            {% for producer in project.producer %}
+                                {% if not forloop.last %}
+                                    {{ producer.name }},
+                                {% else %}
+                                    {{ producer.name }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
                         <!-- project.created_date(>sm) -->
                         <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
                             <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
@@ -164,15 +164,15 @@
                             </p>
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                 <span data-page-id="{{ project.page_id }}"
-                                        data-title="{{ project.title }}"
-                                        data-title-original="{{ project.title }}"
-                                        data-category="{{ project.category }}"
-                                        data-category-original="{{ project.category }}"
-                                        data-staff = "{{ project.staff }}"
-                                        data-staff-original = "{{ project.staff }}"
-                                        data-created-date="{{ project.created_date }}"
-                                        class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                        tabindex="0">수정하기</span>
+                                      data-title="{{ project.title }}"
+                                      data-title-original="{{ project.title }}"
+                                      data-category="{{ project.category }}"
+                                      data-category-original="{{ project.category }}"
+                                      data-staff="{{ project.staff }}"
+                                      data-staff-original="{{ project.staff }}"
+                                      data-created-date="{{ project.created_date }}"
+                                      class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                      tabindex="0">수정하기</span>
                             </p>
                         </div>
                     {% else %}
