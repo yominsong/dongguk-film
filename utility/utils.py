@@ -592,7 +592,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     for staff in staff_list:
                         student_id = staff["student_id"]
                         user = User.objects.get(username=student_id)
-                        staff["pk"] = user.pk
+                        staff["pk"] = str(user.pk)
                         staff["name"] = user.metadata.name
                         staff["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
                         staff["avatar_url"] = user.socialaccount_set.all()[0].get_avatar_url()

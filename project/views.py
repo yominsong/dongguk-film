@@ -22,25 +22,51 @@ def project(request):
     # Search box
     query = request.GET.get("q")
     search_result_count = None
-    search_placeholder = random.choice(project_list[: min(project_count, 7)])["title"] if project_count > 0 else "<영화 제목>"
-    
+    search_placeholder = (
+        random.choice(project_list[: min(project_count, 7)])["title"]
+        if project_count > 0
+        else "<영화 제목>"
+    )
+
     if query:
         query = query.lower().replace(" ", "")
         search_result_list = []
         for project in project_list:
             for k, v in project.items():
-                if k != "staff" and query in v and project not in search_result_list:
+                if (
+                    (
+                        k != "page_id"
+                        and k != "user"
+                        and k != "staff"
+                        and k != "director"
+                        and k != "producer"
+                        and k != "producer_name"
+                        and k != "producer_student_id"
+                    )
+                    and query in v
+                    and project not in search_result_list
+                ):
                     search_result_list.append(project)
+                    print(query, k, v)
                 elif k == "staff":
                     for staff in v:
                         for k, v in staff.items():
-                            if query in v and project not in search_result_list:
+                            if (
+                                (
+                                    k != "position_priority"
+                                    and k != "pk"
+                                    and k != "avatar_url"
+                                )
+                                and query in v
+                                and project not in search_result_list
+                            ):
                                 search_result_list.append(project)
+                                print(query, k, v)
 
         project_list = search_result_list
         search_result_count = len(search_result_list)
         query_string += f"q={query}&"
-    
+
     # Pagination
     try:
         page = request.GET["page"]

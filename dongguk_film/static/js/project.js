@@ -714,7 +714,7 @@ function updateForm(action, datasetObj = null) {
                 };
 
                 const userData = {
-                    pk: String(user.pk),
+                    pk: user.pk,
                     name: user.name,
                     studentId: user.student_id,
                     avatarUrl: user.avatar_url,
