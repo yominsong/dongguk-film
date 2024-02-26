@@ -438,14 +438,6 @@ function addStaff(userData, blink = false) {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     const staffElement = remove.parentElement.parentElement;
 
-                    // JSON.parse(staffElement.dataset.position).some(elementPosition => {
-                    //     if (elementPosition.required === "True") {
-                    //         addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
-                    //             return arrayPosition.priority !== elementPosition.priority;
-                    //         });
-                    //     };
-                    // });
-
                     addedRequiredPositions = [];
 
                     addedStaffs = addedStaffs.filter(staff => {
