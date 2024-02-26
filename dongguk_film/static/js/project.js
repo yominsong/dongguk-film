@@ -16,6 +16,7 @@ const id_found_user_list = document.getElementById("id_found_user_list");
 const id_staff_list = document.getElementById("id_staff_list");
 const id_staff_list_descr = code(id_staff_list, "_descr");
 const id_staff_list_error = code(id_staff_list, "_error");
+const id_staff_list_original = code(id_staff_list, "_original");
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
@@ -309,7 +310,7 @@ function sortStaffList() {
     temporaryArrayForStaffList.forEach(staffElement => id_staff_list.appendChild(staffElement));
 };
 
-function addStaff(userData) {
+function addStaff(userData, blink = false) {
     let isUserAlreadyAddedToStaffList = false;
     let isPositionAlreadyAssignedToStaff = false;
 
@@ -325,12 +326,14 @@ function addStaff(userData) {
             if (staffData.pk === userData.pk) {
                 isUserAlreadyAddedToStaffList = true;
 
-                const class_blinks = staff.querySelectorAll(".class-blink");
+                if (blink) {
+                    const class_blinks = staff.querySelectorAll(".class-blink");
 
-                class_blinks.forEach(blink => {
-                    blink.classList.add("blink");
-                    setTimeout(() => { blink.classList.remove("blink") }, 3000);
-                });
+                    class_blinks.forEach(blink => {
+                        blink.classList.add("blink");
+                        setTimeout(() => { blink.classList.remove("blink") }, 3000);
+                    });
+                };
             };
 
             if (staffData.pk === userData.pk && staffData.position.some(position => position.priority === positionData.priority)) {
@@ -416,12 +419,14 @@ function addStaff(userData) {
 
     id_staff_list.appendChild(staffElement);
 
-    const class_blinks = staffElement.querySelectorAll(".class-blink");
+    if (blink) {
+        const class_blinks = staffElement.querySelectorAll(".class-blink");
 
-    class_blinks.forEach(blink => {
-        blink.classList.add("blink");
-        setTimeout(() => { blink.classList.remove("blink") }, 3000);
-    });
+        class_blinks.forEach(blink => {
+            blink.classList.add("blink");
+            setTimeout(() => { blink.classList.remove("blink") }, 3000);
+        });
+    };
 
     sortStaffList();
 
@@ -560,7 +565,7 @@ function initStaffBox() {
                                         avatarUrl: user.dataset.avatarUrl,
                                     };
 
-                                    addStaff(userData);
+                                    addStaff(userData, blink = true);
                                 };
                             });
                         });
@@ -724,6 +729,7 @@ function updateForm(action, datasetObj = null) {
             });
         });
 
+        id_staff_list_original.value = data.staffOriginal;
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;
@@ -808,9 +814,28 @@ function requestCreateProject() {
 }
 
 function requestUpdateProject() {
+    let formData = new FormData();
+
+    formData.append("id", "update_project");
+    formData.append("page_id", id_page_id.value);
+    formData.append("title", id_title.value);
+    formData.append("category", id_category.value);
+
+    addedStaffs.forEach((staff, index) => {
+        formData.append(`staffPk_${index}`, staff.pk);
+
+        let staffPositionPriority = staff.position.map(position => position.priority);
+
+        staffPositionPriority.sort((a, b) => {
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+        });
+
+        formData.append(`staffPositionPriority_${index}`, JSON.stringify(staffPositionPriority));
+    });
+
     request.url = `${originLocation}/project/utils/project/`;
-    request.type = "GET";
-    request.data = { id: "update_project", title: `${id_title.value}`, category: `${id_category.value}`, staff: `${addedStaffs}` };
+    request.type = "POST";
+    request.data = formData;
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -819,9 +844,10 @@ function requestUpdateProject() {
 }
 
 function requestDeleteProject() {
+    const staffList = JSON.parse(id_staff_list_original.value.replace(/'/g, '"'));
     request.url = `${originLocation}/project/utils/project/`;
-    request.type = "GET";
-    request.data = { id: "delete_project", title: `${id_title_original.value}`, category: `${id_category_original.value}`, staff: `${addedStaffs}` };
+    request.type = "POST";
+    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_title_original.value}`, category: `${id_category_original.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

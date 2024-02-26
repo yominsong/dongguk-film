@@ -106,6 +106,7 @@ def get_staff(request):
 @login_required
 def project(request):
     id = request.POST.get("id")
+    page_id = request.POST.get("page_id")
     title = request.POST.get("title")
     category = request.POST.get("category")
     name = request.POST.get("name")
@@ -182,6 +183,73 @@ def project(request):
             "result": {
                 "status": status,
                 "reason": reason,
+                "msg": msg,
+                "notion_url": response.json()["url"] if status == "DONE" else None,
+                "title": title,
+                "category": category,
+                "user": f"{request.user}",
+            },
+        }
+    
+    # id: update_project
+    elif id == "update_project":
+        staff = get_staff(request)
+
+        data = {
+            "db_name": "project",
+            "page_id": page_id,
+            "title": title,
+            "category": category,
+            "staff": staff,
+            "user": request.user,
+        }
+        response = notion("update", "page_properties", data=data)
+
+        if response.status_code == 200:
+            status = "DONE"
+            reason = "프로젝트 수정"
+            msg = "프로젝트가 수정되었어요! 👍"
+        elif response.status_code == 400:
+            status = "FAIL"
+            reason = response.json()
+            msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
+        else:
+            status = "FAIL"
+            reason = response.json()
+            msg = "앗, 알 수 없는 오류가 발생했어요!"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "reason": reason,
+                "msg": msg,
+                "notion_url": response.json()["url"] if status == "DONE" else None,
+                "title": title,
+                "category": category,
+                "user": f"{request.user}",
+            },
+        }
+    
+    # id: delete_project
+    elif id == "delete_project":
+        staff = json.loads(request.POST.get("staff"))
+        data = {"page_id": page_id}
+        response = notion("delete", "page", data=data)
+
+        if response.status_code == 200:
+            status = "DONE"
+            msg = "프로젝트가 삭제되었어요! 🗑️"
+        elif response.status_code != 200:
+            status = "FAIL"
+            reason = response.json()
+            msg = "앗, 삭제할 수 없는 프로젝트예요!"
+        
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "reason": reason if status == "FAIL" else None,
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,

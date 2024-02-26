@@ -766,22 +766,39 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
     # action: update / target: page_properties
     elif action == "update" and target == "page_properties":
         url = f"https://api.notion.com/v1/pages/{page_id}"
-        payload = {
-            "properties": {
-                "Category": {
-                    "select": {
-                        "name": category,
+
+        if db_name == "project":
+            payload = {
+                "properties": {
+                    "Category": {
+                        "select": {
+                            "name": category,
+                        },
                     },
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
+                    "User": {"number": int(str(user))},
                 },
-                "Title": {"title": [{"text": {"content": title}}]},
-                "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
-                "Image key list": {
-                    "rich_text": [{"text": {"content": str(img_key_list)}}]
+            }
+            response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+        
+        elif db_name == "notice":
+            payload = {
+                "properties": {
+                    "Category": {
+                        "select": {
+                            "name": category,
+                        },
+                    },
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Keyword": {"rich_text": [{"text": {"content": keyword}}]},
+                    "Image key list": {
+                        "rich_text": [{"text": {"content": str(img_key_list)}}]
+                    },
+                    "File": {"rich_text": [{"text": {"content": str(file)}}]},
                 },
-                "File": {"rich_text": [{"text": {"content": str(file)}}]},
-            },
-        }
-        response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
+            }
+            response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
 
         result = response
 

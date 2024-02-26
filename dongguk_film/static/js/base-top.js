@@ -374,6 +374,45 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestUpdateProject()
+    else if (resID === "update_project") {
+        if (resResult.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+            displayButtonMsg(false, id_create_or_update, "error");
+            location.href = location.href.replace("#id_main_content", "");
+        } else if (resResult.status === "FAIL") {
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            displayButtonMsg(false, id_create_or_update, "descr");
+            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
+    // requestDeleteProject()
+    else if (resID === "delete_project") {
+        if (resResult.status === "DONE") {
+            displayButtonMsg(true, id_delete, "descr", resResult.msg);
+            displayButtonMsg(false, id_delete, "error");
+            location.href = location.href.replace("#id_main_content", "");
+        } else if (resResult.status === "FAIL") {
+            freezeFileForm(false);
+            freezeForm(false);
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+            displayButtonMsg(false, id_delete, "descr");
+            displayButtonMsg(true, id_delete, "error", resResult.msg);
+        };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestCreateDflink()
     else if (resID === "create_dflink") {
         if (resResult.status === "DONE") {

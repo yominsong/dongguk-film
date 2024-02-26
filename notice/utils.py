@@ -597,6 +597,7 @@ def notice(request):
             file = get_file(request)
 
             data = {
+                "db_name": "notice",
                 "page_id": page_id,
                 "block_id_list": block_id_list,
                 "title": title,
