@@ -438,19 +438,33 @@ function addStaff(userData, blink = false) {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     const staffElement = remove.parentElement.parentElement;
 
-                    JSON.parse(staffElement.dataset.position).some(elementPosition => {
-                        if (elementPosition.required === "True") {
-                            addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
-                                return arrayPosition.priority !== elementPosition.priority;
-                            });
-                        };
-                    });
+                    // JSON.parse(staffElement.dataset.position).some(elementPosition => {
+                    //     if (elementPosition.required === "True") {
+                    //         addedRequiredPositions = addedRequiredPositions.filter(arrayPosition => {
+                    //             return arrayPosition.priority !== elementPosition.priority;
+                    //         });
+                    //     };
+                    // });
+
+                    addedRequiredPositions = [];
 
                     addedStaffs = addedStaffs.filter(staff => {
                         return staff.pk !== staffElement.dataset.pk;
                     });
 
                     staffElement.remove();
+
+                    const class_staffs = id_staff_list.querySelectorAll(".class-staff");
+
+                    class_staffs.forEach(staff => {
+                        JSON.parse(staff.dataset.position).forEach(position => {
+                            if (position.required === "True") {
+                                addedRequiredPositions.push(position);
+                            };
+                        });
+                    });
+
+                    controlErrorInStaffBox();
 
                     if (id_staff_list.childElementCount === 0) {
                         id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
