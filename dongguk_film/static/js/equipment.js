@@ -3,6 +3,7 @@
 //
 
 const id_modal = document.getElementById("id_modal");
+const id_modal_base = code(id_modal, "_base");
 const id_modal_filter = code(id_modal, "_filter");
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
@@ -33,14 +34,25 @@ let currentHistoryLength = history.length;
 
 function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
-    const id_modal_base = code(id_modal, "_base");
-    if (this.window.innerWidth < 640) {
-        if (id_grid !== null) {
-            id_modal_base.style.setProperty("width", id_grid.offsetWidth + "px", "important");
-        } else if (id_detail !== null) {
-            id_modal_base.style.setProperty("width", id_detail.offsetWidth + "px", "important");
-        };
+    let widthBase;
+
+    if (id_grid !== null) {  // equipment.html
+        widthBase = id_grid;
+    } else if (id_detail !== null) {  // equipment_detail.html
+        widthBase = id_detail;
     };
+    
+    // As a reminder, the width of each category button is adjusted by the Tailwind CSS
+    if (this.window.innerWidth >= 640) {
+        id_modal_base.style.setProperty("width", "512px", "important");
+    } else if (this.window.innerWidth < 640) {
+        id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+    };
+}
+
+function resizeWidthOfModalAndForm() {
+    adjustModalWidth();
+    window.addEventListener("resize", adjustModalWidth);
 }
 
 function adjustDetailHeight() {
@@ -494,7 +506,7 @@ function updateForm(action) {
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    adjustModalWidth();
+    resizeWidthOfModalAndForm();
     toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 

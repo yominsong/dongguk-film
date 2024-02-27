@@ -59,7 +59,7 @@
                         <div id="id_modal_filter" class="space-y-5">
                             <fieldset>
                                 <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
-                                <div class="mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                <div class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
                                     {% for category in category_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
                                             <input id="id_category_{{ category.priority }}"

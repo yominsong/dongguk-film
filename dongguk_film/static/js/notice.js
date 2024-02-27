@@ -54,9 +54,9 @@ function adjustModalWidth() {
     const id_content_parent = code(id_content, "_parent");
     let widthBase;
 
-    if (id_list !== null) {
+    if (id_list !== null) {  // notice.html
         widthBase = id_list;
-    } else if (id_detail !== null) {
+    } else if (id_detail !== null) {  // notice_detail.html
         widthBase = id_detail;
     };
 
