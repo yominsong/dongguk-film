@@ -18,7 +18,7 @@ let buttons = document.querySelectorAll("button");
 let inputs = [];
 
 const eventTypes = ["focusin", "focusout", "blur", "compositionstart", "compositionupdate", "compositionend", "keydown", "keypress", "keyup", "mouseenter", "mouseover", "mousemove", "mousedown", "mouseup", "click", "contextmenu", "mouseleave", "mouseout", "select"];
-const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Ctrl", "c", "v", "a", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
 
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
@@ -171,6 +171,14 @@ function initValidation(array, button) {
     validate();
 }
 
+/**
+ * @param {HTMLInputElement} input Input that needs to be validated
+ * @returns {boolean}
+ */
+function isValid(input) {
+    return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
+}
+
 function isItOkayToSubmitForm() {
     let filteredInputs = [];
 
@@ -186,14 +194,6 @@ function isItOkayToSubmitForm() {
     filteredInputs = inputs.filter(isValid);
 
     return filteredInputs.length === inputs.length;
-}
-
-/**
- * @param {HTMLInputElement} input Input that needs to be validated
- * @returns {boolean}
- */
-function isValid(input) {
-    return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
 }
 
 function trim(input) {

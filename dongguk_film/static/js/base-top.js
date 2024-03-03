@@ -350,6 +350,8 @@ function handleAjaxCallback(response) {
                     id_found_user_list.appendChild(newlyFoundUserElement);
                 };
             });
+
+            console.log("based-top: " + isUserFound);
         } else if (resResult.status === "FAIL") {
             isUserFound = false;
         };

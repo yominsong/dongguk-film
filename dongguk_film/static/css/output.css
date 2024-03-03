@@ -1402,10 +1402,6 @@ select {
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .flex-row-reverse {
   flex-direction: row-reverse;
 }
@@ -1820,6 +1816,11 @@ select {
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
+.bg-gray-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
+}
+
 .bg-gray-400\/20 {
   background-color: rgb(156 163 175 / 0.2);
 }
@@ -1861,6 +1862,16 @@ select {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
+}
+
+.bg-gray-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(156 163 175 / var(--tw-bg-opacity));
+}
+
+.bg-flamingo {
+  --tw-bg-opacity: 1;
+  background-color: rgb(241 89 34 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-75 {
@@ -2923,12 +2934,6 @@ select {
 
 @media (max-width: 508px) {
   .max-\[508px\]\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 507px) {
-  .max-\[507px\]\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

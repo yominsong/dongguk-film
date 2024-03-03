@@ -142,9 +142,9 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C05 \uce74\uba54\ub77c \uc81c1\uc870\uc218",
+        "name": "C05 \uce74\uba54\ub77c \uc81c1 \uc870\uc218",
         "priority": "05",
-        "keyword": "\uce74\uba54\ub77c \uc81c1\uc870\uc218",
+        "keyword": "\uce74\uba54\ub77c \uc81c1 \uc870\uc218",
         "in_english": "First Assistant Camera",
         "note": null,
         "required": false
@@ -152,9 +152,9 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C06 \uce74\uba54\ub77c \uc81c2\uc870\uc218",
+        "name": "C06 \uce74\uba54\ub77c \uc81c2 \uc870\uc218",
         "priority": "06",
-        "keyword": "\uce74\uba54\ub77c \uc81c2\uc870\uc218",
+        "keyword": "\uce74\uba54\ub77c \uc81c2 \uc870\uc218",
         "in_english": "Second Assistant Camera",
         "note": null,
         "required": false
@@ -162,9 +162,9 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C07 B \uce74\uba54\ub77c \uc81c1\uc870\uc218",
+        "name": "C07 B \uce74\uba54\ub77c \uc81c1 \uc870\uc218",
         "priority": "07",
-        "keyword": "B \uce74\uba54\ub77c \uc81c1\uc870\uc218",
+        "keyword": "B \uce74\uba54\ub77c \uc81c1 \uc870\uc218",
         "in_english": "First Assistant Camera for B Camera",
         "note": null,
         "required": false
@@ -172,9 +172,9 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C08 B \uce74\uba54\ub77c \uc81c2\uc870\uc218",
+        "name": "C08 B \uce74\uba54\ub77c \uc81c2 \uc870\uc218",
         "priority": "08",
-        "keyword": "B \uce74\uba54\ub77c \uc81c2\uc870\uc218",
+        "keyword": "B \uce74\uba54\ub77c \uc81c2 \uc870\uc218",
         "in_english": "Second Assistant Camera for B Camera",
         "note": null,
         "required": false
@@ -182,8 +182,28 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C09 \ucd2c\uc601\ubd80",
+        "name": "C09 DIT",
         "priority": "09",
+        "keyword": "DIT",
+        "in_english": "Digital Imaging Technician",
+        "note": null,
+        "required": false
+    },
+    {
+        "function": "Photography",
+        "function_priority": "C",
+        "name": "C10 \ub370\uc774\ud130 \ub7ad\uae00\ub7ec",
+        "priority": "10",
+        "keyword": "\ub370\uc774\ud130 \ub7ad\uae00\ub7ec",
+        "in_english": "Data Wrangler",
+        "note": null,
+        "required": false
+    },
+    {
+        "function": "Photography",
+        "function_priority": "C",
+        "name": "C11 \ucd2c\uc601\ubd80",
+        "priority": "11",
         "keyword": "\ucd2c\uc601\ubd80",
         "in_english": "Camera Department",
         "note": null,
@@ -192,8 +212,8 @@
     {
         "function": "Photography",
         "function_priority": "C",
-        "name": "C10 \uc870\uba85\ubd80",
-        "priority": "10",
+        "name": "C12 \uc870\uba85\ubd80",
+        "priority": "12",
         "keyword": "\uc870\uba85\ubd80",
         "in_english": "Lighting Department",
         "note": null,
@@ -302,8 +322,18 @@
     {
         "function": "Sound",
         "function_priority": "E",
-        "name": "E05 \uc0ac\uc6b4\ub4dc\ubd80",
+        "name": "E05 \uc81c2 \ubd90 \uc624\ud37c\ub808\uc774\ud130",
         "priority": "05",
+        "keyword": "\uc81c2 \ubd90 \uc624\ud37c\ub808\uc774\ud130",
+        "in_english": "Second Boom Operator",
+        "note": null,
+        "required": false
+    },
+    {
+        "function": "Sound",
+        "function_priority": "E",
+        "name": "E06 \uc0ac\uc6b4\ub4dc\ubd80",
+        "priority": "06",
         "keyword": "\uc0ac\uc6b4\ub4dc\ubd80",
         "in_english": "Sound Department",
         "note": null,

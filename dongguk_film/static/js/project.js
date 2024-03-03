@@ -10,6 +10,8 @@ const id_category = document.getElementById("id_category");
 const id_category_original = code(id_category, "_original");
 const id_category_dram = document.getElementById("id_category_dram");
 const id_category_docu = document.getElementById("id_category_docu");
+const id_select_position = document.getElementById("id_select_position");
+const id_found_position_list = document.getElementById("id_found_position_list");
 const id_position = document.getElementById("id_position");
 const id_name = document.getElementById("id_name");
 const id_found_user_list = document.getElementById("id_found_user_list");
@@ -22,7 +24,7 @@ const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 
-const staffBoxInputs = [id_position, id_name];
+const staffBoxElements = [id_select_position, id_found_position_list, id_name];
 
 let isAuthenticated = false;
 let isModalOpen = false;
@@ -114,17 +116,17 @@ function displayErrorInStaffBox(bool, errorType = null) {
         };
 
         id_staff_list_error.hidden = false;
-        staffBoxInputs.forEach(input => { input.classList.remove("bg-transparent") });
-        staffBoxInputs.forEach(input => { input.classList.add("bg-flamingo-50", "ring-transparent") });
-        id_position.classList.add("hover:z-10");
+        staffBoxElements.forEach(element => { element.classList.remove("bg-transparent") });
+        staffBoxElements.forEach(element => { element.classList.add("bg-flamingo-50", "ring-transparent") });
+        id_select_position.classList.add("hover:z-10");
         id_name.classList.add("hover:bg-gray-50", "hover:df-ring-inset-gray");
         id_found_user_list.classList.add("hidden");
     } else {
         id_staff_list_error.innerText = null;
         id_staff_list_error.hidden = true;
-        staffBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
-        staffBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
-        id_position.classList.remove("hover:z-10");
+        staffBoxElements.forEach(element => { element.classList.add("bg-transparent") });
+        staffBoxElements.forEach(element => { element.classList.remove("bg-flamingo-50", "ring-transparent") });
+        id_select_position.classList.remove("hover:z-10");
         id_name.classList.remove("hover:bg-gray-50", "hover:df-ring-inset-gray");
     };
 }
@@ -140,34 +142,36 @@ function controlErrorInStaffBox() {
 }
 
 function validateStaffBox() {
-    staffBoxInputs.forEach(input => {
-        input.addEventListener("click", () => {
+    staffBoxElements.forEach(element => {
+        element.addEventListener("click", () => {
             displayErrorInStaffBox(false);
         });
 
-        if (input === id_name) {
-            input.addEventListener("keydown", event => {
+        if (element === id_name) {
+            element.addEventListener("keydown", event => {
                 displayErrorInStaffBox(false);
-                controlDescr(input, event);
+                controlDescr(element, event);
             });
         };
 
-        input.addEventListener("focusout", () => {
+        element.addEventListener("focusout", () => {
             if (!isInteractingWithList) { controlErrorInStaffBox() };
         });
 
-        input.addEventListener("focusin", () => {
+        element.addEventListener("focusin", () => {
             displayErrorInStaffBox(false);
         });
     });
 }
 
 function initStaffBoxValidation() {
-    [...id_position.options].forEach(position => {
+    const class_positions = document.querySelectorAll(".class-position");
+
+    class_positions.forEach(position => {
         if (position.dataset.required === "True" &&
-            !requiredPositions.some(requiredPosition => requiredPosition.priority === position.value)) {
+            !requiredPositions.some(requiredPosition => requiredPosition.priority === position.dataset.priority)) {
             requiredPositions.push({
-                priority: position.value,
+                priority: position.dataset.priority,
                 keyword: position.dataset.keyword,
                 required: position.dataset.required,
             });
@@ -232,6 +236,24 @@ function isItOkayToSubmitProjectForm() {
     isProducer = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
 
     return isProducer && areStaffsAdded && areAllRequiredPositionsAdded && isItOkayToSubmitForm();
+}
+
+function executePositionAction(selectedPurpose = null) {
+    if (selectedPurpose) {
+        id_position.value = selectedPurpose.priority;
+
+        positionData = {
+            priority: selectedPurpose.priority,
+            keyword: selectedPurpose.keyword,
+            required: selectedPurpose.required,
+        };
+
+        id_name.readOnly = false;
+        id_name.focus();
+    } else {
+        id_position.value = null;
+        id_name.readOnly = true;
+    };
 }
 
 function executeWhenModalIsClosed() {
@@ -473,54 +495,15 @@ function addStaff(userData, blink = false) {
 
 function initStaffBox() {
     if (id_modal !== null) {
+        const id_position_placeholder = code(id_position, "_placeholder");
+        
         addedRequiredPositions = [];
         addedStaffs = [];
-
-        window.lastKeyWasArrow = false;
-
-        document.addEventListener("keydown", (event) => {
-            if (document.activeElement === id_position) {
-                if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-                    window.lastKeyWasArrow = true;
-                } else {
-                    window.lastKeyWasArrow = false;
-                };
-            };
-        });
-
-        document.addEventListener("keyup", (event) => {
-            if (document.activeElement === id_position) {
-                if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-                    window.lastKeyWasArrow = false;
-                };
-            };
-        });
-
-        id_position.selectedIndex = 0;
-
-        id_position.addEventListener("change", () => {
-            if (id_position.selectedOptions[0].disabled) {
-                id_position.selectedIndex = 0;
-            };
-
-            if (id_position.selectedIndex !== 0) {
-                id_name.readOnly = false;
-                if (!window.lastKeyWasArrow) { id_name.focus() };
-            } else {
-                id_name.readOnly = true;
-            };
-
-            positionData = {
-                priority: id_position.value,
-                keyword: id_position.selectedOptions[0].dataset.keyword,
-                required: id_position.selectedOptions[0].dataset.required,
-            };
-        });
-
+        id_position.value = null;
+        id_position_placeholder.click();
         id_name.value = null;
         id_name.readOnly = true;
         id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
-        // id_name.classList.remove("hover:bg-gray-50");  // I don't know why this is here
         id_name.parentElement.classList.add("rounded-b-md");
 
         id_name.addEventListener("blur", () => {
@@ -543,8 +526,10 @@ function initStaffBox() {
         id_staff_list_error.innerText = null;
         id_staff_list_error.hidden = true;
 
-        ["click", "keyup", "focus"].forEach(type => {
+        ["click", "keydown", "focus"].forEach(type => {
             id_name.addEventListener(type, event => {
+                console.log("project: " + isUserFound);
+
                 if (isUserFound) {
                     id_found_user_list.classList.remove("hidden");
 
@@ -582,8 +567,8 @@ function initStaffBox() {
             });
         });
 
-        staffBoxInputs.forEach(input => { input.classList.add("bg-transparent") });
-        staffBoxInputs.forEach(input => { input.classList.remove("bg-flamingo-50", "ring-transparent") });
+        staffBoxElements.forEach(element => { element.classList.add("bg-transparent") });
+        staffBoxElements.forEach(element => { element.classList.remove("bg-flamingo-50", "ring-transparent") });
     };
 }
 
@@ -716,10 +701,10 @@ function updateForm(action, datasetObj = null) {
 
         staffArray.forEach(user => {
             user.position_priority.forEach(priority => {
-                const position = id_position.querySelector(`option[value="${priority}"]`);
+                const position = document.querySelector(`[data-priority="${priority}"]`);
 
                 positionData = {
-                    priority: position.value,
+                    priority: position.dataset.priority,
                     keyword: position.dataset.keyword,
                     required: position.dataset.required,
                 };
@@ -913,8 +898,8 @@ function initRequest() {
                             });
                         });
 
-                        staffBoxInputs.forEach(input => {
-                            input.addEventListener(type, () => {
+                        staffBoxElements.forEach(element => {
+                            element.addEventListener(type, () => {
                                 displayButtonMsg(false, id_create_or_update, "error");
                             });
                         });
