@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from .utils import get_project_position
+from equipment.utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import notion
 import random
@@ -13,6 +14,7 @@ import random
 def project(request):
     query_string = ""
     image_list = get_hero_img("project")
+    purpose_list = get_equipment_policy("purpose")
     position_list = get_project_position()
 
     # Notion
@@ -87,6 +89,7 @@ def project(request):
             "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
+            "purpose_list": purpose_list,
             "position_list": position_list,
         },
     )

@@ -36,7 +36,7 @@
                 <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
                     <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">프로젝트</h1>
                     <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
-                        제작진 및 촬영 계획 관리
+                        영화 제작진 및 촬영 계획 관리
                     </p>
                 </div>
             </div>
@@ -120,16 +120,10 @@
                                 {{ project.title }}
                             </a>
                         </p>
-                        <!-- project.category -->
-                        {% if project.category == "극영화" %}
-                            <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                {{ project.category }}
-                            </p>
-                        {% elif project.category == "다큐멘터리" %}
-                            <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-amber-700 bg-amber-50 ring-amber-600/20">
-                                {{ project.category }}
-                            </p>
-                        {% endif %}
+                        <!-- project.purpose -->
+                        <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            {{ project.purpose.keyword }}
+                        </p>
                     </div>
                     <div class="flex justify-between items-center gap-x-2">
                         <!-- project.director & project.producer -->
@@ -166,8 +160,8 @@
                                 <span data-page-id="{{ project.page_id }}"
                                       data-title="{{ project.title }}"
                                       data-title-original="{{ project.title }}"
-                                      data-category="{{ project.category }}"
-                                      data-category-original="{{ project.category }}"
+                                      data-purpose="{{ project.purpose.priority }}"
+                                      data-purpose-original="{{ project.purpose.priority }}"
                                       data-staff="{{ project.staff }}"
                                       data-staff-original="{{ project.staff }}"
                                       data-created-date="{{ project.created_date }}"

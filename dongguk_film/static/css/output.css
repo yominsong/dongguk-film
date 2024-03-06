@@ -1514,6 +1514,12 @@ select {
   margin-left: calc(2.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
+.space-x-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.75rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .space-x-6 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(1.5rem * var(--tw-space-x-reverse));
@@ -1759,11 +1765,6 @@ select {
   background-color: rgb(254 229 0 / var(--tw-bg-opacity));
 }
 
-.bg-amber-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 251 235 / var(--tw-bg-opacity));
-}
-
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
@@ -1857,16 +1858,6 @@ select {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
-}
-
-.bg-flamingo {
-  --tw-bg-opacity: 1;
-  background-color: rgb(241 89 34 / var(--tw-bg-opacity));
-}
-
-.bg-gray-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(75 85 99 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-75 {
@@ -2184,11 +2175,6 @@ select {
   letter-spacing: -0.025em;
 }
 
-.text-amber-700 {
-  --tw-text-opacity: 1;
-  color: rgb(180 83 9 / var(--tw-text-opacity));
-}
-
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -2287,11 +2273,6 @@ select {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
-}
-
-.text-flamingo-900 {
-  --tw-text-opacity: 1;
-  color: rgb(48 15 3 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -2400,10 +2381,6 @@ select {
 
 .ring-inset {
   --tw-ring-inset: inset;
-}
-
-.ring-amber-600\/20 {
-  --tw-ring-color: rgb(217 119 6 / 0.2);
 }
 
 .ring-black {

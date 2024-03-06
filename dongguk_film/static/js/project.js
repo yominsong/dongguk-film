@@ -6,17 +6,17 @@ const id_modal = document.getElementById("id_modal");
 const id_page_id = document.getElementById("id_page_id");
 const id_title = document.getElementById("id_title");
 const id_title_original = code(id_title, "_original");
-const id_category = document.getElementById("id_category");
-const id_category_original = code(id_category, "_original");
-const id_category_dram = document.getElementById("id_category_dram");
-const id_category_docu = document.getElementById("id_category_docu");
+const id_select_purpose = document.getElementById("id_select_purpose");
+const id_purpose = document.getElementById("id_purpose");
+const id_purpose_list = code(id_purpose, "_list");
+const id_purpose_error = code(id_purpose, "_error");
+const id_purpose_original = code(id_purpose, "_original");
 const id_select_position = document.getElementById("id_select_position");
 const id_found_position_list = document.getElementById("id_found_position_list");
 const id_position = document.getElementById("id_position");
 const id_name = document.getElementById("id_name");
 const id_found_user_list = document.getElementById("id_found_user_list");
 const id_staff_list = document.getElementById("id_staff_list");
-const id_staff_list_descr = code(id_staff_list, "_descr");
 const id_staff_list_error = code(id_staff_list, "_error");
 const id_staff_list_original = code(id_staff_list, "_original");
 const id_keyword = document.getElementById("id_keyword");
@@ -31,7 +31,8 @@ let isModalOpen = false;
 let isUserFound = false;
 let isInteractingWithList = false;
 let isLastSelectedAnchorHash = false;
-let isProducer = false;
+let isPurposeSelected = false;
+let isUserProducer = false;
 let isItDoubleChecked = false;
 
 let userPk, userName, userStudentId;  // User authentication verification results
@@ -104,6 +105,60 @@ function preventGoBack() {
 }
 
 preventGoBack();
+
+function displayErrorInPurpose(bool, errorType = null) {
+    if (bool) {
+        if (errorType === "empty") {
+            id_purpose_error.innerText = "목적을 선택해주세요.";
+        };
+
+        id_purpose_error.hidden = false;
+        id_select_purpose.classList.add("bg-flamingo-50", "ring-transparent", "hover:df-ring-inset-gray");
+    } else {
+        id_purpose_error.innerText = null;
+        id_purpose_error.hidden = true;
+        id_select_purpose.classList.remove("bg-flamingo-50", "ring-transparent", "hover:df-ring-inset-gray");
+    }
+}
+
+function controlErrorInPurpose() {
+    if (id_purpose.value === "") {
+        displayErrorInPurpose(true, "empty");
+    } else {
+        return false;
+    };
+}
+
+function validatePurpose() {
+    let isPurposeListOpen = false;
+    
+    ["click", "keydown"].forEach(type => {
+        id_select_purpose.addEventListener(type, event => {
+            if (type === "click" || event.key === "Enter" || event.key === " " || event.key === "ArrowUp" || event.key === "ArrowDown") {
+                // isPurposeListOpen = id_purpose_list.style.display === "";
+                displayErrorInPurpose(false);
+            };
+        });
+    });
+
+    id_select_purpose.addEventListener("focusout", () => {
+        isPurposeListOpen = id_purpose_list.style.display === "";
+        if (!isPurposeListOpen) { controlErrorInPurpose() };
+    });
+
+    id_purpose_list.addEventListener("focusout", () => {
+        isPurposeListOpen = id_purpose_list.style.display === "";
+        controlErrorInPurpose();
+    });
+
+    id_select_purpose.addEventListener("focusin", () => {
+        displayErrorInPurpose(false);
+    });
+}
+
+function initPurposeValidation() {
+    validatePurpose();
+}
 
 function displayErrorInStaffBox(bool, errorType = null) {
     const keywordsOfRequiredPositions = requiredPositions.map(position => position.keyword).join(", ");
@@ -233,26 +288,34 @@ function isItOkayToSubmitProjectForm() {
     const areStaffsAdded = addedStaffs.length !== 0;
     const areAllRequiredPositionsAdded = areArraysIdentical(requiredPositions, addedRequiredPositions);
 
-    isProducer = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
+    isPurposeSelected = id_purpose.value !== "";
+    isUserProducer = addedStaffs.some(staff => staff.pk === userPk && staff.position.some(position => position.keyword === "제작"));
 
-    return isProducer && areStaffsAdded && areAllRequiredPositionsAdded && isItOkayToSubmitForm();
+    return areStaffsAdded && areAllRequiredPositionsAdded && isPurposeSelected && isUserProducer && isItOkayToSubmitForm();
+}
+
+function executePurposeAction(selectedPurpose = null) {
+    displayErrorInPurpose(false);
+
+    if (selectedPurpose) {
+        id_purpose.value = selectedPurpose.priority;
+    };
 }
 
 function executePositionAction(selectedPurpose = null) {
-    if (selectedPurpose) {
-        id_position.value = selectedPurpose.priority;
+    const isValidPurpose = selectedPurpose && selectedPurpose.priority !== "";
 
+    id_position.value = isValidPurpose ? selectedPurpose.priority : null;
+    id_name.readOnly = !isValidPurpose;
+
+    if (isValidPurpose) {
         positionData = {
             priority: selectedPurpose.priority,
             keyword: selectedPurpose.keyword,
             required: selectedPurpose.required,
         };
 
-        id_name.readOnly = false;
         id_name.focus();
-    } else {
-        id_position.value = null;
-        id_name.readOnly = true;
     };
 }
 
@@ -496,7 +559,7 @@ function addStaff(userData, blink = false) {
 function initStaffBox() {
     if (id_modal !== null) {
         const id_position_placeholder = code(id_position, "_placeholder");
-        
+
         addedRequiredPositions = [];
         addedStaffs = [];
         id_position.value = null;
@@ -575,71 +638,20 @@ function initStaffBox() {
 function initForm() {
     const id_title_placeholder_array = new Array("<피아골>", "<속 돌아온 외다리>", "<초대받은 사람들>", "<불나비>", "<만선>", "<서편제>", "<자유부인>", "<안개마을>", "<축제>", "<낙동강>", "<민며느리>", "<장희빈>", "<청춘의 십자로>", "<쇠사슬을 끊어라>", "<와룡선생 이야기>", "<사의 찬미>", "<월급쟁이>");
     const id_title_placeholder = randomItem(id_title_placeholder_array);
-    const class_categories = document.querySelectorAll(".class-category");
+    const id_purpose_placeholder = code(id_purpose, "_placeholder");
 
     id_title.value = null;
     id_title.placeholder = id_title_placeholder;
-    id_category.value = null;
-    id_category_dram.checked = false;
-    id_category_docu.checked = false;
-
-    class_categories.forEach((category) => {
-        const label = category.closest("label");
-        const svg = label.querySelector("svg");
-
-        category.addEventListener("click", () => {
-            id_category.value = category.value;
-        });
-
-        category.addEventListener("focus", () => {
-            label.classList.add("df-focus-ring-inset");
-            svg.classList.remove("invisible");
-        });
-
-        category.addEventListener("blur", () => {
-            if (!category.checked) {
-                svg.classList.add("invisible");
-            } else if (category.checked) {
-                label.classList.add("df-ring-inset-flamingo");
-            };
-
-            label.classList.remove("df-focus-ring-inset");
-        });
-
-        category.addEventListener("change", () => {
-            const otherInputs = [...class_categories].filter(i => i !== category);
-
-            if (category.checked) {
-                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
-                svg.classList.remove("invisible");
-            } else {
-                svg.classList.add("invisible");
-            };
-
-            otherInputs.forEach(i => {
-                const otherLabel = i.closest("label");
-                const otherSvg = otherLabel.querySelector("svg");
-
-                if (!i.checked) {
-                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-                    otherSvg.classList.add("invisible");
-                };
-            });
-        });
-
-        if (!category.checked) {
-            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-            svg.classList.add("invisible");
-        } else {
-            label.classList.add("df-ring-inset-flamingo");
-        };
-    });
+    id_purpose.value = null;
+    id_purpose_placeholder.click();
 
     initStaffBox();
 
     inputs.forEach((input) => {
         displayError(false, input);
     });
+
+    displayErrorInPurpose(false);
 
     [id_create_or_update, id_delete].forEach(button => {
         displayButtonMsg(false, button, "error");
@@ -669,7 +681,6 @@ function updateForm(action, datasetObj = null) {
     // action: adjust
     else if (action === "adjust") {
         const data = datasetObj.dataset;
-        let label, svg;
 
         updateForm("create");
 
@@ -680,22 +691,9 @@ function updateForm(action, datasetObj = null) {
         id_page_id.value = data.pageId;
         id_title.value = data.title;
         id_title_original.value = data.titleOriginal;
-
-        if (data.category === "극영화") {
-            id_category.value = "극영화";
-            id_category_dram.checked = true;
-            label = id_category_dram.closest("label");
-        } else if (data.category === "다큐멘터리") {
-            id_category.value = "다큐멘터리";
-            id_category_docu.checked = true;
-            label = id_category_docu.closest("label");
-        };
-
-        id_category_original.value = data.categoryOriginal;
-        label.classList.remove("df-ring-inset-gray");
-        label.classList.add("df-ring-inset-flamingo");
-        svg = label.querySelector("svg");
-        svg.classList.remove("invisible");
+        id_purpose.value = data.purpose;
+        code(id_purpose, `_${data.purpose}`).click();
+        id_purpose_original.value = data.purposeOriginal;
 
         const staffArray = JSON.parse(data.staff.replace(/'/g, '"'));
 
@@ -780,7 +778,7 @@ function requestCreateProject() {
 
     formData.append("id", "create_project");
     formData.append("title", id_title.value);
-    formData.append("category", id_category.value);
+    formData.append("purpose", id_purpose.value);
 
     addedStaffs.forEach((staff, index) => {
         formData.append(`staffPk_${index}`, staff.pk);
@@ -810,7 +808,7 @@ function requestUpdateProject() {
     formData.append("id", "update_project");
     formData.append("page_id", id_page_id.value);
     formData.append("title", id_title.value);
-    formData.append("category", id_category.value);
+    formData.append("purpose", id_purpose.value);
 
     addedStaffs.forEach((staff, index) => {
         formData.append(`staffPk_${index}`, staff.pk);
@@ -838,7 +836,7 @@ function requestDeleteProject() {
     const staffList = JSON.parse(id_staff_list_original.value.replace(/'/g, '"'));
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_title_original.value}`, category: `${id_category_original.value}`, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_title_original.value}`, purpose: `${id_purpose_original.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -855,6 +853,7 @@ function initRequest() {
 
             initValidation(class_firsts, id_create_or_update);
             initStaffBoxValidation();
+            validatePurpose();
 
             id_name.addEventListener("input", () => {
                 if (isItOkayToFindUser()) {
@@ -885,8 +884,9 @@ function initRequest() {
                         } else {
                             inputs.forEach(input => {
                                 controlError(input);
+                                controlErrorInPurpose();
                                 controlErrorInStaffBox();
-                                if (addedStaffs.length > 0 && !isProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
+                                if (addedStaffs.length > 0 && !isUserProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
                             });
                         };
                     };

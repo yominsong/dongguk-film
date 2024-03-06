@@ -452,7 +452,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     record_list.append(collection)
             except:
                 pass
-        
+
         elif table_name == "project-position":
             try:
                 for record in records:
@@ -503,6 +503,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - property_id
         - title
         - category
+        - purpose
         - content
         - keyword
         - img_key_list
@@ -521,6 +522,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         property_id = data.get("property_id", None)
         title = data.get("title", None)
         category = data.get("category", None)
+        purpose = data.get("purpose", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
         img_key_list = data.get("img_key_list", None)
@@ -557,6 +559,16 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             items = response["results"]
             item_list = []
 
+            JSON_PATH = (
+                "dongguk_film/static/json/equipment.json"
+                if settings.DEBUG
+                else "dongguk_film/staticfiles/json/equipment.json"
+            )
+
+            with open(JSON_PATH, "r") as f:
+                purpose_list = json.load(f)["purpose"]
+                f.close()
+
             try:
                 for item in items:
                     properties = item["properties"]
@@ -564,13 +576,28 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     created_time = properties["Created time"]["created_time"]
                     created_time = convert_datetime(created_time)
 
-                    category = properties["Category"]["select"]["name"]
+                    purpose = (
+                        properties.get("Purpose", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
+                    )
+
+                    purpose_priority = [item for item in purpose_list if item["priority"] in purpose][0][
+                        "priority"
+                    ]
+                    purpose_keyword = [item for item in purpose_list if item["priority"] in purpose][0][
+                        "keyword"
+                    ]
+
                     title = properties["Title"]["title"][0]["plain_text"]
                     user = str(properties["User"]["number"])
 
                     project = {
                         "page_id": item["id"],
-                        "category": category,
+                        "purpose": {
+                            "priority": purpose_priority,
+                            "keyword": purpose_keyword,
+                        },
                         "title": title,
                         "user": user,
                         "created_date": created_time.strftime("%Y-%m-%d"),
@@ -594,14 +621,20 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         user = User.objects.get(username=student_id)
                         staff["pk"] = str(user.pk)
                         staff["name"] = user.metadata.name
-                        staff["student_id"] = student_id[:2] + '*' * (len(student_id) - 5) + student_id[-3:]
-                        staff["avatar_url"] = user.socialaccount_set.all()[0].get_avatar_url()
-                        
+                        staff["student_id"] = (
+                            student_id[:2]
+                            + "*" * (len(student_id) - 5)
+                            + student_id[-3:]
+                        )
+                        staff["avatar_url"] = user.socialaccount_set.all()[
+                            0
+                        ].get_avatar_url()
+
                         for priority in staff["position_priority"]:
-                            if (priority == "A01"):  # A01: 연출
+                            if priority == "A01":  # A01: 연출
                                 director_list.append(staff)
-                            
-                            if (priority == "B01"):  # B01: 제작
+
+                            if priority == "B01":  # B01: 제작
                                 producer_list.append(staff)
                                 producer_name_list.append(staff["name"])
                                 producer_student_id_list.append(staff["student_id"])
@@ -674,11 +707,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             payload = {
                 "parent": {"database_id": NOTION_DB_ID[db_name]},
                 "properties": {
-                    "Category": {
-                        "select": {
-                            "name": category,
-                        },
-                    },
+                    "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
                     "Title": {"title": [{"text": {"content": title}}]},
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "User": {"number": int(str(user))},
@@ -770,18 +799,14 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         if db_name == "project":
             payload = {
                 "properties": {
-                    "Category": {
-                        "select": {
-                            "name": category,
-                        },
-                    },
+                    "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
                     "Title": {"title": [{"text": {"content": title}}]},
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "User": {"number": int(str(user))},
                 },
             }
             response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
-        
+
         elif db_name == "notice":
             payload = {
                 "properties": {

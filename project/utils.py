@@ -108,7 +108,7 @@ def project(request):
     id = request.POST.get("id")
     page_id = request.POST.get("page_id")
     title = request.POST.get("title")
-    category = request.POST.get("category")
+    purpose = request.POST.get("purpose")
     name = request.POST.get("name")
 
     status = None
@@ -155,7 +155,7 @@ def project(request):
         data = {
             "db_name": "project",
             "title": title,
-            "category": category,
+            "purpose": purpose,
             "staff": staff,
             "user": request.user,
         }
@@ -186,7 +186,7 @@ def project(request):
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
-                "category": category,
+                "purpose": purpose,
                 "user": f"{request.user}",
             },
         }
@@ -199,7 +199,7 @@ def project(request):
             "db_name": "project",
             "page_id": page_id,
             "title": title,
-            "category": category,
+            "purpose": purpose,
             "staff": staff,
             "user": request.user,
         }
@@ -226,7 +226,7 @@ def project(request):
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
-                "category": category,
+                "purpose": purpose,
                 "user": f"{request.user}",
             },
         }
@@ -253,7 +253,7 @@ def project(request):
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
-                "category": category,
+                "purpose": purpose,
                 "user": f"{request.user}",
             },
         }
