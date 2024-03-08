@@ -72,9 +72,9 @@
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
                                 </div>
                                 <input id="id_title_original" value="" hidden>
-                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '목적을 선택하세요.', 'at_least': '', 'up_to': '', 'max': '' },
+                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '목적을 선택하세요.', 'in_english': '' },
                                     {% for purpose in purpose_list %}
-                                        { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'at_least': '{{ purpose.at_least }}', 'up_to': '{{ purpose.up_to }}', 'max': '{{ purpose.max }}' }
+                                        { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'in_english':'{{ purpose.in_english }}' }
                                         {% if not forloop.last %},&nbsp;{% endif %}
                                     {% endfor %}
                                     ] })" x-init="init()">
@@ -149,7 +149,7 @@
                                                     <span x-state:on="Highlighted"
                                                         x-state:off="Not Highlighted"
                                                         class="font-normal block mt-1 mr-2 text-gray-500"
-                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">기자재 {{ purpose.in_a_nutshell }}</span>
+                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ purpose.in_english }}</span>
                                                     <span x-state:on="Highlighted"
                                                         x-state:off="Not Highlighted"
                                                         class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
@@ -193,7 +193,7 @@
                                             </div>
                                             <div class="relative">
                                                 <button id="id_select_position"
-                                                        class="relative block w-full rounded-none rounded-t-md border-0 bg-transparent py-1.5 pl-3 text-left text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                        class="relative block w-full cursor-default rounded-none rounded-t-md border-0 bg-transparent py-1.5 pl-3 text-left text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 sm:text-sm sm:leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                                         type="button"
                                                         x-ref="button"
                                                         @keydown.arrow-up.stop.prevent="onButtonClick()"
@@ -375,8 +375,8 @@
                                                 <h3 class="text-sm font-medium text-flamingo-800">프로젝트 관련 안내사항</h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
-                                                        <li>프로젝트 생성 및 수정 권한은 제작자(Producer)에게 있습니다.</li>
-                                                        <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 생성 및 수정 내역을 조회할 수 있습니다.</li>
+                                                        <li>프로젝트 생성 및 수정 권한은 제작자(Producer)에게 있어요.</li>
+                                                        <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 생성 및 수정 내역을 조회할 수 있어요.</li>
                                                     </ul>
                                                 </div>
                                             </div>

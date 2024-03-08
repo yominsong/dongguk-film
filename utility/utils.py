@@ -452,6 +452,24 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     record_list.append(collection)
             except:
                 pass
+        
+        elif table_name == "project-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "name": fields["Name"],
+                        "priority": fields["Priority"],
+                        "keyword": fields["Keyword"],
+                        "in_english": fields["In English"],
+                        "validation": fields["Validation"],
+                        "equipment_purpose_priority": fields["Equipment Purpose Priority"],
+                    }
+
+                    record_list.append(purpose)
+            except:
+                pass
 
         elif table_name == "project-position":
             try:
@@ -560,9 +578,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             item_list = []
 
             JSON_PATH = (
-                "dongguk_film/static/json/equipment.json"
+                "dongguk_film/static/json/project.json"
                 if settings.DEBUG
-                else "dongguk_film/staticfiles/json/equipment.json"
+                else "dongguk_film/staticfiles/json/project.json"
             )
 
             with open(JSON_PATH, "r") as f:

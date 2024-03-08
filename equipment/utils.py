@@ -68,7 +68,7 @@ def update_equipment_policy(request):
 
     send_msg(request, "UEP", "DEV", result_list)
 
-    return HttpResponse(f"Updated policy: {result_list}")
+    return HttpResponse(f"Updated equipment policy: {result_list}")
 
 
 #

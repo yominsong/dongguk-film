@@ -111,13 +111,6 @@
                   </div>
                   <div>{% include "shared/_footer.html" %}</div>
             </div>
-            <!-- FlareLane Web Push JS -->
-            <!-- <script src="https://cdn.flarelane.com/WebSDK.js" charset="UTF-8"></script> -->
-            <!-- {% if request.user.is_authenticated %}
-                  <script id="pushJS"
-                          src="{% static 'js/push.js' %}"
-                          data-student-id="{{ request.user.metadata.student_id }}"></script>
-            {% endif %} -->
             <script src="{% static 'js/swiper.js' %}"></script>
             <script src="{% static 'js/base-bottom.js' %}"></script>
             <!-- Notify MS IE not supported -->
@@ -125,7 +118,7 @@
                   function notifyMsIeNotSupported() {
                         let agent = navigator.userAgent.toLowerCase();
                         if (agent.indexOf("trident") !== -1 || agent.indexOf("msie") !== -1) {
-                        alert("Internet Explorer에서는 디닷에프를 이용하실 수 없어요.\nChrome이나 Edge, 또는 Safari에서 이용해주세요!");
+                        alert("Internet Explorer에서는 디닷에프를 이용하실 수 없어요.\nChrome이나 Edge, 또는 Safari에서 이용해주세요.");
                         document.body.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);");
                         document.body.innerHTML = "<img src='{% static 'images/d_dot_f_logo.svg' %}' style='height: 3rem; text-align: center;' /><p style='margin-top: 1rem;'>Internet Explorer에서는 디닷에프를 이용하실 수 없어요.<br><a href='https://www.google.com/chrome/' target='_blank' style='color: #F15922;'>Chrome</a>이나 <a href='microsoft-edge:{{ request.build_absolute_uri }}' target='_blank' style='color: #F15922;'>Edge</a>, 또는 Safari에서 이용해주세요.</p>";
                         };

@@ -135,7 +135,6 @@ function validatePurpose() {
     ["click", "keydown"].forEach(type => {
         id_select_purpose.addEventListener(type, event => {
             if (type === "click" || event.key === "Enter" || event.key === " " || event.key === "ArrowUp" || event.key === "ArrowDown") {
-                // isPurposeListOpen = id_purpose_list.style.display === "";
                 displayErrorInPurpose(false);
             };
         });

@@ -22,36 +22,57 @@ JSON_PATH = (
 #
 
 
-def update_project_position(request):
-    data = {
-        "table_name": "project-position",
-        "params": {
-            "view": "Grid view",
-            "fields": [
-                "Function",
-                "Function priority",
-                "Name",
-                "Priority",
-                "Keyword",
-                "In English",
-                "Note",
-                "Required",
-            ],
-        },
-    }
+def update_project_policy(request):
+    target_list = ["purpose", "position"]
+    result_list = []
 
-    record_list = airtable("get_all", "records", data=data)
-    result_list = record_list
+    for target in target_list:
+        if target == "purpose":
+            data = {
+                "table_name": "project-purpose",
+                "params": {
+                    "view": "Grid view",
+                    "fields": [
+                        "Name",
+                        "Priority",
+                        "Keyword",
+                        "In English",
+                        "Validation",
+                        "Equipment Purpose Priority",
+                    ],
+                },
+            }
+        elif target == "position":
+            data = {
+                "table_name": "project-position",
+                "params": {
+                    "view": "Grid view",
+                    "fields": [
+                        "Function",
+                        "Function priority",
+                        "Name",
+                        "Priority",
+                        "Keyword",
+                        "In English",
+                        "Note",
+                        "Required",
+                    ],
+                },
+            }
 
-    with open(JSON_PATH, "r+") as f:
-        data = record_list
-        f.seek(0)
-        f.write(json.dumps(data, indent=4))
-        f.truncate()
+        record_list = airtable("get_all", "records", data=data)
+        result_list.append({target: record_list})
+
+        with open(JSON_PATH, "r+") as f:
+            data = json.load(f)
+            data[target] = record_list
+            f.seek(0)
+            f.write(json.dumps(data, indent=4))
+            f.truncate()
 
     send_msg(request, "UPP", "DEV", result_list)
 
-    return HttpResponse(f"Updated project position: {result_list}")
+    return HttpResponse(f"Updated project policy: {result_list}")
 
 
 #
@@ -59,9 +80,9 @@ def update_project_position(request):
 #
 
 
-def get_project_position():
+def get_project_policy(policy: str):
     with open(JSON_PATH, "r") as f:
-        item_list = json.load(f)
+        item_list = json.load(f)[policy]
         f.close()
 
         return item_list
@@ -85,13 +106,15 @@ def get_staff(request):
 
     while request.POST.get(f"staffPk_{index}") is not None:
         staff_pk = request.POST.get(f"staffPk_{index}")
-        staff_position_priority = json.loads(request.POST.get(f"staffPositionPriority_{index}"))
+        staff_position_priority = json.loads(
+            request.POST.get(f"staffPositionPriority_{index}")
+        )
 
         staff_dict = {
             "position_priority": staff_position_priority,
             "student_id": User.objects.get(id=staff_pk).username,
         }
-        
+
         staff_list.append(staff_dict)
         index += 1
 
@@ -190,7 +213,7 @@ def project(request):
                 "user": f"{request.user}",
             },
         }
-    
+
     # id: update_project
     elif id == "update_project":
         staff = get_staff(request)
@@ -230,7 +253,7 @@ def project(request):
                 "user": f"{request.user}",
             },
         }
-    
+
     # id: delete_project
     elif id == "delete_project":
         staff = json.loads(request.POST.get("staff"))
@@ -244,7 +267,7 @@ def project(request):
             status = "FAIL"
             reason = response.json()
             msg = "앗, 삭제할 수 없는 프로젝트예요!"
-        
+
         response = {
             "id": id,
             "result": {

@@ -8,9 +8,9 @@ urlpatterns = [
     path("", views.project, name="project"),
     # utils.py
     path(
-        "utils/update-project-position/",
-        utils.update_project_position,
-        name="update_project_position",
+        "utils/update-project-policy/",
+        utils.update_project_policy,
+        name="update_project_policy",
     ),
     path("utils/project/", utils.project),
 ]

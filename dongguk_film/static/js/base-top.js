@@ -381,7 +381,7 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update, "error");
-            location.href = location.href.replace("#id_main_content", "");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
         } else if (resResult.status === "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -400,7 +400,7 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             displayButtonMsg(true, id_delete, "descr", resResult.msg);
             displayButtonMsg(false, id_delete, "error");
-            location.href = location.href.replace("#id_main_content", "");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
         } else if (resResult.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
