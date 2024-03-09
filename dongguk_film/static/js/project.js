@@ -558,11 +558,13 @@ function addStaff(userData, blink = false) {
 function initStaffBox() {
     if (id_modal !== null) {
         const id_position_placeholder = code(id_position, "_placeholder");
+        const firstPosition = id_position_placeholder.nextElementSibling;
 
         addedRequiredPositions = [];
         addedStaffs = [];
         id_position.value = null;
         id_position_placeholder.click();
+        firstPosition.style.setProperty("border-top", "none", "important");
         id_name.value = null;
         id_name.readOnly = true;
         id_name.classList.add("rounded-b-md", "focus:rounded-b-md", "read-only:rounded-b-md");
