@@ -408,7 +408,7 @@ function initCalendar() {
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
     const class_categories = document.querySelectorAll(".class-category");
-    const firstPurpose = document.getElementById("id_purpose_A");
+    const firstPurpose = id_purpose_placeholder.nextElementSibling;
 
     id_category.value = null;
 

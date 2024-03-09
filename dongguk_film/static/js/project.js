@@ -638,11 +638,13 @@ function initForm() {
     const id_title_placeholder_array = new Array("<피아골>", "<속 돌아온 외다리>", "<초대받은 사람들>", "<불나비>", "<만선>", "<서편제>", "<자유부인>", "<안개마을>", "<축제>", "<낙동강>", "<민며느리>", "<장희빈>", "<청춘의 십자로>", "<쇠사슬을 끊어라>", "<와룡선생 이야기>", "<사의 찬미>", "<월급쟁이>");
     const id_title_placeholder = randomItem(id_title_placeholder_array);
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
+    const firstPurpose = id_purpose_placeholder.nextElementSibling;
 
     id_title.value = null;
     id_title.placeholder = id_title_placeholder;
     id_purpose.value = null;
     id_purpose_placeholder.click();
+    firstPurpose.style.setProperty("border-top", "none", "important");
 
     initStaffBox();
 
