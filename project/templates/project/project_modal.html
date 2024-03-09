@@ -145,7 +145,8 @@
                                                     :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter }}, 'text-gray-900': !(activeIndex === {{ forloop.counter }}) }">
                                                     <span x-state:on="Selected"
                                                         x-state:off="Not Selected"
-                                                        class="font-semibold block mr-4 truncate">{{ purpose.keyword }}</span>
+                                                        class="font-semibold block mr-4 truncate"
+                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ purpose.keyword }}</span>
                                                     <span x-state:on="Highlighted"
                                                         x-state:off="Not Highlighted"
                                                         class="font-normal block mt-1 mr-2 text-gray-500"
@@ -260,7 +261,8 @@
                                                             <div>
                                                                 <span x-state:on="Selected"
                                                                     x-state:off="Not Selected"
-                                                                    class="font-semibold block mr-4 truncate">{{ position.keyword }}{% if position.note %}({{ position.note }}){% endif %}</span>
+                                                                    class="font-semibold block mr-4 truncate"
+                                                                    :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ position.keyword }}{% if position.note %}({{ position.note }}){% endif %}</span>
                                                                 <span x-state:on="Highlighted"
                                                                     x-state:off="Not Highlighted"
                                                                     class="font-normal block mt-1 mr-2 text-gray-500"

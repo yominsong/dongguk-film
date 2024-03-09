@@ -114,11 +114,15 @@
                     <div class="flex justify-between items-center gap-x-2">
                         <!-- project.title -->
                         <p class="text-sm font-semibold leading-6 text-gray-900">
-                            <a href="#"
+                            <!-- Keep the cursor at default until the detail page is ready -->
+                            <!-- <a href="#"
                                class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
                                 <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                 {{ project.title }}
-                            </a>
+                            </a> -->
+                            <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">
+                                {{ project.title }}
+                            </span>
                         </p>
                         <!-- project.purpose -->
                         <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
