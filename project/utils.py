@@ -38,7 +38,7 @@ def update_project_policy(request):
                         "Keyword",
                         "In English",
                         "Validation",
-                        "Equipment Purpose Priority",
+                        "Equipment Purpose priority",
                     ],
                 },
             }

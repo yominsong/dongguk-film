@@ -464,7 +464,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "keyword": fields["Keyword"],
                         "in_english": fields["In English"],
                         "validation": fields["Validation"],
-                        "equipment_purpose_priority": fields["Equipment Purpose Priority"],
+                        "equipment_purpose_priority": fields["Equipment Purpose priority"],
                     }
 
                     record_list.append(purpose)
