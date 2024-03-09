@@ -64,7 +64,7 @@
                                     <div class="mt-2">
                                         <input type="text"
                                                id="id_title"
-                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm leading-6 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
@@ -178,7 +178,7 @@
                                 <input id="id_purpose_original" value="" hidden>
                                 <fieldset>
                                     <legend class="block text-sm font-medium leading-6 text-gray-900">스태프</legend>
-                                    <div class="mt-2 -space-y-px rounded-md df-ring-inset-gray">
+                                    <div class="mt-2 -space-y-px rounded-md shadow-sm df-ring-inset-gray">
                                         <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '', 'note': '', 'in_english': '', 'required': '', 'text': '담당을 선택하세요.' },
                                             {% for position in position_list %}
                                                 { 'priority': '{{ position.function_priority }}{{ position.priority }}', 'keyword':'{{ position.keyword }}', 'note': '{{ position.note }}', 'in_english': '{{ position.in_english }}', 'required': '{{ position.required }}', 'text': '{{ position.keyword }}{% if position.note %}({{ position.note }}){% endif %}' }
@@ -193,7 +193,7 @@
                                             </div>
                                             <div class="relative">
                                                 <button id="id_select_position"
-                                                        class="relative block w-full cursor-default rounded-none rounded-t-md border-0 bg-transparent py-1.5 pl-3 text-left text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                        class="relative block w-full cursor-default rounded-none rounded-t-md border-0 bg-transparent py-1.5 pl-3 text-left text-gray-900 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 text-sm leading-6 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                                         type="button"
                                                         x-ref="button"
                                                         @keydown.arrow-up.stop.prevent="onButtonClick()"
@@ -292,7 +292,7 @@
                                         </div>
                                         <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
                                             <label for="id_name" class="sr-only">이름</label>
-                                            <input class="only-hangul w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md text-sm read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md read-only:hover:bg-gray-100"
+                                            <input class="only-hangul w-full rounded-b-md border-0 bg-transparent py-1.5 pl-3 pr-12 text-gray-900 placeholder:text-gray-400 focus:df-focus-ring-inset focus:rounded-b-md text-sm leading-6 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:df-ring-inset-gray read-only:rounded-b-md read-only:hover:bg-gray-100"
                                                    id="id_name"
                                                    role="combobox"
                                                    type="text"
