@@ -26,7 +26,6 @@ const id_delete_text = code(id_delete, "_text");
 
 const staffBoxElements = [id_select_position, id_found_position_list, id_name];
 
-let isAuthenticated = false;
 let isModalOpen = false;
 let isUserFound = false;
 let isInteractingWithList = false;
@@ -109,7 +108,7 @@ preventGoBack();
 function displayErrorInPurpose(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
-            id_purpose_error.innerText = "목적을 선택해주세요.";
+            id_purpose_error.innerText = "유형을 선택해주세요.";
         };
 
         id_purpose_error.hidden = false;
@@ -555,6 +554,52 @@ function addStaff(userData, blink = false) {
     id_name.parentElement.classList.remove("rounded-b-md");
 }
 
+function initFoundUserList(resResult = null) {
+    // FAIL
+    if (resResult === null) {
+        isUserFound = false;
+
+        return;
+    };
+
+    // DONE
+    isUserFound = true;
+
+    resResult.found_user_list.forEach(newlyFoundUser => {
+        const alreadyFoundUsers = id_found_user_list.querySelectorAll("li");
+
+        alreadyFoundUsers.forEach(alreadyFoundUser => {
+            if (alreadyFoundUser.dataset.name !== newlyFoundUser.name) {
+                id_found_user_list.removeChild(alreadyFoundUser);
+            };
+        });
+
+        if (!document.getElementById(`id_found_user_${newlyFoundUser.pk}`)) {
+            const newlyFoundUserElement = document.createElement("li");
+            const data_user = newlyFoundUserElement.dataset;
+
+            data_user.pk = newlyFoundUser.pk;
+            data_user.name = newlyFoundUser.name;
+            data_user.studentId = newlyFoundUser.student_id;
+            data_user.avatarUrl = newlyFoundUser.avatar_url;
+
+            newlyFoundUserElement.id = `id_found_user_${data_user.pk}`;
+            newlyFoundUserElement.classList.add("class-user", "relative", "outline-none", "cursor-default", "select-none", "py-2", "pl-3", "text-gray-900", "focus:bg-flamingo-600", "focus:text-white", "hover:bg-flamingo-600", "hover:text-white");
+            newlyFoundUserElement.setAttribute("role", "option");
+
+            newlyFoundUserElement.innerHTML = `
+                <div class="flex items-center">
+                    <img src="${data_user.avatarUrl}" alt="${data_user.name}님의 프로필 사진" class="h-6 w-6 flex-shrink-0 rounded-full">
+                    <span class="font-semibold ml-3 truncate">${data_user.name}</span>
+                    <span>&nbsp(${data_user.studentId})</span>
+                </div>
+            `;
+
+            id_found_user_list.appendChild(newlyFoundUserElement);
+        };
+    });
+}
+
 function initStaffBox() {
     if (id_modal !== null) {
         const id_position_placeholder = code(id_position, "_placeholder");
@@ -637,7 +682,7 @@ function initStaffBox() {
 }
 
 function initForm() {
-    const id_title_placeholder_array = new Array("<피아골>", "<속 돌아온 외다리>", "<초대받은 사람들>", "<불나비>", "<만선>", "<서편제>", "<자유부인>", "<안개마을>", "<축제>", "<낙동강>", "<민며느리>", "<장희빈>", "<청춘의 십자로>", "<쇠사슬을 끊어라>", "<와룡선생 이야기>", "<사의 찬미>", "<월급쟁이>");
+    const id_title_placeholder_array = new Array("<피아골>", "<속 돌아온 외다리>", "<초대받은 사람들>", "<불나비>", "<만선>", "<서편제>", "<자유부인>", "<안개 마을>", "<축제>", "<낙동강>", "<민며느리>", "<장희빈>", "<청춘의 십자로>", "<쇠사슬을 끊어라>", "<와룡선생 상경기>", "<사의 찬미>", "<월급쟁이>");
     const id_title_placeholder = randomItem(id_title_placeholder_array);
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
     const firstPurpose = id_purpose_placeholder.nextElementSibling;
@@ -674,7 +719,7 @@ function updateForm(action, datasetObj = null) {
     // action: create
     if (action === "create") {
         class_keywords.forEach(keyword => {
-            keyword.innerText = "만들기";
+            keyword.innerText = "등록하기";
         });
 
         initForm();
@@ -755,16 +800,6 @@ function initModal() {
 }
 
 initModal();
-
-function requestVerifyAuthentication() {
-    request.url = `${originLocation}/users/utils/verify-authentication/`;
-    request.type = "POST";
-    request.data = { id: "verify_authentication" };
-    request.async = true;
-    request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-}
 
 function requestFindUser() {
     request.url = `${originLocation}/project/utils/project/`;
@@ -850,8 +885,6 @@ function requestDeleteProject() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         if (id_modal !== null) {
-            requestVerifyAuthentication();
-
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);
@@ -875,7 +908,7 @@ function initRequest() {
                         if (isItOkayToSubmitProjectForm()) {
                             const id_create_or_update_spin = code(id_create_or_update, "_spin");
 
-                            if (id_create_or_update.innerText === "만들기") {
+                            if (id_create_or_update.innerText === "등록하기") {
                                 requestCreateProject();
                             } else if (id_create_or_update.innerText === "수정하기") {
                                 requestUpdateProject();

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from utility.msg import send_msg
@@ -14,16 +13,6 @@ from konlpy.tag import Okt
 from collections import Counter
 from bs4 import BeautifulSoup
 import base64, ast
-
-#
-# Global variables
-#
-
-NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
-NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
-GOOGLE_DRIVE_FOLDER_ID = getattr(
-    settings, "GOOGLE_DRIVE_FOLDER_ID", "GOOGLE_DRIVE_FOLDER_ID"
-)
 
 #
 # Sub functions

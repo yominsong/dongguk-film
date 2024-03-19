@@ -4,18 +4,14 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test, set_headers, chat_gpt, short_io
+from utility.utils import reg_test, set_headers, chat_gpt, short_io, notion
 import requests
 
 #
 # Global variables
 #
 
-NOTION_SECRET = getattr(settings, "NOTION_SECRET", "NOTION_SECRET")
-NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", "NOTION_DB_ID")
 SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
-SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
-SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
 
 global need_www
 need_www = False
@@ -121,24 +117,20 @@ def is_listed(target_url: str):
     if has_www(target_url):
         target_url = target_url[4:]
 
-    url = (
-        f"https://api.notion.com/v1/databases/{NOTION_DB_ID['dflink-allowlist']}/query"
-    )
-    payload = {
+    data = {
+        "db_name": "dflink-allowlist",
         "filter": {
             "and": [
                 {"property": "URL", "rich_text": {"contains": target_url}},
                 {"property": "Validation", "rich_text": {"contains": "🟢"}},
             ]
-        }
+        },
     }
-    notion_response = requests.post(
-        url, json=payload, headers=set_headers("NOTION")
-    ).json()
+
+    url_list = notion("query", "db", data=data)
 
     try:
-        listed_url = notion_response["results"][0]["properties"]["URL"]["url"]
-        result = True if target_url in listed_url else False
+        result = True if target_url in url_list else False
     except:
         result = False
 

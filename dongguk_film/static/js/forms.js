@@ -178,9 +178,9 @@ function initValidation(array, button) {
 function isValid(input) {
     return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
 }
-
+let filteredInputs = [];
 function isItOkayToSubmitForm() {
-    let filteredInputs = [];
+    // let filteredInputs = [];
 
     Array.from(class_radios).forEach(radio => {
         let idx = inputs.indexOf(radio);
@@ -413,6 +413,15 @@ function controlError(input) {
         };
     };
 
+    // alt-select
+    if (input.classList.contains("alt-select")) {
+        if (input.value === "") {
+            displayError(true, input, "unselected");
+        } else {
+            return false;
+        };
+    }
+
     // alt-calendar
     if (input.classList.contains("alt-calendar")) {
         if (input.value.length === 0) {
@@ -441,19 +450,6 @@ function controlError(input) {
             displayError(true, input, "insufficient");
         } else if (input.value.indexOf("-") !== 3 && input.value.lastIndexOf("-") !== 8) {
             displayError(true, input, "invalid");
-        } else {
-            return false;
-        };
-    };
-
-    // film-title
-    if (input.classList.contains("film-title")) {
-        if (input.value.length === 0) {
-            displayError(true, input, "empty");
-        } else if (!(input.value.startsWith("<") && input.value.endsWith(">"))) {
-            displayError(true, input, "no parentheses");
-        } else if (input.value.length < 4) {
-            displayError(true, input, "insufficient");
         } else {
             return false;
         };
@@ -532,6 +528,19 @@ function controlError(input) {
         if (input.value.length === 0) {
             displayError(true, input, "empty");
         } else if (input.value.length < 2) {
+            displayError(true, input, "insufficient");
+        } else {
+            return false;
+        };
+    };
+
+    // text (film title)
+    if (lowercaseId(input).indexOf("title") !== -1 && input.classList.contains("class-film")) {
+        if (input.value.length === 0) {
+            displayError(true, input, "empty");
+        } else if (!(input.value.startsWith("<") && input.value.endsWith(">"))) {
+            displayError(true, input, "no parentheses");
+        } else if (input.value.length < 4) {
             displayError(true, input, "insufficient");
         } else {
             return false;
@@ -640,6 +649,13 @@ function displayError(bool, input, errorType = null) {
             });
         }
 
+        // alt-select
+        else if (input.classList.contains("alt-select")) {
+            const select = document.getElementById(`id_select_${input.id.replace("id_", "")}`);
+
+            console.log(select + "스타일 변화 주기");
+        }
+
         // textarea (CKEditor)
         else if (input.type === "textarea" && input.id === "id_content") {
             setTimeout(() => {
@@ -732,6 +748,13 @@ function displayError(bool, input, errorType = null) {
                     input.classList.remove("border-flamingo-300");
                 };
             });
+        }
+
+        // alt-select
+        else if (input.classList.contains("alt-select")) {
+            const select = document.getElementById(`id_select_${input.id.replace("id_", "")}`);
+
+            console.log(select + "스타일 초기화하기");
         }
 
         // textarea (CKEditor)

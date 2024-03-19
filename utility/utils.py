@@ -407,6 +407,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "up_to": fields["Up to"],
                         "max": fields["Max"],
                         "in_a_nutshell": fields["In a nutshell"],
+                        "project_connection": fields.get("Project connection", False),
                     }
 
                     record_list.append(purpose)
@@ -450,24 +451,6 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     }
 
                     record_list.append(collection)
-            except:
-                pass
-        
-        elif table_name == "project-purpose":
-            try:
-                for record in records:
-                    fields = record["fields"]
-
-                    purpose = {
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
-                        "in_english": fields["In English"],
-                        "validation": fields["Validation"],
-                        "equipment_purpose_priority": fields["Equipment Purpose priority"],
-                    }
-
-                    record_list.append(purpose)
             except:
                 pass
 
@@ -600,12 +583,12 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         .get("plain_text", None)
                     )
 
-                    purpose_priority = [item for item in purpose_list if item["priority"] in purpose][0][
-                        "priority"
-                    ]
-                    purpose_keyword = [item for item in purpose_list if item["priority"] in purpose][0][
-                        "keyword"
-                    ]
+                    purpose_priority = [
+                        item for item in purpose_list if item["priority"] in purpose
+                    ][0]["priority"]
+                    purpose_keyword = [
+                        item for item in purpose_list if item["priority"] in purpose
+                    ][0]["keyword"]
 
                     title = properties["Title"]["title"][0]["plain_text"]
                     user = str(properties["User"]["number"])
@@ -630,6 +613,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     staff_list = ast.literal_eval(staff) if staff else None
 
                     director_list = []
+                    director_name_list = []
                     producer_list = []
                     producer_name_list = []
                     producer_student_id_list = []
@@ -651,6 +635,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         for priority in staff["position_priority"]:
                             if priority == "A01":  # A01: 연출
                                 director_list.append(staff)
+                                director_name_list.append(staff["name"])
 
                             if priority == "B01":  # B01: 제작
                                 producer_list.append(staff)
@@ -659,11 +644,29 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
                     project["staff"] = staff_list
                     project["director"] = director_list
+                    project["director_name"] = director_name_list
                     project["producer"] = producer_list
                     project["producer_name"] = producer_name_list
                     project["producer_student_id"] = producer_student_id_list
 
                     item_list.append(project)
+            except:
+                pass
+
+        elif db_name == "dflink-allowlist":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
+                    url = properties["URL"]["url"]
+
+                    item_list.append(url)
             except:
                 pass
 

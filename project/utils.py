@@ -23,26 +23,11 @@ JSON_PATH = (
 
 
 def update_project_policy(request):
-    target_list = ["purpose", "position"]
+    target_list = ["position"]
     result_list = []
 
     for target in target_list:
-        if target == "purpose":
-            data = {
-                "table_name": "project-purpose",
-                "params": {
-                    "view": "Grid view",
-                    "fields": [
-                        "Name",
-                        "Priority",
-                        "Keyword",
-                        "In English",
-                        "Validation",
-                        "Equipment Purpose priority",
-                    ],
-                },
-            }
-        elif target == "position":
+        if target == "position":
             data = {
                 "table_name": "project-position",
                 "params": {

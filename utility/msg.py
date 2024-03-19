@@ -157,7 +157,7 @@ def send_msg(request, type: str, channel: str, extra=None):
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
         for i, item in enumerate(extra[1]["purpose"]):
-            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
+            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']} (프로젝트 연결성 {item['project_connection']})"
             sub_content += new_line
         sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개 정책"
         main_content = {

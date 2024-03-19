@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.http import HttpResponse
-from utility.utils import airtable
+from django.http import JsonResponse, HttpResponse
+from django.contrib.auth.decorators import login_required
+from utility.utils import airtable, notion
 from utility.msg import send_msg
 import json
 
@@ -82,3 +83,18 @@ def get_equipment_policy(policy: str):
         f.close()
 
     return item_list
+
+
+#
+# Main functions
+#
+
+
+@login_required
+def equipment(request):
+    id = request.POST.get("id")
+    equipment_purpose_priority = request.POST.get("equipment_purpose_priority")
+
+    status = None
+
+    # return JsonResponse(response)

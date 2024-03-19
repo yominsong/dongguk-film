@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
+from equipment.utils import get_equipment_policy
 from .utils import get_project_policy
 from utility.img import get_hero_img
 from utility.utils import notion
@@ -13,8 +14,12 @@ import random
 def project(request):
     query_string = ""
     image_list = get_hero_img("project")
-    purpose_list = get_project_policy("purpose")
+    purpose_list = get_equipment_policy("purpose")
     position_list = get_project_policy("position")
+
+    for purpose in purpose_list:
+        if purpose["project_connection"] == False:
+            purpose_list.remove(purpose)
 
     # Notion
     project_list = notion("query", "db", data={"db_name": "project"})

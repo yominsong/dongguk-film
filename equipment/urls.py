@@ -9,4 +9,5 @@ urlpatterns = [
     path("<str:collection_id>/", views.equipment_detail, name="equipment_detail"),
     # utils.py
     path("utils/update-equipment-policy/", utils.update_equipment_policy, name="update_equipment_policy"),
+    path("utils/equipment/", utils.equipment),
 ]

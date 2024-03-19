@@ -6,6 +6,7 @@ const originLocation = location.origin;
 
 let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
+let isAuthenticated = false;
 
 //
 // Sub functions
@@ -315,45 +316,10 @@ function handleAjaxCallback(response) {
     // requestFindUser()
     else if (resID === "find_user") {
         if (resResult.status === "DONE") {
-            isUserFound = true;
-
-            resResult.found_user_list.forEach(newlyFoundUser => {
-                const alreadyFoundUsers = id_found_user_list.querySelectorAll("li");
-
-                alreadyFoundUsers.forEach(alreadyFoundUser => {
-                    if (alreadyFoundUser.dataset.name !== newlyFoundUser.name) {
-                        id_found_user_list.removeChild(alreadyFoundUser);
-                    };
-                });
-
-                if (!document.getElementById(`id_found_user_${newlyFoundUser.pk}`)) {
-                    const newlyFoundUserElement = document.createElement("li");
-                    const data_user = newlyFoundUserElement.dataset;
-                    
-                    data_user.pk = newlyFoundUser.pk;
-                    data_user.name = newlyFoundUser.name;
-                    data_user.studentId = newlyFoundUser.student_id;
-                    data_user.avatarUrl = newlyFoundUser.avatar_url;
-
-                    newlyFoundUserElement.id = `id_found_user_${data_user.pk}`;
-                    newlyFoundUserElement.classList.add("class-user", "relative", "outline-none", "cursor-default", "select-none", "py-2", "pl-3", "text-gray-900", "focus:bg-flamingo-600", "focus:text-white", "hover:bg-flamingo-600", "hover:text-white");
-                    newlyFoundUserElement.setAttribute("role", "option");
-
-                    newlyFoundUserElement.innerHTML = `
-                        <div class="flex items-center">
-                            <img src="${data_user.avatarUrl}" alt="${data_user.name}님의 프로필 사진" class="h-6 w-6 flex-shrink-0 rounded-full">
-                            <span class="font-semibold ml-3 truncate">${data_user.name}</span>
-                            <span>&nbsp(${data_user.studentId})</span>
-                        </div>
-                    `;
-
-                    id_found_user_list.appendChild(newlyFoundUserElement);
-                };
-            });
-
+            initFoundUserList(resResult);
             console.log("based-top: " + isUserFound);
         } else if (resResult.status === "FAIL") {
-            isUserFound = false;
+            initFoundUserList();
         };
     }
 
@@ -586,3 +552,15 @@ function handleAjaxCallback(response) {
         });
     };
 }
+
+function requestVerifyAuthentication() {
+    request.url = `${originLocation}/users/utils/verify-authentication/`;
+    request.type = "POST";
+    request.data = { id: "verify_authentication" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+requestVerifyAuthentication();

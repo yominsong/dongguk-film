@@ -34,7 +34,7 @@
                             @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }">
-                        <span class="sr-only">프로젝트 <span class="class-keyword">만들기</span> 화면 닫기</span>
+                        <span class="sr-only">프로젝트 <span class="class-keyword">등록하기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -50,7 +50,7 @@
                         <div class="mt-0 text-left">
                             <h3 id="id_modal_title"
                                 class="text-base font-semibold leading-6 text-gray-900">
-                                프로젝트 <span class="class-keyword">만들기</span>
+                                프로젝트 <span class="class-keyword">등록하기</span>
                             </h3>
                         </div>
                     </div>
@@ -60,11 +60,11 @@
                                 <input id="id_page_id" value="" hidden>
                                 <div>
                                     <label for="id_title"
-                                           class="flex-1 text-sm font-medium leading-6 text-gray-900">제목</label>
+                                           class="flex-1 text-sm font-medium leading-6 text-gray-900">작품 제목</label>
                                     <div class="mt-2">
                                         <input type="text"
                                                id="id_title"
-                                               class="class-first film-title space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm leading-6 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                               class="class-first class-film space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm leading-6 df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
                                                placeholder=""
                                                required>
                                     </div>
@@ -72,9 +72,9 @@
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
                                 </div>
                                 <input id="id_title_original" value="" hidden>
-                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '목적을 선택하세요.', 'in_english': '' },
+                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '유형을 선택하세요.', 'in_a_nutshell': '' },
                                     {% for purpose in purpose_list %}
-                                        { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'in_english':'{{ purpose.in_english }}' }
+                                        { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'in_a_nutshell':'{{ purpose.in_a_nutshell }}' }
                                         {% if not forloop.last %},&nbsp;{% endif %}
                                     {% endfor %}
                                     ] })" x-init="init()">
@@ -82,7 +82,7 @@
                                         <label id="id_purpose_label"
                                             for="id_purpose"
                                             class="block text-sm font-medium leading-6 text-gray-900"
-                                            @click="$refs.button.focus()">목적</label>
+                                            @click="$refs.button.focus()">유형</label>
                                     </div>
                                     <div class="relative mt-2">
                                         <button id="id_select_purpose"
@@ -130,7 +130,7 @@
                                                 class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hidden"
                                                 role="option"
                                                 @click="choose(0)">
-                                                <span class="font-semibold block mr-4 truncate">목적을 선택하세요.</span>
+                                                <span class="font-semibold block mr-4 truncate">유형을 선택하세요.</span>
                                             </li>
                                             {% for purpose in purpose_list %}
                                                 <li x-state:on="Highlighted"
@@ -150,7 +150,7 @@
                                                     <span x-state:on="Highlighted"
                                                         x-state:off="Not Highlighted"
                                                         class="font-normal block mt-1 mr-2 text-gray-500"
-                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ purpose.in_english }}</span>
+                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">기자재 {{ purpose.in_a_nutshell }}</span>
                                                     <span x-state:on="Highlighted"
                                                         x-state:off="Not Highlighted"
                                                         class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
@@ -377,8 +377,8 @@
                                                 <h3 class="text-sm font-medium text-flamingo-800">프로젝트 관련 안내사항</h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
-                                                        <li>프로젝트 생성 및 수정 권한은 제작자(Producer)에게 있어요.</li>
-                                                        <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 생성 및 수정 내역을 조회할 수 있어요.</li>
+                                                        <li>프로젝트 등록 및 수정 권한은 제작자(Producer)에게 있어요.</li>
+                                                        <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 프로젝트 등록 및 수정 내역을 조회할 수 있어요.</li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -411,7 +411,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span class="class-keyword">만들기</span>
+                            <span class="class-keyword">등록하기</span>
                         </button>
                         <button type="button"
                                 id="id_delete"

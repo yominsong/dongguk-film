@@ -6,8 +6,10 @@ const id_modal = document.getElementById("id_modal");
 const id_modal_base = code(id_modal, "_base");
 const id_modal_filter = code(id_modal, "_filter");
 const id_category = document.getElementById("id_category");
+const id_initialize_purpose = document.getElementById("id_initialize_purpose");
 const id_purpose = document.getElementById("id_purpose");
 const id_period = document.getElementById("id_period");
+const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
 const id_url = document.getElementById("id_url");
@@ -41,18 +43,33 @@ function adjustModalWidth() {
     } else if (id_detail !== null) {  // equipment_detail.html
         widthBase = id_detail;
     };
-    
-    // As a reminder, the width of each category button is adjusted by the Tailwind CSS
-    if (this.window.innerWidth >= 640) {
-        id_modal_base.style.setProperty("width", "512px", "important");
-    } else if (this.window.innerWidth < 640) {
-        id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+
+    if (id_modal_base !== null) {
+        const id_modal_cart = code(id_modal, "_cart");
+        const id_modal_share = code(id_modal, "_share");
+
+        if (id_modal_cart.hidden === false || id_modal_share.hidden === false) {
+            id_modal_base.style = "";
+        } else {
+            // As a reminder, the width of each category button is adjusted by the Tailwind CSS
+            if (this.window.innerWidth >= 640) {
+                id_modal_base.style.setProperty("width", "512px", "important");
+            } else if (this.window.innerWidth < 640) {
+                id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+            };
+        };
     };
 }
 
 function resizeWidthOfModalAndForm() {
-    adjustModalWidth();
+    const id_modal_cart = code(id_modal, "_cart");
+    const id_modal_share = code(id_modal, "_share");
+    
     window.addEventListener("resize", adjustModalWidth);
+
+    if (id_modal_cart.hidden === false || id_modal_share.hidden === false) {
+        id_modal_base.style = "";
+    };
 }
 
 function adjustDetailHeight() {
@@ -109,8 +126,6 @@ function isItOkayToCloseModal() {
 }
 
 function executePurposeAction(selectedPurpose = null) {
-    const id_initialize_purpose = document.getElementById("id_initialize_purpose");
-
     displayError(false, id_period);
 
     if (selectedPurpose) {
@@ -123,6 +138,7 @@ function executePurposeAction(selectedPurpose = null) {
         data_purpose.max = selectedPurpose.max;
         data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
         data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
+        id_period_calendar.classList.replace("bg-gray-100", "bg-white");
     } else {
         id_purpose.value = null;
         id_initialize_purpose.hidden = true;
@@ -133,6 +149,7 @@ function executePurposeAction(selectedPurpose = null) {
         data_purpose.max = "";
         data_period.startDateMin = "";
         data_period.startDateMax = "";
+        id_period_calendar.classList.replace("bg-white", "bg-gray-100");
     };
 
     id_period.value = "";
@@ -250,7 +267,6 @@ function initCalendar() {
 
     function updateCalendar() {
         const id_period_current_month = code(id_period, "_current_month");
-        const id_period_calendar = code(id_period, "_calendar");
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -477,7 +493,7 @@ function initForm() {
     };
 
     id_purpose.value = null;
-    id_purpose_placeholder.click();
+    id_initialize_purpose.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
     if (urlParams.get("purposePriority") !== null &&
@@ -502,15 +518,14 @@ function updateForm(action) {
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
-    // action: all
+    // First action: all
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    resizeWidthOfModalAndForm();
     toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
-    // action: filter
+    // Middle action: filter
     if (action === "filter") {
         id_modal_filter.hidden = false;
         id_modal_cart.hidden = true;
@@ -524,11 +539,11 @@ function updateForm(action) {
         id_filter.classList.replace("hidden", "inline-flex");
     }
 
-    // action: cart
+    // Middle action: cart
     else if (action === "cart") {
-        if (id_modal_filter !== null) { id_modal_filter.hidden = true };
-        if (id_modal_share !== null) { id_modal_share.hidden = true };
+        id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
+        id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "장바구니";
@@ -537,10 +552,10 @@ function updateForm(action) {
         id_filter.classList.replace("inline-flex", "hidden");
     }
 
-    // action: share
+    // Middle action: share
     else if (action === "share") {
-        if (id_modal_filter !== null) { id_modal_filter.hidden = true };
-        if (id_modal_cart !== null) { id_modal_cart.hidden = true };
+        id_modal_filter.hidden = true;
+        id_modal_cart.hidden = true;
         id_modal_share.hidden = false;
 
         class_keywords.forEach(keyword => {
@@ -552,6 +567,9 @@ function updateForm(action) {
         id_copy_url_descr.hidden = true;
         id_filter.classList.replace("inline-flex", "hidden");
     };
+    
+    // Last action: all
+    resizeWidthOfModalAndForm();
 }
 
 function initModal() {

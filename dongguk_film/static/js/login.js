@@ -38,12 +38,12 @@ function displayLoginRequestMsg() {
     const loginRequestMsg = urlParams.get("loginRequestMsg");
 
     if (loginRequestMsg) {
-        if (loginRequestMsg === "createDflink") {
+        if (loginRequestMsg === "createProject") {
+            id_login_request_msg.innerText = "프로젝트를 새로 만들려면";
+        } else if (loginRequestMsg === "createDflink") {
             id_login_request_msg.innerText = "동영링크를 새로 만들려면";
         } else if (loginRequestMsg === "createNotice") {
             id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
-        } else if (loginRequestMsg === "createProject") {
-            id_login_request_msg.innerText = "프로젝트를 새로 만들려면";
         };
     };
 }
