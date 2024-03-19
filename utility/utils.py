@@ -561,9 +561,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
             item_list = []
 
             JSON_PATH = (
-                "dongguk_film/static/json/project.json"
+                "dongguk_film/static/json/equipment.json"
                 if settings.DEBUG
-                else "dongguk_film/staticfiles/json/project.json"
+                else "dongguk_film/staticfiles/json/equipment.json"
             )
 
             with open(JSON_PATH, "r") as f:
