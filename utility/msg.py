@@ -170,14 +170,10 @@ def send_msg(request, type: str, channel: str, extra=None):
             "description": sub_content,
         }
     
-    # type: "UPR"
+    # type: "UPP"
     elif type == "UPP":
         sub_content = ""
-        for i, item in enumerate(extra[0]["purpose"]):
-            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: Equipment Purpose priority {item['equipment_purpose_priority']}"
-            new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        for i, item in enumerate(extra[1]["position"]):
+        for i, item in enumerate(extra[0]["position"]):
             new_line = f"\nㆍ[담당] {item['function']} | {item['keyword']}{'(' + item['note'] + ')' if item['note'] is not None else ''} {item['in_english']}"
             new_line.replace("\n", "") if i == 0 else None
             sub_content += new_line
