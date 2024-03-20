@@ -17,9 +17,9 @@ def project(request):
     purpose_list = get_equipment_policy("purpose")
     position_list = get_project_policy("position")
 
-    for purpose in purpose_list:
-        if purpose["project_connection"] == False:
-            purpose_list.remove(purpose)
+    # for purpose in purpose_list:
+    #     if purpose["project_connection"] == False:
+    #         purpose_list.remove(purpose)
 
     # Notion
     project_list = notion("query", "db", data={"db_name": "project"})
