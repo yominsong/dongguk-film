@@ -46,6 +46,7 @@ def update_equipment_policy(request):
                         "At least",
                         "Max",
                         "In a nutshell",
+                        "For instructor"
                     ],
                 },
             }

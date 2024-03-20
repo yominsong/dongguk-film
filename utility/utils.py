@@ -407,6 +407,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "up_to": fields["Up to"],
                         "max": fields["Max"],
                         "in_a_nutshell": fields["In a nutshell"],
+                        "for_instructor": fields.get("For instructor", False),
                     }
 
                     record_list.append(purpose)
