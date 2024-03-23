@@ -97,14 +97,20 @@ def update_hero_img(request):
 #
 
 
-def convert_datetime(notion_datetime: str):
+def convert_datetime(datetime_str: str):
     """
-    - notion_datetime | `str`: DateTime string from Notion
+    - datetime_str | `str`: DateTime string
     """
 
-    datetime_utc = datetime.datetime.strptime(
-        notion_datetime, "%Y-%m-%dT%H:%M:%S.%fZ"
-    ).replace(tzinfo=pytz.utc)
+    try:
+        datetime_utc = datetime.datetime.strptime(
+            datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ"
+        ).replace(tzinfo=pytz.utc)
+    except:
+        datetime_utc = datetime.datetime.strptime(
+            datetime_str, "%Y-%m-%d"
+        ).replace(tzinfo=pytz.utc)
+
     kor_tz = pytz.timezone("Asia/Seoul")
     datetime_kor = datetime_utc.astimezone(kor_tz)
 
@@ -345,9 +351,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             params.get("record_id", None),
         )
 
-        if table_name == "equipment-collection":
-            fields = record["fields"]
+        fields = record["fields"]
 
+        if table_name == "equipment-collection":
             record = {
                 "record_id": record["id"],
                 "collection_id": fields["ID"],
@@ -364,6 +370,49 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "brand": fields["Brand name"][0],
                 "model": fields["Model"],
                 "item_purpose": sorted(set(fields["Item purpose"].split(", "))),
+            }
+
+            item_record_id_list = fields["Item"]
+            item_list = []
+
+            for record_id in item_record_id_list:
+                data = {
+                    "table_name": "equipment-item",
+                    "params": {
+                        "record_id": record_id,
+                    },
+                }
+
+                item = airtable("get", "record", data=data)
+                item_list.append(item)
+
+            record["item"] = item_list
+
+            # item_purpose_list = fields["Item purpose"].split(", ")
+            # item_purpose_count = {}
+
+            # for item_purpose in item_purpose_list:
+            #     if item_purpose in item_purpose_count:
+            #         item_purpose_count[item_purpose] += 1
+            #     else:
+            #         item_purpose_count[item_purpose] = 1
+
+            # record["item_purpose"] = sorted(set(item_purpose_list))
+            # record["item_purpose_count"] = {
+            #     item: count for item, count in item_purpose_count.items() if count > 1
+            # }
+
+        elif table_name == "equipment-item":
+            record = {
+                "record_id": record["id"],
+                "item_id": fields["ID"],
+                "serial_number": fields["Serial number"],
+                "purpose": fields["Purpose name"],
+                "project": fields.get("Project", None),
+                "start_date": fields.get("Start date", None),
+                "end_date": fields.get("End date", None),
+                "status": fields["Status"],
+                "validation": fields["Validation"],
             }
 
         result = record

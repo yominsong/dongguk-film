@@ -60,47 +60,69 @@
                 </div>
                 <div class="flex justify-end gap-2">
                     {% if category.keyword != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">범주:</span>
-                        {{ category.keyword }}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">범주:</span>
+                            {{ category.keyword }}
+                        </span>
                     {% endif %}
                     {% if purpose.keyword != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">대여 목적:</span>
-                        {{ purpose.keyword }}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">대여 목적:</span>
+                            {{ purpose.keyword }}
+                        </span>
                     {% endif %}
                     {% if period.duration != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">대여 기간:</span>
-                        {% if period.duration == 0 %}
-                            당일
-                        {% else %}
-                            {{ period.duration }}일
-                        {% endif %}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">대여 기간:</span>
+                            {% if period.duration == 0 %}
+                                당일
+                            {% else %}
+                                {{ period.duration }}일
+                            {% endif %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-            <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                 tabindex="0">
-                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                <div class="flex justify-start items-center gap-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="1.7"
-                         stroke="currentColor"
-                         class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                    </svg>
-                    장바구니
+            {% if user.is_authenticated %}
+                <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                     tabindex="0">
+                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                    <div class="flex justify-start items-center gap-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.7"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        장바구니
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    </div>
                 </div>
-                <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
-                </div>
-            </div>
+            {% else %}
+                <a href="{% url 'account_login' %}"
+                   class="login-button flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                   data-login-request-msg="createCart">
+                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                    <div class="flex justify-start items-center gap-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.7"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        장바구니
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    </div>
+                </a>
+            {% endif %}
         </div>
     </div>
     <!-- Search bar -->
@@ -110,7 +132,7 @@
                 <div class="flex justify-between items-center">
                     <label for="id_query"
                            class="flex text-sm font-medium leading-6 text-gray-500">
-                        총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 {{ category.keyword }} 검색됨
+                        총&nbsp<span class="font-semibold">{{ equipment_collection_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 {{ category.keyword }} 검색됨
                     </label>
                     <div id="id_initialize_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
@@ -129,7 +151,7 @@
                 </div>
             {% else %}
                 <label for="id_query" class="text-sm font-medium leading-6 text-gray-500">
-                    총&nbsp<span class="font-semibold">{{ equipment_count }}개</span>의 {{ category.keyword }} 검색
+                    총&nbsp<span class="font-semibold">{{ equipment_collection_count }}개</span>의 {{ category.keyword }} 검색
                 </label>
             {% endif %}
             <div class="mt-2 flex rounded-md shadow-sm">
@@ -174,23 +196,23 @@
                      class="mx-auto max-w-2xl lg:max-w-7xl">
                     <h2 id="products-heading" class="sr-only">기자재 목록</h2>
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                        {% for equipment in page_value %}
-                            <a href="{% url 'equipment:equipment_detail' equipment.collection_id %}"
+                        {% for collection in page_value %}
+                            <a href="{% url 'equipment:equipment_detail' collection.collection_id %}"
                                class="class-detail rounded-md group focus:df-focus-ring-offset-white-2"
                                alt="">
                                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
-                                    <img src="{{ equipment.thumbnail }}"
+                                    <img src="{{ collection.thumbnail }}"
                                          width=""
                                          height=""
                                          alt=""
                                          class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
                                 </div>
-                                <h3 class="mt-4 text-sm text-gray-500">{{ equipment.brand }}</h3>
-                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ equipment.model }}</p>
+                                <h3 class="mt-4 text-sm text-gray-500">{{ collection.brand }}</h3>
+                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
                                 <div class="inline-flex mt-2 gap-2">
-                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.collection_id }}</span>
-                                    {% if equipment.subcategory != None %}
-                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ equipment.subcategory }}</span>
+                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.collection_id }}</span>
+                                    {% if collection.subcategory != None %}
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory }}</span>
                                     {% endif %}
                                 </div>
                             </a>

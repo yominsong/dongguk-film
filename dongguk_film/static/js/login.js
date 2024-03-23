@@ -38,8 +38,10 @@ function displayLoginRequestMsg() {
     const loginRequestMsg = urlParams.get("loginRequestMsg");
 
     if (loginRequestMsg) {
-        if (loginRequestMsg === "createProject") {
-            id_login_request_msg.innerText = "프로젝트를 새로 만들려면";
+        if (loginRequestMsg === "createCart") {
+            id_login_request_msg.innerText = "기자재를 대여하려면";
+        } else if (loginRequestMsg === "createProject") {
+            id_login_request_msg.innerText = "프로젝트를 새로 등록하려면";
         } else if (loginRequestMsg === "createDflink") {
             id_login_request_msg.innerText = "동영링크를 새로 만들려면";
         } else if (loginRequestMsg === "createNotice") {

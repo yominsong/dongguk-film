@@ -45,10 +45,9 @@ function adjustModalWidth() {
     };
 
     if (id_modal_base !== null) {
-        const id_modal_cart = code(id_modal, "_cart");
         const id_modal_share = code(id_modal, "_share");
 
-        if (id_modal_cart.hidden === false || id_modal_share.hidden === false) {
+        if (id_modal_share.hidden === false) {
             id_modal_base.style = "";
         } else {
             // As a reminder, the width of each category button is adjusted by the Tailwind CSS
@@ -62,12 +61,12 @@ function adjustModalWidth() {
 }
 
 function resizeWidthOfModalAndForm() {
-    const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
-    
+
+    adjustModalWidth();
     window.addEventListener("resize", adjustModalWidth);
 
-    if (id_modal_cart.hidden === false || id_modal_share.hidden === false) {
+    if (id_modal_share.hidden === false) {
         id_modal_base.style = "";
     };
 }
@@ -567,7 +566,7 @@ function updateForm(action) {
         id_copy_url_descr.hidden = true;
         id_filter.classList.replace("inline-flex", "hidden");
     };
-    
+
     // Last action: all
     resizeWidthOfModalAndForm();
 }
@@ -613,10 +612,11 @@ initModal();
 function styleAccordion() {
     if (id_detail !== null) {
         const id_detail_purpose = code(id_detail, "_purpose");
+        const id_detail_status = code(id_detail, "_status");
         const id_detail_limit = code(id_detail, "_limit");
         const id_detail_precaution = code(id_detail, "_precaution");
 
-        [id_detail_purpose, id_detail_limit, id_detail_precaution].forEach(accordion => {
+        [id_detail_purpose, id_detail_status, id_detail_limit, id_detail_precaution].forEach(accordion => {
             accordion.addEventListener("keydown", () => {
                 accordion.classList.add("focus:df-focus-ring-offset-white");
             });
@@ -636,6 +636,14 @@ function styleAccordion() {
                 accordion.classList.remove("focus:df-focus-ring-offset-white");
             });
         });
+
+        const id_detail_purpose_alert = code(id_detail_purpose, "_alert");
+
+        if (urlParams.has("period")) {
+            id_detail_purpose_alert.hidden = true;
+        } else {
+            id_detail_purpose_alert.hidden = false;
+        };
     };
 }
 

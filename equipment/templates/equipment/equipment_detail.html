@@ -60,47 +60,69 @@
                 </div>
                 <div class="flex justify-end gap-2">
                     {% if category.keyword != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">범주:</span>
-                        {{ category.keyword }}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">범주:</span>
+                            {{ category.keyword }}
+                        </span>
                     {% endif %}
                     {% if purpose.keyword != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">대여 목적:</span>
-                        {{ purpose.keyword }}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">대여 목적:</span>
+                            {{ purpose.keyword }}
+                        </span>
                     {% endif %}
                     {% if period.duration != None %}
-                    <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                        <span class="sr-only">대여 기간:</span>
-                        {% if period.duration == 0 %}
-                            당일
-                        {% else %}
-                            {{ period.duration }}일
-                        {% endif %}
-                    </span>
+                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                            <span class="sr-only">대여 기간:</span>
+                            {% if period.duration == 0 %}
+                                당일
+                            {% else %}
+                                {{ period.duration }}일
+                            {% endif %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-            <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                 tabindex="0">
-                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                <div class="flex justify-start items-center gap-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 24 24"
-                         stroke-width="1.7"
-                         stroke="currentColor"
-                         class="w-5 h-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                    </svg>
-                    장바구니
+            {% if user.is_authenticated %}
+                <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                     tabindex="0">
+                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                    <div class="flex justify-start items-center gap-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.7"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        장바구니
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    </div>
                 </div>
-                <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">0개</span>
-                </div>
-            </div>
+            {% else %}
+                <a href="{% url 'account_login' %}"
+                   class="login-button flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                   data-login-request-msg="createCart">
+                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                    <div class="flex justify-start items-center gap-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke-width="1.7"
+                             stroke="currentColor"
+                             class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                        </svg>
+                        장바구니
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    </div>
+                </a>
+            {% endif %}
         </div>
     </div>
     <!-- Detail -->
@@ -250,36 +272,43 @@
                                     </span>
                                 </button>
                             </h3>
-                            <div class="pb-6"
-                                 id="id_detail_purpose_content"
+                            <div id="id_detail_purpose_content"
+                                 class="pb-6"
                                  x-show="open"
                                  style="display: none">
-                                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3"
+                                    role="list">
                                     {% for purpose in purpose_list %}
-                                        <label class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} df-ring-inset-flamingo {% else %} df-ring-inset-gray {% endif %} ">
+                                        <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} {% if purpose.available_stock_length != 0 %} df-ring-inset-flamingo {% else %} df-ring-inset-dark-gray {% endif %} {% else %} df-ring-inset-gray {% endif %}">
                                             <span class="flex flex-col space-y-1">
                                                 <div class="flex items-center">
                                                     <span class="block text-sm font-medium text-gray-900">{{ purpose.keyword }}</span>
                                                 </div>
                                                 <div class="flex items-center text-sm text-gray-500">
-                                                    {% if purpose.available %}
-                                                        대여 가능
+                                                    {% if purpose.permitted %}
+                                                        {% if not "period" in request.get_full_path %}
+                                                            대여 허용
+                                                        {% elif purpose.available_stock_length != 0 %}
+                                                            재고 있음
+                                                        {% else %}
+                                                            재고 없음
+                                                        {% endif %}
                                                     {% else %}
-                                                        대여 불가
+                                                        대여 제한
                                                     {% endif %}
                                                 </div>
                                             </span>
                                             {% if purpose.priority == purpose_priority %}
                                                 <div class="flex-none">
                                                     <span class="sr-only">선택된 대여 목적</span>
-                                                    <svg class="h-5 w-5 ml-1 text-flamingo"
-                                                        viewBox="0 0 16 20"
-                                                        fill="currentColor"
-                                                        aria-hidden="true">
+                                                    <svg class="h-5 w-5 ml-1 {% if purpose.available_stock_length != 0 %} text-flamingo {% else %} text-gray-600 {% endif %}"
+                                                         viewBox="0 0 16 20"
+                                                         fill="currentColor"
+                                                         aria-hidden="true">
                                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                                                     </svg>
                                                 </div>
-                                            {% elif purpose.available %}
+                                            {% elif purpose.permitted and purpose.available_stock_length != 0 %}
                                                 <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
                                                     <div class="h-2 w-2 rounded-full bg-current"></div>
                                                 </div>
@@ -288,12 +317,110 @@
                                                     <div class="h-2 w-2 rounded-full bg-current"></div>
                                                 </div>
                                             {% endif %}
-                                        </label>
+                                        </li>
                                     {% endfor %}
+                                </ul>
+                                <div id="id_detail_purpose_alert" class="rounded-md bg-yellow-50 p-4 mt-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-yellow-400"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">
+                                                <span class="underline cursor-pointer rounded-md hover:text-flamingo-800 focus:outline-none focus:df-focus-ring-offset-yellow"
+                                                      onclick="document.querySelector('.class-filter').click(); document.querySelector('#id_select_purpose').click();"
+                                                      onkeydown="if(event.key === 'Enter' || event.key === ' ') { document.querySelector('.class-filter').click(); document.querySelector('#id_select_purpose').click(); }"
+                                                      tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하면 재고 유무를 확인할 수 있어요.
+                                            </h3>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div x-data="{ open: true }">
+                        <div x-data="{ open: false }">
+                            <h3>
+                                <button id="id_detail_status"
+                                        type="button"
+                                        class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
+                                        aria-controls="id_detail_status_content"
+                                        @click="open = !open"
+                                        aria-expanded="false"
+                                        x-bind:aria-expanded="open.toString()">
+                                    <span class="text-gray-900 text-sm font-medium"
+                                          x-state:on="Open"
+                                          x-state:off="Closed"
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 현황</span>
+                                    <span class="ml-6 flex items-center">
+                                        <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'hidden': open, 'block': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                                        </svg>
+                                        <svg class="hidden h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500"
+                                             x-state:on="Open"
+                                             x-state:off="Closed"
+                                             :class="{ 'block': open, 'hidden': !(open) }"
+                                             fill="none"
+                                             viewBox="0 0 24 24"
+                                             stroke-width="1.5"
+                                             stroke="currentColor"
+                                             aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+                            <div id="id_detail_status_content"
+                                 class="pb-6"
+                                 x-show="open"
+                                 style="display: none">
+                                <ul class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                                    {% for item in equipment.item %}
+                                    <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray">
+                                        <span class="flex flex-col space-y-1">
+                                            <div class="flex items-center">
+                                                <span class="block text-sm font-medium text-gray-900">{{ item.item_id }}</span>
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <span>
+                                                    {% if item.status == "Available" %}
+                                                        사용 가능
+                                                    {% elif item.status == "In Use" %}
+                                                        {{ item.end_date }}까지 대여 중
+                                                    {% else %}
+                                                        사용 불가
+                                                    {% endif %}
+                                                </span>
+                                                <span></span>
+                                            </div>
+                                        </span>
+                                        {% if item.status == "Available" %}
+                                            <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
+                                                <div class="h-2 w-2 rounded-full bg-current"></div>
+                                            </div>
+                                        {% else %}
+                                            <div class="flex-none ml-2 rounded-full p-1 text-gray-400 bg-gray-400/20">
+                                                <div class="h-2 w-2 rounded-full bg-current"></div>
+                                            </div>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div x-data="{ open: false }">
                             <h3>
                                 <button id="id_detail_limit"
                                         type="button"
@@ -362,7 +489,7 @@
                                     <span class="text-gray-900 text-sm font-medium"
                                           x-state:on="Open"
                                           x-state:off="Closed"
-                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">유의 사항</span>
+                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">대여 관련 안내사항</span>
                                     <span class="ml-6 flex items-center">
                                         <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
                                              x-state:on="Open"
@@ -390,9 +517,9 @@
                                 </button>
                             </h3>
                             <div id="id_detail_precaution_content" x-show="open" style="display: none">
-                                <div class="rounded-md bg-flamingo-50 p-4">
+                                <div class="rounded-md bg-gray-50 p-4">
                                     <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
-                                    <div class="text-sm text-flamingo-700">
+                                    <div class="text-sm text-gray-700">
                                         <ul role="list" class="list-disc space-y-1 pl-5">
                                             <li>개별 기자재마다 구성품 종류 및 세부 상태가 상이할 수 있어요.</li>
                                             <li>예약 확정 시 대여 기간은 연장할 수 없어요.</li>
@@ -405,11 +532,38 @@
                 </section>
                 <section aria-labelledby="options-heading">
                     <h2 id="options-heading" class="sr-only">기자재 선택</h2>
-                    <div class="mt-6 sm:mb-3">
-                        <button type="submit"
-                                class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
-                            장바구니에 담기
-                        </button>
+                    <div class="flex items-center justify-between mt-6 sm:mb-3">
+                        {% if user.is_authenticated %}
+                            <div class="mr-4">
+                                <label for="id_select_quantity_label" class="sr-only">수량</label>
+                                <select id="id_select_quantity"
+                                        class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                    <option value="0">0</option>
+                                </select>
+                            </div>
+                            <button type="submit"
+                                    class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                장바구니에 담기
+                            </button>
+                        {% else %}
+                            <div class="mr-4">
+                                <label for="id_select_quantity_label" class="sr-only">수량</label>
+                                <select id="id_select_quantity"
+                                        class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+                            <a href="{% url 'account_login' %}"
+                               class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                               data-login-request-msg="createCart">장바구니에 담기</a>
+                        {% endif %}
                     </div>
                 </section>
             </div>

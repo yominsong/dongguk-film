@@ -8,6 +8,10 @@
         @apply border-0 ring-1 ring-inset ring-gray-300
     }
 
+    .df-ring-inset-dark-gray {
+        @apply border-0 ring-1 ring-inset ring-gray-600
+    }
+
     .df-ring-inset-flamingo {
         @apply border-0 ring-1 ring-inset ring-flamingo
     }
@@ -30,5 +34,9 @@
 
     .df-focus-ring-offset-gray {
         @apply outline-none ring-2 ring-offset-2 ring-offset-gray-100 ring-flamingo
+    }
+
+    .df-focus-ring-offset-yellow {
+        @apply outline-none ring-2 ring-offset-2 ring-offset-yellow-50 ring-flamingo
     }
 }

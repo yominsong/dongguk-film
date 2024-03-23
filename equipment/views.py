@@ -1,15 +1,34 @@
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.utils import timezone
 from urllib.parse import urlencode
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
-from utility.utils import airtable
+from utility.utils import convert_datetime, airtable
 import random
 
 #
 # Sub functions
 #
+
+
+def is_query_string_valid(
+    category_priority, purpose_priority, period, category_list, purpose_list
+):
+    return (
+        (not category_priority or (bool(purpose_priority) != bool(period)))
+        or (
+            category_priority
+            not in [category["priority"] for category in category_list]
+        )
+        or (
+            bool(purpose_priority)
+            and purpose_priority
+            not in [purpose["priority"] for purpose in purpose_list]
+        )
+        or (bool(period) and is_not_two_numeric_format(period))
+    )
 
 
 def is_not_two_numeric_format(period):
@@ -22,6 +41,32 @@ def redirect_with_query_string(base_url, query_string):
     url = f"{base_url}?{urlencode(query_string)}"
 
     return redirect(url)
+
+
+def set_template_tag(
+    category_priority,
+    purpose_priority,
+    days_from_now,
+    duration,
+    category_list,
+    purpose_list,
+):
+    category_dict = {item["priority"]: item["keyword"] for item in category_list}
+    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
+
+    category = {
+        "priority": category_priority,
+        "keyword": category_dict.get(category_priority),
+    }
+
+    purpose = {
+        "priority": purpose_priority,
+        "keyword": purpose_dict.get(purpose_priority),
+    }
+
+    period = {"days_from_now": days_from_now, "duration": duration}
+
+    return category, purpose, period
 
 
 #
@@ -38,37 +83,28 @@ def equipment(request):
     purpose_list = get_equipment_policy("purpose")
 
     # Query string validation
-    if (
-        (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (
-            category_priority
-            not in [category["priority"] for category in category_list]
-        )
-        or (
-            bool(purpose_priority)
-            and purpose_priority
-            not in [purpose["priority"] for purpose in purpose_list]
-        )
-        or (bool(period) and is_not_two_numeric_format(period))
+    if is_query_string_valid(
+        category_priority, purpose_priority, period, category_list, purpose_list
     ):
         base_url = reverse("equipment:equipment")
+
         query_string = {
             "categoryPriority": category_list[0]["priority"],
         }
 
         return redirect_with_query_string(base_url, query_string)
 
-    split_period = period.split(",") if bool(period) else None
-    days_from_now = int(split_period[0]) if bool(period) else None
-    duration = int(split_period[1]) if bool(period) else None
+    split_period = period.split(",") if period else None
+    days_from_now = int(split_period[0]) if period else None
+    duration = int(split_period[1]) if period else None
 
-    if bool(period):
+    if period:
         for purpose_item in purpose_list:
-            at_least = purpose_item["at_least"]
-            up_to = purpose_item["up_to"]
-            max = purpose_item["max"]
-
             if purpose_item["priority"] == purpose_priority:
+                at_least = purpose_item["at_least"]
+                up_to = purpose_item["up_to"]
+                max = purpose_item["max"]
+
                 if (
                     days_from_now < at_least
                     or days_from_now > up_to
@@ -76,6 +112,7 @@ def equipment(request):
                     or duration > max
                 ):
                     base_url = reverse("equipment:equipment")
+
                     query_string = {
                         "categoryPriority": category_priority,
                     }
@@ -110,36 +147,35 @@ def equipment(request):
             "formula"
         ] = f"AND(FIND('{category_priority}', {{Category name}} & ''), FIND('{purpose_priority}', {{Item purpose}} & ''))"
 
-    equipment_list = airtable("get_all", "records", data=data)
-    equipment_count = len(equipment_list)
+    equipment_collection_list = airtable("get_all", "records", data=data)
+    equipment_collection_count = len(equipment_collection_list)
 
     # Query string and template tag
     query_string = f"categoryPriority={category_priority}&"
+    query_string += (
+        f"purposePriority={purpose_priority}&period={period}&"
+        if purpose_priority and period
+        else ""
+    )
 
-    if bool(purpose_priority) and bool(period):
-        query_string += f"purposePriority={purpose_priority}&period={period}&"
-
-    category_dict = {item["priority"]: item["keyword"] for item in category_list}
-    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
-    category = {
-        "priority": category_priority,
-        "keyword": category_dict.get(category_priority),
-    }
-    purpose = {
-        "priority": purpose_priority,
-        "keyword": purpose_dict.get(purpose_priority),
-    }
-    period = {"days_from_now": days_from_now, "duration": duration}
+    category, purpose, period = set_template_tag(
+        category_priority,
+        purpose_priority,
+        days_from_now,
+        duration,
+        category_list,
+        purpose_list,
+    )
 
     # Search box
     query = request.GET.get("q")
     search_result_count = None
-    search_placeholder = random.choice(equipment_list)["name"]
+    search_placeholder = random.choice(equipment_collection_list)["name"]
 
     if query:
         query = query.lower().replace(" ", "")
         query_result_list = []
-        for equipment in equipment_list:
+        for equipment in equipment_collection_list:
             for k, v in equipment.items():
                 if v is not None:
                     v = v.lower().replace(" ", "")
@@ -147,7 +183,7 @@ def equipment(request):
                         if query in v:
                             query_result_list.append(equipment)
 
-        equipment_list = query_result_list
+        equipment_collection_list = query_result_list
         search_result_count = len(query_result_list)
         query_string += f"q={query}&"
 
@@ -156,7 +192,8 @@ def equipment(request):
         page = request.GET["page"]
     except:
         page = 1
-    paginator = Paginator(equipment_list, 16)
+
+    paginator = Paginator(equipment_collection_list, 16)
     page_value = paginator.get_page(page)
     page_range = paginator.page_range
 
@@ -166,7 +203,7 @@ def equipment(request):
         {
             "query_string": query_string,
             "image_list": image_list,
-            "equipment_count": equipment_count,
+            "equipment_collection_count": equipment_collection_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
             "page_value": page_value,
@@ -196,29 +233,21 @@ def equipment_detail(request, collection_id):
             "formula": f"{{ID}} = '{collection_id}'",
         },
     }
-    equipment = airtable("get_all", "records", data=data)[0]
+
+    record_id = airtable("get_all", "records", data=data)[0]["record_id"]
 
     data = {
         "table_name": "equipment-collection",
         "params": {
-            "record_id": equipment["record_id"],
+            "record_id": record_id,
         },
     }
+
     equipment = airtable("get", "record", data=data)
 
     # Query string validation
-    if (
-        (not category_priority or (bool(purpose_priority) != bool(period)))
-        or (
-            category_priority
-            not in [category["priority"] for category in category_list]
-        )
-        or (
-            bool(purpose_priority)
-            and purpose_priority
-            not in [purpose["priority"] for purpose in purpose_list]
-        )
-        or (bool(period) and is_not_two_numeric_format(period))
+    if is_query_string_valid(
+        category_priority, purpose_priority, period, category_list, purpose_list
     ):
         base_url = reverse(
             "equipment:equipment_detail", kwargs={"collection_id": collection_id}
@@ -227,49 +256,69 @@ def equipment_detail(request, collection_id):
 
         return redirect_with_query_string(base_url, query_string)
 
-    if bool(purpose_priority) and purpose_priority not in [
-        item_purpose[0] for item_purpose in equipment["item_purpose"]
-    ]:
-        base_url = reverse(
-            "equipment:equipment_detail", kwargs={"collection_id": collection_id}
-        )
-        query_string = {"categoryPriority": equipment["category"]["priority"]}
+    split_period = period.split(",") if period else None
+    days_from_now = int(split_period[0]) if period else None
+    duration = int(split_period[1]) if period else None
 
-        return redirect_with_query_string(base_url, query_string)
+    if period:
+        for purpose_item in purpose_list:
+            if purpose_item["priority"] == purpose_priority:
+                at_least = purpose_item["at_least"]
+                up_to = purpose_item["up_to"]
+                max = purpose_item["max"]
 
-    split_period = period.split(",") if bool(period) else None
-    days_from_now = int(split_period[0]) if bool(period) else None
-    duration = int(split_period[1]) if bool(period) else None
-
-    for purpose in purpose_list:
-        if period:
-            at_least = purpose["at_least"]
-            up_to = purpose["up_to"]
-            max = purpose["max"]
-
-            if purpose["priority"] == purpose_priority:
                 if (
                     days_from_now < at_least
                     or days_from_now > up_to
                     or duration < 0
                     or duration > max
                 ):
-                    base_url = reverse(
-                        "equipment:equipment_detail",
-                        kwargs={"collection_id": collection_id},
-                    )
+                    base_url = reverse("equipment:equipment")
+
                     query_string = {
-                        "categoryPriority": equipment["category"]["priority"]
+                        "categoryPriority": category_priority,
                     }
 
                     return redirect_with_query_string(base_url, query_string)
 
-        if purpose["name"] in equipment["item_purpose"]:
-            purpose["available"] = True
-        else:
-            purpose["available"] = False
-
     image_list = get_hero_img("equipment")
+
+    # Purpose and limit
+    for purpose in purpose_list:
+        if purpose["name"] in equipment["item_purpose"]:
+            purpose["permitted"] = True
+        else:
+            purpose["permitted"] = False
+
+        if period and purpose["permitted"]:
+            user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
+            user_end_date = user_start_date + timezone.timedelta(days=duration)
+            user_start_date = user_start_date.date()
+            user_end_date = user_end_date.date()
+            available_stock_length = 0
+
+            for item in equipment["item"]:
+                if purpose["name"] in item["purpose"] and "🟢" in item["validation"]:
+                    item_start_date = (
+                        convert_datetime(item["start_date"]).date()
+                        if item["start_date"]
+                        else None
+                    )
+
+                    item_end_date = (
+                        convert_datetime(item["end_date"]).date()
+                        if item["end_date"]
+                        else None
+                    )
+
+                    if (item["status"] == "Available") or (
+                        user_start_date > item_end_date
+                        or user_end_date < item_start_date
+                    ):
+                        available_stock_length += 1
+
+            purpose["available_stock_length"] = available_stock_length
+
     limit_list = get_equipment_policy("limit")
     filtered_limit_list = []
 
@@ -279,18 +328,22 @@ def equipment_detail(request, collection_id):
             and equipment["category"]["priority"] == limit["category_priority"]
         ):
             filtered_limit_list.append(limit)
+
         if (
             limit["subcategory_order"] is not None
             and equipment["subcategory"]["order"] == limit["subcategory_order"]
         ):
             filtered_limit_list.append(limit)
+
         if limit["brand"] is not None and equipment["brand"] == limit["brand"]:
             filtered_limit_list.append(limit)
+
         if (
             limit["group_collection_id"] is not None
             and equipment["collection_id"] in limit["group_collection_id"]
         ):
             filtered_limit_list.append(limit)
+
         if (
             limit["collection_id"] is not None
             and equipment["collection_id"] == limit["collection_id"]
@@ -299,18 +352,15 @@ def equipment_detail(request, collection_id):
 
     limit_list = filtered_limit_list
 
-    # Query string and template tag
-    category_dict = {item["priority"]: item["keyword"] for item in category_list}
-    purpose_dict = {item["priority"]: item["keyword"] for item in purpose_list}
-    category = {
-        "priority": category_priority,
-        "keyword": category_dict.get(category_priority),
-    }
-    purpose = {
-        "priority": purpose_priority,
-        "keyword": purpose_dict.get(purpose_priority),
-    }
-    period = {"days_from_now": days_from_now, "duration": duration}
+    # Template tag
+    category, purpose, period = set_template_tag(
+        category_priority,
+        purpose_priority,
+        days_from_now,
+        duration,
+        category_list,
+        purpose_list,
+    )
 
     return render(
         request,
