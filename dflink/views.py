@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from utility.img import get_hero_img
-from utility.utils import short_io
+from utility.utils import short_io, append_item
 import random
 
 #
@@ -37,7 +37,7 @@ def dflink(request):
                 k = k.lower().replace(" ", "")
                 v = v.lower().replace(" ", "")
                 if k != "user" and query in v and dflink not in search_result_list:
-                    search_result_list.append(dflink)
+                    append_item(dflink, search_result_list)
 
         dflink_list = search_result_list
         search_result_count = len(search_result_list)

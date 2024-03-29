@@ -13,7 +13,7 @@ import random
 #
 
 
-def is_query_string_valid(
+def is_query_string_invalid(
     category_priority, purpose_priority, period, category_list, purpose_list
 ):
     return (
@@ -83,7 +83,7 @@ def equipment(request):
     purpose_list = get_equipment_policy("purpose")
 
     # Query string validation
-    if is_query_string_valid(
+    if is_query_string_invalid(
         category_priority, purpose_priority, period, category_list, purpose_list
     ):
         base_url = reverse("equipment:equipment")
@@ -243,16 +243,16 @@ def equipment_detail(request, collection_id):
         },
     }
 
-    equipment = airtable("get", "record", data=data)
+    collection = airtable("get", "record", data=data)
 
     # Query string validation
-    if is_query_string_valid(
+    if is_query_string_invalid(
         category_priority, purpose_priority, period, category_list, purpose_list
     ):
         base_url = reverse(
             "equipment:equipment_detail", kwargs={"collection_id": collection_id}
         )
-        query_string = {"categoryPriority": equipment["category"]["priority"]}
+        query_string = {"categoryPriority": collection["category"]["priority"]}
 
         return redirect_with_query_string(base_url, query_string)
 
@@ -261,11 +261,11 @@ def equipment_detail(request, collection_id):
     duration = int(split_period[1]) if period else None
 
     if period:
-        for purpose_item in purpose_list:
-            if purpose_item["priority"] == purpose_priority:
-                at_least = purpose_item["at_least"]
-                up_to = purpose_item["up_to"]
-                max = purpose_item["max"]
+        for purpose in purpose_list:
+            if purpose["priority"] == purpose_priority:
+                at_least = purpose["at_least"]
+                up_to = purpose["up_to"]
+                max = purpose["max"]
 
                 if (
                     days_from_now < at_least
@@ -284,8 +284,10 @@ def equipment_detail(request, collection_id):
     image_list = get_hero_img("equipment")
 
     # Purpose and limit
+    available_stock_of_current_purpose = []
+
     for purpose in purpose_list:
-        if purpose["name"] in equipment["item_purpose"]:
+        if purpose["name"] in collection["item_purpose"]:
             purpose["permitted"] = True
         else:
             purpose["permitted"] = False
@@ -297,7 +299,7 @@ def equipment_detail(request, collection_id):
             user_end_date = user_end_date.date()
             available_stock_length = 0
 
-            for item in equipment["item"]:
+            for item in collection["item"]:
                 if purpose["name"] in item["purpose"] and "🟢" in item["validation"]:
                     item_start_date = (
                         convert_datetime(item["start_date"]).date()
@@ -317,6 +319,12 @@ def equipment_detail(request, collection_id):
                     ):
                         available_stock_length += 1
 
+                        if (
+                            purpose_priority == purpose["priority"]
+                            and not item in available_stock_of_current_purpose
+                        ):
+                            available_stock_of_current_purpose.append(item)
+
             purpose["available_stock_length"] = available_stock_length
 
     limit_list = get_equipment_policy("limit")
@@ -325,28 +333,28 @@ def equipment_detail(request, collection_id):
     for limit in limit_list:
         if (
             limit["category_priority"] is not None
-            and equipment["category"]["priority"] == limit["category_priority"]
+            and collection["category"]["priority"] == limit["category_priority"]
         ):
             filtered_limit_list.append(limit)
 
         if (
             limit["subcategory_order"] is not None
-            and equipment["subcategory"]["order"] == limit["subcategory_order"]
+            and collection["subcategory"]["order"] == limit["subcategory_order"]
         ):
             filtered_limit_list.append(limit)
 
-        if limit["brand"] is not None and equipment["brand"] == limit["brand"]:
+        if limit["brand"] is not None and collection["brand"] == limit["brand"]:
             filtered_limit_list.append(limit)
 
         if (
             limit["group_collection_id"] is not None
-            and equipment["collection_id"] in limit["group_collection_id"]
+            and collection["collection_id"] in limit["group_collection_id"]
         ):
             filtered_limit_list.append(limit)
 
         if (
             limit["collection_id"] is not None
-            and equipment["collection_id"] == limit["collection_id"]
+            and collection["collection_id"] == limit["collection_id"]
         ):
             filtered_limit_list.append(limit)
 
@@ -373,7 +381,8 @@ def equipment_detail(request, collection_id):
             "category": category,
             "purpose": purpose,
             "purpose_priority": purpose_priority,
+            "available_stock_of_current_purpose": available_stock_of_current_purpose,
             "period": period,
-            "equipment": equipment,
+            "collection": collection,
         },
     )

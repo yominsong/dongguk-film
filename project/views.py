@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from equipment.utils import get_equipment_policy
 from .utils import get_project_policy
 from utility.img import get_hero_img
-from utility.utils import notion
+from utility.utils import notion, append_item
 import random
 
 #
@@ -37,35 +37,34 @@ def project(request):
     if query:
         query = query.lower().replace(" ", "")
         search_result_list = []
+
         for project in project_list:
+            full_searchable_text = ""
+
             for k, v in project.items():
-                if (
-                    (
-                        k != "page_id"
-                        and k != "user"
-                        and k != "staff"
-                        and k != "director"
-                        and k != "producer"
-                        and k != "producer_name"
-                        and k != "producer_student_id"
+                if k not in [
+                    "page_id",
+                    "user",
+                    "director",
+                    "producer",
+                    "producer_student_id",
+                ]:
+                    if isinstance(v, dict) and k == "purpose":
+                        full_searchable_text += v.get("keyword", "").lower().replace(" ", "")
+                    elif isinstance(v, str):
+                        full_searchable_text += v.lower().replace(" ", "")
+
+            for staff in ["staff"]:
+                for person in project.get(staff, []):
+                    person_str = "".join(
+                        str(v).lower().replace(" ", "")
+                        for k, v in person.items()
+                        if isinstance(v, str)
                     )
-                    and query in v
-                    and project not in search_result_list
-                ):
-                    search_result_list.append(project)
-                elif k == "staff":
-                    for staff in v:
-                        for k, v in staff.items():
-                            if (
-                                (
-                                    k != "position_priority"
-                                    and k != "pk"
-                                    and k != "avatar_url"
-                                )
-                                and query in v
-                                and project not in search_result_list
-                            ):
-                                search_result_list.append(project)
+                    full_searchable_text += person_str
+
+            if query in full_searchable_text:
+                append_item(project, search_result_list)
 
         project_list = search_result_list
         search_result_count = len(search_result_list)

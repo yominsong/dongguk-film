@@ -18,6 +18,8 @@ if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "08:00":
 # equipment
 #
 
+requests.get("https://dongguk.film/equipment/utils/delete-expired-carts/")
+
 if datetime.now(pytz.timezone("Asia/Seoul")).strftime("%H:%M") == "22:30":
     requests.get("https://dongguk.film/equipment/utils/update-equipment-policy/")
 

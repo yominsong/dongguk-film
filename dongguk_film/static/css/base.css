@@ -80,6 +80,26 @@
     animation-iteration-count: 1;
 }
 
+/* blink ring once */
+@keyframes blinkRing {
+    0% {
+        --tw-ring-color: inherit;
+    }
+
+    10%, 90% {
+        --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
+    }
+
+    100% {
+        --tw-ring-color: inherit;
+    }
+}
+
+.blink-ring {
+    animation: blinkRing 3s ease;
+    animation-iteration-count: 1;
+}
+
 /* CKEditor root */
 :root {
     --ck-color-focus-border-coordinates: 17, 85%, 54% !important;

@@ -27,7 +27,7 @@
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
-                    <button id="id_modal_close"
+                    <button id="id_close_modal"
                             type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
@@ -74,7 +74,7 @@
                                        id="id_target_url_error"
                                        hidden></p>
                                 </div>
-                                <input id="id_target_url_original" value="" hidden>
+                                <input id="id_original_target_url" value="" hidden>
                                 <div>
                                     <label for="id_slug"
                                            class="flex-1 text-sm font-medium leading-6 text-gray-900">동영링크 URL</label>
@@ -89,7 +89,7 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_slug_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_slug_error" hidden></p>
                                 </div>
-                                <input id="id_slug_original" value="" hidden>
+                                <input id="id_original_slug" value="" hidden>
                                 <div>
                                     <label for="id_title"
                                            class="flex-1 text-sm font-medium leading-6 text-gray-900">제목</label>
@@ -103,7 +103,7 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_title_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
                                 </div>
-                                <input id="id_title_original" value="" hidden>
+                                <input id="id_original_title" value="" hidden>
                                 <fieldset>
                                     <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
                                     <div class="mt-2 space-y-4">
@@ -148,7 +148,7 @@
                                     <p class="mt-2 text-sm text-gray-500" id="id_category_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                                 </fieldset>
-                                <input id="id_category_original" value="" hidden>
+                                <input id="id_original_category" value="" hidden>
                                 <div>
                                     <label for="id_expiration_date"
                                            class="flex-1 text-sm font-medium leading-6 text-gray-900">만료일</label>
@@ -171,7 +171,7 @@
                                        id="id_expiration_date_error"
                                        hidden></p>
                                 </div>
-                                <input id="id_expiration_date_original" value="" hidden>
+                                <input id="id_original_expiration_date" value="" hidden>
                                 <div>
                                     <div class="rounded-md shadow bg-flamingo-50 p-4">
                                         <div class="flex">

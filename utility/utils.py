@@ -8,7 +8,7 @@ from .img import save_hero_img
 from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
+import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast, html
 
 #
 # Global variables
@@ -125,6 +125,13 @@ def generate_random_string(int: int):
     random_string = "".join(random.choices(string.ascii_letters, k=int))
 
     return random_string
+
+
+def append_item(item, item_list: list):
+    if item not in item_list:
+        item_list.append(item)
+        
+    return item_list
 
 
 #
@@ -733,6 +740,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     listed_time = properties["Listed time"]["created_time"]
                     listed_time = convert_datetime(listed_time)
 
+                    notice_id = properties["ID"]["formula"]["string"]
                     title = properties["Title"]["title"][0]["plain_text"]
                     category = properties["Category"]["select"]["name"]
                     keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
@@ -740,6 +748,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
                     notice = {
                         "page_id": item["id"],
+                        "notice_id": notice_id,
                         "title": title,
                         "category": category,
                         "keyword": keyword,
@@ -989,7 +998,7 @@ def ncp_clova(action: str, target: str, data: dict = None):
     if data != None:
         img_src = data.get("img_src", None)
 
-    # action: ocr / target: b64_img
+    # action: "ocr" / target: "b64_img"
     if action == "ocr" and target == "b64_img":
         img_mime_type = img_src.split(";")[0].split(":")[1]
         img_format = img_mime_type.split("/")[-1]
@@ -997,9 +1006,9 @@ def ncp_clova(action: str, target: str, data: dict = None):
         img_url = None
         img_key = img_data[-5:]
 
-    # action: ocr / target: bin_img
+    # action: "ocr" / target: "bin_img"
     elif action == "ocr" and target == "bin_img":
-        img_format = img_src.rsplit(".", 1)[-1]
+        img_format = img_src.rsplit(".", 1)[-1].split("&")[0].split("/")[0]
         img_data = None
         img_url = img_src
         img_key = img_url.rsplit(".", 1)[0][-5:]

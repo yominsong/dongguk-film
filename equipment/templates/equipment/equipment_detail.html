@@ -7,7 +7,7 @@
     <meta name="robots" content="index,follow">
 {% endblock meta %}
 {% block title %}
-    {{ equipment.name }} - 기자재 - 디닷에프
+    {{ collection.name }} - 기자재 - 디닷에프
 {% endblock title %}
 {% block body %}
     <!-- Hero -->
@@ -84,7 +84,7 @@
                 </div>
             </div>
             {% if user.is_authenticated %}
-                <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                <div class="class-cart class-view flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                      tabindex="0">
                     <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <div class="flex justify-start items-center gap-x-2">
@@ -129,22 +129,22 @@
     <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div id="id_detail"
              class="bg-white shadow rounded-md px-4 py-5 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8"
-             data-record-id="{{ equipment.record_id }}"
-             data-collection-id="{{ equipment.collection_id }}"
-             data-thumbnail="{{ equipment.thumbnail }}"
-             data-name="{{ equipment.name }}"
-             data-category="{{ equipment.category.keyword }}"
-             data-subcategory="{{ equipment.subcategory.keyword }}">
+             data-record-id="{{ collection.record_id }}"
+             data-collection-id="{{ collection.collection_id }}"
+             data-thumbnail="{{ collection.thumbnail }}"
+             data-name="{{ collection.name }}"
+             data-category="{{ collection.category.keyword }}"
+             data-subcategory="{{ collection.subcategory.keyword }}">
             <!-- Title -->
             <div id="id_detail_title"
                  class="lg:col-start-2 lg:row-start-1 sm:h-[98px] sm:z-10">
-                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ equipment.name }}</h2>
+                <h2 class="text-gray-700 text-xl sm:text-2xl font-bold break-words mt-2">{{ collection.name }}</h2>
                 <div class="flex justify-between items-center mt-2 h-[24px]">
                     <div class="flex items-center text-sm text-gray-500 gap-x-1">
-                        <span>{{ equipment.collection_id }}</span>
-                        {% if equipment.subcategory.keyword != None %}
+                        <span>{{ collection.collection_id }}</span>
+                        {% if collection.subcategory.keyword != None %}
                             <span>·</span>
-                            <span>{{ equipment.subcategory.keyword }}</span>
+                            <span>{{ collection.subcategory.keyword }}</span>
                         {% endif %}
                     </div>
                     <div x-data="Components.menu({ open: false })"
@@ -219,8 +219,8 @@
             <div id="id_detail_image"
                  class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
                 <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
-                    <img src="{{ equipment.thumbnail }}"
-                         alt="{{ equipment.name }} 사진"
+                    <img src="{{ collection.thumbnail }}"
+                         alt="{{ collection.name }} 사진"
                          class="max-h-[500px] max-w-[500px] h-full w-full object-cover object-center"
                          height=""
                          width="">
@@ -276,8 +276,7 @@
                                  class="pb-6"
                                  x-show="open"
                                  style="display: none">
-                                <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3"
-                                    role="list">
+                                <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3" role="list">
                                     {% for purpose in purpose_list %}
                                         <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} {% if purpose.available_stock_length != 0 %} df-ring-inset-flamingo {% else %} df-ring-inset-dark-gray {% endif %} {% else %} df-ring-inset-gray {% endif %}">
                                             <span class="flex flex-col space-y-1">
@@ -288,10 +287,16 @@
                                                     {% if purpose.permitted %}
                                                         {% if not "period" in request.get_full_path %}
                                                             대여 허용
-                                                        {% elif purpose.available_stock_length != 0 %}
-                                                            재고 있음
                                                         {% else %}
-                                                            재고 없음
+                                                            {% if purpose.available_stock_length != 0 %}
+                                                                {% if purpose.priority == purpose_priority %}
+                                                                    재고 {{ purpose.available_stock_length }}개
+                                                                {% else %}
+                                                                    재고 있음
+                                                                {% endif %}
+                                                            {% else %}
+                                                                재고 없음
+                                                            {% endif %}
                                                         {% endif %}
                                                     {% else %}
                                                         대여 제한
@@ -333,61 +338,33 @@
                                         </div>
                                         <div class="ml-3">
                                             <h3 class="text-sm font-medium text-yellow-800">
-                                                <span class="underline cursor-pointer rounded-md hover:text-flamingo-800 focus:outline-none focus:df-focus-ring-offset-yellow"
-                                                      onclick="document.querySelector('.class-filter').click(); document.querySelector('#id_select_purpose').click();"
-                                                      onkeydown="if(event.key === 'Enter' || event.key === ' ') { document.querySelector('.class-filter').click(); document.querySelector('#id_select_purpose').click(); }"
-                                                      tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하면 재고 유무를 확인할 수 있어요.
+                                                재고 유무를 확인하려면
+                                                <span id="id_open_modal_and_focus_on_purpose"
+                                                      class="underline cursor-pointer rounded-md hover:text-flamingo-800 focus:outline-none focus:df-focus-ring-offset-yellow"
+                                                      tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하새요.
                                             </h3>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div x-data="{ open: false }">
+                        <!-- <div x-data="{ open: false }">
                             <h3>
-                                <button id="id_detail_status"
-                                        type="button"
-                                        class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white"
-                                        aria-controls="id_detail_status_content"
-                                        @click="open = !open"
-                                        aria-expanded="false"
-                                        x-bind:aria-expanded="open.toString()">
-                                    <span class="text-gray-900 text-sm font-medium"
-                                          x-state:on="Open"
-                                          x-state:off="Closed"
-                                          :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 현황</span>
+                                <button id="id_detail_status" type="button" class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white" aria-controls="id_detail_status_content" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
+                                    <span class="text-gray-900 text-sm font-medium" x-state:on="Open" x-state:off="Closed" :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 현황</span>
                                     <span class="ml-6 flex items-center">
-                                        <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                                             x-state:on="Open"
-                                             x-state:off="Closed"
-                                             :class="{ 'hidden': open, 'block': !(open) }"
-                                             fill="none"
-                                             viewBox="0 0 24 24"
-                                             stroke-width="1.5"
-                                             stroke="currentColor"
-                                             aria-hidden="true">
+                                        <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500" x-state:on="Open" x-state:off="Closed" :class="{ 'hidden': open, 'block': !(open) }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                                         </svg>
-                                        <svg class="hidden h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500"
-                                             x-state:on="Open"
-                                             x-state:off="Closed"
-                                             :class="{ 'block': open, 'hidden': !(open) }"
-                                             fill="none"
-                                             viewBox="0 0 24 24"
-                                             stroke-width="1.5"
-                                             stroke="currentColor"
-                                             aria-hidden="true">
+                                        <svg class="hidden h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500" x-state:on="Open" x-state:off="Closed" :class="{ 'block': open, 'hidden': !(open) }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
                                         </svg>
                                     </span>
                                 </button>
                             </h3>
-                            <div id="id_detail_status_content"
-                                 class="pb-6"
-                                 x-show="open"
-                                 style="display: none">
+                            <div id="id_detail_status_content" class="pb-6" x-show="open" style="display: none">
                                 <ul class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-                                    {% for item in equipment.item %}
+                                    {% for item in collection.item %}
                                     <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray">
                                         <span class="flex flex-col space-y-1">
                                             <div class="flex items-center">
@@ -419,7 +396,7 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                        </div>
+                        </div> -->
                         <div x-data="{ open: false }">
                             <h3>
                                 <button id="id_detail_limit"
@@ -536,30 +513,45 @@
                         {% if user.is_authenticated %}
                             <div class="mr-4">
                                 <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                <select id="id_select_quantity"
-                                        class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                    <option value="0">0</option>
-                                </select>
+                                {% if not available_stock_of_current_purpose %}
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            disabled>
+                                        <option disabled hidden selected>0</option>
+                                    </select>
+                                {% else %}
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        {% for stock in available_stock_of_current_purpose %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
                             </div>
-                            <button type="submit"
-                                    class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            <button id="id_add_equipment"
+                                    class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                                 장바구니에 담기
                             </button>
                         {% else %}
-                            <div class="mr-4">
+                            <a href="{% url 'account_login' %}"
+                               class="login-button mr-4"
+                               data-login-request-msg="createCart">
                                 <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                <select id="id_select_quantity"
-                                        class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                </select>
-                            </div>
+                                {% if not available_stock_of_current_purpose %}
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            disabled>
+                                        <option disabled hidden selected>0</option>
+                                    </select>
+                                {% else %}
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        {% for stock in available_stock_of_current_purpose %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                            </a>
                             <a href="{% url 'account_login' %}"
                                class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
                                data-login-request-msg="createCart">장바구니에 담기</a>
@@ -571,7 +563,7 @@
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
                 <button type="button"
-                        id="id_go_to_list"
+                        id="id_back_to_list"
                         class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed">
                     목록 보기
                 </button>
@@ -582,4 +574,5 @@
     {% include "equipment/equipment_modal.html" %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/equipment.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

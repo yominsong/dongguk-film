@@ -74,8 +74,8 @@ def evaluate_accessibility(request):
 
     elif not is_description_text_included(content):
         status = "FAIL"
-        reason = "이미지 설명 텍스트 미입력"
-        msg = "이미지에 대한 설명을 추가해주세요."
+        reason = "텍스트 미포함"
+        msg = "내용에 텍스트를 포함해주세요."
         element = "id_content"
 
     else:
@@ -158,13 +158,13 @@ def find_in_content(target: str, content: str):
 
     soup = BeautifulSoup(content, "html.parser")
 
-    # action: str
+    # action: "str"
     if target == "str":
         str_generator = " ".join(soup.stripped_strings)
 
         result = str_generator
 
-    # target: str_list
+    # target: "str_list"
     elif target == "str_list":
         str_generator = find_in_content("str", content)
 
@@ -172,7 +172,7 @@ def find_in_content(target: str, content: str):
 
         result = str_list
 
-    # target: img_list
+    # target: "img_list"
     elif "img_list" in target:
         prefix = "data:image/" if "b64" in target else "http" if "bin" in target else ""
         img_list = soup.find_all("img")
@@ -185,7 +185,7 @@ def find_in_content(target: str, content: str):
 
         result = img_list
 
-    # target: b64_img_src_list OR bin_img_src_list
+    # target: "b64_img_src_list" or "bin_img_src_list"
     elif "img_src_list" in target:
         prefix = "data:image/" if "b64" in target else "http" if "bin" in target else ""
         img_list = soup.find_all("img")
@@ -198,7 +198,7 @@ def find_in_content(target: str, content: str):
 
         result = img_src_list
 
-    # target: img_alt_list
+    # target: "img_alt_list"
     elif target == "img_alt_list":
         img_list = soup.find_all("img")
 

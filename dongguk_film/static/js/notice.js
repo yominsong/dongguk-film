@@ -2,47 +2,48 @@
 // Global variables
 //
 
+// modal
 const id_modal = document.getElementById("id_modal");
 const id_modal_base = code(id_modal, "_base");
 const id_page_id = document.getElementById("id_page_id");
 const id_block_id_list = document.getElementById("id_block_id_list");
 const id_title = document.getElementById("id_title");
 const id_category = document.getElementById("id_category");
-const id_category_serv = document.getElementById("id_category_serv");
-const id_category_dept = document.getElementById("id_category_dept");
+const id_category_serv = code(id_category, "_serv");
+const id_category_dept = code(id_category, "_dept");
 const id_content = document.getElementById("id_content");
 const id_file = document.getElementById("id_file");
-const id_drop_file = document.getElementById("id_drop_file");
-const id_attach_file = document.getElementById("id_attach_file");
+const id_drop_file = code("id_drop_", id_file);
+const id_attach_file = code("id_attach_", id_file);
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 const id_url = document.getElementById("id_url");
-const id_copy_url = document.getElementById("id_copy_url");
+const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
 const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
 
+// detail
 const id_detail = document.getElementById("id_detail");
 
+// classes
 const class_counts = document.querySelectorAll(".class-count");
 const class_measures = document.querySelectorAll(".class-measure");
 
+// boolean
 let isFocused = false;
 let isHovered = false;
 let isDragging = false;
 let isEventListenersAddedToFileForm = false;
-let isModalOpen = false;
-let isLastSelectedAnchorHash = false;
 let isItDoubleChecked = false;
 
+// miscellaneous
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let selectedFiles;
 let attachedFiles = [];
 let totalSizeOfFiles = 0;
-
-let currentHistoryLength = history.length;
 let doubleCheckTimer;
 
 //
@@ -51,23 +52,35 @@ let doubleCheckTimer;
 
 function adjustModalWidth() {
     const id_list = document.getElementById("id_list");
-    const id_content_parent = code(id_content, "_parent");
-    let widthBase;
+    const id_content_base = code(id_content, "_base");
+    let basisForWidth;
 
     if (id_list !== null) {  // notice.html
-        widthBase = id_list;
+        basisForWidth = id_list;
     } else if (id_detail !== null) {  // notice_detail.html
-        widthBase = id_detail;
+        basisForWidth = id_detail;
     };
 
     if (id_modal_base !== null) {
-        id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
-        id_content_parent.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
-        id_drop_file.style.setProperty("width", widthBase.querySelector("div").offsetWidth + "px", "important");
+        id_modal_base.style.setProperty("width", basisForWidth.offsetWidth + "px", "important");
+        id_content_base.style.setProperty("width", basisForWidth.querySelector("div").offsetWidth + "px", "important");
+        id_drop_file.style.setProperty("width", basisForWidth.querySelector("div").offsetWidth + "px", "important");
     };
 }
 
-function resizeWidthOfModalAndForm(bool) {
+function hasOnlyImages(htmlData) {
+    const hasImage = /<img\s+[^>]*src=["'][^"']*["'][^>]*>/gi.test(htmlData);
+    const textWithoutTags = htmlData.replaceAll("&nbsp;", "").replace(/<[^>]*>/g, "");
+    const hasText = /\S/.test(textWithoutTags);
+  
+    if (hasImage && !hasText) {
+      return true;
+    };
+  
+    return false;
+  }
+
+function handleModalWidth(bool) {
     if (bool) {
         adjustModalWidth();
         window.addEventListener("resize", adjustModalWidth);
@@ -101,104 +114,9 @@ function adjustTextboxStyle(bool, type) {  // Adding and removing event listener
     };
 }
 
-function preventGoBack() {
-    if (currentHistoryLength === history.length) {
-        history.pushState(null, null, location.href);
-    };
-
-    document.addEventListener("click", event => {
-        let closestAnchor = event.target.closest("a");
-
-        if (closestAnchor) {
-            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-
-    window.onpopstate = () => {
-        if (isModalOpen) {
-            history.pushState(null, null, location.href);
-
-            if (isItOkayToCloseModal()) {
-                const id_modal_close = code(id_modal, "_close");
-
-                id_modal_close.click();
-            };
-        } else if (!isModalOpen) {
-            if (!isLastSelectedAnchorHash) {
-                history.go(-1);
-            };
-        };
-    };
-}
-
-preventGoBack();
-
-function isItOkayToCloseModal() {
-    const id_create_or_update_descr = code(id_create_or_update, "_descr");
-    const id_delete_descr = code(id_delete, "_descr");
-    const id_delete_error = code(id_delete, "_error");
-
-    return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
-}
-
-function executeWhenModalIsClosed() {
-    isModalOpen = false;
-    toggleFocusOnModal(false);
-}
-
 //
 // Main functions
 //
-
-function initSearchBar() {
-    const id_query = document.getElementById("id_query");
-    const id_submit_query = document.getElementById("id_submit_query");
-
-    if (id_query !== null) {
-        window.addEventListener("pageshow", event => {
-            if (event.persisted) {  // Detect if a user used the web browser back or forward buttons
-                id_query.readOnly = false;
-                id_query.value = urlParams.get("q");
-                id_submit_query.disabled = false;
-            };
-        });
-
-        id_query.addEventListener("keyup", event => {
-            if (event.key === "Enter") {
-                id_submit_query.click();
-            };
-        });
-
-        ["click", "keyup"].forEach(type => {
-            id_submit_query.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    urlParams.set("q", id_query.value);
-                    location.href = `${originLocation}/notice/?${urlParams.toString()}`;
-                    id_query.readOnly = true;
-                    id_submit_query.disabled = true;
-                };
-            });
-        });
-
-        if (urlParams.has("q")) {
-            const id_initialize_query = document.getElementById("id_initialize_query");
-
-            id_query.value = urlParams.get("q");
-
-            ["click", "keyup"].forEach(type => {
-                id_initialize_query.addEventListener(type, event => {
-                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                        location.href = `${originLocation}/notice/`;
-                        id_query.readOnly = true;
-                        id_submit_query.disabled = true;
-                    };
-                });
-            });
-        };
-    };
-}
-
-initSearchBar();
 
 function initCkEditor() {
     const isUserAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
@@ -220,16 +138,22 @@ function initCkEditor() {
                 toolbarViewRoot = ckEditor.ui.view.toolbar.element;
                 textboxModel = ckEditor.model.document;
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
-                let rysFlag = false;
 
                 textboxModel.on("change:data", () => {
                     let data = ckEditor.getData();
-                    let rysRegex = /https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)&amp;ab_channel=([^&\s]+)/;
-                    let rysMatch = data.match(rysRegex);
+                    let hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
+                    let hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
 
-                    if (!rysFlag && rysMatch) {
-                        rysFlag = true;
+                    if (hasYouTubeShareLink) {
+                        displayNoti(false, "RYS");
+                    } else if (hasYouTubeRegularLink) {
                         displayNoti(true, "RYS");
+                    };
+
+                    if (!hasOnlyImages(data)) {
+                        displayNoti(false, "SDI");
+                    } else if (hasOnlyImages(data)) {
+                        displayNoti(true, "SDI");
                     };
 
                     id_content.value = ckEditor.getData();
@@ -621,20 +545,20 @@ function initForm() {
 }
 
 function updateForm(action, datasetObj = null) {
-    const id_modal_notice = document.getElementById("id_modal_notice");
-    const id_modal_share = document.getElementById("id_modal_share");
+    const id_modal_notice = code(id_modal, "_notice")
+    const id_modal_share = code(id_modal, "_share")
     const class_keywords = document.querySelectorAll(".class-keyword");
 
     // action: all
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
-    // action: create
+    // action: "create"
     if (action === "create") {
-        resizeWidthOfModalAndForm(true);
+        handleModalWidth(true);
         id_modal_notice.hidden = false;
         id_modal_share.hidden = true;
 
@@ -647,7 +571,7 @@ function updateForm(action, datasetObj = null) {
         id_delete.classList.replace("inline-flex", "hidden");
     }
 
-    // action: adjust
+    // action: "adjust"
     else if (action === "adjust") {
         const data = datasetObj.dataset;
         let label, svg;
@@ -684,9 +608,9 @@ function updateForm(action, datasetObj = null) {
         requestReadNotice();
     }
 
-    // action: share
+    // action: "share"
     else if (action === "share") {
-        resizeWidthOfModalAndForm(false);
+        handleModalWidth(false);
         if (id_modal_notice !== null) { id_modal_notice.hidden = true };
         id_modal_share.hidden = false;
 
@@ -704,7 +628,7 @@ function updateForm(action, datasetObj = null) {
 
 function initModal() {
     const class_creates = document.querySelectorAll(".class-create");
-    const class_adjusts = document.querySelectorAll(".class-adjust"); // Update or delete
+    const class_adjusts = document.querySelectorAll(".class-adjust");  // Update or delete
     const class_shares = document.querySelectorAll(".class-share");
 
     class_creates.forEach(create => {
@@ -859,69 +783,69 @@ function copyUrl() {
 copyUrl();
 
 function share() {
-    if (id_detail !== null) {
-        const data = id_detail.dataset;
-        const id_kakaotalk = document.getElementById("id_kakaotalk");
-        const id_x = document.getElementById("id_x");
-        const id_facebook = document.getElementById("id_facebook");
-        const id_line = document.getElementById("id_line");
+    if (id_detail == null) { return };
+    
+    const data = id_detail.dataset;
+    const id_kakaotalk = document.getElementById("id_kakaotalk");
+    const id_x = document.getElementById("id_x");
+    const id_facebook = document.getElementById("id_facebook");
+    const id_line = document.getElementById("id_line");
 
-        Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+    Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
 
-        id_kakaotalk.addEventListener("click", () => {
-            Kakao.Share.sendDefault({
-                objectType: "feed",
-                itemContent: {
-                    profileText: data.userName,
-                    profileImageUrl: data.userProfileImg,
+    id_kakaotalk.addEventListener("click", () => {
+        Kakao.Share.sendDefault({
+            objectType: "feed",
+            itemContent: {
+                profileText: data.userName,
+                profileImageUrl: data.userProfileImg,
+            },
+            content: {
+                title: data.title,
+                description: `${data.listedDate} · ${data.category}\n${data.keyword}`,
+                imageUrl:
+                    "https://dongguk.film/static/images/d_dot_f_logo.jpg",
+                link: {
+                    mobileWebUrl: `${location.origin}${location.pathname}`,
+                    webUrl: `${location.origin}${location.pathname}`,
                 },
-                content: {
-                    title: data.title,
-                    description: `${data.listedDate} · ${data.category}\n${data.keyword}`,
-                    imageUrl:
-                        "https://dongguk.film/static/images/d_dot_f_logo.jpg",
+            },
+            buttons: [
+                {
+                    title: "디닷에프에서 보기",
                     link: {
-                        mobileWebUrl: `${originLocation}${location.pathname}`,
-                        webUrl: `${originLocation}${location.pathname}`,
+                        mobileWebUrl: `${location.origin}${location.pathname}`,
+                        webUrl: `${location.origin}${location.pathname}`,
                     },
                 },
-                buttons: [
-                    {
-                        title: "디닷에프에서 보기",
-                        link: {
-                            mobileWebUrl: `${originLocation}${location.pathname}`,
-                            webUrl: `${originLocation}${location.pathname}`,
-                        },
-                    },
-                ],
-            });
+            ],
         });
+    });
 
-        id_x.addEventListener("click", () => {
-            const hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
-            const xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${originLocation}${location.pathname}&hashtags=${hashtags}`;
+    id_x.addEventListener("click", () => {
+        const hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
+        const xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${location.origin}${location.pathname}&hashtags=${hashtags}`;
 
-            window.open(xUrl);
-        });
+        window.open(xUrl);
+    });
 
-        id_facebook.addEventListener("click", () => {
-            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+    id_facebook.addEventListener("click", () => {
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${location.origin}${location.pathname}`;
 
-            window.open(facebookUrl);
-        });
+        window.open(facebookUrl);
+    });
 
-        id_line.addEventListener("click", () => {
-            const lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+    id_line.addEventListener("click", () => {
+        const lineUrl = `https://social-plugins.line.me/lineit/share?url=${location.origin}${location.pathname}`;
 
-            window.open(lineUrl);
-        });
-    };
+        window.open(lineUrl);
+    });
 }
 
 share();
 
-function goToList() {
-    const id_go_to_list = document.getElementById("id_go_to_list");
+function backToList() {
+    const id_back_to_list = document.getElementById("id_back_to_list");
     const class_details = document.querySelectorAll(".class-detail");
 
     if (class_details !== null) {
@@ -932,18 +856,18 @@ function goToList() {
         });
     };
 
-    if (id_go_to_list !== null) {
-        if (id_go_to_list.previousElementSibling === null) {
-            id_go_to_list.classList.remove("mt-3");
+    if (id_back_to_list !== null) {
+        if (id_back_to_list.previousElementSibling === null) {
+            id_back_to_list.classList.remove("mt-3");
         };
 
         ["click", "keyup"].forEach(type => {
-            id_go_to_list.addEventListener(type, event => {
+            id_back_to_list.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     if (location.search !== "") {
-                        location.href = `${originLocation}/notice${location.search}`;
+                        location.href = `${location.origin}${location.pathname}${location.search}`;
                     } else {
-                        location.href = `${originLocation}/notice/`;
+                        location.href = `${location.origin}${location.pathname}`;
                     };
 
                     freezeForm(true);
@@ -953,10 +877,10 @@ function goToList() {
     };
 }
 
-goToList();
+backToList();
 
 function requestOcrNotice() {
-    request.url = `${originLocation}/notice/utils/notice/`;
+    request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "ocr_notice", content: `${id_content.value}` };
     request.async = true;
@@ -987,7 +911,7 @@ function requestCreateNotice() {
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
 
-    request.url = `${originLocation}/notice/utils/notice/`;
+    request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -999,7 +923,7 @@ function requestCreateNotice() {
 }
 
 function requestReadNotice() {
-    request.url = `${originLocation}/notice/utils/notice/`;
+    request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "read_notice", page_id: `${id_page_id.value}` };
     request.async = true;
@@ -1028,7 +952,7 @@ function requestUpdateNotice() {
         formData.append(`fileReadableSize_${index}`, fileObj.readableSize);
     });
 
-    request.url = `${originLocation}/notice/utils/notice/`;
+    request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -1040,7 +964,7 @@ function requestUpdateNotice() {
 }
 
 function requestDeleteNotice() {
-    request.url = `${originLocation}/notice/utils/notice/`;
+    request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
     request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
     request.async = true;

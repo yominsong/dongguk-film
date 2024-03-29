@@ -2,44 +2,43 @@
 // Global variables
 //
 
+// modal
 const id_modal = document.getElementById("id_modal");
 const id_page_id = document.getElementById("id_page_id");
 const id_title = document.getElementById("id_title");
-const id_title_original = code(id_title, "_original");
-const id_select_purpose = document.getElementById("id_select_purpose");
+const id_original_title = code("id_original_", id_title);
 const id_purpose = document.getElementById("id_purpose");
+const id_select_purpose = code("id_select_", id_purpose);
 const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
-const id_purpose_original = code(id_purpose, "_original");
-const id_select_position = document.getElementById("id_select_position");
-const id_found_position_list = document.getElementById("id_found_position_list");
 const id_position = document.getElementById("id_position");
+const id_original_purpose = code("id_original_", id_purpose);
+const id_select_position = code("id_select_", id_position);
+const id_found_position_list = document.getElementById("id_found_position_list");
 const id_name = document.getElementById("id_name");
 const id_found_user_list = document.getElementById("id_found_user_list");
 const id_staff_list = document.getElementById("id_staff_list");
 const id_staff_list_error = code(id_staff_list, "_error");
-const id_staff_list_original = code(id_staff_list, "_original");
+const id_original_staff_list = code("id_original_", id_staff_list);
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 
-const staffBoxElements = [id_select_position, id_found_position_list, id_name];
-
-let isModalOpen = false;
+// boolean
 let isUserFound = false;
 let isInteractingWithList = false;
-let isLastSelectedAnchorHash = false;
 let isPurposeSelected = false;
 let isUserProducer = false;
 let isItDoubleChecked = false;
 
+// miscellaneous
+const staffBoxElements = [id_select_position, id_found_position_list, id_name];
 let userPk, userName, userStudentId;  // User authentication verification results
 let positionData;  // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
 let requiredPositions = [];
 let addedRequiredPositions = [];  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
 let addedStaffs = [];
-let currentHistoryLength = history.length;
 let doubleCheckTimer;
 
 //
@@ -72,38 +71,6 @@ function allowArrowKeysForNavigatingFoundUserList() {
         });
     });
 }
-
-function preventGoBack() {
-    if (currentHistoryLength === history.length) {
-        history.pushState(null, null, location.href);
-    };
-
-    document.addEventListener("click", event => {
-        let closestAnchor = event.target.closest("a");
-
-        if (closestAnchor) {
-            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-
-    window.onpopstate = () => {
-        if (isModalOpen) {
-            history.pushState(null, null, location.href);
-
-            if (isItOkayToCloseModal()) {
-                const id_modal_close = code(id_modal, "_close");
-
-                id_modal_close.click();
-            };
-        } else if (!isModalOpen) {
-            if (!isLastSelectedAnchorHash) {
-                history.go(-1);
-            };
-        };
-    };
-}
-
-preventGoBack();
 
 function displayErrorInPurpose(bool, errorType = null) {
     if (bool) {
@@ -263,14 +230,6 @@ function areArraysIdentical(a, b) {
     return true;
 }
 
-function isItOkayToCloseModal() {
-    const id_create_or_update_descr = code(id_create_or_update, "_descr");
-    const id_delete_descr = code(id_delete, "_descr");
-    const id_delete_error = code(id_delete, "_error");
-
-    return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
-}
-
 function isItOkayToFindUser() {
     const validHangulOrNonHangulRegex = /^([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+$/;
     const hangulSyllableRegex = /[\uAC00-\uD7A3]/g;
@@ -292,7 +251,7 @@ function isItOkayToSubmitProjectForm() {
     return areStaffsAdded && areAllRequiredPositionsAdded && isPurposeSelected && isUserProducer && isItOkayToSubmitForm();
 }
 
-function executePurposeAction(selectedPurpose = null) {
+function executeWhenPurposeIsSelected(selectedPurpose = null) {
     displayErrorInPurpose(false);
 
     if (selectedPurpose) {
@@ -300,81 +259,26 @@ function executePurposeAction(selectedPurpose = null) {
     };
 }
 
-function executePositionAction(selectedPurpose = null) {
-    const isValidPurpose = selectedPurpose && selectedPurpose.priority !== "";
+function executeWhenPositionIsSelected(selectedPosition = null) {
+    const isValidPosition = selectedPosition && selectedPosition.priority !== "";
 
-    id_position.value = isValidPurpose ? selectedPurpose.priority : null;
-    id_name.readOnly = !isValidPurpose;
+    id_position.value = isValidPosition ? selectedPosition.priority : null;
+    id_name.readOnly = !isValidPosition;
 
-    if (isValidPurpose) {
+    if (isValidPosition) {
         positionData = {
-            priority: selectedPurpose.priority,
-            keyword: selectedPurpose.keyword,
-            required: selectedPurpose.required,
+            priority: selectedPosition.priority,
+            keyword: selectedPosition.keyword,
+            required: selectedPosition.required,
         };
 
         id_name.focus();
     };
 }
 
-function executeWhenModalIsClosed() {
-    isModalOpen = false;
-    toggleFocusOnModal(false);
-}
-
 //
 // Main functions
 //
-
-function initSearchBar() {
-    const id_query = document.getElementById("id_query");
-    const id_submit_query = document.getElementById("id_submit_query");
-
-    if (id_query !== null) {
-        window.addEventListener("pageshow", event => {
-            if (event.persisted) {  // Detect if a user used the web browser back or forward buttons
-                id_query.readOnly = false;
-                id_query.value = urlParams.get("q");
-                id_submit_query.disabled = false;
-            };
-        });
-
-        id_query.addEventListener("keyup", event => {
-            if (event.key === "Enter") {
-                id_submit_query.click();
-            };
-        });
-
-        ["click", "keyup"].forEach(type => {
-            id_submit_query.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    urlParams.set("q", id_query.value);
-                    location.href = `${originLocation}/project/?${urlParams.toString()}`;
-                    id_query.readOnly = true;
-                    id_submit_query.disabled = true;
-                };
-            });
-        });
-
-        if (urlParams.has("q")) {
-            const id_initialize_query = document.getElementById("id_initialize_query");
-
-            id_query.value = urlParams.get("q");
-
-            ["click", "keyup"].forEach(type => {
-                id_initialize_query.addEventListener(type, event => {
-                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                        location.href = `${originLocation}/project/`;
-                        id_query.readOnly = true;
-                        id_submit_query.disabled = true;
-                    };
-                });
-            });
-        };
-    };
-}
-
-initSearchBar();
 
 function sortStaffList() {
     const temporaryArrayForStaffList = Array.from(id_staff_list.querySelectorAll("li"));
@@ -598,6 +502,8 @@ function initFoundUserList(resResult = null) {
             id_found_user_list.appendChild(newlyFoundUserElement);
         };
     });
+
+    id_name.click();  // To pass the isUserFound boolean value to initStaffBox()
 }
 
 function initStaffBox() {
@@ -637,8 +543,6 @@ function initStaffBox() {
 
         ["click", "keydown", "focus"].forEach(type => {
             id_name.addEventListener(type, event => {
-                console.log("project: " + isUserFound);
-
                 if (isUserFound) {
                     id_found_user_list.classList.remove("hidden");
 
@@ -713,10 +617,10 @@ function updateForm(action, datasetObj = null) {
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    handleFocusForModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
-    // action: create
+    // action: "create"
     if (action === "create") {
         class_keywords.forEach(keyword => {
             keyword.innerText = "등록하기";
@@ -726,7 +630,7 @@ function updateForm(action, datasetObj = null) {
         id_delete.classList.replace("inline-flex", "hidden");
     }
 
-    // action: adjust
+    // action: "adjust"
     else if (action === "adjust") {
         const data = datasetObj.dataset;
 
@@ -738,10 +642,10 @@ function updateForm(action, datasetObj = null) {
 
         id_page_id.value = data.pageId;
         id_title.value = data.title;
-        id_title_original.value = data.titleOriginal;
+        id_original_title.value = data.originalTitle;
         id_purpose.value = data.purpose;
         code(id_purpose, `_${data.purpose}`).click();
-        id_purpose_original.value = data.purposeOriginal;
+        id_original_purpose.value = data.originalPurpose;
 
         const staffArray = JSON.parse(data.staff.replace(/'/g, '"'));
 
@@ -766,7 +670,7 @@ function updateForm(action, datasetObj = null) {
             });
         });
 
-        id_staff_list_original.value = data.staffOriginal;
+        id_original_staff_list.value = data.originalStaff;
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;
@@ -871,10 +775,10 @@ function requestUpdateProject() {
 }
 
 function requestDeleteProject() {
-    const staffList = JSON.parse(id_staff_list_original.value.replace(/'/g, '"'));
+    const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
     request.url = `${originLocation}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_title_original.value}`, purpose: `${id_purpose_original.value}`, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

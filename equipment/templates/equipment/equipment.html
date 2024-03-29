@@ -84,7 +84,7 @@
                 </div>
             </div>
             {% if user.is_authenticated %}
-                <div class="class-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                <div class="class-cart class-view flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                      tabindex="0">
                     <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
                     <div class="flex justify-start items-center gap-x-2">
@@ -134,7 +134,7 @@
                            class="flex text-sm font-medium leading-6 text-gray-500">
                         총&nbsp<span class="font-semibold">{{ equipment_collection_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 {{ category.keyword }} 검색됨
                     </label>
-                    <div id="id_initialize_query"
+                    <div id="id_init_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -305,4 +305,5 @@
     {% include "equipment/equipment_modal.html" %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/equipment.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

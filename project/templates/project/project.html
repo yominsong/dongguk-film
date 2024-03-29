@@ -51,7 +51,7 @@
                            class="flex text-sm font-medium leading-6 text-gray-500">
                         총&nbsp<span class="font-semibold">{{ project_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 프로젝트 검색됨
                     </label>
-                    <div id="id_initialize_query"
+                    <div id="id_init_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -163,11 +163,11 @@
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                 <span data-page-id="{{ project.page_id }}"
                                       data-title="{{ project.title }}"
-                                      data-title-original="{{ project.title }}"
+                                      data-original-title="{{ project.title }}"
                                       data-purpose="{{ project.purpose.priority }}"
-                                      data-purpose-original="{{ project.purpose.priority }}"
+                                      data-original-purpose="{{ project.purpose.priority }}"
                                       data-staff="{{ project.staff }}"
-                                      data-staff-original="{{ project.staff }}"
+                                      data-original-staff="{{ project.staff }}"
                                       data-created-date="{{ project.created_date }}"
                                       class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                       tabindex="0">수정하기</span>
@@ -296,4 +296,5 @@
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/project.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

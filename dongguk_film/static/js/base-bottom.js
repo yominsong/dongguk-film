@@ -123,7 +123,7 @@ function copyDflinkUrl() {
                             document.body.removeChild(textarea);
                         }
 
-                        url.innerHTML = "URL이 클립보드에 복사되었어요!";
+                        url.innerHTML = "URL이 클립보드에 복사되었어요.";
                         url.classList.add("blink");
 
                         setTimeout(() => {

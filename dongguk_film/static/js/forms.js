@@ -809,7 +809,7 @@ function displayButtonMsg(bool, button, type, text) {
     };
 }
 
-function toggleFocusOnModal(isModalOpen, modal) {
+function handleFocusForModal(isModalOpen, modal) {
     let focusableElements;
     let tabIndexStorage = JSON.parse(sessionStorage.getItem("focusableItems")) || [];
 

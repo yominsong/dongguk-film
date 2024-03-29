@@ -36,5 +36,18 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/line-clamp"),
     require("@tailwindcss/aspect-ratio"),
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".transparent-scrollbar::-webkit-scrollbar": {
+          "display": "none",
+        },
+        ".transparent-scrollbar": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+      };
+
+      addUtilities(newUtilities);
+    },
   ],
 }

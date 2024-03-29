@@ -1428,6 +1428,10 @@ select {
   flex-direction: column-reverse;
 }
 
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
 .items-start {
   align-items: flex-start;
 }
@@ -1612,6 +1616,10 @@ select {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
 }
 
 .overflow-y-auto {
@@ -2526,6 +2534,15 @@ select {
 
 .ease-out {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.transparent-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.transparent-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .\[a-zA-Z\:_\] {

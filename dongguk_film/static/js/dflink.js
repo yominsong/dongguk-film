@@ -2,137 +2,44 @@
 // Global variables
 //
 
+// modal
 const id_modal = document.getElementById("id_modal");
 const id_link_id = document.getElementById("id_link_id");
 const id_target_url = document.getElementById("id_target_url");
-const id_target_url_original = code(id_target_url, "_original");
+const id_original_target_url = code("id_original_", id_target_url);
 const id_slug = document.getElementById("id_slug");
-const id_slug_original = code(id_slug, "_original");
+const id_original_slug = code("id_original_", id_slug);
 const id_title = document.getElementById("id_title");
-const id_title_original = code(id_title, "_original");
+const id_original_title = code("id_original_", id_title);
 const id_category = document.getElementById("id_category");
-const id_category_original = code(id_category, "_original");
-const id_category_work = document.getElementById("id_category_work");
-const id_category_dept = document.getElementById("id_category_dept");
+const id_original_category = code("id_original_", id_category);
+const id_category_work = code(id_category, "_work");
+const id_category_dept = code(id_category, "_dept");
 const id_expiration_date = document.getElementById("id_expiration_date");
-const id_expiration_date_original = code(id_expiration_date, "_original");
+const id_original_expiration_date = code("id_original_", id_expiration_date);
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
 const id_delete_text = code(id_delete, "_text");
 
-let isModalOpen = false;
-let isLastSelectedAnchorHash = false;
+// boolean
 let isItDoubleChecked = false;
 
-let currentHistoryLength = history.length;
+// miscellaneous
 let doubleCheckTimer;
 
 //
 // Sub functions
 //
 
-function alertNonexistentLink() {
+function notifyLinkNotFound() {
     if (window.location.search.indexOf("nonexistent-link") !== -1) { displayNoti(true, "INL") };
 }
 
-alertNonexistentLink();
-
-function preventGoBack() {
-    if (currentHistoryLength === history.length) {
-        history.pushState(null, null, location.href);
-    };
-
-    document.addEventListener("click", event => {
-        const closestAnchor = event.target.closest("a");
-
-        if (closestAnchor) {
-            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-
-    window.onpopstate = () => {
-        if (isModalOpen) {
-            history.pushState(null, null, location.href);
-
-            if (isItOkayToCloseModal()) {
-                const id_modal_close = code(id_modal, "_close");
-
-                id_modal_close.click();
-            };
-        } else if (!isModalOpen) {
-            if (!isLastSelectedAnchorHash) {
-                history.go(-1);
-            };
-        };
-    };
-}
-
-preventGoBack();
-
-function isItOkayToCloseModal() {
-    const id_create_or_update_descr = code(id_create_or_update, "_descr");
-    const id_delete_descr = code(id_delete, "_descr");
-    const id_delete_error = code(id_delete, "_error");
-
-    return id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
-}
-
-function executeWhenModalIsClosed() {
-    isModalOpen = false;
-    toggleFocusOnModal(false);
-}
+notifyLinkNotFound();
 
 //
 // Main functions
 //
-
-function initSearchBar() {
-    const id_query = document.getElementById("id_query");
-    const id_submit_query = document.getElementById("id_submit_query");
-
-    window.addEventListener("pageshow", event => {
-        if (event.persisted) { // Detect if a user used the web browser back or forward buttons
-            id_query.readOnly = false;
-            id_query.value = urlParams.get("q");
-            id_submit_query.disabled = false;
-        };
-    });
-
-    id_query.addEventListener("keyup", event => {
-        if (event.key === "Enter") {
-            id_submit_query.click();
-        };
-    });
-
-    ["click", "keyup"].forEach(type => {
-        id_submit_query.addEventListener(type, event => {
-            if (type === "click" || event.key === "Enter" || event.key === " ") {
-                urlParams.set("q", id_query.value);
-                location.href = `${originLocation}/dflink/?${urlParams.toString()}`;
-                id_query.readOnly = true;
-                id_submit_query.disabled = true;
-            };
-        });
-    });
-
-    if (urlParams.has("q")) {
-        const id_initialize_query = document.getElementById("id_initialize_query");
-
-        id_query.value = urlParams.get("q");
-
-        ["click", "keyup"].forEach(type => {
-            id_initialize_query.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    location.href = `${originLocation}/dflink/`;
-                    id_query.readOnly = true;
-                    id_submit_query.disabled = true;
-                };
-            });
-        });
-    };
-}
-
-initSearchBar();
 
 function initForm() {
     const id_target_url_placeholder_array = new Array("https://docs.google.com/document/d/...", "https://docs.google.com/spreadsheets/d/...", "https://docs.google.com/presentation/d/...", "https://docs.google.com/forms/d/...", "https://drive.google.com/drive/folders/...", "https://drive.google.com/file/d/...", "https://www.dropbox.com/s/...", "https://www.youtube.com/playlist?list=...", "https://www.youtube.com/watch?v=...", "https://vimeo.com/...", "https://www.dailymotion.com/video/...", "https://www.notion.so/...", "https://example.notion.site/...", "https://www.evernote.com/shard/...", "https://zoom.us/j/...", "https://www.filmmakers.co.kr/actorsAudition/...", "https://www.dongguk.edu/article/HAKSANOTICE/detail/...");
@@ -180,10 +87,10 @@ function updateForm(action, datasetObj = null) {
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
-    // action: create
+    // action: "create"
     if (action === "create") {
         class_keywords.forEach(keyword => {
             keyword.innerText = "만들기";
@@ -193,7 +100,7 @@ function updateForm(action, datasetObj = null) {
         id_delete.classList.replace("inline-flex", "hidden");
     }
 
-    // action: adjust
+    // action: "adjust"
     else if (action === "adjust") {
         const data = datasetObj.dataset;
 
@@ -205,11 +112,11 @@ function updateForm(action, datasetObj = null) {
 
         id_link_id.value = data.linkId;
         id_target_url.value = data.targetUrl;
-        id_target_url_original.value = data.targetUrlOriginal;
+        id_original_target_url.value = data.originalTargetUrl;
         id_slug.value = data.slug;
-        id_slug_original.value = data.slugOriginal;
+        id_original_slug.value = data.originalSlug;
         id_title.value = data.title;
-        id_title_original.value = data.titleOriginal;
+        id_original_title.value = data.originalTitle;
 
         if (data.category === "작품") {
             id_category.value = "작품";
@@ -218,10 +125,10 @@ function updateForm(action, datasetObj = null) {
             id_category.value = "학과";
             id_category_dept.checked = true;
         };
-        
-        id_category_original.value = data.categoryOriginal;
+
+        id_original_category.value = data.originalCategory;
         id_expiration_date.value = data.expirationDate;
-        id_expiration_date_original.value = data.expirationDateOriginal;
+        id_original_expiration_date.value = data.originalExpirationDate;
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;
@@ -231,7 +138,7 @@ function updateForm(action, datasetObj = null) {
 
 function initModal() {
     const class_creates = document.querySelectorAll(".class-create");
-    const class_adjusts = document.querySelectorAll(".class-adjust"); // Update or delete
+    const class_adjusts = document.querySelectorAll(".class-adjust");  // Update or delete
 
     class_creates.forEach(create => {
         ["click", "keyup"].forEach(type => {
@@ -257,7 +164,7 @@ function initModal() {
 initModal();
 
 function requestCreateDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink/`;
+    request.url = `${location.origin}/dflink/utils/dflink/`;
     request.type = "GET";
     request.data = { id: "create_dflink", target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
@@ -268,7 +175,7 @@ function requestCreateDflink() {
 }
 
 function requestUpdateDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink/`;
+    request.url = `${location.origin}/dflink/utils/dflink/`;
     request.type = "GET";
     request.data = { id: "update_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url.value}`, slug: `${id_slug.value}`, title: `${id_title.value}`, category: `${id_category.value}`, expiration_date: `${id_expiration_date.value}` };
     request.async = true;
@@ -279,9 +186,9 @@ function requestUpdateDflink() {
 }
 
 function requestDeleteDflink() {
-    request.url = `${originLocation}/dflink/utils/dflink/`;
+    request.url = `${location.origin}/dflink/utils/dflink/`;
     request.type = "GET";
-    request.data = { id: "delete_dflink", link_id: `${id_link_id.value}`, target_url: `${id_target_url_original.value}`, slug: `${id_slug_original.value}`, title: `${id_title_original.value}`, category: `${id_category_original.value}`, expiration_date: `${id_expiration_date_original.value}` };
+    request.data = { id: "delete_dflink", link_id: `${id_link_id.value}`, target_url: `${id_original_target_url.value}`, slug: `${id_original_slug.value}`, title: `${id_original_title.value}`, category: `${id_original_category.value}`, expiration_date: `${id_original_expiration_date.value}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

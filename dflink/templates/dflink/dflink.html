@@ -50,7 +50,7 @@
                            class="flex text-sm font-medium leading-6 text-gray-500">
                         총&nbsp;<span class="font-semibold">{{ dflink_count }}개</span>&nbsp중&nbsp;<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 동영링크 검색됨
                     </label>
-                    <div id="id_initialize_query"
+                    <div id="id_init_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -152,15 +152,15 @@
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                 <span data-link-id="{{ dflink.link_id }}"
                                         data-target-url="{{ dflink.target_url }}"
-                                        data-target-url-original="{{ dflink.target_url }}"
+                                        data-original-target-url="{{ dflink.target_url }}"
                                         data-slug="{{ dflink.slug }}"
-                                        data-slug-original="{{ dflink.slug }}"
+                                        data-original-slug="{{ dflink.slug }}"
                                         data-title="{{ dflink.title }}"
-                                        data-title-original="{{ dflink.title }}"
+                                        data-original-title="{{ dflink.title }}"
                                         data-category="{{ dflink.category }}"
-                                        data-category-original="{{ dflink.category }}"
+                                        data-original-category="{{ dflink.category }}"
                                         data-expiration-date="{{ dflink.expiration_date }}"
-                                        data-expiration-date-original="{{ dflink.expiration_date }}"
+                                        data-original-expiration-date="{{ dflink.expiration_date }}"
                                         class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                         tabindex="0">수정하기</span>
                             </p>
@@ -288,4 +288,5 @@
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/dflink.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

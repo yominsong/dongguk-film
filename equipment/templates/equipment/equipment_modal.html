@@ -29,7 +29,7 @@
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
-                    <button id="id_modal_close"
+                    <button id="id_close_modal"
                             type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
@@ -112,7 +112,7 @@
                                     <div id="id_initialize_purpose"
                                          class="text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                                          tabindex="0"
-                                         @click="choose(0); executePurposeAction()"
+                                         @click="choose(0); executeWhenPurposeIsSelected()"
                                          hidden>
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              fill="none"
@@ -156,8 +156,8 @@
                                         class="absolute z-10 mt-1 max-h-60 w-full overflow-auto divide-y divide-gray-100 rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                         x-max="1"
                                         @click.away="open = false"
-                                        @keydown.enter.stop.prevent="onOptionSelect(); executePurposeAction(selected)"
-                                        @keydown.space.stop.prevent="onOptionSelect(); executePurposeAction(selected)"
+                                        @keydown.enter.stop.prevent="onOptionSelect(); executeWhenPurposeIsSelected(selected)"
+                                        @keydown.space.stop.prevent="onOptionSelect(); executeWhenPurposeIsSelected(selected)"
                                         @keydown.escape="onEscape()"
                                         @keydown.arrow-up.prevent="onArrowUp()"
                                         @keydown.arrow-down.prevent="onArrowDown()"
@@ -179,7 +179,7 @@
                                                 class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
                                                 id="id_purpose_{{ purpose.priority }}"
                                                 role="option"
-                                                @click="choose({{ forloop.counter }}); executePurposeAction(selected)"
+                                                @click="choose({{ forloop.counter }}); executeWhenPurposeIsSelected(selected)"
                                                 @mouseenter="onMouseEnter($event)"
                                                 @mousemove="onMouseMove($event, {{ forloop.counter }})"
                                                 @mouseleave="onMouseLeave($event)"
@@ -224,7 +224,8 @@
                             <!-- id_period -->
                             <div>
                                 <div class="flex items-center justify-between">
-                                    <label class="block text-sm font-medium leading-6 text-gray-900"
+                                    <label id="id_period_label"
+                                           class="block text-sm font-medium leading-6 text-gray-900"
                                            for="id_period">대여 기간</label>
                                     <div class="flex items-center gap-x-2">
                                         <h2 id="id_period_current_month"
@@ -257,7 +258,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                <div id="id_period_base"
+                                     class="shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
                                     <div class="my-2 pt-2 grid grid-cols-7 text-center text-xs leading-6 text-gray-500">
                                         <div class="text-red-700">일</div>
                                         <div>월</div>

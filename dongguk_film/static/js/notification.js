@@ -22,11 +22,13 @@ function editXDate(notiType, bool) {
  * - `CWF`: Complete Weather Fetch
  * - `RNP`: Request Notification Permission
  * - `WNU`: Welcome New User
+ * - `RTL`: Redirect to the List
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
  * - `RYS`: Request YouTube Share Link
  * - `RAT`: Request Alternative Text
  * - `RDI`: Request Description of Image
+ * - `SDI`: Suggest Description of Image
  * - `EIS`: Extracting text from an Image Succeeded
  * - `EIF`: Extracting text from an Image Failed
  * - `LDF`: Limit Duplicate Files
@@ -169,6 +171,13 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = `디닷에프가 ${param}님의 학과 생활에 도움이 되어드릴게요!`;
         }
 
+        // equipment
+        else if (notiType === "RTL") {
+            notiIcon = exclamationIcon;
+            notiTitle = "해당 목적으로 대여할 수 없는 기자재예요.";
+            notiContent = `${param} 기자재는 선택한 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
+        }
+
         // login
         else if (notiType === "RBG") {
             notiIcon = exclamationIcon;
@@ -187,25 +196,30 @@ function displayNoti(bool, notiType, param = null) {
         else if (notiType === "RYS") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
-            notiContent = "YouTube 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
+            notiContent = "'youtu.be'로 시작하는 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
         } else if (notiType === "RAT") {
             notiIcon = imageIcon;
             notiTitle = "이미지 대체 텍스트를 입력해주세요.";
             notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://blog.naver.com/mofakr/222059815030', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://terms.naver.com/entry.naver?cid=42346&docId=3436471&categoryId=42346', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType === "RDI") {
             notiIcon = imageIcon;
-            notiTitle = "내용에 텍스트를 추가해주세요.";
-            notiContent = "스크린 리더 사용자를 위해 내용에 텍스트를 추가해주세요. 이미지에 텍스트가 있다면 디닷에프가 추출을 도와드릴게요.";
+            notiTitle = "내용에 텍스트를 포함해주세요.";
+            notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
+        } else if (notiType === "SDI") {
+            notiIcon = imageIcon;
+            notiTitle = "이미지는 텍스트와 함께 사용해주세요.";
+            notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         } else if (notiType === "EIS") {
             notiIcon = textIcon;
             notiTitle = "텍스트 추출이 완료되었어요.";
-            notiContent = "단, 추출에 실패했거나 부정확한 결과가 포함되어 있을 수 있어요.";
+            notiContent = "부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
         } else if (notiType === "EIF") {
             notiIcon = exclamationIcon;
             notiTitle = "텍스트 추출에 실패했어요.";
-            notiContent = "문자를 인식할 수 없는 이미지인 것 같아요. 직접 이미지에 대한 설명을 추가해주세요.";
+            notiContent = "이미지를 직접 내려받아 삽입한 후 다시 시도해주세요.";
         } else if (notiType === "LDF") {
             notiIcon = infoIcon;
             notiTitle = "이미 첨부된 파일이 있어요.";

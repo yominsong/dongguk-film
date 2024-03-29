@@ -2,33 +2,36 @@
 // Global variables
 //
 
+// modal
 const id_modal = document.getElementById("id_modal");
 const id_modal_base = code(id_modal, "_base");
 const id_modal_filter = code(id_modal, "_filter");
 const id_category = document.getElementById("id_category");
-const id_initialize_purpose = document.getElementById("id_initialize_purpose");
 const id_purpose = document.getElementById("id_purpose");
+const id_initialize_purpose = code("id_initialize_", id_purpose);
 const id_period = document.getElementById("id_period");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
 const id_url = document.getElementById("id_url");
-const id_copy_url = document.getElementById("id_copy_url");
+const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
 const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
 
+// detail
 const id_detail = document.getElementById("id_detail");
+const id_select_quantity = document.getElementById("id_select_quantity");
 
-const data_purpose = id_purpose.dataset;
-const data_period = id_period.dataset;
-
+// classes
 let class_firsts = document.querySelectorAll(".class-first");
 
-let isModalOpen = false;
-let isLastSelectedAnchorHash = false;
+// boolean
+let isCartReady = false;
 
-let currentHistoryLength = history.length;
+// miscellaneous
+const data_purpose = id_purpose.dataset;
+const data_period = id_period.dataset;
 
 //
 // Sub functions
@@ -36,12 +39,12 @@ let currentHistoryLength = history.length;
 
 function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
-    let widthBase;
+    let baseForWidth;
 
     if (id_grid !== null) {  // equipment.html
-        widthBase = id_grid;
+        baseForWidth = id_grid;
     } else if (id_detail !== null) {  // equipment_detail.html
-        widthBase = id_detail;
+        baseForWidth = id_detail;
     };
 
     if (id_modal_base !== null) {
@@ -54,7 +57,7 @@ function adjustModalWidth() {
             if (this.window.innerWidth >= 640) {
                 id_modal_base.style.setProperty("width", "512px", "important");
             } else if (this.window.innerWidth < 640) {
-                id_modal_base.style.setProperty("width", widthBase.offsetWidth + "px", "important");
+                id_modal_base.style.setProperty("width", baseForWidth.offsetWidth + "px", "important");
             };
         };
     };
@@ -86,45 +89,40 @@ function adjustDetailHeight() {
 
 adjustDetailHeight();
 
-function preventGoBack() {
-    if (currentHistoryLength === history.length) {
-        history.pushState(null, null, location.href);
-    };
+function executeWhenUserGoesToSelectPurpose() {
+    if (id_detail !== null) {
+        const id_open_modal_and_focus_on_purpose = document.getElementById("id_open_modal_and_focus_on_purpose");
 
-    document.addEventListener("click", event => {
-        const closestAnchor = event.target.closest("a");
+        ["click", "keyup"].forEach(type => {
+            id_open_modal_and_focus_on_purpose.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    const filter = document.querySelector('.class-filter');
+                    const id_purpose_label = code(id_purpose, "_label");
+                    const id_select_purpose = document.getElementById("id_select_purpose");
+                    const id_period_label = code(id_period, "_label");
+                    const id_period_base = code(id_period, "_base");
 
-        if (closestAnchor) {
-            isLastSelectedAnchorHash = closestAnchor.getAttribute("href").startsWith("#");
-        };
-    });
-
-    window.onpopstate = () => {
-        if (isModalOpen) {
-            history.pushState(null, null, location.href);
-
-            if (isItOkayToCloseModal()) {
-                const id_modal_close = code(id_modal, "_close");
-
-                id_modal_close.click();
-            };
-        } else if (!isModalOpen) {
-            if (!isLastSelectedAnchorHash) {
-                history.go(-1);
-            };
-        };
+                    filter.click();
+                    id_purpose_label.scrollIntoView({ behavior: "smooth" });
+                    setTimeout(() => { id_purpose_label.classList.add("blink") }, 300);
+                    setTimeout(() => { id_select_purpose.classList.add("blink-ring") }, 300);
+                    setTimeout(() => { id_purpose_label.classList.remove("blink") }, 3300);
+                    setTimeout(() => { id_select_purpose.classList.remove("blink-ring") }, 3300);
+                    setTimeout(() => { id_period_label.classList.add("blink") }, 300);
+                    setTimeout(() => { id_period_base.classList.add("blink-ring") }, 300);
+                    setTimeout(() => { id_period_calendar.classList.add("blink-ring") }, 300);
+                    setTimeout(() => { id_period_label.classList.remove("blink") }, 3300);
+                    setTimeout(() => { id_period_base.classList.remove("blink-ring") }, 3300);
+                    setTimeout(() => { id_period_calendar.classList.remove("blink-ring") }, 3300);
+                };
+            });
+        });
     };
 }
 
-preventGoBack();
+executeWhenUserGoesToSelectPurpose();
 
-function isItOkayToCloseModal() {
-    const id_filter_descr = code(id_filter, "_descr");
-
-    return id_filter_descr.hidden;
-}
-
-function executePurposeAction(selectedPurpose = null) {
+function executeWhenPurposeIsSelected(selectedPurpose = null) {
     displayError(false, id_period);
 
     if (selectedPurpose) {
@@ -157,58 +155,9 @@ function executePurposeAction(selectedPurpose = null) {
     initValidation(class_firsts, id_filter);
 }
 
-function executeWhenModalIsClosed() {
-    isModalOpen = false;
-    toggleFocusOnModal(false);
-}
-
 //
 // Main functions
 //
-
-function initSearchBar() {
-    const id_query = document.getElementById("id_query");
-    const id_submit_query = document.getElementById("id_submit_query");
-
-    if (id_query !== null) {
-        id_query.addEventListener("keyup", event => {
-            if (event.key === "Enter") {
-                id_submit_query.click();
-            };
-        });
-
-        ["click", "keyup"].forEach(type => {
-            id_submit_query.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    urlParams.delete("page");
-                    urlParams.set("q", id_query.value);
-                    location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
-                    id_query.readOnly = true;
-                    id_submit_query.disabled = true;
-                };
-            });
-        });
-
-        if (urlParams.has("q")) {
-            const id_initialize_query = document.getElementById("id_initialize_query");
-
-            id_query.value = urlParams.get("q");
-
-            ["click", "keyup"].forEach(type => {
-                id_initialize_query.addEventListener(type, event => {
-                    if (type === "click" || event.key === "Enter" || event.key === " ") {
-                        urlParams.delete("q");
-                        location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
-                        id_query.readOnly = true;
-                        id_submit_query.disabled = true;
-                    };
-                });
-            });
-        };
-    };
-}
-
-initSearchBar();
 
 function initCalendar() {
     const id_period_prev_month = code(id_period, "_prev_month");
@@ -512,7 +461,7 @@ function initForm() {
     displayButtonMsg(false, id_filter, "error");
 }
 
-function updateForm(action) {
+function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
@@ -521,7 +470,7 @@ function updateForm(action) {
     isModalOpen = true;
     id_modal.hidden = false;
     id_modal.setAttribute("x-data", "{ open: true }");
-    toggleFocusOnModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
+    handleFocusForModal(true, id_modal); // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
     // Middle action: filter
@@ -538,8 +487,8 @@ function updateForm(action) {
         id_filter.classList.replace("hidden", "inline-flex");
     }
 
-    // Middle action: cart
-    else if (action === "cart") {
+    // Middle action: view_cart
+    else if (action === "view_cart") {
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
         id_modal_share.hidden = true;
@@ -549,6 +498,16 @@ function updateForm(action) {
         });
 
         id_filter.classList.replace("inline-flex", "hidden");
+    }
+
+    // Middle action: add_to_cart
+    else if (action === "add_to_cart") {
+        updateForm("view_cart");
+
+        if (!isCartReady) {
+            requestCreateCart();
+            isCartReady = true;
+        };
     }
 
     // Middle action: share
@@ -574,6 +533,8 @@ function updateForm(action) {
 function initModal() {
     const class_filters = document.querySelectorAll(".class-filter");
     const class_carts = document.querySelectorAll(".class-cart");
+    const class_views = document.querySelectorAll(".class-view");
+    const class_adds = document.querySelectorAll(".class-add");
     const class_shares = document.querySelectorAll(".class-share");
 
     class_filters.forEach(filter => {
@@ -590,7 +551,8 @@ function initModal() {
         ["click", "keyup"].forEach(type => {
             cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    updateForm("cart");
+                    if (Array.from(class_views).includes(cart)) { updateForm("view_cart") }
+                    else if (Array.from(class_adds).includes(cart)) { updateForm("add_to_cart") };
                 };
             });
         });
@@ -612,11 +574,11 @@ initModal();
 function styleAccordion() {
     if (id_detail !== null) {
         const id_detail_purpose = code(id_detail, "_purpose");
-        const id_detail_status = code(id_detail, "_status");
+        // const id_detail_status = code(id_detail, "_status");
         const id_detail_limit = code(id_detail, "_limit");
         const id_detail_precaution = code(id_detail, "_precaution");
 
-        [id_detail_purpose, id_detail_status, id_detail_limit, id_detail_precaution].forEach(accordion => {
+        [id_detail_purpose, id_detail_limit, id_detail_precaution].forEach(accordion => {
             accordion.addEventListener("keydown", () => {
                 accordion.classList.add("focus:df-focus-ring-offset-white");
             });
@@ -649,6 +611,20 @@ function styleAccordion() {
 
 styleAccordion();
 
+// function addEquipment() {
+//     if (id_detail !== null) {
+//         const id_add_equipment = document.getElementById("id_add_equipment");
+
+//         ["click", "keyup"].forEach(type => {
+//             id_add_equipment.addEventListener(type, event => {
+//                 if (type === "click" || event.key === "Enter" || event.key === " ") {
+
+//                 };
+//             });
+//         });
+//     };
+// }
+
 function copyUrl() {
     if (id_copy_url !== null) {
         id_url.addEventListener("click", () => {
@@ -676,125 +652,130 @@ function copyUrl() {
 copyUrl();
 
 function share() {
-    if (id_detail !== null) {
-        const data = id_detail.dataset;
-        const id_kakaotalk = document.getElementById("id_kakaotalk");
-        const id_x = document.getElementById("id_x");
-        const id_facebook = document.getElementById("id_facebook");
-        const id_line = document.getElementById("id_line");
-        let description;
+    if (id_detail == null) { return };
 
-        if (data.subcategory !== "None") {
-            description = `${data.category} · ${data.collectionId} · ${data.subcategory}`;
-        } else {
-            description = `${data.category} · ${data.collectionId}`;
-        };
+    const data = id_detail.dataset;
+    const id_kakaotalk = document.getElementById("id_kakaotalk");
+    const id_x = document.getElementById("id_x");
+    const id_facebook = document.getElementById("id_facebook");
+    const id_line = document.getElementById("id_line");
+    let description;
 
-        Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+    if (data.subcategory !== "None") {
+        description = `${data.category} · ${data.collectionId} · ${data.subcategory}`;
+    } else {
+        description = `${data.category} · ${data.collectionId}`;
+    };
 
-        id_kakaotalk.addEventListener("click", () => {
-            Kakao.Share.sendDefault({
-                objectType: "feed",
-                content: {
-                    title: data.name,
-                    description: description,
-                    imageUrl: data.thumbnail,
+    Kakao.init("36080e7fa227c8f75e1b351c53d2c77c");
+
+    id_kakaotalk.addEventListener("click", () => {
+        Kakao.Share.sendDefault({
+            objectType: "feed",
+            content: {
+                title: data.name,
+                description: description,
+                imageUrl: data.thumbnail,
+                link: {
+                    mobileWebUrl: `${location.origin}${location.pathname}`,
+                    webUrl: `${location.origin}${location.pathname}`,
+                },
+            },
+            buttons: [
+                {
+                    title: "디닷에프에서 보기",
                     link: {
-                        mobileWebUrl: `${originLocation}${location.pathname}`,
-                        webUrl: `${originLocation}${location.pathname}`,
+                        mobileWebUrl: `${location.origin}${location.pathname}`,
+                        webUrl: `${location.origin}${location.pathname}`,
                     },
                 },
-                buttons: [
-                    {
-                        title: "디닷에프에서 보기",
-                        link: {
-                            mobileWebUrl: `${originLocation}${location.pathname}`,
-                            webUrl: `${originLocation}${location.pathname}`,
-                        },
-                    },
-                ],
-            });
+            ],
         });
+    });
 
-        id_x.addEventListener("click", () => {
-            const xUrl = `https://twitter.com/intent/tweet?text=${data.name}&url=${originLocation}${location.pathname}`;
+    id_x.addEventListener("click", () => {
+        const xUrl = `https://twitter.com/intent/tweet?text=${data.name}&url=${location.origin}${location.pathname}`;
 
-            window.open(xUrl);
-        });
+        window.open(xUrl);
+    });
 
-        id_facebook.addEventListener("click", () => {
-            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${originLocation}${location.pathname}`;
+    id_facebook.addEventListener("click", () => {
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${location.origin}${location.pathname}`;
 
-            window.open(facebookUrl);
-        });
+        window.open(facebookUrl);
+    });
 
-        id_line.addEventListener("click", () => {
-            const lineUrl = `https://social-plugins.line.me/lineit/share?url=${originLocation}${location.pathname}`;
+    id_line.addEventListener("click", () => {
+        const lineUrl = `https://social-plugins.line.me/lineit/share?url=${location.origin}${location.pathname}`;
 
-            window.open(lineUrl);
-        });
-    };
+        window.open(lineUrl);
+    });
 }
 
 share();
 
-function goToList() {
-    const id_go_to_list = document.getElementById("id_go_to_list");
-    const class_details = document.querySelectorAll(".class-detail");
-
-    if (class_details !== null) {
-        class_details.forEach((detail) => {
-            if (location.search !== "") {
-                detail.href += `${location.search}`;
-            };
-        });
-    };
-
-    if (id_go_to_list !== null) {
-        if (id_go_to_list.previousElementSibling === null) {
-            id_go_to_list.classList.remove("mt-3");
-        };
-
-        ["click", "keyup"].forEach(type => {
-            id_go_to_list.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    if (location.search !== "") {
-                        location.href = `${originLocation}/equipment${location.search}`;
-                    } else {
-                        location.href = `${originLocation}/equipment/`;
-                    };
-
-                    freezeForm(true);
-                };
-            });
-        });
-    };
-}
-
-goToList();
-
 function requestFilterEquipment() {
-    freezeForm(true);
+    let data;
 
     if (id_purpose.value !== "" && id_period.value !== "") {
-        urlParams.set("categoryPriority", id_category.value);
-        urlParams.set("purposePriority", id_purpose.value);
-        urlParams.set("period", id_period.value);
+        data = { categoryPriority: id_category.value, purposePriority: id_purpose.value, period: id_period.value };
     } else if (id_purpose.value !== "") {
-        urlParams.set("categoryPriority", id_category.value);
-        urlParams.set("purposePriority", id_purpose.value);
-        urlParams.delete("period");
+        data = { categoryPriority: id_category.value, purposePriority: id_purpose.value };
     } else {
-        urlParams.set("categoryPriority", id_category.value);
-        urlParams.delete("purposePriority");
-        urlParams.delete("period");
+        data = { categoryPriority: id_category.value };
     };
 
-    urlParams.delete("q");
-    urlParams.delete("page");
+    data["id"] = "filter_equipment";
+    if (location.pathname !== "/equipment/") { data["recordId"] = id_detail.dataset.recordId };
 
-    location.href = `${originLocation}/equipment/?${urlParams.toString()}`;
+    request.url = `${location.origin}/equipment/utils/filter-equipment/`;
+    request.type = "POST";
+    request.data = data;
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
 }
+
+function requestCreateCart() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "create_cart", purpose_priority: urlParams.get("purposePriority"), period: urlParams.get("period") };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+};
+
+function requestReadCart() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "read_cart" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+};
+
+function requestUpdateCart() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "update_cart" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+};
+
+function requestDeleteCart() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "delete_cart" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+};
 
 function initRequest() {
     window.addEventListener("pageshow", () => {

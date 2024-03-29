@@ -51,7 +51,7 @@
                            class="flex text-sm font-medium leading-6 text-gray-500">
                         총&nbsp<span class="font-semibold">{{ notice_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 공지사항 검색됨
                     </label>
-                    <div id="id_initialize_query"
+                    <div id="id_init_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                          tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -67,8 +67,7 @@
                     </div>
                 </div>
             {% else %}
-                <label for="id_query"
-                       class="text-sm font-medium leading-6 text-gray-500">
+                <label for="id_query" class="text-sm font-medium leading-6 text-gray-500">
                     총&nbsp<span class="font-semibold">{{ notice_count }}개</span>의 공지사항 검색
                 </label>
             {% endif %}
@@ -117,7 +116,7 @@
                         <div class="flex justify-start items-center gap-x-2">
                             <!-- notice.title -->
                             <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a href="{% url 'notice:notice_detail' notice.page_id %}"
+                                <a href="{% url 'notice:notice_detail' notice.notice_id %}"
                                    class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ notice.title }}
@@ -164,13 +163,14 @@
                             </p>
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                 <span data-page-id="{{ notice.page_id }}"
-                                        data-title="{{ notice.title }}"
-                                        data-category="{{ notice.category }}"
-                                        data-keyword="{{ notice.keyword }}"
-                                        data-file="{{ notice.file }}"
-                                        data-listed-date="{{ notice.listed_date }}"
-                                        class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                        tabindex="0">수정하기</span>
+                                      data-notice-id="{{ notice.notice_id }}"
+                                      data-title="{{ notice.title }}"
+                                      data-category="{{ notice.category }}"
+                                      data-keyword="{{ notice.keyword }}"
+                                      data-file="{{ notice.file }}"
+                                      data-listed-date="{{ notice.listed_date }}"
+                                      class="class-adjust relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                      tabindex="0">수정하기</span>
                             </p>
                         </div>
                     {% else %}
@@ -297,4 +297,5 @@
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

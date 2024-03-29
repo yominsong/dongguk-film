@@ -142,16 +142,13 @@ def project(request):
                 found_user["pk"] = found_user.pop("user")
 
             status = "DONE"
-            reason = "사용자 찾기 성공"
         else:
             status = "FAIL"
-            reason = "사용자 찾기 실패"
 
         response = {
             "id": id,
             "result": {
                 "status": status,
-                "reason": reason,
                 "found_user_list": found_user_list,
             },
         }
@@ -171,7 +168,6 @@ def project(request):
 
         if response.status_code == 200:
             status = "DONE"
-            reason = "프로젝트 등록"
             msg = "프로젝트가 등록되었어요! 👍"
         elif response.status_code == 400:
             status = "FAIL"
@@ -190,7 +186,7 @@ def project(request):
             "id": id,
             "result": {
                 "status": status,
-                "reason": reason,
+                "reason": reason if status == "FAIL" else None,
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,
@@ -215,7 +211,6 @@ def project(request):
 
         if response.status_code == 200:
             status = "DONE"
-            reason = "프로젝트 수정"
             msg = "프로젝트가 수정되었어요! 👍"
         elif response.status_code == 400:
             status = "FAIL"
@@ -230,7 +225,7 @@ def project(request):
             "id": id,
             "result": {
                 "status": status,
-                "reason": reason,
+                "reason": reason if status == "FAIL" else None,
                 "msg": msg,
                 "notion_url": response.json()["url"] if status == "DONE" else None,
                 "title": title,

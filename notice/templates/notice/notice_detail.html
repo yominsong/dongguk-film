@@ -191,10 +191,10 @@
                 </ul>
             {% endif %}
             <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
-            <div class="flex justify-start gap-2 mt-5 mb-2.5">
+            <div class="flex flex-nowrap overflow-x-auto transparent-scrollbar justify-start gap-2 mt-5 mb-2.5">
                 <span class="sr-only">해시태그:</span>
                 {% for keyword in notice.keyword.list %}
-                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
+                    <span class="flex rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">
                         {{ keyword }}
                     </span>
                 {% endfor %}
@@ -215,7 +215,7 @@
                     </button>
                 {% endif %}
                 <button type="button"
-                        id="id_go_to_list"
+                        id="id_back_to_list"
                         class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed">
                     목록 보기
                 </button>
@@ -227,4 +227,5 @@
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/ckeditor.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

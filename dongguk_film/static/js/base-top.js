@@ -2,8 +2,6 @@
 // Global variables
 //
 
-const originLocation = location.origin;
-
 let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
 let isAuthenticated = false;
@@ -50,7 +48,7 @@ function code(one, two) {
     let result;
 
     if (one === null || one === undefined) {
-        result = null;
+        return;
     } else {
         if (two === null || two === undefined) {
             two = "";
@@ -59,7 +57,11 @@ function code(one, two) {
         if (typeof (one) === "object" && typeof (two) === "string") {
             result = one.id + two;
         } else if (typeof (one) === "string" && typeof (two) === "object") {
-            result = one + two.id;
+            if (two.id.indexOf("id_") === 0) {
+                result = one + two.id.replace("id_", "");
+            } else {
+                result = one + two.id;
+            };
         } else if (typeof (one) === "object" && typeof (two) === "object") {
             result = one.id + two.id;
         } else if (typeof (one) === "string" && typeof (two) === "string") {
@@ -313,11 +315,21 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestFilterEquipment()
+    else if (resID === "filter_equipment") {
+        if (resResult.status === "DONE") {
+            if (resResult.redirect_to_list) {
+                location.href = `${location.origin}/equipment/${resResult.collection_id}/?${resResult.query_string}`;
+            } else {
+                location.href = `${location.origin}/equipment/?${resResult.query_string}`;
+            };
+        };
+    }
+
     // requestFindUser()
     else if (resID === "find_user") {
         if (resResult.status === "DONE") {
             initFoundUserList(resResult);
-            console.log("based-top: " + isUserFound);
         } else if (resResult.status === "FAIL") {
             initFoundUserList();
         };
@@ -328,7 +340,7 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update, "error");
-            location.href = `${originLocation}${location.pathname}`;
+            location.href = `${location.origin}${location.pathname}`;
         } else if (resResult.status === "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -386,7 +398,7 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update, "error");
-            location.href = `${originLocation}${location.pathname}`;
+            location.href = `${location.origin}${location.pathname}`;
         } else if (resResult.status === "FAIL") {
             freezeForm(false);
             buttons.forEach((button) => {
@@ -464,7 +476,7 @@ function handleAjaxCallback(response) {
         if (resResult.status === "DONE") {
             displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
             displayButtonMsg(false, id_create_or_update, "error");
-            location.href = `${originLocation}${location.pathname}`;
+            location.href = `${location.origin}${location.pathname}`;
         } else if (resResult.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
@@ -476,7 +488,7 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
             if (resResult.reason.includes("대체 텍스트")) {
                 displayNoti(true, "RAT");
-            } else if (resResult.reason.includes("설명 텍스트")) {
+            } else if (resResult.reason.includes("텍스트 미포함")) {
                 displayNoti(true, "RDI");
             };
         };
@@ -532,11 +544,11 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_delete, "error");
             if (search.includes("previousSearch")) {
                 let previousSearch = new URLSearchParams(search).get("previousSearch");
-                location.href = `${originLocation}/notice${previousSearch}`;
+                location.href = `${location.origin}/notice${previousSearch}`;
             } else if (location.pathname !== "/notice/") {
-                location.href = `${originLocation}/${location.pathname.split("/")[1]}/`;
+                location.href = `${location.origin}/${location.pathname.split("/")[1]}/`;
             } else {
-                location.href = `${originLocation}${location.pathname}`;
+                location.href = `${location.origin}${location.pathname}`;
             };
         } else if (resResult.status === "FAIL") {
             freezeFileForm(false);
@@ -554,7 +566,7 @@ function handleAjaxCallback(response) {
 }
 
 function requestVerifyAuthentication() {
-    request.url = `${originLocation}/users/utils/verify-authentication/`;
+    request.url = `${location.origin}/users/utils/verify-authentication/`;
     request.type = "POST";
     request.data = { id: "verify_authentication" };
     request.async = true;
