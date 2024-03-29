@@ -109,8 +109,6 @@ def filter_equipment(request):
     purpose_priority = request.POST.get("purposePriority")
     period = request.POST.get("period")
 
-    status = None
-
     # id: filter_equipment
     if id == "filter_equipment":
         try:
@@ -158,57 +156,6 @@ def filter_equipment(request):
                     "reason": str(e),
                 },
             }
-
-        # try:
-        #     record_id = request.POST.get("recordId", None)
-        #     query_string = {"categoryPriority": category_priority}
-
-        #     if purpose_priority and period:
-        #         query_string["purposePriority"] = purpose_priority
-        #         query_string["period"] = period
-
-        #     query_string = urlencode(query_string)
-
-        #     collection_id = None
-        #     name = None
-        #     redirect_to_list = None
-
-        #     if record_id:
-        #         data = {
-        #             "table_name": "equipment-collection",
-        #             "params": {
-        #                 "record_id": record_id,
-        #             },
-        #         }
-
-        #         collection = airtable("get", "record", data=data)
-        #         collection_id = collection["collection_id"]
-        #         name = collection["name"]
-        #         item_purpose = collection["item_purpose"]
-
-        #         for purpose in item_purpose:
-        #             if purpose_priority in purpose:
-        #                 redirect_to_list = True
-        #                 break
-        #             else:
-        #                 redirect_to_list = False
-
-        #     status = "DONE"
-        # except:
-        #     status = "FAIL"
-        #     reason = response.json()
-
-        # response = {
-        #     "id": id,
-        #     "result": {
-        #         "status": status,
-        #         "reason": reason if status == "FAIL" else None,
-        #         "collection_id": collection_id,
-        #         "name": name,
-        #         "query_string": query_string,
-        #         "redirect_to_list": redirect_to_list,
-        #     },
-        # }
     
     return JsonResponse(response)
 
