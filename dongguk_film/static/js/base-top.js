@@ -318,12 +318,18 @@ function handleAjaxCallback(response) {
     // requestFilterEquipment()
     else if (resID === "filter_equipment") {
         if (resResult.status === "DONE") {
-            if (resResult.execute_from_detail_page && resResult.rental_allowed) {
-                location.href = `${location.origin}/equipment/${resResult.collection_id}/?${resResult.query_string}`;
-            } else if (resResult.execute_from_detail_page && !resResult.rental_allowed) {
-                location.href = `${location.origin}/equipment/?${resResult.query_string}&rental-limit=${resResult.name}`;
+            const defaultUrl = `${location.origin}/equipment/?${resResult.query_string}`;
+
+            if (resResult.execute_from_detail_page) {
+                if (!resResult.execute_within_same_category) {
+                    location.href = defaultUrl;
+                } else if (resResult.rental_allowed) {
+                    location.href = `${location.origin}/equipment/${resResult.collection_id}/?${resResult.query_string}`;
+                } else if (!resResult.rental_allowed) {
+                    location.href = `${defaultUrl}&rental-limit=${resResult.name}`;
+                };
             } else {
-                location.href = `${location.origin}/equipment/?${resResult.query_string}`;
+                location.href = defaultUrl;
             };
         };
     }

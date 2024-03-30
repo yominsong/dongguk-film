@@ -118,7 +118,8 @@ def filter_equipment(request):
             query_string["purposePriority"] = purpose_priority
             query_string["period"] = period
 
-        execute_from_detail_page, collection_id, name, rental_allowed = (
+        execute_from_detail_page, execute_within_same_category, collection_id, name, rental_allowed = (
+            False,
             False,
             None,
             None,
@@ -138,16 +139,16 @@ def filter_equipment(request):
 
             collection = airtable("get", "record", data=data)
 
-            if collection["category"]["priority"] != category_priority:
-                pass
-            else:
-                collection_id = collection["collection_id"]
-                name = collection["name"]
-                
-                rental_allowed = any(
-                    purpose_priority in collection_purpose
-                    for collection_purpose in collection["item_purpose"]
-                )
+            if collection["category"]["priority"] == category_priority:
+                execute_within_same_category = True
+
+            collection_id = collection["collection_id"]
+            name = collection["name"]
+
+            rental_allowed = any(
+                purpose_priority in collection_purpose
+                for collection_purpose in collection["item_purpose"]
+            )
 
         query_string = urlencode(query_string)
 
@@ -157,6 +158,7 @@ def filter_equipment(request):
                 "status": "DONE",
                 "query_string": query_string,
                 "execute_from_detail_page": execute_from_detail_page,
+                "execute_within_same_category": execute_within_same_category,
                 "collection_id": collection_id,
                 "name": name,
                 "rental_allowed": rental_allowed,
