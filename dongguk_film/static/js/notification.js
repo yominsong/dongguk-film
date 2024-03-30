@@ -175,7 +175,7 @@ function displayNoti(bool, notiType, param = null) {
         else if (notiType === "RTL") {
             notiIcon = exclamationIcon;
             notiTitle = "해당 목적으로 대여할 수 없는 기자재예요.";
-            notiContent = `${param} 기자재는 현재 선택된 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
+            notiContent = `${param} 기자재는 ${id_purpose_badge.innerText.split("\n")[1]} 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
         }
 
         // login
