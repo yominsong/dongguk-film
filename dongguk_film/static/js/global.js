@@ -126,7 +126,7 @@ function initSearchBar() {
 
 initSearchBar();
 
-function backToList() {
+function adjustHrefTarget() {
     if (appName !== "equipment" && !appName == "notice") { return };
 
     const class_details = document.querySelectorAll(".class-detail");
@@ -134,7 +134,13 @@ function backToList() {
     if (class_details !== null) {
         class_details.forEach((detail) => {
             if (location.search !== "") {
-                detail.href += `${location.search}`;
+                const params = new URLSearchParams(location.search);
+
+                params.delete("rental-limit");
+
+                if ([...params].length > 0) {
+                    detail.href += `?${params}`;
+                };
             };
         });
     };
@@ -162,4 +168,4 @@ function backToList() {
     };
 }
 
-backToList();
+adjustHrefTarget();

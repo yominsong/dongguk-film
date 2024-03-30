@@ -586,7 +586,6 @@ initModal();
 function styleAccordion() {
     if (id_detail !== null) {
         const id_detail_purpose = code(id_detail, "_purpose");
-        // const id_detail_status = code(id_detail, "_status");
         const id_detail_limit = code(id_detail, "_limit");
         const id_detail_precaution = code(id_detail, "_precaution");
 
