@@ -115,7 +115,6 @@ function executeWhenUserGoesToSelectPurpose() {
                     const id_period_base = code(id_period, "_base");
 
                     filter.click();
-                    id_purpose_label.scrollIntoView({ behavior: "smooth" });
                     setTimeout(() => { id_purpose_label.classList.add("blink") }, 300);
                     setTimeout(() => { id_select_purpose.classList.add("blink-ring") }, 300);
                     setTimeout(() => { id_purpose_label.classList.remove("blink") }, 3300);
@@ -126,6 +125,7 @@ function executeWhenUserGoesToSelectPurpose() {
                     setTimeout(() => { id_period_label.classList.remove("blink") }, 3300);
                     setTimeout(() => { id_period_base.classList.remove("blink-ring") }, 3300);
                     setTimeout(() => { id_period_calendar.classList.remove("blink-ring") }, 3300);
+                    setTimeout(() => { id_purpose_label.scrollIntoView({ behavior: "smooth" }); }, 100);
                 };
             });
         });
