@@ -850,7 +850,7 @@ function handleFocusForModal(isModalOpen, modal) {
         if (lastFocusedElement) {
             if (lastFocusedElement === id_notice_detail_option_menu) {
                 lastFocusedElement = id_notice_detail_option_button;
-            }
+            };
 
             setTimeout(() => { lastFocusedElement.focus() }, 300);
             setTimeout(() => { window.scrollTo(0, parseInt(sessionStorage.getItem("scrollPosition")), { behavior: "instant" }) }, 0.00001);

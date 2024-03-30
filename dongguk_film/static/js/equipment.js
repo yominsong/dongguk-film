@@ -40,11 +40,14 @@ const data_period = id_period.dataset;
 function notifyRentalLimit() {
     const params = new URLSearchParams(window.location.search);
 
-    if (params.has("rental-limit")) {
-        const collection_name = params.get("rental-limit");
+    if (!params.has("rental-limit")) { return };
 
-        displayNoti(true, "RTL", collection_name);
-    };
+    const id_purpose_badge = code(id_purpose, "_badge");
+    const collectionName = params.get("rental-limit");
+    const purposeKeyword = id_purpose_badge.innerText.split("\n")[1]
+    const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
+
+    displayNoti(true, "RTL", paramForNoti);
 }
 
 notifyRentalLimit();

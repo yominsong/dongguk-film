@@ -118,7 +118,12 @@ def filter_equipment(request):
             query_string["purposePriority"] = purpose_priority
             query_string["period"] = period
 
-        execute_from_detail_page, collection_id, name, rental_allowed = False, None, None, False
+        execute_from_detail_page, collection_id, name, rental_allowed = (
+            False,
+            None,
+            None,
+            False,
+        )
 
         # detail page only
         if record_id:
@@ -138,7 +143,11 @@ def filter_equipment(request):
             else:
                 collection_id = collection["collection_id"]
                 name = collection["name"]
-                rental_allowed = purpose_priority in str(collection["item_purpose"])
+                
+                rental_allowed = any(
+                    purpose_priority in collection_purpose
+                    for collection_purpose in collection["item_purpose"]
+                )
 
         query_string = urlencode(query_string)
 

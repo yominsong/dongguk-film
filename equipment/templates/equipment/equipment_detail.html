@@ -348,55 +348,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div x-data="{ open: false }">
-                            <h3>
-                                <button id="id_detail_status" type="button" class="group relative flex w-full items-center justify-between py-6 text-left rounded-md focus:outline-none focus:df-focus-ring-offset-white" aria-controls="id_detail_status_content" @click="open = !open" aria-expanded="false" x-bind:aria-expanded="open.toString()">
-                                    <span class="text-gray-900 text-sm font-medium" x-state:on="Open" x-state:off="Closed" :class="{ 'text-flamingo-600': open, 'text-gray-900': !(open) }">기자재 현황</span>
-                                    <span class="ml-6 flex items-center">
-                                        <svg class="block h-6 w-6 text-gray-400 group-hover:text-gray-500" x-state:on="Open" x-state:off="Closed" :class="{ 'hidden': open, 'block': !(open) }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-                                        </svg>
-                                        <svg class="hidden h-6 w-6 text-flamingo-400 group-hover:text-flamingo-500" x-state:on="Open" x-state:off="Closed" :class="{ 'block': open, 'hidden': !(open) }" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"></path>
-                                        </svg>
-                                    </span>
-                                </button>
-                            </h3>
-                            <div id="id_detail_status_content" class="pb-6" x-show="open" style="display: none">
-                                <ul class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-                                    {% for item in collection.item %}
-                                    <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray">
-                                        <span class="flex flex-col space-y-1">
-                                            <div class="flex items-center">
-                                                <span class="block text-sm font-medium text-gray-900">{{ item.item_id }}</span>
-                                            </div>
-                                            <div class="flex items-center text-sm text-gray-500">
-                                                <span>
-                                                    {% if item.status == "Available" %}
-                                                        사용 가능
-                                                    {% elif item.status == "In Use" %}
-                                                        {{ item.end_date }}까지 대여 중
-                                                    {% else %}
-                                                        사용 불가
-                                                    {% endif %}
-                                                </span>
-                                                <span></span>
-                                            </div>
-                                        </span>
-                                        {% if item.status == "Available" %}
-                                            <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
-                                                <div class="h-2 w-2 rounded-full bg-current"></div>
-                                            </div>
-                                        {% else %}
-                                            <div class="flex-none ml-2 rounded-full p-1 text-gray-400 bg-gray-400/20">
-                                                <div class="h-2 w-2 rounded-full bg-current"></div>
-                                            </div>
-                                        {% endif %}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div> -->
                         <div x-data="{ open: false }">
                             <h3>
                                 <button id="id_detail_limit"
@@ -511,51 +462,96 @@
                     <h2 id="options-heading" class="sr-only">기자재 선택</h2>
                     <div class="flex items-center justify-between mt-6 sm:mb-3">
                         {% if user.is_authenticated %}
-                            <div class="mr-4">
-                                <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                {% if not available_stock_of_current_purpose %}
+                            {% if not available_stock_of_current_purpose %}
+                                <div class="mr-4">
+                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
                                     <select id="id_select_quantity"
                                             class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
                                             disabled>
                                         <option disabled hidden selected>0</option>
                                     </select>
-                                {% else %}
+                                </div>
+                                <button id="id_add_equipment"
+                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                        disabled>장바구니에 담기</button>
+                            {% else %}
+                                <div class="mr-4">
+                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
                                     <select id="id_select_quantity"
                                             class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        {% for stock in available_stock_of_current_purpose %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button id="id_add_equipment"
+                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                    장바구니에 담기
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            {% if not available_stock_of_current_purpose %}
+                                <div class="mr-4">
+                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                            disabled>
+                                        <option disabled hidden selected>0</option>
+                                    </select>
+                                </div>
+                                <button id="id_add_equipment"
+                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                        disabled>장바구니에 담기</button>
+                            {% else %}
+                                <div class="mr-4">
+                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
+                                    <select id="id_select_quantity"
+                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        {% for stock in available_stock_of_current_purpose %}
+                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <a href="{% url 'account_login' %}"
+                                   class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                   data-login-request-msg="createCart">장바구니에 담기</a>
+                            {% endif %}
+                        {% endif %}
+                        <!-- {% if user.is_authenticated %}
+                            <div class="mr-4">
+                                <label for="id_select_quantity_label" class="sr-only">수량</label>
+                                {% if not available_stock_of_current_purpose %}
+                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
+                                        <option disabled hidden selected>0</option>
+                                    </select>
+                                {% else %}
+                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
                                         {% for stock in available_stock_of_current_purpose %}
                                             <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
                                         {% endfor %}
                                     </select>
                                 {% endif %}
                             </div>
-                            <button id="id_add_equipment"
-                                    class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            <button id="id_add_equipment" class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                                 장바구니에 담기
                             </button>
                         {% else %}
-                            <a href="{% url 'account_login' %}"
-                               class="login-button mr-4"
-                               data-login-request-msg="createCart">
+                            <a href="{% url 'account_login' %}" class="login-button mr-4" data-login-request-msg="createCart">
                                 <label for="id_select_quantity_label" class="sr-only">수량</label>
                                 {% if not available_stock_of_current_purpose %}
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                            disabled>
+                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
                                         <option disabled hidden selected>0</option>
                                     </select>
                                 {% else %}
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
                                         {% for stock in available_stock_of_current_purpose %}
                                             <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
                                         {% endfor %}
                                     </select>
                                 {% endif %}
                             </a>
-                            <a href="{% url 'account_login' %}"
-                               class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                               data-login-request-msg="createCart">장바구니에 담기</a>
-                        {% endif %}
+                            <a href="{% url 'account_login' %}" class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed" data-login-request-msg="createCart">장바구니에 담기</a>
+                        {% endif %} -->
                     </div>
                 </section>
             </div>
