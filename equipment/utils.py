@@ -105,58 +105,55 @@ def get_equipment_policy(policy: str):
 
 def filter_equipment(request):
     id = request.POST.get("id")
+    record_id = request.POST.get("recordId", None)
     category_priority = request.POST.get("categoryPriority")
     purpose_priority = request.POST.get("purposePriority")
     period = request.POST.get("period")
 
     # id: filter_equipment
     if id == "filter_equipment":
-        try:
-            record_id = request.POST.get("recordId", None)
-            query_string = {"categoryPriority": category_priority}
+        query_string = {"categoryPriority": category_priority}
 
-            if purpose_priority and period:
-                query_string["purposePriority"] = purpose_priority
-                query_string["period"] = period
+        if purpose_priority and period:
+            query_string["purposePriority"] = purpose_priority
+            query_string["period"] = period
 
-            collection_id, name, redirect_to_list = None, None, None
+        execute_from_detail_page, collection_id, name, rental_allowed = False, None, None, False
 
-            if record_id:
-                data = {
-                    "table_name": "equipment-collection",
-                    "params": {
-                        "record_id": record_id,
-                    },
-                }
+        # detail page only
+        if record_id:
+            execute_from_detail_page = True
 
-                collection = airtable("get", "record", data=data)
+            data = {
+                "table_name": "equipment-collection",
+                "params": {
+                    "record_id": record_id,
+                },
+            }
+
+            collection = airtable("get", "record", data=data)
+
+            if collection["category"]["priority"] != category_priority:
+                pass
+            else:
                 collection_id = collection["collection_id"]
                 name = collection["name"]
-                item_purpose = collection["item_purpose"]
+                rental_allowed = purpose_priority in str(collection["item_purpose"])
 
-                redirect_to_list = any(purpose_priority in purpose for purpose in item_purpose)
+        query_string = urlencode(query_string)
 
-            query_string = urlencode(query_string)
+        response = {
+            "id": id,
+            "result": {
+                "status": "DONE",
+                "query_string": query_string,
+                "execute_from_detail_page": execute_from_detail_page,
+                "collection_id": collection_id,
+                "name": name,
+                "rental_allowed": rental_allowed,
+            },
+        }
 
-            response = {
-                "id": id,
-                "result": {
-                    "status": "DONE",
-                    "collection_id": collection_id,
-                    "name": name,
-                    "query_string": query_string,
-                    "redirect_to_list": redirect_to_list,
-                },
-            }
-        except Exception as e:
-            response = {
-                "id": id,
-                "result": {
-                    "status": "FAIL",
-                    "reason": str(e),
-                },
-            }
-    
     return JsonResponse(response)
 
 

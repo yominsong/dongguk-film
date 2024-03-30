@@ -37,6 +37,18 @@ const data_period = id_period.dataset;
 // Sub functions
 //
 
+function notifyRentalLimit() {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.has("rental-limit")) {
+        const collection_name = params.get("rental-limit");
+
+        displayNoti(true, "RTL", collection_name);
+    };
+}
+
+notifyRentalLimit();
+
 function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
     let baseForWidth;
@@ -726,13 +738,14 @@ function requestFilterEquipment() {
     };
 
     data["id"] = "filter_equipment";
-    if (location.pathname !== "/equipment/") { data["recordId"] = id_detail.dataset.recordId };
+    if (id_detail !== null) { data["recordId"] = id_detail.dataset.recordId };
 
     request.url = `${location.origin}/equipment/utils/filter-equipment/`;
     request.type = "POST";
     request.data = data;
     request.async = true;
     request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
