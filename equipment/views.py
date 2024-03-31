@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, airtable
-import random
+import random, time
 
 #
 # Sub functions
@@ -260,7 +260,7 @@ def equipment_detail(request, collection_id):
     days_from_now = int(split_period[0]) if period else None
     duration = int(split_period[1]) if period else None
 
-    if period:
+    if period != "":
         for purpose in purpose_list:
             if purpose["priority"] == purpose_priority:
                 at_least = purpose["at_least"]
@@ -292,7 +292,7 @@ def equipment_detail(request, collection_id):
         else:
             purpose["permitted"] = False
 
-        if period and purpose["permitted"]:
+        if period != "" and purpose["permitted"]:
             user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
             user_end_date = user_start_date + timezone.timedelta(days=duration)
             user_start_date = user_start_date.date()

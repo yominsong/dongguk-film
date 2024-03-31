@@ -215,7 +215,7 @@
                     <div class="relative flex justify-end min-h-[36px] sm:min-h-[18px]"></div>
                 </div>
             </div>
-            <!-- Image -->
+            <!-- Thumbnail -->
             <div id="id_detail_image"
                  class="lg:col-start-1 lg:row-start-1 lg:row-span-2">
                 <div class="flex justify-center items-center aspect-1 sm:pt-4 overflow-hidden rounded-lg">
@@ -325,27 +325,6 @@
                                         </li>
                                     {% endfor %}
                                 </ul>
-                                <div id="id_detail_purpose_alert" class="rounded-md bg-yellow-50 p-4 mt-4">
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <svg class="h-5 w-5 text-yellow-400"
-                                                 xmlns="http://www.w3.org/2000/svg"
-                                                 viewBox="0 0 20 20"
-                                                 fill="currentColor"
-                                                 aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <h3 class="text-sm font-medium text-yellow-800">
-                                                재고 유무를 확인하려면
-                                                <span id="id_open_modal_and_focus_on_purpose"
-                                                      class="underline cursor-pointer rounded-md hover:text-flamingo-800 focus:outline-none focus:df-focus-ring-offset-yellow"
-                                                      tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
-                                            </h3>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div x-data="{ open: false }">
@@ -392,7 +371,6 @@
                                  x-show="open"
                                  style="display: none">
                                 <div class="rounded-md bg-gray-50 p-4">
-                                    <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
                                         <ul role="list" class="list-disc space-y-1 pl-5">
                                             {% for limit in limit_list %}
@@ -446,7 +424,6 @@
                             </h3>
                             <div id="id_detail_precaution_content" x-show="open" style="display: none">
                                 <div class="rounded-md bg-gray-50 p-4">
-                                    <!-- <h3 class="text-sm font-medium text-gray-800">제목</h3> -->
                                     <div class="text-sm text-gray-700">
                                         <ul role="list" class="list-disc space-y-1 pl-5">
                                             <li>개별 기자재마다 구성품 종류 및 세부 상태가 상이할 수 있어요.</li>
@@ -459,6 +436,31 @@
                     </div>
                 </section>
                 <section aria-labelledby="options-heading">
+                    <div id="id_cart_alert"
+                         class="rounded-md bg-flamingo-50 p-4 mt-6 -mb-2">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-flamingo-400"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3 text-sm font-medium text-flamingo-800">
+                                <h3 id="id_cart_alert_for_filter">
+                                    장바구니에 담으려면
+                                    <span id="id_open_modal_and_focus_on_purpose"
+                                          class="underline cursor-pointer rounded-md hover:text-flamingo-700 focus:outline-none focus:df-focus-ring-offset-flamingo"
+                                          tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
+                                </h3>
+                                <h3 id="id_cart_alert_for_stock">
+                                    현재 하세요.
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
                     <h2 id="options-heading" class="sr-only">기자재 선택</h2>
                     <div class="flex items-center justify-between mt-6 sm:mb-3">
                         {% if user.is_authenticated %}
@@ -517,41 +519,6 @@
                                    data-login-request-msg="createCart">장바구니에 담기</a>
                             {% endif %}
                         {% endif %}
-                        <!-- {% if user.is_authenticated %}
-                            <div class="mr-4">
-                                <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                {% if not available_stock_of_current_purpose %}
-                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
-                                        <option disabled hidden selected>0</option>
-                                    </select>
-                                {% else %}
-                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        {% for stock in available_stock_of_current_purpose %}
-                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                                        {% endfor %}
-                                    </select>
-                                {% endif %}
-                            </div>
-                            <button id="id_add_equipment" class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
-                                장바구니에 담기
-                            </button>
-                        {% else %}
-                            <a href="{% url 'account_login' %}" class="login-button mr-4" data-login-request-msg="createCart">
-                                <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                {% if not available_stock_of_current_purpose %}
-                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
-                                        <option disabled hidden selected>0</option>
-                                    </select>
-                                {% else %}
-                                    <select id="id_select_quantity" class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        {% for stock in available_stock_of_current_purpose %}
-                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                                        {% endfor %}
-                                    </select>
-                                {% endif %}
-                            </a>
-                            <a href="{% url 'account_login' %}" class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed" data-login-request-msg="createCart">장바구니에 담기</a>
-                        {% endif %} -->
                     </div>
                 </section>
             </div>

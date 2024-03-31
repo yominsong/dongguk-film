@@ -613,12 +613,19 @@ function styleAccordion() {
             });
         });
 
-        const id_detail_purpose_alert = code(id_detail_purpose, "_alert");
+        const id_cart_alert = document.getElementById("id_cart_alert");
+        const id_cart_alert_for_filter = code(id_cart_alert, "_for_filter");
+        const id_cart_alert_for_stock = code(id_cart_alert, "_for_stock");
 
-        if (urlParams.has("period")) {
-            id_detail_purpose_alert.hidden = true;
-        } else {
-            id_detail_purpose_alert.hidden = false;
+        [id_cart_alert, id_cart_alert_for_filter, id_cart_alert_for_stock].forEach(alert => { alert.hidden = true });
+
+        if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
+            id_cart_alert.hidden = false;
+            id_cart_alert_for_filter.hidden = false;
+        } else if (id_select_quantity.value === "0" && id_select_quantity.disabled) {
+            id_cart_alert.hidden = false;
+            id_cart_alert_for_stock.innerText = `해당 목적과 기간에 맞는 재고가 없어요.`;
+            id_cart_alert_for_stock.hidden = false;
         };
     };
 }
