@@ -127,7 +127,7 @@ def filter_equipment(request):
         )
 
         # detail page only
-        if record_id:
+        if purpose_priority:
             execute_from_detail_page = True
 
             data = {
