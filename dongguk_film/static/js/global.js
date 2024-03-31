@@ -136,7 +136,7 @@ function adjustHrefTarget() {
             if (location.search !== "") {
                 const params = new URLSearchParams(location.search);
 
-                params.delete("rental-limit");
+                params.delete("rentalLimited");
 
                 if ([...params].length > 0) {
                     detail.href += `?${params}`;

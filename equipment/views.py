@@ -261,6 +261,23 @@ def equipment_detail(request, collection_id):
     duration = int(split_period[1]) if period else None
 
     if period != "":
+        is_rental_allowed = any(
+            purpose_priority in collection_purpose
+            for collection_purpose in collection["item_purpose"]
+        )
+
+        if not is_rental_allowed:
+            base_url = reverse("equipment:equipment")
+
+            query_string = {
+                "categoryPriority": category_priority,
+                "purposePriority": purpose_priority,
+                "period": period,
+                "rentalLimited": collection["name"],
+            }
+
+            return redirect_with_query_string(base_url, query_string)
+
         for purpose in purpose_list:
             if purpose["priority"] == purpose_priority:
                 at_least = purpose["at_least"]

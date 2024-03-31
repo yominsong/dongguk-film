@@ -40,10 +40,10 @@ const data_period = id_period.dataset;
 function notifyRentalLimit() {
     const params = new URLSearchParams(window.location.search);
 
-    if (!params.has("rental-limit")) { return };
+    if (!params.has("rentalLimited")) { return };
 
     const id_purpose_badge = code(id_purpose, "_badge");
-    const collectionName = params.get("rental-limit");
+    const collectionName = params.get("rentalLimited");
     const purposeKeyword = id_purpose_badge.innerText.split("\n")[1]
     const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
 

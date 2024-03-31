@@ -112,24 +112,14 @@ def filter_equipment(request):
 
     # id: filter_equipment
     if id == "filter_equipment":
+        pathname = "/equipment/"
         query_string = {"categoryPriority": category_priority}
 
         if purpose_priority and period:
             query_string["purposePriority"] = purpose_priority
             query_string["period"] = period
 
-        execute_from_detail_page, execute_within_same_category, collection_id, name, rental_allowed = (
-            False,
-            False,
-            None,
-            None,
-            False,
-        )
-
-        # detail page only
         if record_id and purpose_priority and period:
-            execute_from_detail_page = True
-
             data = {
                 "table_name": "equipment-collection",
                 "params": {
@@ -139,29 +129,25 @@ def filter_equipment(request):
 
             collection = airtable("get", "record", data=data)
 
-            if collection["category"]["priority"] == category_priority:
-                execute_within_same_category = True
+            is_category_same = collection["category"]["priority"] == category_priority
 
-            collection_id = collection["collection_id"]
-            name = collection["name"]
-
-            rental_allowed = any(
+            is_rental_allowed = any(
                 purpose_priority in collection_purpose
                 for collection_purpose in collection["item_purpose"]
             )
 
-        query_string = urlencode(query_string)
+            if is_category_same and is_rental_allowed:
+                pathname += f'{collection["collection_id"]}/'
+            elif not is_rental_allowed:
+                query_string["rentalLimited"] = collection["name"]
+
+        next_url = f"{pathname}?{urlencode(query_string)}"
 
         response = {
             "id": id,
             "result": {
                 "status": "DONE",
-                "query_string": query_string,
-                "execute_from_detail_page": execute_from_detail_page,
-                "execute_within_same_category": execute_within_same_category,
-                "collection_id": collection_id,
-                "name": name,
-                "rental_allowed": rental_allowed,
+                "next_url": next_url,
             },
         }
 
