@@ -94,7 +94,9 @@ function freezeForm(bool) {
      */
 
     inputs.forEach(input => {
-        if (input.type === "checkbox") {
+        if (input.type === "text") {
+            bool ? input.readOnly = true : input.readOnly = false;
+        } else if (input.type === "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
         } else if (input.classList.contains("alt-calendar")) {
             const calendar = code(input.id + "_calendar");

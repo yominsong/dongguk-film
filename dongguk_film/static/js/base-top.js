@@ -173,6 +173,7 @@ function makeAjaxCall(request) {
 
     function getCookie(name) {
         let cookieValue = null;
+
         if (document.cookie && document.cookie !== "") {
             let cookies = document.cookie.split(";");
             for (let i = 0; i < cookies.length; i++) {
@@ -183,6 +184,7 @@ function makeAjaxCall(request) {
                 };
             };
         };
+        
         return cookieValue;
     }
 
@@ -229,11 +231,13 @@ function handleAjaxCallback(response) {
         pulseOn.forEach((item) => {
             item.classList.add("hidden");
         });
+
         pulseOff.forEach((item) => {
             item.classList.remove("hidden");
         });
 
         sessionStorage.setItem("weatherCachedAt", new Date().toString());
+
         if (sessionStorage.getItem("cachedWeather") !== null) {
             let cachedWeather = JSON.parse(sessionStorage.getItem("cachedWeather"));
             for (let key in cachedWeather) {
@@ -254,7 +258,9 @@ function handleAjaxCallback(response) {
 
         for (let key in resResult) {
             let obj = document.getElementById(`id_${key}`);
+
             obj.innerText = writeWeather(obj.innerText, resResult[key]);
+
             if ((!/\d+/.test(obj.innerText) && obj.innerText.includes("-")) && !notified) {
                 alertRefreshWeather();
                 notified = true;

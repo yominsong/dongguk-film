@@ -10,6 +10,7 @@ const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_initialize_purpose = code("id_initialize_", id_purpose);
 const id_period = document.getElementById("id_period");
+const id_purpose_badge = code(id_purpose, "_badge");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
 const id_filter = document.getElementById("id_filter");
@@ -21,13 +22,9 @@ const id_copy_url_descr = code(id_copy_url, "_descr");
 
 // detail
 const id_detail = document.getElementById("id_detail");
-const id_select_quantity = document.getElementById("id_select_quantity");
 
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
-
-// boolean
-let isCartReady = false;
 
 // miscellaneous
 const data_purpose = id_purpose.dataset;
@@ -42,7 +39,6 @@ function notifyRentalLimit() {
 
     if (!params.has("rentalLimited")) { return };
 
-    const id_purpose_badge = code(id_purpose, "_badge");
     const collectionName = params.get("rentalLimited");
     const purposeKeyword = id_purpose_badge.innerText.split("\n")[1]
     const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
@@ -118,16 +114,16 @@ function executeWhenUserGoesToSelectPurpose() {
                     const id_period_base = code(id_period, "_base");
 
                     filter.click();
-                    setTimeout(() => { id_purpose_label.classList.add("blink") }, 300);
-                    setTimeout(() => { id_select_purpose.classList.add("blink-ring") }, 300);
-                    setTimeout(() => { id_purpose_label.classList.remove("blink") }, 3300);
-                    setTimeout(() => { id_select_purpose.classList.remove("blink-ring") }, 3300);
-                    setTimeout(() => { id_period_label.classList.add("blink") }, 300);
-                    setTimeout(() => { id_period_base.classList.add("blink-ring") }, 300);
-                    setTimeout(() => { id_period_calendar.classList.add("blink-ring") }, 300);
-                    setTimeout(() => { id_period_label.classList.remove("blink") }, 3300);
-                    setTimeout(() => { id_period_base.classList.remove("blink-ring") }, 3300);
-                    setTimeout(() => { id_period_calendar.classList.remove("blink-ring") }, 3300);
+                    setTimeout(() => { id_purpose_label.classList.add("blink") }, 500);
+                    setTimeout(() => { id_select_purpose.classList.add("blink-ring") }, 500);
+                    setTimeout(() => { id_purpose_label.classList.remove("blink") }, 3500);
+                    setTimeout(() => { id_select_purpose.classList.remove("blink-ring") }, 3500);
+                    setTimeout(() => { id_period_label.classList.add("blink") }, 500);
+                    setTimeout(() => { id_period_base.classList.add("blink-ring") }, 500);
+                    setTimeout(() => { id_period_calendar.classList.add("blink-ring") }, 500);
+                    setTimeout(() => { id_period_label.classList.remove("blink") }, 3500);
+                    setTimeout(() => { id_period_base.classList.remove("blink-ring") }, 3500);
+                    setTimeout(() => { id_period_calendar.classList.remove("blink-ring") }, 3500);
                     setTimeout(() => { id_purpose_label.scrollIntoView({ behavior: "smooth" }); }, 100);
                 };
             });
@@ -476,7 +472,7 @@ function initForm() {
     displayButtonMsg(false, id_filter, "error");
 }
 
-function updateForm(action, datasetObj = null) {
+function updateForm(action) {
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
@@ -513,16 +509,17 @@ function updateForm(action, datasetObj = null) {
         });
 
         id_filter.classList.replace("inline-flex", "hidden");
+
+        const id_cart = sessionStorage.getItem("cart");
+
+        // if (id_cart == null) {
+        //     id_modal_cart.innerHTML = "<p class='text-center text-sm text-gray-500'>장바구니에 담긴 기자재가 없어요.</p>";
+        // }
     }
 
     // Middle action: add_to_cart
     else if (action === "add_to_cart") {
         updateForm("view_cart");
-
-        if (!isCartReady) {
-            requestCreateCart();
-            isCartReady = true;
-        };
     }
 
     // Middle action: share
@@ -547,9 +544,8 @@ function updateForm(action, datasetObj = null) {
 
 function initModal() {
     const class_filters = document.querySelectorAll(".class-filter");
-    const class_carts = document.querySelectorAll(".class-cart");
-    const class_views = document.querySelectorAll(".class-view");
-    const class_adds = document.querySelectorAll(".class-add");
+    const class_view_carts = document.querySelectorAll(".class-view-cart");
+    const class_add_to_carts = document.querySelectorAll(".class-add-to-cart");
     const class_shares = document.querySelectorAll(".class-share");
 
     class_filters.forEach(filter => {
@@ -562,12 +558,21 @@ function initModal() {
         });
     });
 
-    class_carts.forEach(cart => {
+    class_view_carts.forEach(view_cart => {
         ["click", "keyup"].forEach(type => {
-            cart.addEventListener(type, event => {
+            view_cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    if (Array.from(class_views).includes(cart)) { updateForm("view_cart") }
-                    else if (Array.from(class_adds).includes(cart)) { updateForm("add_to_cart") };
+                    updateForm("view_cart");
+                };
+            });
+        });
+    });
+
+    class_add_to_carts.forEach(add_to_cart => {
+        ["click", "keyup"].forEach(type => {
+            add_to_cart.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("add_to_cart");
                 };
             });
         });
@@ -616,35 +621,25 @@ function styleAccordion() {
         const id_cart_alert = document.getElementById("id_cart_alert");
         const id_cart_alert_for_filter = code(id_cart_alert, "_for_filter");
         const id_cart_alert_for_stock = code(id_cart_alert, "_for_stock");
-
-        [id_cart_alert, id_cart_alert_for_filter, id_cart_alert_for_stock].forEach(alert => { alert.hidden = true });
+        const id_quantity = document.getElementById("id_quantity");
 
         if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
             id_cart_alert.hidden = false;
             id_cart_alert_for_filter.hidden = false;
-        } else if (id_select_quantity.value === "0" && id_select_quantity.disabled) {
+        } else if (id_quantity.value === "0" && id_quantity.readOnly) {
+            const class_purposes = document.querySelectorAll(".class-purpose");
+
             id_cart_alert.hidden = false;
-            id_cart_alert_for_stock.innerText = `해당 목적과 기간에 맞는 재고가 없어요.`;
             id_cart_alert_for_stock.hidden = false;
+            
+            class_purposes.forEach(purpose => {
+                purpose.innerText = id_purpose_badge.innerText.split("\n")[1];
+            });
         };
     };
 }
 
 styleAccordion();
-
-// function addEquipment() {
-//     if (id_detail !== null) {
-//         const id_add_equipment = document.getElementById("id_add_equipment");
-
-//         ["click", "keyup"].forEach(type => {
-//             id_add_equipment.addEventListener(type, event => {
-//                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-
-//                 };
-//             });
-//         });
-//     };
-// }
 
 function copyUrl() {
     if (id_copy_url !== null) {
@@ -759,40 +754,20 @@ function requestFilterEquipment() {
     request = {};
 }
 
-function requestCreateCart() {
+function requestAddToCart() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
-    request.data = { id: "create_cart", purpose_priority: urlParams.get("purposePriority"), period: urlParams.get("period") };
+    request.data = { id: "add_to_cart" };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);
     request = {};
 };
 
-function requestReadCart() {
+function requestRemoveFromCart() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
-    request.data = { id: "read_cart" };
-    request.async = true;
-    request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-};
-
-function requestUpdateCart() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "update_cart" };
-    request.async = true;
-    request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-};
-
-function requestDeleteCart() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "delete_cart" };
+    request.data = { id: "remove_from_cart" };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);
@@ -804,7 +779,7 @@ function initRequest() {
         if (id_modal !== null) {
             class_firsts = document.querySelectorAll(".class-first");
             initValidation(class_firsts, id_filter);
-
+            
             ["click", "keyup"].forEach(type => {
                 id_filter.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;
@@ -832,6 +807,19 @@ function initRequest() {
                             });
                         });
                     });
+                });
+
+                if (id_detail == null) { return };
+
+                const id_add_to_cart = document.getElementById("id_add_to_cart");
+
+                id_add_to_cart.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                            
+                        };
                 });
             });
         };

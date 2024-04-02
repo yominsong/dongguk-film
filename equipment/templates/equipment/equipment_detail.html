@@ -66,7 +66,8 @@
                         </span>
                     {% endif %}
                     {% if purpose.keyword != None %}
-                        <span class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                        <span id="id_purpose_badge"
+                              class="class-badge rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
                             <span class="sr-only">대여 목적:</span>
                             {{ purpose.keyword }}
                         </span>
@@ -83,46 +84,51 @@
                     {% endif %}
                 </div>
             </div>
-            {% if user.is_authenticated %}
-                <div class="class-cart class-view flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                     tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke-width="1.7"
-                             stroke="currentColor"
-                             class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        장바구니
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
-                    </div>
+            <div class="class-view-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                 tabindex="0">
+                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                <div class="flex justify-start items-center gap-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.7"
+                         stroke="currentColor"
+                         class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                    장바구니
                 </div>
-            {% else %}
-                <a href="{% url 'account_login' %}"
-                   class="login-button flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                   data-login-request-msg="createCart">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke-width="1.7"
-                             stroke="currentColor"
-                             class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        장바구니
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
-                    </div>
-                </a>
-            {% endif %}
+                <div class="flex justify-end gap-2">
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Alert -->
+    <div id="id_cart_alert"
+         class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+         hidden>
+        <div class="rounded-md shadow bg-flamingo-50 p-4 my-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-flamingo-400"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20"
+                         fill="currentColor"
+                         aria-hidden="true">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3 text-sm font-medium text-flamingo-800">
+                    <h3 id="id_cart_alert_for_filter" hidden>
+                        재고 유무를 확인하거나 장바구니를 이용하려면
+                        <span id="id_open_modal_and_focus_on_purpose"
+                              class="underline cursor-pointer rounded-md hover:text-flamingo-700 focus:outline-none focus:df-focus-ring-offset-flamingo"
+                              tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
+                    </h3>
+                    <h3 id="id_cart_alert_for_stock" hidden><span class="class-purpose">해당</span> 목적으로 이 기자재를 대여할 수 있는 가장 이른 날짜는 {{ available_from }}이에요.</h3>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Detail -->
@@ -278,7 +284,7 @@
                                  style="display: none">
                                 <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3" role="list">
                                     {% for purpose in purpose_list %}
-                                        <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} {% if purpose.available_stock_length != 0 %} df-ring-inset-flamingo {% else %} df-ring-inset-dark-gray {% endif %} {% else %} df-ring-inset-gray {% endif %}">
+                                        <li class="relative flex justify-between items-center h-[72px] p-4 shadow-sm rounded-md {% if purpose.priority == purpose_priority %} {% if purpose.in_stock %} df-ring-inset-flamingo {% else %} df-ring-inset-dark-gray {% endif %} {% else %} df-ring-inset-gray {% endif %}">
                                             <span class="flex flex-col space-y-1">
                                                 <div class="flex items-center">
                                                     <span class="block text-sm font-medium text-gray-900">{{ purpose.keyword }}</span>
@@ -288,9 +294,9 @@
                                                         {% if not "period" in request.get_full_path %}
                                                             대여 허용
                                                         {% else %}
-                                                            {% if purpose.available_stock_length != 0 %}
+                                                            {% if purpose.in_stock %}
                                                                 {% if purpose.priority == purpose_priority %}
-                                                                    재고 {{ purpose.available_stock_length }}개
+                                                                    재고 {{ stock_list|length }}개
                                                                 {% else %}
                                                                     재고 있음
                                                                 {% endif %}
@@ -306,17 +312,29 @@
                                             {% if purpose.priority == purpose_priority %}
                                                 <div class="flex-none">
                                                     <span class="sr-only">선택된 대여 목적</span>
-                                                    <svg class="h-5 w-5 ml-1 {% if purpose.available_stock_length != 0 %} text-flamingo {% else %} text-gray-600 {% endif %}"
+                                                    <svg class="h-5 w-5 ml-1 {% if purpose.in_stock %} text-flamingo {% else %} text-gray-600 {% endif %}"
                                                          viewBox="0 0 16 20"
                                                          fill="currentColor"
                                                          aria-hidden="true">
                                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                                                     </svg>
                                                 </div>
-                                            {% elif purpose.permitted and purpose.available_stock_length != 0 %}
-                                                <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
-                                                    <div class="h-2 w-2 rounded-full bg-current"></div>
-                                                </div>
+                                            {% elif purpose.permitted %}
+                                                {% if not "period" in request.get_full_path %}
+                                                    <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
+                                                        <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                    </div>
+                                                {% else %}
+                                                    {% if purpose.in_stock %}
+                                                        <div class="flex-none ml-2 rounded-full p-1 text-flamingo-400 bg-flamingo-400/20">
+                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="flex-none ml-2 rounded-full p-1 text-gray-400 bg-gray-400/20">
+                                                            <div class="h-2 w-2 rounded-full bg-current"></div>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
                                             {% else %}
                                                 <div class="flex-none ml-2 rounded-full p-1 text-gray-400 bg-gray-400/20">
                                                     <div class="h-2 w-2 rounded-full bg-current"></div>
@@ -436,88 +454,84 @@
                     </div>
                 </section>
                 <section aria-labelledby="options-heading">
-                    <div id="id_cart_alert"
-                         class="rounded-md bg-flamingo-50 p-4 mt-6 -mb-2">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-flamingo-400"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     viewBox="0 0 20 20"
-                                     fill="currentColor"
-                                     aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3 text-sm font-medium text-flamingo-800">
-                                <h3 id="id_cart_alert_for_filter">
-                                    장바구니에 담으려면
-                                    <span id="id_open_modal_and_focus_on_purpose"
-                                          class="underline cursor-pointer rounded-md hover:text-flamingo-700 focus:outline-none focus:df-focus-ring-offset-flamingo"
-                                          tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
-                                </h3>
-                                <h3 id="id_cart_alert_for_stock">
-                                    현재 하세요.
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
                     <h2 id="options-heading" class="sr-only">기자재 선택</h2>
                     <div class="flex items-center justify-between mt-6 sm:mb-3">
-                        {% if user.is_authenticated %}
-                            {% if not available_stock_of_current_purpose %}
-                                <div class="mr-4">
-                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        {% if not stock_list %}
+                            <div class="mr-4">
+                                <div class="isolate inline-flex rounded-md shadow-sm h-11">
+                                    <button type="button"
+                                            class="relative -mr-px inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
                                             disabled>
-                                        <option disabled hidden selected>0</option>
-                                    </select>
+                                        <span class="sr-only">수량 1개 줄이기</span>
+                                        <svg class="h-5 w-5"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div class="inline-flex">
+                                        <label for="id_quantity" class="sr-only">대여 수량</label>
+                                        <input type="text"
+                                               id="id_quantity"
+                                               class="h-11 w-11 block border-0 py-1.5 text-center text-gray-900 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 focus:placeholder:text-transparent hover:bg-gray-50 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:focus:df-ring-inset-gray read-only:focus:placeholder:text-gray-400 read-only:hover:bg-gray-100 placeholder:text-gray-400"
+                                               value="0"
+                                               placeholder="0"
+                                               readonly>
+                                    </div>
+                                    <button type="button"
+                                            class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
+                                            disabled>
+                                        <span class="sr-only">수량 1개 늘리기</span>
+                                        <svg class="h-5 w-5"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <button id="id_add_equipment"
-                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                        disabled>장바구니에 담기</button>
-                            {% else %}
-                                <div class="mr-4">
-                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        {% for stock in available_stock_of_current_purpose %}
-                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <button id="id_add_equipment"
-                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
-                                    장바구니에 담기
-                                </button>
-                            {% endif %}
+                            </div>
+                            <button id="id_add_to_cart"
+                                    class="class-add-to-cart flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    disabled>장바구니에 담기</button>
                         {% else %}
-                            {% if not available_stock_of_current_purpose %}
-                                <div class="mr-4">
-                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                            disabled>
-                                        <option disabled hidden selected>0</option>
-                                    </select>
+                            <div class="mr-4">
+                                <div class="isolate inline-flex rounded-md shadow-sm h-11">
+                                    <button type="button"
+                                            class="relative -mr-px inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100">
+                                        <span class="sr-only">수량 1개 줄이기</span>
+                                        <svg class="h-5 w-5"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div class="inline-flex">
+                                        <label for="id_quantity" class="sr-only">대여 수량</label>
+                                        <input type="text"
+                                               id="id_quantity"
+                                               class="h-11 w-11 block border-0 py-1.5 text-center text-gray-900 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 focus:placeholder:text-transparent hover:bg-gray-50 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:hover:bg-gray-100 placeholder:text-gray-400"
+                                               value="1"
+                                               placeholder="0">
+                                    </div>
+                                    <button type="button"
+                                            class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100">
+                                        <span class="sr-only">수량 1개 늘리기</span>
+                                        <svg class="h-5 w-5"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                <button id="id_add_equipment"
-                                        class="class-cart class-add flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                        disabled>장바구니에 담기</button>
-                            {% else %}
-                                <div class="mr-4">
-                                    <label for="id_select_quantity_label" class="sr-only">수량</label>
-                                    <select id="id_select_quantity"
-                                            class="flex items-center rounded-md df-ring-inset-gray py-3 text-sm font-semibold shadow-sm text-gray-700 hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                        {% for stock in available_stock_of_current_purpose %}
-                                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <a href="{% url 'account_login' %}"
-                                   class="login-button flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                   data-login-request-msg="createCart">장바구니에 담기</a>
-                            {% endif %}
+                            </div>
+                            <button id="id_add_to_cart"
+                                    class="class-add-to-cart flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                장바구니에 담기
+                            </button>
                         {% endif %}
                     </div>
                 </section>

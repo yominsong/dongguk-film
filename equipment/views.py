@@ -301,20 +301,20 @@ def equipment_detail(request, collection_id):
     image_list = get_hero_img("equipment")
 
     # Purpose and limit
-    available_stock_of_current_purpose = []
+    stock_list = []
+    available_from = None
 
     for purpose in purpose_list:
-        if purpose["name"] in collection["item_purpose"]:
-            purpose["permitted"] = True
-        else:
-            purpose["permitted"] = False
+        purpose["permitted"] = purpose["name"] in collection["item_purpose"]
 
         if period != "" and purpose["permitted"]:
             user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
             user_end_date = user_start_date + timezone.timedelta(days=duration)
-            user_start_date = user_start_date.date()
-            user_end_date = user_end_date.date()
-            available_stock_length = 0
+            user_start_date, user_end_date = (
+                user_start_date.date(),
+                user_end_date.date(),
+            )
+            in_stock = False
 
             for item in collection["item"]:
                 if purpose["name"] in item["purpose"] and "🟢" in item["validation"]:
@@ -330,19 +330,33 @@ def equipment_detail(request, collection_id):
                         else None
                     )
 
-                    if (item["status"] == "Available") or (
+                    if item["status"] == "Available" or (
                         user_start_date > item_end_date
                         or user_end_date < item_start_date
                     ):
-                        available_stock_length += 1
+                        in_stock = True
 
                         if (
                             purpose_priority == purpose["priority"]
-                            and not item in available_stock_of_current_purpose
+                            and not item in stock_list
                         ):
-                            available_stock_of_current_purpose.append(item)
+                            stock_list.append(item)
+                    elif (
+                        purpose_priority == purpose["priority"]
+                        and item_end_date
+                        and not in_stock
+                    ):
+                        potential_available_from = item_end_date + timezone.timedelta(
+                            days=1
+                        )
 
-            purpose["available_stock_length"] = available_stock_length
+                        if (
+                            not available_from
+                            or potential_available_from < available_from
+                        ):
+                            available_from = potential_available_from
+
+            purpose["in_stock"] = in_stock
 
     limit_list = get_equipment_policy("limit")
     filtered_limit_list = []
@@ -398,8 +412,9 @@ def equipment_detail(request, collection_id):
             "category": category,
             "purpose": purpose,
             "purpose_priority": purpose_priority,
-            "available_stock_of_current_purpose": available_stock_of_current_purpose,
             "period": period,
             "collection": collection,
+            "stock_list": stock_list,
+            "available_from": available_from,
         },
     )

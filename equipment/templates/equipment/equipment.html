@@ -84,46 +84,24 @@
                     {% endif %}
                 </div>
             </div>
-            {% if user.is_authenticated %}
-                <div class="class-cart class-view flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                     tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke-width="1.7"
-                             stroke="currentColor"
-                             class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        장바구니
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
-                    </div>
+            <div class="class-view-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                 tabindex="0">
+                <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                <div class="flex justify-start items-center gap-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke-width="1.7"
+                         stroke="currentColor"
+                         class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                    장바구니
                 </div>
-            {% else %}
-                <a href="{% url 'account_login' %}"
-                   class="login-button flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                   data-login-request-msg="createCart">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke-width="1.7"
-                             stroke="currentColor"
-                             class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        장바구니
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
-                    </div>
-                </a>
-            {% endif %}
+                <div class="flex justify-end gap-2">
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Search bar -->
