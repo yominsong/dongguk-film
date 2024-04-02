@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from .utils import get_equipment_policy
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, airtable
-import random, time
+import random, json
 
 #
 # Sub functions
@@ -390,6 +390,7 @@ def equipment_detail(request, collection_id):
             filtered_limit_list.append(limit)
 
     limit_list = filtered_limit_list
+    limit_list_json = json.dumps(limit_list)
 
     # Template tag
     category, purpose, period = set_template_tag(
@@ -409,6 +410,7 @@ def equipment_detail(request, collection_id):
             "category_list": category_list,
             "purpose_list": purpose_list,
             "limit_list": limit_list,
+            "limit_list_json": limit_list_json,
             "category": category,
             "purpose": purpose,
             "purpose_priority": purpose_priority,

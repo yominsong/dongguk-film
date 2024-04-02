@@ -591,55 +591,119 @@ function initModal() {
 
 initModal();
 
-function styleAccordion() {
-    if (id_detail !== null) {
-        const id_detail_purpose = code(id_detail, "_purpose");
-        const id_detail_limit = code(id_detail, "_limit");
-        const id_detail_precaution = code(id_detail, "_precaution");
+function initDetail() {
+    if (id_detail === null) { return };
+    
+    const id_detail_purpose = code(id_detail, "_purpose");
+    const id_detail_limit = code(id_detail, "_limit");
+    const id_detail_precaution = code(id_detail, "_precaution");
 
-        [id_detail_purpose, id_detail_limit, id_detail_precaution].forEach(accordion => {
-            accordion.addEventListener("keydown", () => {
-                accordion.classList.add("focus:df-focus-ring-offset-white");
-            });
-            accordion.addEventListener("keypress", () => {
-                accordion.classList.add("focus:df-focus-ring-offset-white");
-            });
-            accordion.addEventListener("keyup", () => {
-                accordion.classList.add("focus:df-focus-ring-offset-white");
-            });
-            accordion.addEventListener("mouseout", () => {
-                accordion.classList.remove("focus:df-focus-ring-offset-white");
-            });
-            accordion.addEventListener("mousedown", () => {
-                accordion.classList.remove("focus:df-focus-ring-offset-white");
-            });
-            accordion.addEventListener("mouseover", () => {
-                accordion.classList.remove("focus:df-focus-ring-offset-white");
-            });
+    [id_detail_purpose, id_detail_limit, id_detail_precaution].forEach(accordion => {
+        accordion.addEventListener("keydown", () => {
+            accordion.classList.add("focus:df-focus-ring-offset-white");
         });
+        accordion.addEventListener("keypress", () => {
+            accordion.classList.add("focus:df-focus-ring-offset-white");
+        });
+        accordion.addEventListener("keyup", () => {
+            accordion.classList.add("focus:df-focus-ring-offset-white");
+        });
+        accordion.addEventListener("mouseout", () => {
+            accordion.classList.remove("focus:df-focus-ring-offset-white");
+        });
+        accordion.addEventListener("mousedown", () => {
+            accordion.classList.remove("focus:df-focus-ring-offset-white");
+        });
+        accordion.addEventListener("mouseover", () => {
+            accordion.classList.remove("focus:df-focus-ring-offset-white");
+        });
+    });
 
-        const id_cart_alert = document.getElementById("id_cart_alert");
-        const id_cart_alert_for_filter = code(id_cart_alert, "_for_filter");
-        const id_cart_alert_for_stock = code(id_cart_alert, "_for_stock");
-        const id_quantity = document.getElementById("id_quantity");
+    const id_cart_alert = document.getElementById("id_cart_alert");
+    const id_cart_alert_for_filter = code(id_cart_alert, "_for_filter");
+    const id_cart_alert_for_stock = code(id_cart_alert, "_for_stock");
+    const id_quantity = document.getElementById("id_quantity");
 
-        if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
-            id_cart_alert.hidden = false;
-            id_cart_alert_for_filter.hidden = false;
-        } else if (id_quantity.value === "0" && id_quantity.readOnly) {
-            const class_purposes = document.querySelectorAll(".class-purpose");
+    if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
+        id_cart_alert.hidden = false;
+        id_cart_alert_for_filter.hidden = false;
+    } else if (id_quantity.value === "0" && id_quantity.readOnly) {
+        const class_purposes = document.querySelectorAll(".class-purpose");
 
-            id_cart_alert.hidden = false;
-            id_cart_alert_for_stock.hidden = false;
-            
-            class_purposes.forEach(purpose => {
-                purpose.innerText = id_purpose_badge.innerText.split("\n")[1];
-            });
-        };
+        id_cart_alert.hidden = false;
+        id_cart_alert_for_stock.hidden = false;
+
+        class_purposes.forEach(purpose => {
+            purpose.innerText = id_purpose_badge.innerText.split("\n")[1];
+        });
     };
+
+    if (id_quantity.readOnly) return;
+
+    const id_js = document.getElementById("id_js");
+    const data_js = id_js.dataset;
+    const limitList = JSON.parse(data_js.limitList);
+    const stockListLength = data_js.stockListLength;
+    let max = Infinity;
+
+    console.log(limitList);
+
+    limitList.forEach(limit => {
+        if (limit.depth === "Group" || limit.depth === "Category") {
+            max = limit.limit;
+        }
+    });
+
+    if (Number(stockListLength) < Number(max)) {
+        max = stockListLength;
+    }
+
+    const id_decrease_quantity = document.getElementById("id_decrease_quantity");
+    const id_increase_quantity = document.getElementById("id_increase_quantity");
+
+    function updateButtons() {
+        const quantity = Number(id_quantity.value);
+        id_decrease_quantity.disabled = quantity <= 1;
+        id_increase_quantity.disabled = quantity >= Number(max);
+    }
+
+    // Initial button state update based on current quantity.
+    updateButtons();
+
+    id_quantity.addEventListener("input", () => {
+        if (document.activeElement !== id_quantity) return;
+
+        if (id_quantity.value === "0") {
+            id_quantity.value = "1";
+        }
+        updateButtons(); // Update buttons state on input.
+    });
+
+    id_quantity.addEventListener("blur", () => {
+        if (id_quantity.value === "" || Number(id_quantity.value) === 0) {
+            id_quantity.value = "1";
+        } else if (Number(id_quantity.value) > Number(max)) {
+            id_quantity.value = max;
+        }
+        updateButtons(); // Update buttons state after adjusting the value on blur.
+    });
+
+    id_decrease_quantity.addEventListener("click", () => {
+        if (Number(id_quantity.value) > 1) {
+            id_quantity.value = Number(id_quantity.value) - 1;
+        }
+        updateButtons(); // Update buttons state after decrease.
+    });
+
+    id_increase_quantity.addEventListener("click", () => {
+        if (Number(id_quantity.value) < Number(max)) {
+            id_quantity.value = Number(id_quantity.value) + 1;
+        }
+        updateButtons(); // Update buttons state after increase.
+    });
 }
 
-styleAccordion();
+initDetail();
 
 function copyUrl() {
     if (id_copy_url !== null) {
@@ -779,7 +843,7 @@ function initRequest() {
         if (id_modal !== null) {
             class_firsts = document.querySelectorAll(".class-first");
             initValidation(class_firsts, id_filter);
-            
+
             ["click", "keyup"].forEach(type => {
                 id_filter.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;
@@ -818,8 +882,8 @@ function initRequest() {
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                            
-                        };
+
+                    };
                 });
             });
         };
