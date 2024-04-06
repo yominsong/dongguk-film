@@ -78,7 +78,7 @@ function executeWhenModalIsClosed() {
 function initSearchBar() {
     const id_query = document.getElementById("id_query");
 
-    if (id_query == null) { return };
+    if (id_query == null) return;
 
     const id_submit_query = code("id_submit_", id_query);
 
@@ -127,7 +127,7 @@ function initSearchBar() {
 initSearchBar();
 
 function adjustHrefTarget() {
-    if (appName !== "equipment" && !appName == "notice") { return };
+    if (appName !== "equipment" && !appName == "notice") return;
 
     const class_details = document.querySelectorAll(".class-detail");
 

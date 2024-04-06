@@ -328,6 +328,16 @@ function handleAjaxCallback(response) {
         };
     }
 
+    // requestAddToCart()
+    else if (resID === "add_to_cart") {
+        freezeForm(false);
+        initCart(resResult);
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestFindUser()
     else if (resID === "find_user") {
         if (resResult.status === "DONE") {

@@ -23,6 +23,7 @@ function editXDate(notiType, bool) {
  * - `RNP`: Request Notification Permission
  * - `WNU`: Welcome New User
  * - `RTL`: Redirect to the List
+ * - `EQL`: Exceed rental Quantity Limit
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
  * - `RYS`: Request YouTube Share Link
@@ -176,6 +177,12 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = exclamationIcon;
             notiTitle = "해당 목적으로 대여할 수 없는 기자재예요.";
             notiContent = `${param.collectionName} 기자재는 ${param.purposeKeyword} 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
+        }
+
+        else if (notiType === "EQL") {
+            notiIcon = exclamationIcon;
+            notiTitle = "대여 수량 한도를 초과했어요.";
+            notiContent = param;
         }
 
         // login

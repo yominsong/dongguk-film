@@ -34,10 +34,10 @@ let isItDoubleChecked = false;
 
 // miscellaneous
 const staffBoxElements = [id_select_position, id_found_position_list, id_name];
-let userPk, userName, userStudentId;  // User authentication verification results
-let positionData;  // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
+let userPk, userName, userStudentId; // User authentication verification results
+let positionData; // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
 let requiredPositions = [];
-let addedRequiredPositions = [];  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
+let addedRequiredPositions = []; // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
 let addedStaffs = [];
 let doubleCheckTimer;
 
@@ -307,7 +307,7 @@ function addStaff(userData, blink = false) {
         class_staffs.forEach(staff => {
             const staffData = {
                 pk: staff.dataset.pk,
-                position: JSON.parse(staff.dataset.position),  // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "A02", "keyword": "각본", "required": "False"}]
+                position: JSON.parse(staff.dataset.position), // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "A02", "keyword": "각본", "required": "False"}]
             };
 
             if (staffData.pk === userData.pk) {
@@ -503,7 +503,7 @@ function initFoundUserList(resResult = null) {
         };
     });
 
-    id_name.click();  // To pass the isUserFound boolean value to initStaffBox()
+    id_name.click(); // To pass the isUserFound boolean value to initStaffBox()
 }
 
 function initStaffBox() {

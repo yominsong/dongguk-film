@@ -29,6 +29,7 @@ let class_firsts = document.querySelectorAll(".class-first");
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
+let addedItems = [];
 
 //
 // Sub functions
@@ -37,7 +38,7 @@ const data_period = id_period.dataset;
 function notifyRentalLimit() {
     const params = new URLSearchParams(window.location.search);
 
-    if (!params.has("rentalLimited")) { return };
+    if (!params.has("rentalLimited")) return;
 
     const collectionName = params.get("rentalLimited");
     const purposeKeyword = id_purpose_badge.innerText.split("\n")[1]
@@ -52,9 +53,9 @@ function adjustModalWidth() {
     const id_grid = document.getElementById("id_grid");
     let baseForWidth;
 
-    if (id_grid !== null) {  // equipment.html
+    if (id_grid !== null) { // equipment.html
         baseForWidth = id_grid;
-    } else if (id_detail !== null) {  // equipment_detail.html
+    } else if (id_detail !== null) { // equipment_detail.html
         baseForWidth = id_detail;
     };
 
@@ -472,7 +473,7 @@ function initForm() {
     displayButtonMsg(false, id_filter, "error");
 }
 
-function updateForm(action) {
+function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
@@ -507,19 +508,67 @@ function updateForm(action) {
         class_keywords.forEach(keyword => {
             keyword.innerText = "장바구니";
         });
+        
+        const cart = JSON.parse(sessionStorage.getItem("cart"));
+        const cartList = id_modal_cart.querySelector("ul");
+
+        cartList.innerHTML = "";
+
+        console.log("뭐야");
+
+        if (cart === null || cart.length === 0) {
+            const emptyCartElement = document.createElement("li");
+
+            emptyCartElement.className = "flex justify-center items-center text-gray-500 text-sm font-medium";
+            emptyCartElement.innerHTML = "장바구니가 비어있어요.";
+            cartList.appendChild(emptyCartElement);
+        } else {
+            cart.forEach(item => {
+                const addedItemElement = document.createElement("li");
+
+                addedItemElement.className = "flex justify-between gap-x-4 py-5";
+
+                addedItemElement.innerHTML = `
+                    <div class="flex min-w-0 gap-x-4 items-center">
+                        <img class="h-12 w-12 flex-none rounded-md"
+                                src="${item.thumbnail}"
+                                alt="${item.name} 사진">
+                        <div class="min-w-0 flex-auto">
+                            <p class="font-semibold leading-6 text-gray-900">${item.name}</p>
+                            <p class="mt-1 truncate leading-5 text-gray-500">${item.item_id} · 1개</p>
+                        </div>
+                    </div>
+                    <div class="flex shrink-0 items-center">
+                        <button class="class-remove-from-cart rounded-md text-gray-500 hover:underline focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
+                                data-record-id="${item.record_id}">
+                            삭제하기
+                        </button>
+                    </div>
+                `;
+
+                cartList.appendChild(addedItemElement);
+            });
+        };
 
         id_filter.classList.replace("inline-flex", "hidden");
-
-        const id_cart = sessionStorage.getItem("cart");
-
-        // if (id_cart == null) {
-        //     id_modal_cart.innerHTML = "<p class='text-center text-sm text-gray-500'>장바구니에 담긴 기자재가 없어요.</p>";
-        // }
+        initModal(); // Reinitialize to recognize class-remove-from-cart
     }
 
-    // Middle action: add_to_cart
-    else if (action === "add_to_cart") {
-        updateForm("view_cart");
+    // Middle action: remove_from_cart
+    else if (action === "remove_from_cart") {
+        const data = datasetObj.dataset;
+        const cart = JSON.parse(sessionStorage.getItem("cart"));
+
+        cart.forEach(item => {
+            if (item.record_id === data.recordId) {
+                const index = cart.indexOf(item);
+
+                cart.splice(index, 1);
+            };
+        });
+
+        initCart({ status: "DONE", cart: cart });
+        initModal(); // Reinitialize to recognize class-remove-from-cart
     }
 
     // Middle action: share
@@ -545,7 +594,7 @@ function updateForm(action) {
 function initModal() {
     const class_filters = document.querySelectorAll(".class-filter");
     const class_view_carts = document.querySelectorAll(".class-view-cart");
-    const class_add_to_carts = document.querySelectorAll(".class-add-to-cart");
+    const class_remove_from_carts = document.querySelectorAll(".class-remove-from-cart");
     const class_shares = document.querySelectorAll(".class-share");
 
     class_filters.forEach(filter => {
@@ -568,11 +617,12 @@ function initModal() {
         });
     });
 
-    class_add_to_carts.forEach(add_to_cart => {
+    class_remove_from_carts.forEach(remove_from_cart => {
         ["click", "keyup"].forEach(type => {
-            add_to_cart.addEventListener(type, event => {
+            remove_from_cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    updateForm("add_to_cart");
+                    console.log("remove_from_cart");
+                    updateForm("remove_from_cart", remove_from_cart);
                 };
             });
         });
@@ -592,8 +642,8 @@ function initModal() {
 initModal();
 
 function initDetail() {
-    if (id_detail === null) { return };
-    
+    if (id_detail === null) return;
+
     const id_detail_purpose = code(id_detail, "_purpose");
     const id_detail_limit = code(id_detail, "_limit");
     const id_detail_precaution = code(id_detail, "_precaution");
@@ -640,23 +690,20 @@ function initDetail() {
 
     if (id_quantity.readOnly) return;
 
-    const id_js = document.getElementById("id_js");
-    const data_js = id_js.dataset;
-    const limitList = JSON.parse(data_js.limitList);
-    const stockListLength = data_js.stockListLength;
+    const data = id_detail.dataset;
+    const limitList = JSON.parse(data.limitList);
+    const stockListLength = data.stockListLength;
     let max = Infinity;
 
-    console.log(limitList);
-
     limitList.forEach(limit => {
-        if (limit.depth === "Group" || limit.depth === "Category") {
+        if (Number(limit.limit) < Number(max)) {
             max = limit.limit;
-        }
+        };
     });
 
     if (Number(stockListLength) < Number(max)) {
         max = stockListLength;
-    }
+    };
 
     const id_decrease_quantity = document.getElementById("id_decrease_quantity");
     const id_increase_quantity = document.getElementById("id_increase_quantity");
@@ -667,7 +714,6 @@ function initDetail() {
         id_increase_quantity.disabled = quantity >= Number(max);
     }
 
-    // Initial button state update based on current quantity.
     updateButtons();
 
     id_quantity.addEventListener("input", () => {
@@ -675,8 +721,9 @@ function initDetail() {
 
         if (id_quantity.value === "0") {
             id_quantity.value = "1";
-        }
-        updateButtons(); // Update buttons state on input.
+        };
+
+        updateButtons();
     });
 
     id_quantity.addEventListener("blur", () => {
@@ -684,26 +731,47 @@ function initDetail() {
             id_quantity.value = "1";
         } else if (Number(id_quantity.value) > Number(max)) {
             id_quantity.value = max;
-        }
-        updateButtons(); // Update buttons state after adjusting the value on blur.
+        };
+
+        updateButtons();
     });
 
     id_decrease_quantity.addEventListener("click", () => {
         if (Number(id_quantity.value) > 1) {
             id_quantity.value = Number(id_quantity.value) - 1;
-        }
-        updateButtons(); // Update buttons state after decrease.
+        };
+
+        updateButtons();
     });
 
     id_increase_quantity.addEventListener("click", () => {
         if (Number(id_quantity.value) < Number(max)) {
             id_quantity.value = Number(id_quantity.value) + 1;
-        }
-        updateButtons(); // Update buttons state after increase.
+        };
+
+        updateButtons();
     });
 }
 
 initDetail();
+
+function initCart(resResult) {
+    // FAIL
+    if (resResult.status === "FAIL") {
+        displayNoti(true, "EQL", resResult.msg);
+
+        return;
+    };
+
+    // DONE
+    const cart = resResult.cart;
+    const cartUpdatedAt = new Date();
+
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+    sessionStorage.setItem("cartUpdatedAt", cartUpdatedAt);
+
+    updateForm("view_cart");
+}
 
 function copyUrl() {
     if (id_copy_url !== null) {
@@ -732,7 +800,7 @@ function copyUrl() {
 copyUrl();
 
 function share() {
-    if (id_detail == null) { return };
+    if (id_detail == null) return;
 
     const data = id_detail.dataset;
     const id_kakaotalk = document.getElementById("id_kakaotalk");
@@ -808,7 +876,7 @@ function requestFilterEquipment() {
     data["id"] = "filter_equipment";
     if (id_detail !== null) { data["recordId"] = id_detail.dataset.recordId };
 
-    request.url = `${location.origin}/equipment/utils/filter-equipment/`;
+    request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
     request.data = data;
     request.async = true;
@@ -821,72 +889,78 @@ function requestFilterEquipment() {
 function requestAddToCart() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
-    request.data = { id: "add_to_cart" };
+    request.data = {
+        id: "add_to_cart",
+        recordId: id_detail.dataset.recordId,
+        categoryPriority: urlParams.get("categoryPriority"),
+        purposePriority: urlParams.get("purposePriority"),
+        period: urlParams.get("period"),
+        quantity: id_quantity.value,
+        cart: sessionStorage.getItem("cart"),
+    };
     request.async = true;
     request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-};
-
-function requestRemoveFromCart() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "remove_from_cart" };
-    request.async = true;
-    request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 };
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        if (id_modal !== null) {
-            class_firsts = document.querySelectorAll(".class-first");
-            initValidation(class_firsts, id_filter);
+        if (id_modal === null) return;
 
-            ["click", "keyup"].forEach(type => {
-                id_filter.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
+        class_firsts = document.querySelectorAll(".class-first");
+        initValidation(class_firsts, id_filter);
 
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (isItOkayToSubmitForm()) {
-                            const id_filter_spin = code(id_filter, "_spin");
+        ["click", "keyup"].forEach(type => {
+            id_filter.addEventListener(type, event => {
+                const targetTagName = event.target.tagName;
 
-                            requestFilterEquipment();
-                            displayButtonMsg(true, id_filter, "descr", "잠시만 기다려주세요.");
-                            displayButtonMsg(false, id_filter, "error");
-                            id_filter_spin.classList.remove("hidden");
-                        } else {
-                            inputs.forEach((input) => {
-                                controlError(input);
-                            });
-                        };
-                    };
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    if (isItOkayToSubmitForm()) {
+                        const id_filter_spin = code(id_filter, "_spin");
 
-                    ["keydown", "focusin"].forEach((type) => {
+                        requestFilterEquipment();
+                        displayButtonMsg(true, id_filter, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_filter, "error");
+                        id_filter_spin.classList.remove("hidden");
+                    } else {
                         inputs.forEach((input) => {
-                            input.addEventListener(type, () => {
-                                displayButtonMsg(false, id_filter, "error");
-                            });
+                            controlError(input);
+                        });
+                    };
+                };
+
+                ["keydown", "focusin"].forEach((type) => {
+                    inputs.forEach((input) => {
+                        input.addEventListener(type, () => {
+                            displayButtonMsg(false, id_filter, "error");
                         });
                     });
                 });
-
-                if (id_detail == null) { return };
-
-                const id_add_to_cart = document.getElementById("id_add_to_cart");
-
-                id_add_to_cart.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
-
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-
-                    };
-                });
             });
-        };
+
+            if (id_detail == null) return;
+
+            const id_add_to_cart = document.getElementById("id_add_to_cart");
+
+            id_add_to_cart.addEventListener(type, event => {
+                const targetTagName = event.target.tagName;
+
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    const id_add_to_cart_spin = code(id_add_to_cart, "_spin");
+
+                    if (sessionStorage.cart === undefined) {
+                        sessionStorage.setItem("cart", JSON.stringify([]));
+                    };
+
+                    requestAddToCart();
+                    id_add_to_cart_spin.classList.remove("hidden");
+                };
+            });
+        });
     });
 }
 

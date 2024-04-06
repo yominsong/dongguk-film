@@ -31,25 +31,22 @@ def pronounce_last_digit(str_number):
     return str_pron
 
 
-def handle_hangul(str_word, str_handling_type, boolean_merge):
-    word = str_word
-    type = str_handling_type
-    merge = boolean_merge
+def handle_hangul(word:str, handling_type:str, merge:bool):
     last_letter = [word[-1] if not word.isdigit() else pronounce_last_digit(word)][0]
     has_batchim = (ord(last_letter) - ord("가")) % 28 > 0
-    if type == "을를":
+
+    if handling_type == "을를":
         element = "을" if has_batchim else "를"
-    elif type == "이가":
+    elif handling_type == "이가":
         element = "이" if has_batchim else "가"
-    elif type == "은는":
+    elif handling_type == "은는":
         element = "은" if has_batchim else "는"
-    elif type == "와과":
+    elif handling_type == "와과":
         element = "과" if has_batchim else "와"
-    elif type == "이에요예요":
+    elif handling_type == "이에요예요":
         element = "이에요" if has_batchim else "예요"
-    result = word + element if merge else element
-    str_result = result
-    return str_result
+
+    return word + element if merge else element
 
 
 def encode_hangul_to_url(str_hangul):

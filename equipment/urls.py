@@ -10,6 +10,5 @@ urlpatterns = [
     # utils.py
     path("utils/update-equipment-policy/", utils.update_equipment_policy, name="update_equipment_policy"),
     path("utils/delete-expired-carts/", utils.delete_expired_carts, name="delete_expired_carts"),
-    path("utils/filter-equipment/", utils.filter_equipment),
     path("utils/equipment/", utils.equipment),
 ]

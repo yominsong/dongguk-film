@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from urllib.parse import urlencode
 from .models import Cart
+from utility.hangul import handle_hangul
 from utility.utils import airtable
 from utility.msg import send_msg
 
@@ -82,6 +83,7 @@ def delete_expired_carts(request):
     count = expired_carts.count()
     if count > 0:
         expired_carts.delete()
+
     return HttpResponse(f"Number of deleted carts: {count}")
 
 
@@ -98,28 +100,115 @@ def get_equipment_policy(policy: str):
     return item_list
 
 
+def filter_limit_list(limit_list, collection):
+    filtered_limit_list = []
+
+    for limit in limit_list:
+        if (
+            limit["category_priority"] is not None
+            and collection["category"]["priority"] == limit["category_priority"]
+        ):
+            filtered_limit_list.append(limit)
+
+        if (
+            limit["subcategory_order"] is not None
+            and collection["subcategory"]["order"] == limit["subcategory_order"]
+        ):
+            filtered_limit_list.append(limit)
+
+        if limit["brand"] is not None and collection["brand"] == limit["brand"]:
+            filtered_limit_list.append(limit)
+
+        if (
+            limit["group_collection_id"] is not None
+            and collection["collection_id"] in limit["group_collection_id"]
+        ):
+            filtered_limit_list.append(limit)
+
+        if (
+            limit["collection_id"] is not None
+            and collection["collection_id"] == limit["collection_id"]
+        ):
+            filtered_limit_list.append(limit)
+
+    return filtered_limit_list
+
+
+def is_within_limits(
+    collection,
+    cart,
+    limits_by_category,
+    limits_by_brand,
+    limits_by_subcategory,
+    limits_by_group,
+    limits_by_collection,
+):
+    category = collection["category"]["priority"]
+    brand = collection["brand"]
+    subcategory = collection["subcategory"]["order"]
+    collection_id = collection["collection_id"]
+
+    category_count = sum(1 for it in cart if it["category"]["priority"] == category)
+    category_limit = limits_by_category.get(category, float("inf"))
+
+    if category_count >= category_limit:
+        category_keyword_with_josa = handle_hangul(collection["category"]["keyword"], "은는", True)
+        msg = f"{category_keyword_with_josa} 최대 {category_limit}개 대여할 수 있어요."
+
+        return False, "Category별 대여 수량 한도 초과", msg
+
+    subcategory_count = sum(1 for it in cart if it.get("subcategory", {}).get("order") == subcategory)
+    subcategory_limit = limits_by_subcategory.get(subcategory, float("inf"))
+
+    if subcategory_count >= subcategory_limit:
+        msg = f'{collection["subcategory"]["keyword"]} 기자재는 최대 {subcategory_limit}개 대여할 수 있어요.'
+
+        return False, "Subcategory별 대여 수량 한도 초과", msg
+
+    brand_count = sum(1 for it in cart if it["brand"] == brand)
+    brand_limit = limits_by_brand.get(brand, float("inf"))
+
+    if brand_count >= brand_limit:
+        msg = f"{brand} 기자재는 최대 {brand_limit}개 대여할 수 있어요."
+
+        return False, "Brand별 대여 수량 한도 초과", msg
+
+    collection_count = sum(1 for it in cart if it["collection_id"] == collection_id)
+    collection_limit = limits_by_collection.get(collection_id, float("inf"))
+
+    if collection_count >= collection_limit:
+        msg = f'{collection["name"]} 기자재는 최대 {collection_limit}개 대여할 수 있어요.'
+
+        return False, "Collection별 대여 수량 한도 초과", msg
+
+    for group_limit, limit in limits_by_group.items():
+        if collection_id in group_limit:
+            group_items_count = sum(1 for it in cart if it["collection_id"] in group_limit)
+
+            if group_items_count >= limit:
+                msg = "대여 수량 한도를 확인해주세요."
+
+                return False, "Group별 대여 수량 한도 초과", msg
+
+    return True, "", "기자재가 장바구니에 담겼어요."
+
+
 #
 # Main functions
 #
 
 
-def filter_equipment(request):
+def equipment(request):
     id = request.POST.get("id")
-    record_id = request.POST.get("recordId", None)
+    record_id = request.POST.get("recordId")
     category_priority = request.POST.get("categoryPriority")
     purpose_priority = request.POST.get("purposePriority")
     period = request.POST.get("period")
+    cart = request.POST.get("cart")
 
     # id: filter_equipment
     if id == "filter_equipment":
-        pathname = "/equipment/"
-        query_string = {"categoryPriority": category_priority}
-
-        if purpose_priority and period:
-            query_string["purposePriority"] = purpose_priority
-            query_string["period"] = period
-
-        if record_id and purpose_priority and period:
+        if record_id:
             data = {
                 "table_name": "equipment-collection",
                 "params": {
@@ -128,17 +217,23 @@ def filter_equipment(request):
             }
 
             collection = airtable("get", "record", data=data)
+            pathname = f'/equipment/{collection["collection_id"]}/'
+        else:
+            pathname = "/equipment/"
 
-            is_category_same = collection["category"]["priority"] == category_priority
+        query_string = {"categoryPriority": category_priority}
 
+        if purpose_priority and period:
+            query_string["purposePriority"] = purpose_priority
+            query_string["period"] = period
+
+        if record_id and purpose_priority and period:
             is_rental_allowed = any(
                 purpose_priority in collection_purpose
                 for collection_purpose in collection["item_purpose"]
             )
 
-            if is_category_same and is_rental_allowed:
-                pathname += f'{collection["collection_id"]}/'
-            elif not is_rental_allowed:
+            if not is_rental_allowed:
                 query_string["rentalLimited"] = collection["name"]
 
         next_url = f"{pathname}?{urlencode(query_string)}"
@@ -151,65 +246,95 @@ def filter_equipment(request):
             },
         }
 
-    return JsonResponse(response)
+    # id: add_to_cart
+    elif id == "add_to_cart":
+        cart = json.loads(cart)
 
-
-@login_required
-def equipment(request):
-    id = request.POST.get("id")
-    purpose_priority = request.POST.get("purposePriority")
-    period = request.POST.get("period")
-
-    status = None
-
-    # id: create_cart
-    if id == "create_cart":
-        if not purpose_priority or not period:
-            status = "FAIL"
-            reason = "대여 목적 및 기간 미설정"
-        elif Cart.objects.filter(user=request.user).exists():
-            status = "FAIL"
-            reason = "이미 존재하는 장바구니"
-        else:
-            cart = Cart(
-                user=request.user,
-                student_id=request.user.username,
-                purpose_priority=purpose_priority,
-                period=period,
-                equipment={},
-                will_expire_on=timezone.now() + timezone.timedelta(minutes=30),
-            )
-
-            cart.save()
-            status = "DONE"
-
-        response = {
-            "id": id,
-            "result": {
-                "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "purpose_priority": purpose_priority if status == "DONE" else None,
-                "period": period if status == "DONE" else None,
-                "will_expire_on": cart.will_expire_on if status == "DONE" else None,
+        collection = airtable(
+            "get",
+            "record",
+            data={
+                "table_name": "equipment-collection",
+                "params": {"record_id": record_id},
             },
+        )
+
+        limit_list = get_equipment_policy("limit")
+
+        limits_by_category = {
+            limit["category_priority"]: limit["limit"]
+            for limit in limit_list
+            if limit["depth"] == "Category"
         }
 
-    # id: read_cart
-    elif id == "read_cart":
-        try:
-            cart = Cart.objects.get(user=request.user)
-            equipment = cart.equipment
-            status = "DONE"
-        except:
-            status = "FAIL"
-            reason = response.json()
+        limits_by_subcategory = {
+            limit["subcategory_order"]: limit["limit"]
+            for limit in limit_list
+            if limit["depth"] == "Subcategory"
+        }
+
+        limits_by_brand = {
+            limit["brand"]: limit["limit"]
+            for limit in limit_list
+            if limit["depth"] == "Brand"
+        }
+
+        limits_by_group = {
+            frozenset(limit["group_collection_id"]): limit["limit"]
+            for limit in limit_list
+            if limit["depth"] == "Group" and limit["group_collection_id"]
+        }
+
+        limits_by_collection = {
+            limit["collection_id"]: limit["limit"]
+            for limit in limit_list
+            if limit["depth"] == "Collection"
+        }
+
+        item_to_add, reason, msg = None, None, None
+
+        for item in collection["item"]:
+            if (
+                item["status"] == "Available"
+                and "🟢" in item["validation"]
+                and purpose_priority in str(item["purpose"])
+            ):
+                valid, reason, msg = is_within_limits(
+                    collection,
+                    cart,
+                    limits_by_category,
+                    limits_by_brand,
+                    limits_by_subcategory,
+                    limits_by_group,
+                    limits_by_collection,
+                )
+
+                if valid:
+                    item_to_add = {
+                        "collection_id": collection["collection_id"],
+                        "thumbnail": collection["thumbnail"],
+                        "name": collection["name"],
+                        "category": collection["category"],
+                        "subcategory": collection["subcategory"],
+                        "brand": collection["brand"],
+                        "record_id": item["record_id"],
+                        "item_id": item["item_id"],
+                        "serial_number": item["serial_number"],
+                    }
+
+                    cart.append(item_to_add)
+                    break
+
+        status = "DONE" if item_to_add else "FAIL"
+        cart.sort(key=lambda item: item["item_id"])
 
         response = {
             "id": id,
             "result": {
                 "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "equipment": equipment,
+                "reason": reason,
+                "msg": msg,
+                "cart": cart,
             },
         }
 

@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from urllib.parse import urlencode
-from .utils import get_equipment_policy
+from .utils import get_equipment_policy, filter_limit_list
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, airtable
 import random, json
@@ -261,20 +261,24 @@ def equipment_detail(request, collection_id):
     duration = int(split_period[1]) if period else None
 
     if period != "":
+        is_category_same = collection["category"]["priority"] == category_priority
+
         is_rental_allowed = any(
             purpose_priority in collection_purpose
             for collection_purpose in collection["item_purpose"]
         )
 
-        if not is_rental_allowed:
+        if not is_category_same or not is_rental_allowed:
             base_url = reverse("equipment:equipment")
 
             query_string = {
                 "categoryPriority": category_priority,
                 "purposePriority": purpose_priority,
                 "period": period,
-                "rentalLimited": collection["name"],
             }
+
+            if not is_rental_allowed:
+                query_string["rentalLimited"] = collection["name"]
 
             return redirect_with_query_string(base_url, query_string)
 
@@ -310,10 +314,12 @@ def equipment_detail(request, collection_id):
         if period != "" and purpose["permitted"]:
             user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
             user_end_date = user_start_date + timezone.timedelta(days=duration)
+
             user_start_date, user_end_date = (
                 user_start_date.date(),
                 user_end_date.date(),
             )
+
             in_stock = False
 
             for item in collection["item"]:
@@ -359,37 +365,7 @@ def equipment_detail(request, collection_id):
             purpose["in_stock"] = in_stock
 
     limit_list = get_equipment_policy("limit")
-    filtered_limit_list = []
-
-    for limit in limit_list:
-        if (
-            limit["category_priority"] is not None
-            and collection["category"]["priority"] == limit["category_priority"]
-        ):
-            filtered_limit_list.append(limit)
-
-        if (
-            limit["subcategory_order"] is not None
-            and collection["subcategory"]["order"] == limit["subcategory_order"]
-        ):
-            filtered_limit_list.append(limit)
-
-        if limit["brand"] is not None and collection["brand"] == limit["brand"]:
-            filtered_limit_list.append(limit)
-
-        if (
-            limit["group_collection_id"] is not None
-            and collection["collection_id"] in limit["group_collection_id"]
-        ):
-            filtered_limit_list.append(limit)
-
-        if (
-            limit["collection_id"] is not None
-            and collection["collection_id"] == limit["collection_id"]
-        ):
-            filtered_limit_list.append(limit)
-
-    limit_list = filtered_limit_list
+    limit_list = filter_limit_list(limit_list, collection)
     limit_list_json = json.dumps(limit_list)
 
     # Template tag
