@@ -23,6 +23,8 @@ function editXDate(notiType, bool) {
  * - `RNP`: Request Notification Permission
  * - `WNU`: Welcome New User
  * - `RTL`: Redirect to the List
+ * - `DIC`: Duplicate Item in Cart
+ * - `DRP`: Different Rental Period
  * - `EQL`: Exceed rental Quantity Limit
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
@@ -179,10 +181,25 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = `${param.collectionName} 기자재는 ${param.purposeKeyword} 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
         }
 
+        else if (notiType === "DIC") {
+            notiIcon = exclamationIcon;
+            notiTitle = "재고 수량을 초과했어요.";
+            notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
+        else if (notiType === "DRP") {
+            notiIcon = exclamationIcon;
+            notiTitle = "대여 기간이 다른 기자재가 있어요.";
+            notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
         else if (notiType === "EQL") {
             notiIcon = exclamationIcon;
             notiTitle = "대여 수량 한도를 초과했어요.";
             notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         // login

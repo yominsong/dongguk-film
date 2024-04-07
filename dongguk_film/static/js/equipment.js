@@ -22,6 +22,7 @@ const id_copy_url_descr = code(id_copy_url, "_descr");
 
 // detail
 const id_detail = document.getElementById("id_detail");
+const id_quantity = document.getElementById("id_quantity");
 
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
@@ -29,7 +30,6 @@ let class_firsts = document.querySelectorAll(".class-first");
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
-let addedItems = [];
 
 //
 // Sub functions
@@ -166,6 +166,19 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter);
 }
+
+function executeWhenCartIsUpdated() {
+    const class_total_quantities = document.querySelectorAll(".class-total-quantity");
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
+
+    if (cart === null) return;
+
+    class_total_quantities.forEach(total_quantity => {
+        total_quantity.innerText = cart.length;
+    });
+}
+
+executeWhenCartIsUpdated();
 
 //
 // Main functions
@@ -508,39 +521,60 @@ function updateForm(action, datasetObj = null) {
         class_keywords.forEach(keyword => {
             keyword.innerText = "장바구니";
         });
-        
+
+        executeWhenCartIsUpdated();
+
         const cart = JSON.parse(sessionStorage.getItem("cart"));
         const cartList = id_modal_cart.querySelector("ul");
 
         cartList.innerHTML = "";
 
-        console.log("뭐야");
-
         if (cart === null || cart.length === 0) {
+            sessionStorage.removeItem("cart");
+            sessionStorage.removeItem("cartUpdatedAt");
+
             const emptyCartElement = document.createElement("li");
 
             emptyCartElement.className = "flex justify-center items-center text-gray-500 text-sm font-medium";
-            emptyCartElement.innerHTML = "장바구니가 비어있어요.";
+
+            emptyCartElement.innerHTML = `
+                <div class="flex min-w-0 gap-x-4 items-center h-[89px]">
+                    장바구니가 비어 있어요.
+                </div>
+            `;
+
             cartList.appendChild(emptyCartElement);
         } else {
-            cart.forEach(item => {
+            const groupedItems = cart.reduce((acc, item) => {
+                (acc[item.collection_id] = acc[item.collection_id] || []).push(item);
+
+                return acc;
+            }, {});
+
+            Object.values(groupedItems).forEach(group => {
+                const firstItem = group[0];
+                const itemCount = group.length;
                 const addedItemElement = document.createElement("li");
 
-                addedItemElement.className = "flex justify-between gap-x-4 py-5";
+                addedItemElement.className = "flex relative rounded-md justify-between gap-x-4 py-5 hover:bg-gray-50 sm:px-6 focus:df-focus-ring-offset-white sm:focus:df-focus-ring-inset";
+                addedItemElement.tabIndex = 0;
 
                 addedItemElement.innerHTML = `
+                    <a href="${location.origin}/equipment/${firstItem.collection_id}/?categoryPriority=${firstItem.category.priority}&purposePriority=${urlParams.get("purposePriority")}&period=${urlParams.get("period")}"
+                       class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></a>
                     <div class="flex min-w-0 gap-x-4 items-center">
                         <img class="h-12 w-12 flex-none rounded-md"
-                                src="${item.thumbnail}"
-                                alt="${item.name} 사진">
+                                src="${firstItem.thumbnail}"
+                                alt="${firstItem.name} 사진">
                         <div class="min-w-0 flex-auto">
-                            <p class="font-semibold leading-6 text-gray-900">${item.name}</p>
-                            <p class="mt-1 truncate leading-5 text-gray-500">${item.item_id} · 1개</p>
+                            <p class="font-semibold leading-6 text-gray-900">${firstItem.name}</p>
+                            <p class="mt-1 truncate leading-5 text-gray-500">${firstItem.collection_id} · ${itemCount}개</p>
                         </div>
                     </div>
-                    <div class="flex shrink-0 items-center">
+                    <div class="flex shrink-0 items-center z-10">
                         <button class="class-remove-from-cart rounded-md text-gray-500 hover:underline focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
-                                data-record-id="${item.record_id}">
+                                type="button"
+                                data-collection-id="${firstItem.collection_id}">
                             삭제하기
                         </button>
                     </div>
@@ -551,24 +585,23 @@ function updateForm(action, datasetObj = null) {
         };
 
         id_filter.classList.replace("inline-flex", "hidden");
-        initModal(); // Reinitialize to recognize class-remove-from-cart
+        initModal(); // Run to read the newly created class-remove-from-cart
     }
 
     // Middle action: remove_from_cart
     else if (action === "remove_from_cart") {
         const data = datasetObj.dataset;
         const cart = JSON.parse(sessionStorage.getItem("cart"));
+        let updatedCart;
 
-        cart.forEach(item => {
-            if (item.record_id === data.recordId) {
-                const index = cart.indexOf(item);
+        if (cart !== null) {
+            updatedCart = cart.filter(item => item.collection_id !== data.collectionId);
+        } else {
+            updatedCart = [];
+        };
 
-                cart.splice(index, 1);
-            };
-        });
-
-        initCart({ status: "DONE", cart: cart });
-        initModal(); // Reinitialize to recognize class-remove-from-cart
+        initCart({ status: "DONE", cart: updatedCart });
+        initModal(); // Run to read the newly created class-remove-from-cart
     }
 
     // Middle action: share
@@ -621,7 +654,6 @@ function initModal() {
         ["click", "keyup"].forEach(type => {
             remove_from_cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    console.log("remove_from_cart");
                     updateForm("remove_from_cart", remove_from_cart);
                 };
             });
@@ -672,7 +704,6 @@ function initDetail() {
     const id_cart_alert = document.getElementById("id_cart_alert");
     const id_cart_alert_for_filter = code(id_cart_alert, "_for_filter");
     const id_cart_alert_for_stock = code(id_cart_alert, "_for_stock");
-    const id_quantity = document.getElementById("id_quantity");
 
     if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
         id_cart_alert.hidden = false;
@@ -756,9 +787,17 @@ function initDetail() {
 initDetail();
 
 function initCart(resResult) {
+    initDetail(); // Run to initialize id_quantity, id_decrease_quantity, id_increase_quantity
+
     // FAIL
     if (resResult.status === "FAIL") {
-        displayNoti(true, "EQL", resResult.msg);
+        if (resResult.reason.indexOf("ITEM") !== -1) {
+            displayNoti(true, "DIC", resResult.msg);
+        } else if (resResult.reason.indexOf("PERIOD") !== -1) {
+            displayNoti(true, "DRP", resResult.msg);
+        } else if (resResult.reason.indexOf("LIMIT") !== -1) {
+            displayNoti(true, "EQL", resResult.msg);
+        };
 
         return;
     };
@@ -901,6 +940,7 @@ function requestAddToCart() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    // id_quantity.readOnly = true;
     makeAjaxCall(request);
     request = {};
 };

@@ -378,6 +378,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "brand": fields["Brand name"][0],
                 "model": fields["Model"],
                 "item_purpose": sorted(set(fields["Item purpose"].split(", "))),
+                "order": fields["Order"],
             }
 
             item_record_id_list = fields["Item"]

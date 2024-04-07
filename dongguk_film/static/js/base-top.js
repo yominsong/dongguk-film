@@ -331,6 +331,7 @@ function handleAjaxCallback(response) {
     // requestAddToCart()
     else if (resID === "add_to_cart") {
         freezeForm(false);
+        // id_quantity.readOnly = false;
         initCart(resResult);
 
         spins.forEach((spin) => {

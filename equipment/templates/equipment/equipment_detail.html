@@ -99,7 +99,9 @@
                     장바구니
                 </div>
                 <div class="flex justify-end gap-2">
-                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">0개</span>
+                    <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-100 ring-slate-600/20">
+                        <span class="class-total-quantity">0</span>개
+                    </span>
                 </div>
             </div>
         </div>
@@ -121,7 +123,7 @@
                 </div>
                 <div class="ml-3 text-sm font-medium text-flamingo-800">
                     <h3 id="id_cart_alert_for_filter" hidden>
-                        재고 유무를 확인하거나 장바구니를 사용하려면
+                        재고 유무를 확인하거나 장바구니에 담으려면
                         <span id="id_open_modal_and_focus_on_purpose"
                               class="underline cursor-pointer rounded-md hover:text-flamingo-700 focus:outline-none focus:df-focus-ring-offset-flamingo"
                               tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
@@ -519,7 +521,7 @@
                                         <label for="id_quantity" class="sr-only">대여 수량</label>
                                         <input type="text"
                                                id="id_quantity"
-                                               class="only-number h-11 w-11 block border-0 py-1.5 text-center text-gray-900 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 focus:placeholder:text-transparent hover:bg-gray-50 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:hover:bg-gray-100 placeholder:text-gray-400"
+                                               class="class-first only-number h-11 w-11 block border-0 py-1.5 text-center text-gray-900 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 focus:placeholder:text-transparent hover:bg-gray-50 read-only:bg-gray-100 read-only:cursor-not-allowed read-only:hover:bg-gray-100 placeholder:text-gray-400"
                                                value="1"
                                                max=""
                                                placeholder="0">

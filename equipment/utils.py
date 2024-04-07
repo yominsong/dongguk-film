@@ -153,44 +153,49 @@ def is_within_limits(
 
     if category_count >= category_limit:
         category_keyword_with_josa = handle_hangul(collection["category"]["keyword"], "은는", True)
+        reason = "CATEGORY LIMIT 초과"
         msg = f"{category_keyword_with_josa} 최대 {category_limit}개 대여할 수 있어요."
 
-        return False, "Category별 대여 수량 한도 초과", msg
+        return False, reason, msg
 
     subcategory_count = sum(1 for it in cart if it.get("subcategory", {}).get("order") == subcategory)
     subcategory_limit = limits_by_subcategory.get(subcategory, float("inf"))
 
     if subcategory_count >= subcategory_limit:
+        reason = "SUBCATEGORY LIMIT 초과"
         msg = f'{collection["subcategory"]["keyword"]} 기자재는 최대 {subcategory_limit}개 대여할 수 있어요.'
 
-        return False, "Subcategory별 대여 수량 한도 초과", msg
+        return False, reason, msg
 
     brand_count = sum(1 for it in cart if it["brand"] == brand)
     brand_limit = limits_by_brand.get(brand, float("inf"))
 
     if brand_count >= brand_limit:
+        reason = "BRAND LIMIT 초과"
         msg = f"{brand} 기자재는 최대 {brand_limit}개 대여할 수 있어요."
 
-        return False, "Brand별 대여 수량 한도 초과", msg
+        return False, reason, msg
 
     collection_count = sum(1 for it in cart if it["collection_id"] == collection_id)
     collection_limit = limits_by_collection.get(collection_id, float("inf"))
 
     if collection_count >= collection_limit:
+        reason = "COLLECTION LIMIT 초과"
         msg = f'{collection["name"]} 기자재는 최대 {collection_limit}개 대여할 수 있어요.'
 
-        return False, "Collection별 대여 수량 한도 초과", msg
+        return False, reason, msg
 
     for group_limit, limit in limits_by_group.items():
         if collection_id in group_limit:
             group_items_count = sum(1 for it in cart if it["collection_id"] in group_limit)
 
             if group_items_count >= limit:
+                reason = "GROUP LIMIT 초과"
                 msg = "대여 수량 한도를 확인해주세요."
 
-                return False, "Group별 대여 수량 한도 초과", msg
+                return False, reason, msg
 
-    return True, "", "기자재가 장바구니에 담겼어요."
+    return True, "", ""
 
 
 #
@@ -204,6 +209,7 @@ def equipment(request):
     category_priority = request.POST.get("categoryPriority")
     purpose_priority = request.POST.get("purposePriority")
     period = request.POST.get("period")
+    quantity = request.POST.get("quantity")
     cart = request.POST.get("cart")
 
     # id: filter_equipment
@@ -292,13 +298,28 @@ def equipment(request):
         }
 
         item_to_add, reason, msg = None, None, None
+        added_count = 0
 
         for item in collection["item"]:
+            if added_count >= int(quantity):
+                break
+
             if (
                 item["status"] == "Available"
                 and "🟢" in item["validation"]
                 and purpose_priority in str(item["purpose"])
             ):
+                if any(it["item_id"] == item["item_id"] for it in cart):
+                    reason = "ITEM 중복"
+                    msg = "장바구니에 이미 재고 수량 전체가 담겨 있어요. 장바구니를 확인해주세요."
+                    continue
+
+                if len(cart) != 0:
+                    if not any(it["period"] == period for it in cart):
+                        reason = "PERIOD 불일치"
+                        msg = "장바구니에 담긴 기자재들과 대여 기간이 동일해야 해요. 검색 필터를 확인해주세요."
+                        break
+
                 valid, reason, msg = is_within_limits(
                     collection,
                     cart,
@@ -311,22 +332,23 @@ def equipment(request):
 
                 if valid:
                     item_to_add = {
+                        "record_id": item["record_id"],
                         "collection_id": collection["collection_id"],
+                        "item_id": item["item_id"],
                         "thumbnail": collection["thumbnail"],
                         "name": collection["name"],
+                        "brand": collection["brand"],
                         "category": collection["category"],
                         "subcategory": collection["subcategory"],
-                        "brand": collection["brand"],
-                        "record_id": item["record_id"],
-                        "item_id": item["item_id"],
-                        "serial_number": item["serial_number"],
+                        "order": collection["order"],
+                        "period": period,
                     }
 
                     cart.append(item_to_add)
-                    break
+                    added_count += 1
 
         status = "DONE" if item_to_add else "FAIL"
-        cart.sort(key=lambda item: item["item_id"])
+        cart.sort(key=lambda item: item["order"])
 
         response = {
             "id": id,
