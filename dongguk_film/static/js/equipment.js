@@ -13,7 +13,7 @@ const id_period = document.getElementById("id_period");
 const id_purpose_badge = code(id_purpose, "_badge");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
-const id_filter = document.getElementById("id_filter");
+const id_filter_or_checkout = document.getElementById("id_filter_or_checkout");
 const id_url = document.getElementById("id_url");
 const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
@@ -167,7 +167,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     id_period.value = "";
     initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
-    initValidation(class_firsts, id_filter);
+    initValidation(class_firsts, id_filter_or_checkout);
 }
 
 function executeWhenCartIsUpdated() {
@@ -486,7 +486,7 @@ function initForm() {
         displayError(false, input);
     });
 
-    displayButtonMsg(false, id_filter, "error");
+    displayButtonMsg(false, id_filter_or_checkout, "error");
 }
 
 function updateForm(action, datasetObj = null) {
@@ -512,7 +512,11 @@ function updateForm(action, datasetObj = null) {
         });
 
         initForm();
-        id_filter.classList.replace("hidden", "inline-flex");
+
+        const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
+
+        id_filter_or_checkout_text.innerText = "적용하기";
+        id_filter_or_checkout.classList.replace("hidden", "inline-flex");
     }
 
     // Middle action: view_cart
@@ -547,6 +551,7 @@ function updateForm(action, datasetObj = null) {
             `;
 
             cartList.appendChild(emptyCartElement);
+            id_filter_or_checkout.classList.replace("inline-flex", "hidden");
         } else {
             const groupedItems = cart.reduce((acc, item) => {
                 (acc[item.collection_id] = acc[item.collection_id] || []).push(item);
@@ -597,9 +602,13 @@ function updateForm(action, datasetObj = null) {
                 setTimeout(() => { blink.classList.add("blink"); }, 500);
                 setTimeout(() => { blink.classList.remove("blink") }, 3500);
             });
+
+            const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
+
+            id_filter_or_checkout_text.innerText = "신청하기";
+            id_filter_or_checkout.classList.replace("hidden", "inline-flex");
         };
 
-        id_filter.classList.replace("inline-flex", "hidden");
         initModal(); // Run to read the newly created class-remove-from-cart
     }
 
@@ -632,7 +641,7 @@ function updateForm(action, datasetObj = null) {
         id_copy_url_ready.classList.remove("hidden");
         id_copy_url_done.classList.add("hidden");
         id_copy_url_descr.hidden = true;
-        id_filter.classList.replace("inline-flex", "hidden");
+        id_filter_or_checkout.classList.replace("inline-flex", "hidden");
     };
 
     // Last action: all
@@ -978,21 +987,27 @@ function initRequest() {
         if (id_modal === null) return;
 
         class_firsts = document.querySelectorAll(".class-first");
-        initValidation(class_firsts, id_filter);
+        initValidation(class_firsts, id_filter_or_checkout);
 
         ["click", "keyup"].forEach(type => {
-            id_filter.addEventListener(type, event => {
+            id_filter_or_checkout.addEventListener(type, event => {
                 const targetTagName = event.target.tagName;
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
                     if (isItOkayToSubmitForm()) {
-                        const id_filter_spin = code(id_filter, "_spin");
+                        const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
+
+                        if (id_filter_or_checkout.innerText === "적용하기") {
+                            requestFilterEquipment();
+                        } else if (id_filter_or_checkout.innerText === "신청하기") {
+                            return; // Under construction
+                        };
 
                         requestFilterEquipment();
-                        displayButtonMsg(true, id_filter, "descr", "잠시만 기다려주세요.");
-                        displayButtonMsg(false, id_filter, "error");
-                        id_filter_spin.classList.remove("hidden");
+                        displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_filter_or_checkout, "error");
+                        id_filter_or_checkout_spin.classList.remove("hidden");
                     } else {
                         inputs.forEach((input) => {
                             controlError(input);
@@ -1003,7 +1018,7 @@ function initRequest() {
                 ["keydown", "focusin"].forEach((type) => {
                     inputs.forEach((input) => {
                         input.addEventListener(type, () => {
-                            displayButtonMsg(false, id_filter, "error");
+                            displayButtonMsg(false, id_filter_or_checkout, "error");
                         });
                     });
                 });

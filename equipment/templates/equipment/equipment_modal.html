@@ -299,11 +299,17 @@
                         <div id="id_modal_cart" class="-mb-5" hidden>
                             <ul role="list" class="divide-y divide-gray-100 text-sm">
                                 <li class="flex justify-center items-center text-gray-500 text-sm font-medium">
-                                    <div class="flex min-w-0 gap-x-4 items-center h-[89px]">
-                                        장바구니가 비어 있어요.
-                                    </div>
+                                    <div class="flex min-w-0 gap-x-4 items-center h-[89px]">장바구니가 비어 있어요.</div>
                                 </li>
                             </ul>
+                            <div class="rounded-md bg-gray-50 p-4 my-5">
+                                <div class="flex justify-between items-center text-sm text-gray-700">
+                                    <div class="flex font-semibold">총 수량</div>
+                                    <div class="flex">
+                                        <span class="class-total-quantity">0</span>개
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- Share -->
                         <div id="id_modal_share" class="mt-3 -mb-5" hidden>
@@ -445,23 +451,25 @@
                 </div>
                 <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
                     <div class="flex mt-2 text-sm sm:mt-0">
-                        <p class="text-gray-500 sm:mt-0" id="id_filter_descr" hidden>잠시만 기다려주세요.</p>
-                        <p class="text-flamingo-600 sm:mt-0" id="id_filter_error" hidden></p>
+                        <p class="text-gray-500 sm:mt-0" id="id_filter_or_checkout_descr" hidden>잠시만 기다려주세요.</p>
+                        <p class="text-flamingo-600 sm:mt-0"
+                           id="id_filter_or_checkout_error"
+                           hidden></p>
                     </div>
                     <div class="sm:flex sm:flex-row-reverse">
                         <button type="button"
-                                id="id_filter"
+                                id="id_filter_or_checkout"
                                 class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
                             <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
                                  viewBox="0 0 24 24"
-                                 id="id_filter_spin">
+                                 id="id_filter_or_checkout_spin">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            적용하기
+                            <span id="id_filter_or_checkout_text">적용하기</span>
                         </button>
                     </div>
                 </div>

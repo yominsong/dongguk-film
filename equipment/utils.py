@@ -100,6 +100,14 @@ def get_equipment_policy(policy: str):
     return item_list
 
 
+def split_period(period: str):
+    split_period = period.split(",") if period else None
+    days_from_now = int(split_period[0]) if period else None
+    duration = int(split_period[1]) if period else None
+
+    return days_from_now, duration
+
+
 def filter_limit_list(limit_list, collection):
     filtered_limit_list = []
 
@@ -311,13 +319,22 @@ def equipment(request):
             ):
                 if any(it["item_id"] == item["item_id"] for it in cart):
                     reason = "ITEM 중복"
-                    msg = "재고 수량 내에서 모든 기자재가 담겼어요."
+                    msg = "장바구니에 재고 수량이 모두 담겼어요. 장바구니를 확인해주세요."
                     continue
 
                 if len(cart) != 0:
                     if not any(it["period"] == period for it in cart):
+                        days_from_now, duration = split_period(cart[0]["period"])
+                        user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
+                        user_end_date = user_start_date + timezone.timedelta(days=duration)
+
+                        user_start_date, user_end_date = (
+                            user_start_date.date(),
+                            user_end_date.date(),
+                        )
+
                         reason = "PERIOD 불일치"
-                        msg = "장바구니에 담긴 기자재들과 대여 기간이 동일해야 해요. 검색 필터를 확인해주세요."
+                        msg = f"검색 필터에 대여 기간을 기존값({user_start_date} ~ {user_end_date})으로 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break
 
                 valid, reason, msg = is_within_limits(

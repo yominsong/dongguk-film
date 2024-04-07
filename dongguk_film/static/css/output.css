@@ -984,6 +984,16 @@ select {
   margin-bottom: 1rem;
 }
 
+.-my-4 {
+  margin-top: -1rem;
+  margin-bottom: -1rem;
+}
+
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
 .-mb-5 {
   margin-bottom: -1.25rem;
 }
@@ -3284,6 +3294,10 @@ select {
     border-radius: 0.75rem;
   }
 
+  .sm\:rounded-lg {
+    border-radius: 0.5rem;
+  }
+
   .sm\:rounded-bl-md {
     border-bottom-left-radius: 0.375rem;
   }
@@ -3310,6 +3324,10 @@ select {
 
   .sm\:p-6 {
     padding: 1.5rem;
+  }
+
+  .sm\:p-8 {
+    padding: 2rem;
   }
 
   .sm\:px-0 {

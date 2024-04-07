@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from urllib.parse import urlencode
-from .utils import get_equipment_policy, filter_limit_list
+from .utils import get_equipment_policy, split_period, filter_limit_list
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, airtable
 import random, json
@@ -94,9 +94,7 @@ def equipment(request):
 
         return redirect_with_query_string(base_url, query_string)
 
-    split_period = period.split(",") if period else None
-    days_from_now = int(split_period[0]) if period else None
-    duration = int(split_period[1]) if period else None
+    days_from_now, duration = split_period(period)
 
     if period:
         for purpose_item in purpose_list:
@@ -252,13 +250,12 @@ def equipment_detail(request, collection_id):
         base_url = reverse(
             "equipment:equipment_detail", kwargs={"collection_id": collection_id}
         )
+
         query_string = {"categoryPriority": collection["category"]["priority"]}
 
         return redirect_with_query_string(base_url, query_string)
 
-    split_period = period.split(",") if period else None
-    days_from_now = int(split_period[0]) if period else None
-    duration = int(split_period[1]) if period else None
+    days_from_now, duration = split_period(period)
 
     if period != "":
         is_category_same = collection["category"]["priority"] == category_priority
