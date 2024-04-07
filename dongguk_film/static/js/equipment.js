@@ -551,6 +551,7 @@ function updateForm(action, datasetObj = null) {
             `;
 
             cartList.appendChild(emptyCartElement);
+            id_modal_cart.classList.add("-mb-5");
             id_filter_or_checkout.classList.replace("inline-flex", "hidden");
         } else {
             const groupedItems = cart.reduce((acc, item) => {
@@ -603,6 +604,8 @@ function updateForm(action, datasetObj = null) {
                 setTimeout(() => { blink.classList.remove("blink") }, 3500);
             });
 
+            id_modal_cart.classList.remove("-mb-5");
+            
             const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
 
             id_filter_or_checkout_text.innerText = "신청하기";
