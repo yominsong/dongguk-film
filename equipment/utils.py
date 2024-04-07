@@ -311,7 +311,7 @@ def equipment(request):
             ):
                 if any(it["item_id"] == item["item_id"] for it in cart):
                     reason = "ITEM 중복"
-                    msg = "장바구니에 이미 재고 수량 전체가 담겨 있어요. 장바구니를 확인해주세요."
+                    msg = "재고 수량 내에서 모든 기자재가 담겼어요."
                     continue
 
                 if len(cart) != 0:
@@ -347,8 +347,8 @@ def equipment(request):
                     cart.append(item_to_add)
                     added_count += 1
         
-        if added_count < int(quantity) and "GROUP" in reason and msg is None:
-            reason = "GROUP LIMIT 초과"
+        if added_count < int(quantity) and msg is None:
+            reason = "LIMIT 초과"
             msg = f"대여 수량 한도 내에서 {added_count}개만 장바구니에 담았어요."
 
         status = "DONE" if item_to_add else "FAIL"
