@@ -191,7 +191,7 @@ def is_within_limits(
 
             if group_items_count >= limit:
                 reason = "GROUP LIMIT 초과"
-                msg = "대여 수량 한도를 확인해주세요."
+                msg = "도합 대여 수량 한도를 확인해주세요."
 
                 return False, reason, msg
 
@@ -346,6 +346,10 @@ def equipment(request):
 
                     cart.append(item_to_add)
                     added_count += 1
+        
+        if added_count < int(quantity) and "GROUP" in reason and msg is None:
+            reason = "GROUP LIMIT 초과"
+            msg = f"대여 수량 한도 내에서 {added_count}개만 장바구니에 담았어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])

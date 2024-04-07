@@ -183,7 +183,7 @@ function displayNoti(bool, notiType, param = null) {
 
         else if (notiType === "DIC") {
             notiIcon = exclamationIcon;
-            notiTitle = "재고 수량을 초과했어요.";
+            notiTitle = "더 이상 담을 수 없는 기자재예요.";
             notiContent = param;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
@@ -192,14 +192,14 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = exclamationIcon;
             notiTitle = "대여 기간이 다른 기자재가 있어요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DRP'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "EQL") {
             notiIcon = exclamationIcon;
             notiTitle = "대여 수량 한도를 초과했어요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'EQL'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         // login

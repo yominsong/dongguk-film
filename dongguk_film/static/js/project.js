@@ -706,7 +706,7 @@ function initModal() {
 initModal();
 
 function requestFindUser() {
-    request.url = `${originLocation}/project/utils/project/`;
+    request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
     request.data = { id: "find_user", name: `${id_name.value}` };
     request.async = true;
@@ -734,7 +734,7 @@ function requestCreateProject() {
         formData.append(`staffPositionPriority_${index}`, JSON.stringify(staffPositionPriority));
     });
 
-    request.url = `${originLocation}/project/utils/project/`;
+    request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -764,7 +764,7 @@ function requestUpdateProject() {
         formData.append(`staffPositionPriority_${index}`, JSON.stringify(staffPositionPriority));
     });
 
-    request.url = `${originLocation}/project/utils/project/`;
+    request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
     request.data = formData;
     request.async = true;
@@ -776,7 +776,7 @@ function requestUpdateProject() {
 
 function requestDeleteProject() {
     const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
-    request.url = `${originLocation}/project/utils/project/`;
+    request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
     request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;

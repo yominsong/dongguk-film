@@ -27,6 +27,9 @@ const id_quantity = document.getElementById("id_quantity");
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
 
+// Boolean
+let is_quantity_button_updated = false;
+
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
@@ -556,19 +559,24 @@ function updateForm(action, datasetObj = null) {
                 const itemCount = group.length;
                 const addedItemElement = document.createElement("li");
 
-                addedItemElement.className = "flex relative rounded-md justify-between gap-x-4 py-5 hover:bg-gray-50 sm:px-6 focus:df-focus-ring-offset-white sm:focus:df-focus-ring-inset";
-                addedItemElement.tabIndex = 0;
+                addedItemElement.className = "flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6";
+
+                let blinkClass = "";
+
+                if (location.pathname.indexOf(firstItem.collection_id) !== -1) {
+                    blinkClass = "class-blink";
+                };
 
                 addedItemElement.innerHTML = `
                     <a href="${location.origin}/equipment/${firstItem.collection_id}/?categoryPriority=${firstItem.category.priority}&purposePriority=${urlParams.get("purposePriority")}&period=${urlParams.get("period")}"
-                       class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></a>
+                       class="absolute inset-x-0 -top-px bottom-0 cursor-pointer focus:df-focus-ring-inset"></a>
                     <div class="flex min-w-0 gap-x-4 items-center">
                         <img class="h-12 w-12 flex-none rounded-md"
                                 src="${firstItem.thumbnail}"
                                 alt="${firstItem.name} 사진">
                         <div class="min-w-0 flex-auto">
-                            <p class="font-semibold leading-6 text-gray-900">${firstItem.name}</p>
-                            <p class="mt-1 truncate leading-5 text-gray-500">${firstItem.collection_id} · ${itemCount}개</p>
+                            <p class="font-semibold leading-6 text-gray-900 ${blinkClass}">${firstItem.name}</p>
+                            <p class="mt-1 truncate leading-5 text-gray-500 ${blinkClass}">${firstItem.collection_id} · ${itemCount}개</p>
                         </div>
                     </div>
                     <div class="flex shrink-0 items-center z-10">
@@ -581,6 +589,13 @@ function updateForm(action, datasetObj = null) {
                 `;
 
                 cartList.appendChild(addedItemElement);
+            });
+
+            const class_blinks = cartList.querySelectorAll(".class-blink");
+
+            class_blinks.forEach(blink => {
+                setTimeout(() => { blink.classList.add("blink"); }, 500);
+                setTimeout(() => { blink.classList.remove("blink") }, 3500);
             });
         };
 
@@ -747,6 +762,8 @@ function initDetail() {
 
     updateButtons();
 
+    if (is_quantity_button_updated) return;
+
     id_quantity.addEventListener("input", () => {
         if (document.activeElement !== id_quantity) return;
 
@@ -782,15 +799,18 @@ function initDetail() {
 
         updateButtons();
     });
+
+    is_quantity_button_updated = true;
 }
 
 initDetail();
 
 function initCart(resResult) {
-    initDetail(); // Run to initialize id_quantity, id_decrease_quantity, id_increase_quantity
+    // Run to initialize id_quantity, id_decrease_quantity, id_increase_quantity
+    id_quantity.readOnly = false;
+    initDetail();
 
-    // FAIL
-    if (resResult.status === "FAIL") {
+    if (resResult.reason !== undefined) {
         if (resResult.reason.indexOf("ITEM") !== -1) {
             displayNoti(true, "DIC", resResult.msg);
         } else if (resResult.reason.indexOf("PERIOD") !== -1) {
@@ -798,9 +818,10 @@ function initCart(resResult) {
         } else if (resResult.reason.indexOf("LIMIT") !== -1) {
             displayNoti(true, "EQL", resResult.msg);
         };
-
-        return;
     };
+
+    // FAIL
+    if (resResult.status === "FAIL") return;
 
     // DONE
     const cart = resResult.cart;
@@ -921,6 +942,7 @@ function requestFilterEquipment() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    id_quantity.readOnly = true;
     makeAjaxCall(request);
     request = {};
 }
@@ -940,7 +962,7 @@ function requestAddToCart() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
-    // id_quantity.readOnly = true;
+    id_quantity.readOnly = true;
     makeAjaxCall(request);
     request = {};
 };
