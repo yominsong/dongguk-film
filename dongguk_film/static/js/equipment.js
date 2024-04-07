@@ -807,8 +807,10 @@ initDetail();
 
 function initCart(resResult) {
     // Run to initialize id_quantity, id_decrease_quantity, id_increase_quantity
-    id_quantity.readOnly = false;
-    initDetail();
+    if (id_detail !== null) {
+        id_quantity.readOnly = false;
+        initDetail();
+    };
 
     if (resResult.reason !== undefined) {
         if (resResult.reason.indexOf("ITEM") !== -1) {
@@ -934,7 +936,11 @@ function requestFilterEquipment() {
     };
 
     data["id"] = "filter_equipment";
-    if (id_detail !== null) { data["recordId"] = id_detail.dataset.recordId };
+
+    if (id_detail !== null) {
+        data["recordId"] = id_detail.dataset.recordId;
+        id_quantity.readOnly = true;
+    };
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
@@ -942,12 +948,13 @@ function requestFilterEquipment() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
-    id_quantity.readOnly = true;
     makeAjaxCall(request);
     request = {};
 }
 
 function requestAddToCart() {
+    if (id_detail !== null) id_quantity.readOnly = true;
+
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
     request.data = {
@@ -962,7 +969,6 @@ function requestAddToCart() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
-    id_quantity.readOnly = true;
     makeAjaxCall(request);
     request = {};
 };
