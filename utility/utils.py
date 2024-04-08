@@ -108,9 +108,9 @@ def convert_datetime(datetime_str: str):
             datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ"
         ).replace(tzinfo=pytz.utc)
     except:
-        datetime_utc = datetime.datetime.strptime(
-            datetime_str, "%Y-%m-%d"
-        ).replace(tzinfo=pytz.utc)
+        datetime_utc = datetime.datetime.strptime(datetime_str, "%Y-%m-%d").replace(
+            tzinfo=pytz.utc
+        )
 
     kor_tz = pytz.timezone("Asia/Seoul")
     datetime_kor = datetime_utc.astimezone(kor_tz)
@@ -131,7 +131,7 @@ def generate_random_string(int: int):
 def append_item(item, item_list: list):
     if item not in item_list:
         item_list.append(item)
-        
+
     return item_list
 
 
@@ -365,7 +365,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             record = {
                 "record_id": record["id"],
                 "collection_id": fields["ID"],
-                "thumbnail": fields["Thumbnail"][0]["url"],
+                # "thumbnail": fields["Thumbnail"][0]["url"],
                 "name": fields["Name"],
                 "category": {
                     "priority": fields.get("Category priority", [None])[0],
@@ -386,7 +386,15 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
 
             with ThreadPoolExecutor(max_workers=30) as executor:
                 future_to_item = {
-                    executor.submit(airtable, "get", "record", data={"table_name": "equipment-item", "params": {"record_id": record_id}}): record_id
+                    executor.submit(
+                        airtable,
+                        "get",
+                        "record",
+                        data={
+                            "table_name": "equipment-item",
+                            "params": {"record_id": record_id},
+                        },
+                    ): record_id
                     for record_id in item_record_id_list
                 }
 
@@ -428,9 +436,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     category = {
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
                     }
 
                     record_list.append(category)
@@ -443,13 +451,13 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     purpose = {
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
-                        "at_least": fields["At least"],
-                        "up_to": fields["Up to"],
-                        "max": fields["Max"],
-                        "in_a_nutshell": fields["In a nutshell"],
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
+                        "at_least": fields.get("At least", None),
+                        "up_to": fields.get("Up to", None),
+                        "max": fields.get("Max", None),
+                        "in_a_nutshell": fields.get("In a nutshell", None),
                         "for_instructor": fields.get("For instructor", False),
                     }
 
@@ -471,7 +479,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "group_collection_id": fields.get("Group collection ID", None),
                         "collection_id": fields.get("Collection ID", [None])[0],
                         "limit": fields.get("Limit", None),
-                        "in_a_nutshell": fields["In a nutshell"],
+                        "in_a_nutshell": fields.get("In a nutshell", None),
                     }
 
                     record_list.append(limit)
@@ -485,12 +493,23 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
 
                     collection = {
                         "record_id": record["id"],
-                        "collection_id": fields["ID"],
-                        "thumbnail": fields["Thumbnail"][0]["url"],
-                        "name": fields["Name"],
+                        "collection_id": fields.get("ID", None),
+                        "thumbnail": (
+                            fields.get("Thumbnail", [None])[0].get("url")
+                            if fields.get("Thumbnail", [None])[0]
+                            else None
+                        ),
+                        "name": fields.get("Name", None),
+                        "category": {
+                            "priority": fields.get("Category priority", [None])[0],
+                            "keyword": fields.get("Category keyword", [None])[0],
+                        },
                         "subcategory": fields.get("Subcategory keyword", [None])[0],
-                        "brand": fields["Brand name"][0],
-                        "model": fields["Model"],
+                        "brand": fields.get("Brand name", [None])[0],
+                        "model": fields.get("Model", None),
+                        "item_purpose": sorted(
+                            set(fields.get("Item purpose", None).split(", "))
+                        ),
                     }
 
                     record_list.append(collection)
@@ -503,12 +522,12 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     position = {
-                        "function": fields["Function"],
-                        "function_priority": fields["Function priority"],
-                        "name": fields["Name"],
-                        "priority": fields["Priority"],
-                        "keyword": fields["Keyword"],
-                        "in_english": fields["In English"],
+                        "function": fields.get("Function", None),
+                        "function_priority": fields.get("Function priority", None),
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
+                        "in_english": fields.get("In English", None),
                         "note": fields.get("Note", None),
                         "required": fields.get("Required", False),
                     }

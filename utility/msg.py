@@ -94,7 +94,7 @@ def send_msg(request, type: str, channel: str, extra=None):
     - type | `str`:
         - UDC: Update DMD Cookie
         - UIG: Update images
-        - UEP: Update Equipment Policy
+        - SED: Synchronize Equipment Data
         - UPP: Update Project Policy
         - DSA: Duplicate signup attempt
         - AIV: Attempting to skip identity verification
@@ -149,8 +149,8 @@ def send_msg(request, type: str, channel: str, extra=None):
             "description": sub_content,
         }
 
-    # type: "UEP"
-    elif type == "UEP":
+    # type: "SED"
+    elif type == "SED":
         sub_content = ""
         for i, item in enumerate(extra[0]["category"]):
             new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
@@ -164,7 +164,7 @@ def send_msg(request, type: str, channel: str, extra=None):
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "기자재 정책 업데이트됨",
+            "title": "기자재 데이터 동기화됨",
             "url": "",
             "thumbnail_url": "",
             "description": sub_content,

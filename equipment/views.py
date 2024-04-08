@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from urllib.parse import urlencode
-from .utils import get_equipment_policy, split_period, filter_limit_list
+from .utils import get_equipment_data, split_period, filter_limit_list
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, airtable
 import random, json
@@ -79,8 +79,8 @@ def equipment(request):
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
 
-    category_list = get_equipment_policy("category")
-    purpose_list = get_equipment_policy("purpose")
+    category_list = get_equipment_data("category")
+    purpose_list = get_equipment_data("purpose")
 
     # Query string validation
     if is_query_string_invalid(
@@ -119,33 +119,27 @@ def equipment(request):
 
     query_string = ""
     image_list = get_hero_img("equipment")
-
-    # Airtable
-    data = {
-        "table_name": "equipment-collection",
-        "params": {
-            "view": "Grid view",
-            "fields": [
-                "ID",
-                "Thumbnail",
-                "Name",
-                "Subcategory keyword",
-                "Brand name",
-                "Model",
-            ],
-        },
-    }
+    equipment_collection_list = get_equipment_data("collection")
 
     if not purpose_priority:
-        data["params"][
-            "formula"
-        ] = f"FIND('{category_priority}', {{Category name}} & '')"
+        equipment_collection_list = [
+            equipment
+            for equipment in equipment_collection_list
+            if equipment["category"]["priority"] == category_priority
+        ]
     else:
-        data["params"][
-            "formula"
-        ] = f"AND(FIND('{category_priority}', {{Category name}} & ''), FIND('{purpose_priority}', {{Item purpose}} & ''))"
+        equipment_collection_list = [
+            equipment
+            for equipment in equipment_collection_list
+            if (
+                equipment["category"]["priority"] == category_priority
+                and any(
+                    purpose_priority in purpose
+                    for purpose in equipment["item_purpose"]
+                )
+            )
+        ]
 
-    equipment_collection_list = airtable("get_all", "records", data=data)
     equipment_collection_count = len(equipment_collection_list)
 
     # Query string and template tag
@@ -220,8 +214,8 @@ def equipment_detail(request, collection_id):
     purpose_priority = request.GET.get("purposePriority", "").strip()
     period = request.GET.get("period", "").strip()
 
-    category_list = get_equipment_policy("category")
-    purpose_list = get_equipment_policy("purpose")
+    category_list = get_equipment_data("category")
+    purpose_list = get_equipment_data("purpose")
 
     # Airtable
     data = {
@@ -242,8 +236,25 @@ def equipment_detail(request, collection_id):
     }
 
     collection = airtable("get", "record", data=data)
+    equipment_collection_list = get_equipment_data("collection")
+    
+    for ec in equipment_collection_list:
+        if ec["record_id"] == record_id:
+            collection["thumbnail"] = ec["thumbnail"]
+            break
 
     # Query string validation
+    if collection_id[0] != category_priority:
+        base_url = reverse(
+            "equipment:equipment_detail", kwargs={"collection_id": collection_id}
+        )
+
+        query_string = {
+            "categoryPriority": collection["category"]["priority"],
+        }
+
+        return redirect_with_query_string(base_url, query_string)
+    
     if is_query_string_invalid(
         category_priority, purpose_priority, period, category_list, purpose_list
     ):
@@ -361,7 +372,7 @@ def equipment_detail(request, collection_id):
 
             purpose["in_stock"] = in_stock
 
-    limit_list = get_equipment_policy("limit")
+    limit_list = get_equipment_data("limit")
     limit_list = filter_limit_list(limit_list, collection)
     limit_list_json = json.dumps(limit_list)
 

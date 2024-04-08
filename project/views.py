@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from equipment.utils import get_equipment_policy
+from equipment.utils import get_equipment_data
 from .utils import get_project_policy
 from utility.img import get_hero_img
 from utility.utils import notion, append_item
@@ -14,7 +14,7 @@ import random
 def project(request):
     query_string = ""
     image_list = get_hero_img("project")
-    purpose_list = get_equipment_policy("purpose")
+    purpose_list = get_equipment_data("purpose")
     position_list = get_project_policy("position")
 
     for purpose in purpose_list:

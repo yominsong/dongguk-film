@@ -25,8 +25,8 @@ JSON_PATH = (
 #
 
 
-def update_equipment_policy(request):
-    target_list = ["category", "purpose", "limit"]
+def synchronize_equipment_data(request):
+    target_list = ["category", "purpose", "limit", "collection"]
     result_list = []
 
     for target in target_list:
@@ -35,7 +35,6 @@ def update_equipment_policy(request):
                 "table_name": "equipment-category",
                 "params": {
                     "view": "Grid view",
-                    "fields": ["Name", "Priority", "Keyword"],
                 },
             }
         elif target == "purpose":
@@ -43,21 +42,18 @@ def update_equipment_policy(request):
                 "table_name": "equipment-purpose",
                 "params": {
                     "view": "Grid view",
-                    "fields": [
-                        "Name",
-                        "Priority",
-                        "Keyword",
-                        "Up to",
-                        "At least",
-                        "Max",
-                        "In a nutshell",
-                        "For instructor",
-                    ],
                 },
             }
         elif target == "limit":
             data = {
                 "table_name": "equipment-limit",
+                "params": {
+                    "view": "Grid view",
+                },
+            }
+        elif target == "collection":
+            data = {
+                "table_name": "equipment-collection",
                 "params": {
                     "view": "Grid view",
                 },
@@ -73,9 +69,9 @@ def update_equipment_policy(request):
             f.write(json.dumps(data, indent=4))
             f.truncate()
 
-    send_msg(request, "UEP", "DEV", result_list)
+    send_msg(request, "SED", "DEV", result_list)
 
-    return HttpResponse(f"Updated equipment policy: {result_list}")
+    return HttpResponse(f"Synchronized Equipment data: {result_list}")
 
 
 def delete_expired_carts(request):
@@ -92,9 +88,9 @@ def delete_expired_carts(request):
 #
 
 
-def get_equipment_policy(policy: str):
+def get_equipment_data(target: str):
     with open(JSON_PATH, "r") as f:
-        item_list = json.load(f)[policy]
+        item_list = json.load(f)[target]
         f.close()
 
     return item_list
@@ -160,13 +156,17 @@ def is_within_limits(
     category_limit = limits_by_category.get(category, float("inf"))
 
     if category_count >= category_limit:
-        category_keyword_with_josa = handle_hangul(collection["category"]["keyword"], "은는", True)
+        category_keyword_with_josa = handle_hangul(
+            collection["category"]["keyword"], "은는", True
+        )
         reason = "CATEGORY LIMIT 초과"
         msg = f"{category_keyword_with_josa} 최대 {category_limit}개 대여할 수 있어요."
 
         return False, reason, msg
 
-    subcategory_count = sum(1 for it in cart if it.get("subcategory", {}).get("order") == subcategory)
+    subcategory_count = sum(
+        1 for it in cart if it.get("subcategory", {}).get("order") == subcategory
+    )
     subcategory_limit = limits_by_subcategory.get(subcategory, float("inf"))
 
     if subcategory_count >= subcategory_limit:
@@ -189,13 +189,17 @@ def is_within_limits(
 
     if collection_count >= collection_limit:
         reason = "COLLECTION LIMIT 초과"
-        msg = f'{collection["name"]} 기자재는 최대 {collection_limit}개 대여할 수 있어요.'
+        msg = (
+            f'{collection["name"]} 기자재는 최대 {collection_limit}개 대여할 수 있어요.'
+        )
 
         return False, reason, msg
 
     for group_limit, limit in limits_by_group.items():
         if collection_id in group_limit:
-            group_items_count = sum(1 for it in cart if it["collection_id"] in group_limit)
+            group_items_count = sum(
+                1 for it in cart if it["collection_id"] in group_limit
+            )
 
             if group_items_count >= limit:
                 reason = "GROUP LIMIT 초과"
@@ -222,33 +226,34 @@ def equipment(request):
 
     # id: filter_equipment
     if id == "filter_equipment":
+        pathname = "/equipment/"
+        query_string = {"categoryPriority": category_priority}
+
         if record_id:
             data = {
                 "table_name": "equipment-collection",
-                "params": {
-                    "record_id": record_id,
-                },
+                "params": {"record_id": record_id},
             }
 
             collection = airtable("get", "record", data=data)
-            pathname = f'/equipment/{collection["collection_id"]}/'
-        else:
-            pathname = "/equipment/"
 
-        query_string = {"categoryPriority": category_priority}
+            if collection["collection_id"][0] == category_priority:
+                pathname += f'{collection["collection_id"]}/'
+            
+            if purpose_priority and period:
+                is_rental_allowed = any(
+                    purpose_priority in collection_purpose
+                    for collection_purpose in collection.get("item_purpose", [])
+                )
+                
+                if not is_rental_allowed:
+                    query_string["rentalLimited"] = collection.get("name")
 
         if purpose_priority and period:
-            query_string["purposePriority"] = purpose_priority
-            query_string["period"] = period
-
-        if record_id and purpose_priority and period:
-            is_rental_allowed = any(
-                purpose_priority in collection_purpose
-                for collection_purpose in collection["item_purpose"]
-            )
-
-            if not is_rental_allowed:
-                query_string["rentalLimited"] = collection["name"]
+            query_string.update({
+                "purposePriority": purpose_priority,
+                "period": period,
+            })
 
         next_url = f"{pathname}?{urlencode(query_string)}"
 
@@ -273,7 +278,14 @@ def equipment(request):
             },
         )
 
-        limit_list = get_equipment_policy("limit")
+        equipment_collection_list = get_equipment_data("collection")
+
+        for ec in equipment_collection_list:
+            if ec["record_id"] == record_id:
+                collection["thumbnail"] = ec["thumbnail"]
+                break
+
+        limit_list = get_equipment_data("limit")
 
         limits_by_category = {
             limit["category_priority"]: limit["limit"]
@@ -319,14 +331,20 @@ def equipment(request):
             ):
                 if any(it["item_id"] == item["item_id"] for it in cart):
                     reason = "ITEM 중복"
-                    msg = "장바구니에 재고 수량이 모두 담겼어요. 장바구니를 확인해주세요."
+                    msg = (
+                        "장바구니에 재고 수량이 모두 담겼어요. 장바구니를 확인해주세요."
+                    )
                     continue
 
                 if len(cart) != 0:
                     if not any(it["period"] == period for it in cart):
                         days_from_now, duration = split_period(cart[0]["period"])
-                        user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
-                        user_end_date = user_start_date + timezone.timedelta(days=duration)
+                        user_start_date = timezone.now() + timezone.timedelta(
+                            days=days_from_now
+                        )
+                        user_end_date = user_start_date + timezone.timedelta(
+                            days=duration
+                        )
 
                         user_start_date, user_end_date = (
                             user_start_date.date(),
@@ -363,7 +381,7 @@ def equipment(request):
 
                     cart.append(item_to_add)
                     added_count += 1
-        
+
         if added_count < int(quantity) and msg is None:
             reason = "LIMIT 초과"
             msg = f"대여 수량 한도 내에서 {added_count}개만 장바구니에 담았어요."
