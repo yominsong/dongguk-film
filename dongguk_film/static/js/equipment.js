@@ -987,8 +987,8 @@ function requestAddToCart() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
+        requestVerifyAuthentication();
         if (id_modal === null) return;
-
         class_firsts = document.querySelectorAll(".class-first");
         initValidation(class_firsts, id_filter_or_checkout);
 
@@ -999,18 +999,23 @@ function initRequest() {
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
                     if (isItOkayToSubmitForm()) {
-                        const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
-
-                        if (id_filter_or_checkout.innerText === "적용하기") {
-                            requestFilterEquipment();
-                        } else if (id_filter_or_checkout.innerText === "신청하기") {
-                            return; // Under construction
-                        };
-
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
+                        
+                        const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
+
                         id_filter_or_checkout_spin.classList.remove("hidden");
+                    } else if (id_filter_or_checkout.innerText === "신청하기") {
+                        if (userPk === null || userName === null || userStudentId === null) {
+                            let params = {};
+
+                            params.next = `${location.pathname}${location.search}`;
+                            params.loginRequestMsg = "checkout";
+                            location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
+                        } else {
+                            return; // Under construction
+                        }
                     } else {
                         inputs.forEach((input) => {
                             controlError(input);

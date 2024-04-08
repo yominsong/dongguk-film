@@ -34,7 +34,6 @@ let isItDoubleChecked = false;
 
 // miscellaneous
 const staffBoxElements = [id_select_position, id_found_position_list, id_name];
-let userPk, userName, userStudentId; // User authentication verification results
 let positionData; // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
 let requiredPositions = [];
 let addedRequiredPositions = []; // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
@@ -788,91 +787,92 @@ function requestDeleteProject() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        if (id_modal !== null) {
-            const class_firsts = document.querySelectorAll(".class-first");
+        requestVerifyAuthentication();
+        if (id_modal === null) return;
 
-            initValidation(class_firsts, id_create_or_update);
-            initStaffBoxValidation();
-            validatePurpose();
+        const class_firsts = document.querySelectorAll(".class-first");
 
-            id_name.addEventListener("input", () => {
-                if (isItOkayToFindUser()) {
-                    requestFindUser();
-                } else {
-                    isUserFound = false;
-                };
-            });
+        initValidation(class_firsts, id_create_or_update);
+        initStaffBoxValidation();
+        validatePurpose();
 
-            ["click", "keyup"].forEach(type => {
-                id_create_or_update.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
+        id_name.addEventListener("input", () => {
+            if (isItOkayToFindUser()) {
+                requestFindUser();
+            } else {
+                isUserFound = false;
+            };
+        });
 
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (isItOkayToSubmitProjectForm()) {
-                            const id_create_or_update_spin = code(id_create_or_update, "_spin");
+        ["click", "keyup"].forEach(type => {
+            id_create_or_update.addEventListener(type, event => {
+                const targetTagName = event.target.tagName;
 
-                            if (id_create_or_update.innerText === "등록하기") {
-                                requestCreateProject();
-                            } else if (id_create_or_update.innerText === "수정하기") {
-                                requestUpdateProject();
-                            };
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    if (isItOkayToSubmitProjectForm()) {
+                        const id_create_or_update_spin = code(id_create_or_update, "_spin");
 
-                            displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
-                            displayButtonMsg(false, id_create_or_update, "error");
-                            id_create_or_update_spin.classList.remove("hidden");
-                        } else {
-                            inputs.forEach(input => {
-                                controlError(input);
-                                controlErrorInPurpose();
-                                controlErrorInStaffBox();
-                                if (addedStaffs.length > 0 && !isUserProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
-                            });
+                        if (id_create_or_update.innerText === "등록하기") {
+                            requestCreateProject();
+                        } else if (id_create_or_update.innerText === "수정하기") {
+                            requestUpdateProject();
                         };
-                    };
 
-                    ["keydown", "focusin"].forEach(type => {
+                        displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_create_or_update, "error");
+                        id_create_or_update_spin.classList.remove("hidden");
+                    } else {
                         inputs.forEach(input => {
-                            input.addEventListener(type, () => {
-                                displayButtonMsg(false, id_create_or_update, "error");
-                            });
+                            controlError(input);
+                            controlErrorInPurpose();
+                            controlErrorInStaffBox();
+                            if (addedStaffs.length > 0 && !isUserProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
                         });
+                    };
+                };
 
-                        staffBoxElements.forEach(element => {
-                            element.addEventListener(type, () => {
-                                displayButtonMsg(false, id_create_or_update, "error");
-                            });
+                ["keydown", "focusin"].forEach(type => {
+                    inputs.forEach(input => {
+                        input.addEventListener(type, () => {
+                            displayButtonMsg(false, id_create_or_update, "error");
+                        });
+                    });
+
+                    staffBoxElements.forEach(element => {
+                        element.addEventListener(type, () => {
+                            displayButtonMsg(false, id_create_or_update, "error");
                         });
                     });
                 });
-
-                id_delete.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
-
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (!isItDoubleChecked) {
-                            id_delete_text.innerText = "정말 삭제하기";
-                            isItDoubleChecked = true;
-
-                            doubleCheckTimer = setTimeout(() => {
-                                id_delete_text.innerText = "삭제하기";
-                                isItDoubleChecked = false;
-                            }, 5000);
-                        } else if (isItDoubleChecked) {
-                            const id_delete_spin = code(id_delete, "_spin");
-
-                            clearTimeout(doubleCheckTimer);
-                            requestDeleteProject();
-                            displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
-                            displayButtonMsg(false, id_create_or_update, "error");
-                            id_delete_spin.classList.remove("hidden");
-                            isItDoubleChecked = false;
-                        };
-                    };
-                });
             });
-        };
+
+            id_delete.addEventListener(type, event => {
+                const targetTagName = event.target.tagName;
+
+                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                    if (!isItDoubleChecked) {
+                        id_delete_text.innerText = "정말 삭제하기";
+                        isItDoubleChecked = true;
+
+                        doubleCheckTimer = setTimeout(() => {
+                            id_delete_text.innerText = "삭제하기";
+                            isItDoubleChecked = false;
+                        }, 5000);
+                    } else if (isItDoubleChecked) {
+                        const id_delete_spin = code(id_delete, "_spin");
+
+                        clearTimeout(doubleCheckTimer);
+                        requestDeleteProject();
+                        displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_create_or_update, "error");
+                        id_delete_spin.classList.remove("hidden");
+                        isItDoubleChecked = false;
+                    };
+                };
+            });
+        });
     });
 }
 

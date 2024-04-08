@@ -4,7 +4,7 @@
 
 let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
-let isAuthenticated = false;
+let userPk, userName, userStudentId; // User authentication verification results
 
 //
 // Sub functions
@@ -212,12 +212,10 @@ function handleAjaxCallback(response) {
     // requestVerifyAuthentication()
     if (resID === "verify_authentication") {
         if (resResult.status === "DONE") {
-            isAuthenticated = true;
             userPk = String(resResult.pk);
             userName = resResult.name;
             userStudentId = resResult.student_id;
         } else if (resResult.status === "FAIL") {
-            isAuthenticated = false;
             userPk = null;
             userName = null;
             userStudentId = null;
@@ -587,5 +585,3 @@ function requestVerifyAuthentication() {
     makeAjaxCall(request);
     request = {};
 }
-
-requestVerifyAuthentication();

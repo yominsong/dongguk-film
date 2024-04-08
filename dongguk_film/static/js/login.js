@@ -38,7 +38,7 @@ function displayLoginRequestMsg() {
     const loginRequestMsg = urlParams.get("loginRequestMsg");
 
     if (loginRequestMsg) {
-        if (loginRequestMsg === "createCart") {
+        if (loginRequestMsg === "checkout") {
             id_login_request_msg.innerText = "기자재를 대여하려면";
         } else if (loginRequestMsg === "createProject") {
             id_login_request_msg.innerText = "프로젝트를 새로 등록하려면";

@@ -984,11 +984,6 @@ select {
   margin-bottom: 1rem;
 }
 
-.my-5 {
-  margin-top: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
 .-mb-5 {
   margin-bottom: -1.25rem;
 }
@@ -1553,10 +1548,6 @@ select {
 
 .gap-y-6 {
   row-gap: 1.5rem;
-}
-
-.gap-y-5 {
-  row-gap: 1.25rem;
 }
 
 .-space-y-px > :not([hidden]) ~ :not([hidden]) {
