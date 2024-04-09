@@ -155,8 +155,8 @@ def validation(data: dict):
 
 
 def verify_authentication(request):
-    if request.POST["id"] == "verify_authentication":
-        id = request.POST["id"]
+    if request.GET["id"] == "verify_authentication":
+        id = request.GET["id"]
         
         if request.user.is_authenticated:
             status = "DONE"

@@ -955,7 +955,7 @@ function requestFilterEquipment() {
     };
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
+    request.type = "GET";
     request.data = data;
     request.async = true;
     request.headers = null;
@@ -988,7 +988,9 @@ function requestAddToCart() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
+        
         if (id_modal === null) return;
+        
         class_firsts = document.querySelectorAll(".class-first");
         initValidation(class_firsts, id_filter_or_checkout);
 

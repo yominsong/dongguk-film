@@ -578,7 +578,7 @@ function handleAjaxCallback(response) {
 
 function requestVerifyAuthentication() {
     request.url = `${location.origin}/users/utils/verify-authentication/`;
-    request.type = "POST";
+    request.type = "GET";
     request.data = { id: "verify_authentication" };
     request.async = true;
     request.headers = null;

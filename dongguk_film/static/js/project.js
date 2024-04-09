@@ -788,6 +788,7 @@ function requestDeleteProject() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
+        
         if (id_modal === null) return;
 
         const class_firsts = document.querySelectorAll(".class-first");
