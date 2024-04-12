@@ -968,7 +968,7 @@ function requestAddToCart() {
     if (id_detail !== null) id_quantity.readOnly = true;
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
+    request.type = "GET";
     request.data = {
         id: "add_to_cart",
         recordId: id_detail.dataset.recordId,
