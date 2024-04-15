@@ -239,21 +239,23 @@ def equipment(request):
 
             if collection["collection_id"][0] == category_priority:
                 pathname += f'{collection["collection_id"]}/'
-            
+
             if purpose_priority and period:
                 is_rental_allowed = any(
                     purpose_priority in collection_purpose
                     for collection_purpose in collection.get("item_purpose", [])
                 )
-                
+
                 if not is_rental_allowed:
                     query_string["rentalLimited"] = collection.get("name")
 
         if purpose_priority and period:
-            query_string.update({
-                "purposePriority": purpose_priority,
-                "period": period,
-            })
+            query_string.update(
+                {
+                    "purposePriority": purpose_priority,
+                    "period": period,
+                }
+            )
 
         next_url = f"{pathname}?{urlencode(query_string)}"
 
@@ -317,6 +319,7 @@ def equipment(request):
             if limit["depth"] == "Collection"
         }
 
+        purpose_list = get_equipment_data("purpose")
         item_to_add, reason, msg = None, None, None
         added_count = 0
 
@@ -337,11 +340,28 @@ def equipment(request):
                     continue
 
                 if len(cart) != 0:
-                    if not any(it["period"] == period for it in cart):
+                    if not any(
+                        it["purpose_priority"] == purpose_priority for it in cart
+                    ):
+                        purpose_keyword = next(
+                            purpose["keyword"]
+                            for purpose in purpose_list
+                            if purpose["priority"] == cart[0]["purpose_priority"]
+                        )
+
+                        purpose_keyword_with_josa = handle_hangul(
+                            purpose_keyword, "으로로", True
+                        ).replace(purpose_keyword, f"'{purpose_keyword}'")
+
+                        reason = "PURPOSE 불일치"
+                        msg = f"검색 필터에 대여 목적을 {purpose_keyword_with_josa} 적용하거나 장바구니를 비우고 다시 담아주세요."
+                        break
+                    elif not any(it["period"] == period for it in cart):
                         days_from_now, duration = split_period(cart[0]["period"])
                         user_start_date = timezone.now() + timezone.timedelta(
                             days=days_from_now
                         )
+
                         user_end_date = user_start_date + timezone.timedelta(
                             days=duration
                         )
@@ -352,7 +372,7 @@ def equipment(request):
                         )
 
                         reason = "PERIOD 불일치"
-                        msg = f"검색 필터에 대여 기간을 기존값({user_start_date} ~ {user_end_date})으로 적용하거나 장바구니를 비우고 다시 담아주세요."
+                        msg = f"검색 필터에 대여 기간을 '{user_start_date} 대여 ~ {user_end_date} 반납'으로 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break
 
                 valid, reason, msg = is_within_limits(
@@ -376,6 +396,7 @@ def equipment(request):
                         "category": collection["category"],
                         "subcategory": collection["subcategory"],
                         "order": collection["order"],
+                        "purpose_priority": purpose_priority,
                         "period": period,
                     }
 

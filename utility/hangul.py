@@ -37,6 +37,8 @@ def handle_hangul(word:str, handling_type:str, merge:bool):
 
     if handling_type == "을를":
         element = "을" if has_batchim else "를"
+    elif handling_type == "으로로":
+        element = "으로" if has_batchim else "로"
     elif handling_type == "이가":
         element = "이" if has_batchim else "가"
     elif handling_type == "은는":

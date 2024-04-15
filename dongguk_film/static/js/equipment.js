@@ -827,8 +827,10 @@ function initCart(resResult) {
     if (resResult.reason !== undefined) {
         if (resResult.reason.indexOf("ITEM") !== -1) {
             displayNoti(true, "DIC", resResult.msg);
-        } else if (resResult.reason.indexOf("PERIOD") !== -1) {
+        } else if (resResult.reason.indexOf("PURPOSE") !== -1) {
             displayNoti(true, "DRP", resResult.msg);
+        } else if (resResult.reason.indexOf("PERIOD") !== -1) {
+            displayNoti(true, "DRD", resResult.msg);
         } else if (resResult.reason.indexOf("LIMIT") !== -1) {
             displayNoti(true, "EQL", resResult.msg);
         };
