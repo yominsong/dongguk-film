@@ -216,13 +216,13 @@ def is_within_limits(
 
 
 def equipment(request):
-    id = request.GET.get("id")
-    record_id = request.GET.get("recordId")
-    category_priority = request.GET.get("categoryPriority")
-    purpose_priority = request.GET.get("purposePriority")
-    period = request.GET.get("period")
-    requested_quantity = request.GET.get("requestedQuantity")
-    cart = request.GET.get("cart")
+    id = request.POST.get("id")
+    record_id = request.POST.get("recordId")
+    category_priority = request.POST.get("categoryPriority")
+    purpose_priority = request.POST.get("purposePriority")
+    period = request.POST.get("period")
+    requested_quantity = request.POST.get("requestedQuantity")
+    cart = request.POST.get("cart")
 
     # id: filter_equipment
     if id == "filter_equipment":

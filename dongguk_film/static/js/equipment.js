@@ -959,7 +959,7 @@ function requestFilterEquipment() {
     };
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "GET";
+    request.type = "POST";
     request.data = data;
     request.async = true;
     request.headers = null;
@@ -972,7 +972,7 @@ function requestAddToCart() {
     if (id_detail !== null) id_requested_quantity.readOnly = true;
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "GET";
+    request.type = "POST";
     request.data = {
         id: "add_to_cart",
         recordId: id_detail.dataset.recordId,
