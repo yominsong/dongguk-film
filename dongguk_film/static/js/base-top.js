@@ -157,7 +157,31 @@ skipNavbar();
 //
 
 function makeAjaxCall(request) {
+    function getCookie(name) {
+        let cookieValue = null;
+
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                };
+            };
+        };
+
+        return cookieValue;
+    }
+
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
     const csrftoken = getCookie("csrftoken");
+
     const ajaxSettings = {
         url: request.url,
         type: request.type,
@@ -169,27 +193,6 @@ function makeAjaxCall(request) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             };
         }
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-
-        if (document.cookie && document.cookie !== "") {
-            let cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                };
-            };
-        };
-        
-        return cookieValue;
-    }
-
-    function csrfSafeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 
     if (request.data instanceof FormData) {
