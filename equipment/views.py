@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
 from urllib.parse import urlencode
 from .utils import get_equipment_data, split_period, filter_limit_list
 from utility.img import get_hero_img
@@ -74,6 +75,7 @@ def set_template_tag(
 #
 
 
+@ensure_csrf_cookie
 def equipment(request):
     category_priority = request.GET.get("categoryPriority", "").strip()
     purpose_priority = request.GET.get("purposePriority", "").strip()
