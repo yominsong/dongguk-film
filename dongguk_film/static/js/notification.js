@@ -23,10 +23,11 @@ function editXDate(notiType, bool) {
  * - `RNP`: Request Notification Permission
  * - `WNU`: Welcome New User
  * - `RTL`: Redirect to the List
- * - `DIC`: Duplicate Item in Cart
- * - `DRP`: Different Rental Purpose
- * - `DRD`: Different Rental Period
+ * - `MPP`: Mismatched PurPose
+ * - `MPD`: Missmatched PerioD
  * - `EQL`: Exceed rental Quantity Limit
+ * - `OOS`: Out Of Stock
+ * - `PTA`: PaTially Added
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
  * - `RYS`: Request YouTube Share Link
@@ -182,25 +183,18 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = `${param.collectionName} 기자재는 ${param.purposeKeyword} 목적으로 대여할 수 없어요. 다른 기자재를 선택해주세요.`;
         }
 
-        else if (notiType === "DIC") {
+        else if (notiType === "MPP") {
             notiIcon = exclamationIcon;
-            notiTitle = "재고 수량이 모두 담겼어요.";
+            notiTitle = "대여 목적이 변경된 것 같아요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DIC'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'MPP'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
-        else if (notiType === "DRP") {
+        else if (notiType === "MPD") {
             notiIcon = exclamationIcon;
-            notiTitle = "대여 목적이 변경되었어요.";
+            notiTitle = "대여 기간이 변경된 것 같아요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DRP'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
-        }
-
-        else if (notiType === "DRD") {
-            notiIcon = exclamationIcon;
-            notiTitle = "대여 기간이 변경되었어요.";
-            notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'DRD'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'MPD'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "EQL") {
@@ -208,6 +202,20 @@ function displayNoti(bool, notiType, param = null) {
             notiTitle = "대여 수량 한도를 초과했어요.";
             notiContent = param;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'EQL'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
+        else if (notiType === "OOS") {
+            notiIcon = exclamationIcon;
+            notiTitle = "재고 수량이 모두 담겼어요.";
+            notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'OOS'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
+        else if (notiType === "PTA") {
+            notiIcon = exclamationIcon;
+            notiTitle = "재고 수량을 초과했어요.";
+            notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'PTA'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         // login

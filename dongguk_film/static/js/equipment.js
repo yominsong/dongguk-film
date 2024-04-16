@@ -22,7 +22,7 @@ const id_copy_url_descr = code(id_copy_url, "_descr");
 
 // detail
 const id_detail = document.getElementById("id_detail");
-const id_quantity = document.getElementById("id_quantity");
+const id_requested_quantity = document.getElementById("id_requested_quantity");
 
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
@@ -735,7 +735,7 @@ function initDetail() {
     if (!urlParams.has("purposePriority") && !urlParams.has("period")) {
         id_cart_alert.hidden = false;
         id_cart_alert_for_filter.hidden = false;
-    } else if (id_quantity.value === "0" && id_quantity.readOnly) {
+    } else if (id_requested_quantity.value === "0" && id_requested_quantity.readOnly) {
         const class_purposes = document.querySelectorAll(".class-purpose");
 
         id_cart_alert.hidden = false;
@@ -746,7 +746,7 @@ function initDetail() {
         });
     };
 
-    if (id_quantity.readOnly) return;
+    if (id_requested_quantity.readOnly) return;
 
     const data = id_detail.dataset;
     const limitList = JSON.parse(data.limitList);
@@ -767,7 +767,7 @@ function initDetail() {
     const id_increase_quantity = document.getElementById("id_increase_quantity");
 
     function updateButtons() {
-        const quantity = Number(id_quantity.value);
+        const quantity = Number(id_requested_quantity.value);
         id_decrease_quantity.disabled = quantity <= 1;
         id_increase_quantity.disabled = quantity >= Number(max);
     }
@@ -776,37 +776,37 @@ function initDetail() {
 
     if (is_quantity_button_updated) return;
 
-    id_quantity.addEventListener("input", () => {
-        if (document.activeElement !== id_quantity) return;
+    id_requested_quantity.addEventListener("input", () => {
+        if (document.activeElement !== id_requested_quantity) return;
 
-        if (id_quantity.value === "0") {
-            id_quantity.value = "1";
+        if (id_requested_quantity.value === "0") {
+            id_requested_quantity.value = "1";
         };
 
         updateButtons();
     });
 
-    id_quantity.addEventListener("blur", () => {
-        if (id_quantity.value === "" || Number(id_quantity.value) === 0) {
-            id_quantity.value = "1";
-        } else if (Number(id_quantity.value) > Number(max)) {
-            id_quantity.value = max;
+    id_requested_quantity.addEventListener("blur", () => {
+        if (id_requested_quantity.value === "" || Number(id_requested_quantity.value) === 0) {
+            id_requested_quantity.value = "1";
+        } else if (Number(id_requested_quantity.value) > Number(max)) {
+            id_requested_quantity.value = max;
         };
 
         updateButtons();
     });
 
     id_decrease_quantity.addEventListener("click", () => {
-        if (Number(id_quantity.value) > 1) {
-            id_quantity.value = Number(id_quantity.value) - 1;
+        if (Number(id_requested_quantity.value) > 1) {
+            id_requested_quantity.value = Number(id_requested_quantity.value) - 1;
         };
 
         updateButtons();
     });
 
     id_increase_quantity.addEventListener("click", () => {
-        if (Number(id_quantity.value) < Number(max)) {
-            id_quantity.value = Number(id_quantity.value) + 1;
+        if (Number(id_requested_quantity.value) < Number(max)) {
+            id_requested_quantity.value = Number(id_requested_quantity.value) + 1;
         };
 
         updateButtons();
@@ -818,21 +818,23 @@ function initDetail() {
 initDetail();
 
 function initCart(resResult) {
-    // Run to initialize id_quantity, id_decrease_quantity, id_increase_quantity
+    // Run to initialize id_requested_quantity, id_decrease_quantity, id_increase_quantity
     if (id_detail !== null) {
-        id_quantity.readOnly = false;
+        id_requested_quantity.readOnly = false;
         initDetail();
     };
 
-    if (resResult.reason !== undefined) {
-        if (resResult.reason.indexOf("ITEM") !== -1) {
-            displayNoti(true, "DIC", resResult.msg);
-        } else if (resResult.reason.indexOf("PURPOSE") !== -1) {
-            displayNoti(true, "DRP", resResult.msg);
-        } else if (resResult.reason.indexOf("PERIOD") !== -1) {
-            displayNoti(true, "DRD", resResult.msg);
+    if (resResult.reason !== undefined && resResult.reason !== null) {
+        if (resResult.reason.indexOf("MISMATCHED_PURPOSE") !== -1) {
+            displayNoti(true, "MPP", resResult.msg);
+        } else if (resResult.reason.indexOf("MISMATCHED_PERIOD") !== -1) {
+            displayNoti(true, "MPD", resResult.msg);
         } else if (resResult.reason.indexOf("LIMIT") !== -1) {
             displayNoti(true, "EQL", resResult.msg);
+        } else if (resResult.reason.indexOf("OUT_OF_STOCK") !== -1) {
+            displayNoti(true, "OOS", resResult.msg);
+        } else if (resResult.reason.indexOf("PARTIALLY_ADDED") !== -1) {
+            displayNoti(true, "PTA", resResult.msg);
         };
     };
 
@@ -953,7 +955,7 @@ function requestFilterEquipment() {
 
     if (id_detail !== null) {
         data["recordId"] = id_detail.dataset.recordId;
-        id_quantity.readOnly = true;
+        id_requested_quantity.readOnly = true;
     };
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
@@ -967,7 +969,7 @@ function requestFilterEquipment() {
 }
 
 function requestAddToCart() {
-    if (id_detail !== null) id_quantity.readOnly = true;
+    if (id_detail !== null) id_requested_quantity.readOnly = true;
 
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "GET";
@@ -977,7 +979,7 @@ function requestAddToCart() {
         categoryPriority: urlParams.get("categoryPriority"),
         purposePriority: urlParams.get("purposePriority"),
         period: urlParams.get("period"),
-        quantity: id_quantity.value,
+        requestedQuantity: id_requested_quantity.value,
         cart: sessionStorage.getItem("cart"),
     };
     request.async = true;

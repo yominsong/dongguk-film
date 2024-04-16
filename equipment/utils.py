@@ -159,7 +159,7 @@ def is_within_limits(
         category_keyword_with_josa = handle_hangul(
             collection["category"]["keyword"], "은는", True
         )
-        reason = "CATEGORY LIMIT 초과"
+        reason = "EXCEED_CATEGORY_LIMIT"
         msg = f"{category_keyword_with_josa} 최대 {category_limit}개 대여할 수 있어요."
 
         return False, reason, msg
@@ -170,7 +170,7 @@ def is_within_limits(
     subcategory_limit = limits_by_subcategory.get(subcategory, float("inf"))
 
     if subcategory_count >= subcategory_limit:
-        reason = "SUBCATEGORY LIMIT 초과"
+        reason = "EXCEED_SUBCATEGORY_LIMIT"
         msg = f'{collection["subcategory"]["keyword"]} 기자재는 최대 {subcategory_limit}개 대여할 수 있어요.'
 
         return False, reason, msg
@@ -179,7 +179,7 @@ def is_within_limits(
     brand_limit = limits_by_brand.get(brand, float("inf"))
 
     if brand_count >= brand_limit:
-        reason = "BRAND LIMIT 초과"
+        reason = "EXCEED_BRAND_LIMIT"
         msg = f"{brand} 기자재는 최대 {brand_limit}개 대여할 수 있어요."
 
         return False, reason, msg
@@ -188,7 +188,7 @@ def is_within_limits(
     collection_limit = limits_by_collection.get(collection_id, float("inf"))
 
     if collection_count >= collection_limit:
-        reason = "COLLECTION LIMIT 초과"
+        reason = "EXCEED_COLLECTION_LIMIT"
         msg = (
             f'{collection["name"]} 기자재는 최대 {collection_limit}개 대여할 수 있어요.'
         )
@@ -202,12 +202,12 @@ def is_within_limits(
             )
 
             if group_items_count >= limit:
-                reason = "GROUP LIMIT 초과"
+                reason = "EXCEED_GROUP_LIMIT"
                 msg = "도합 대여 수량 한도를 확인해주세요."
 
                 return False, reason, msg
 
-    return True, "", ""
+    return True, None, None
 
 
 #
@@ -221,7 +221,7 @@ def equipment(request):
     category_priority = request.GET.get("categoryPriority")
     purpose_priority = request.GET.get("purposePriority")
     period = request.GET.get("period")
-    quantity = request.GET.get("quantity")
+    requested_quantity = request.GET.get("requestedQuantity")
     cart = request.GET.get("cart")
 
     # id: filter_equipment
@@ -280,11 +280,11 @@ def equipment(request):
             },
         )
 
-        equipment_collection_list = get_equipment_data("collection")
+        collection_list = get_equipment_data("collection")
 
-        for ec in equipment_collection_list:
-            if ec["record_id"] == record_id:
-                collection["thumbnail"] = ec["thumbnail"]
+        for it in collection_list:
+            if it["record_id"] == record_id:
+                collection["thumbnail"] = it["thumbnail"]
                 break
 
         limit_list = get_equipment_data("limit")
@@ -319,12 +319,13 @@ def equipment(request):
             if limit["depth"] == "Collection"
         }
 
+        available_item_list = []
+        added_quantity, requested_quantity = 0, int(requested_quantity)
         purpose_list = get_equipment_data("purpose")
         item_to_add, reason, msg = None, None, None
-        added_count = 0
 
         for item in collection["item"]:
-            if added_count >= int(quantity):
+            if added_quantity >= requested_quantity:
                 break
 
             if (
@@ -332,11 +333,9 @@ def equipment(request):
                 and "🟢" in item["validation"]
                 and purpose_priority in str(item["purpose"])
             ):
+                available_item_list.append(item)
+
                 if any(it["item_id"] == item["item_id"] for it in cart):
-                    reason = "ITEM 중복"
-                    msg = (
-                        "장바구니에 재고 수량이 모두 담겼어요. 장바구니를 확인해주세요."
-                    )
                     continue
 
                 if len(cart) != 0:
@@ -353,7 +352,7 @@ def equipment(request):
                             purpose_keyword, "으로로", True
                         ).replace(purpose_keyword, f"'{purpose_keyword}'")
 
-                        reason = "PURPOSE 불일치"
+                        reason = "MISMATCHED_PURPOSE"
                         msg = f"검색 필터에 대여 목적을 {purpose_keyword_with_josa} 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break
                     elif not any(it["period"] == period for it in cart):
@@ -371,7 +370,7 @@ def equipment(request):
                             user_end_date.date(),
                         )
 
-                        reason = "PERIOD 불일치"
+                        reason = "MISMATCHED_PERIOD"
                         msg = f"검색 필터에 대여 기간을 '{user_start_date} 대여 ~ {user_end_date} 반납'으로 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break
 
@@ -401,11 +400,21 @@ def equipment(request):
                     }
 
                     cart.append(item_to_add)
-                    added_count += 1
+                    added_quantity += 1
 
-        if added_count < int(quantity) and msg is None:
-            reason = "LIMIT 초과"
-            msg = f"대여 수량 한도 내에서 {added_count}개만 장바구니에 담았어요."
+        if added_quantity != requested_quantity and msg is None:
+            purpose_keyword = next(
+                purpose["keyword"]
+                for purpose in purpose_list
+                if purpose["priority"] == purpose_priority
+            )
+
+            if added_quantity == 0:
+                reason = "OUT_OF_STOCK"
+                msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개 대여할 수 있어요."
+            elif added_quantity < requested_quantity:
+                reason = "PARTIALLY_ADDED"
+                msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개 대여할 수 있어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])
