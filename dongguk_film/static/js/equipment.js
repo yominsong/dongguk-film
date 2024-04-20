@@ -6,6 +6,7 @@
 const id_modal = document.getElementById("id_modal");
 const id_modal_base = code(id_modal, "_base");
 const id_modal_filter = code(id_modal, "_filter");
+const id_scrollable_part_of_modal = code("id_scrollable_part_of_", id_modal);
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_initialize_purpose = code("id_initialize_", id_purpose);
@@ -19,6 +20,7 @@ const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
 const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
+let yAxisScrollPositionValueForModal;
 
 // detail
 const id_detail = document.getElementById("id_detail");
@@ -128,7 +130,7 @@ function executeWhenUserGoesToSelectPurpose() {
                     setTimeout(() => { id_period_label.classList.remove("blink") }, 3500);
                     setTimeout(() => { id_period_base.classList.remove("blink-ring") }, 3500);
                     setTimeout(() => { id_period_calendar.classList.remove("blink-ring") }, 3500);
-                    setTimeout(() => { id_purpose_label.scrollIntoView({ behavior: "smooth" }); }, 100);
+                    setTimeout(() => { id_purpose_label.scrollIntoView({ behavior: "smooth" }) }, 100);
                 };
             });
         });
@@ -151,6 +153,8 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
         data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
         data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
         id_period_calendar.classList.replace("bg-gray-100", "bg-white");
+        id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight, behavior: "smooth" });
+        setTimeout(() => { yAxisScrollPositionValueForModal = id_scrollable_part_of_modal.scrollTop }, 300); // When the behavior option of the scrollTo() method is set to smooth, the duration varies across web browsers, so a random estimate of 300ms is applied to setTimeout()
     } else {
         id_purpose.value = null;
         id_initialize_purpose.hidden = true;
@@ -287,6 +291,10 @@ function initCalendar() {
                 buttonClasses += "rounded-r-full ";
             } else {
                 buttonClasses += "rounded-full ";
+            };
+
+            if (isStartDate) {
+                id_scrollable_part_of_modal.scrollTo({ top: yAxisScrollPositionValueForModal, behavior: "auto" })
             };
 
             if (isSelected) {
@@ -605,10 +613,10 @@ function updateForm(action, datasetObj = null) {
             });
 
             id_modal_cart.classList.remove("-mb-5");
-            
+
             const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
 
-            id_filter_or_checkout_text.innerText = "신청하기";
+            id_filter_or_checkout_text.innerText = "예약하기";
             id_filter_or_checkout.classList.replace("hidden", "inline-flex");
         };
 
@@ -992,9 +1000,9 @@ function requestAddToCart() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
-        
+
         if (id_modal === null) return;
-        
+
         class_firsts = document.querySelectorAll(".class-first");
         initValidation(class_firsts, id_filter_or_checkout);
 
@@ -1008,11 +1016,11 @@ function initRequest() {
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
-                        
+
                         const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
 
                         id_filter_or_checkout_spin.classList.remove("hidden");
-                    } else if (id_filter_or_checkout.innerText === "신청하기") {
+                    } else if (id_filter_or_checkout.innerText === "예약하기") {
                         if (userPk === null || userName === null || userStudentId === null) {
                             let params = {};
 

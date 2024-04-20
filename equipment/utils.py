@@ -408,13 +408,13 @@ def equipment(request):
                 for purpose in purpose_list
                 if purpose["priority"] == purpose_priority
             )
+            
+            msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개까지 대여할 수 있어요."
 
             if added_quantity == 0:
                 reason = "OUT_OF_STOCK"
-                msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개 대여할 수 있어요."
             elif added_quantity < requested_quantity:
                 reason = "PARTIALLY_ADDED"
-                msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개 대여할 수 있어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])

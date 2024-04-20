@@ -3057,6 +3057,10 @@ select {
     visibility: hidden;
   }
 
+  .sm\:relative {
+    position: relative;
+  }
+
   .sm\:z-10 {
     z-index: 10;
   }
@@ -3118,6 +3122,10 @@ select {
 
   .sm\:block {
     display: block;
+  }
+
+  .sm\:inline {
+    display: inline;
   }
 
   .sm\:flex {

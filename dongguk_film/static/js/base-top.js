@@ -157,6 +157,7 @@ skipNavbar();
 //
 
 function makeAjaxCall(request) {
+    // Used the ensure_csrf_cookie decorator in views.py to issue CSRF cookies to first-time visitors to D-dot-f
     function getCookie(name) {
         let cookieValue = null;
 
