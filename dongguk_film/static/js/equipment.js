@@ -20,7 +20,6 @@ const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
 const id_copy_url_done = code(id_copy_url, "_done");
 const id_copy_url_descr = code(id_copy_url, "_descr");
-let yAxisScrollPositionValueForModal;
 
 // detail
 const id_detail = document.getElementById("id_detail");
@@ -153,8 +152,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
         data_period.startDateMin = formatDateInFewDays(now, data_purpose.atLeast);
         data_period.startDateMax = formatDateInFewDays(now, data_purpose.upTo);
         id_period_calendar.classList.replace("bg-gray-100", "bg-white");
-        id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight + id_period_help.offsetHeight, behavior: "smooth" });
-        setTimeout(() => { yAxisScrollPositionValueForModal = id_scrollable_part_of_modal.scrollTop }, 500); // When the behavior option of the scrollTo() method is set to smooth, the duration varies across web browsers, so a random estimate of 500ms is applied to setTimeout()
+        id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight, behavior: "smooth" });
     } else {
         id_purpose.value = null;
         id_initialize_purpose.hidden = true;
@@ -294,7 +292,7 @@ function initCalendar() {
             };
 
             if (isStartDate) {
-                id_scrollable_part_of_modal.scrollTo({ top: yAxisScrollPositionValueForModal, behavior: "auto" })
+                id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight, behavior: "auto" })
             };
 
             if (isSelected) {
