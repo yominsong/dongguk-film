@@ -1,7 +1,7 @@
 {% load tags %}
 <div id="id_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+     @keydown.window.escape="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti()}"
      x-show="open"
      class="relative z-20"
      aria-labelledby="id_modal_title"
@@ -32,9 +32,9 @@
                     <button id="id_close_modal"
                             type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
-                            @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
+                            @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
+                            @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }">
                         <span class="sr-only">기자재 <span class="class-keyword">검색 필터</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"

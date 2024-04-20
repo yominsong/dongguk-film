@@ -26,6 +26,7 @@ function editXDate(notiType, bool) {
  * - `MPP`: Mismatched PurPose
  * - `MPD`: Missmatched PerioD
  * - `EQL`: Exceed rental Quantity Limit
+ * - `EGL`: Exceed rental Group Limit
  * - `OOS`: Out Of Stock
  * - `PTA`: PaTially Added
  * - `RBG`: Recommend Web Browser for Google Login
@@ -195,6 +196,13 @@ function displayNoti(bool, notiType, param = null) {
             notiTitle = "대여 기간이 변경된 것 같아요.";
             notiContent = param;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'MPD'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
+        else if (notiType === "EGL") {
+            notiIcon = exclamationIcon;
+            notiTitle = "대여 수량 한도를 초과했어요.";
+            notiContent = param;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'EGL'); executeWhenGroupLimitIsExceeded()" onkeydown="if (event.key === 'Enter') { this.click() }">한도 확인하기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "EQL") {

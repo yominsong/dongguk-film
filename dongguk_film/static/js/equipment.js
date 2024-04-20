@@ -105,6 +105,12 @@ function adjustDetailHeight() {
 
 adjustDetailHeight();
 
+function closeNoti() {
+    displayNoti(false, "EGL");
+    displayNoti(false, "EQL");
+    displayNoti(false, "PTA");
+}
+
 function executeWhenUserGoesToSelectPurpose() {
     if (id_detail !== null) {
         const id_open_modal_and_focus_on_purpose = document.getElementById("id_open_modal_and_focus_on_purpose");
@@ -184,6 +190,23 @@ function executeWhenCartIsUpdated() {
 }
 
 executeWhenCartIsUpdated();
+
+function executeWhenGroupLimitIsExceeded() {
+    id_detail_limit.scrollIntoView({ behavior: "smooth" })
+
+    if (id_detail_limit.getAttribute("aria-expanded") === "false") {
+        id_detail_limit.click();
+    };
+
+    const limits = id_detail_limit_content.querySelectorAll("li");
+
+    limits.forEach(limit => {
+        if (limit.innerText.indexOf("도합") !== -1) {
+            setTimeout(() => { limit.classList.add("blink") }, 500);
+            setTimeout(() => { limit.classList.remove("blink") }, 3500);
+        };
+    });
+}
 
 //
 // Main functions
@@ -835,6 +858,8 @@ function initCart(resResult) {
             displayNoti(true, "MPP", resResult.msg);
         } else if (resResult.reason.indexOf("MISMATCHED_PERIOD") !== -1) {
             displayNoti(true, "MPD", resResult.msg);
+        } else if (resResult.reason.indexOf("EXCEED_GROUP_LIMIT") !== -1) {
+            displayNoti(true, "EGL", resResult.msg);
         } else if (resResult.reason.indexOf("LIMIT") !== -1) {
             displayNoti(true, "EQL", resResult.msg);
         } else if (resResult.reason.indexOf("OUT_OF_STOCK") !== -1) {

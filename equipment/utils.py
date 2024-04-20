@@ -203,7 +203,7 @@ def is_within_limits(
 
             if group_items_count >= limit:
                 reason = "EXCEED_GROUP_LIMIT"
-                msg = "도합 대여 수량 한도를 확인해주세요."
+                msg = f'{collection["name"]} 기자재는 특정 기자재와 함께 도합 최대 {limit}개 대여할 수 있어요.'
 
                 return False, reason, msg
 
@@ -402,19 +402,24 @@ def equipment(request):
                     cart.append(item_to_add)
                     added_quantity += 1
 
-        if added_quantity != requested_quantity and msg is None:
-            purpose_keyword = next(
-                purpose["keyword"]
-                for purpose in purpose_list
-                if purpose["priority"] == purpose_priority
-            )
-            
-            msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개까지 대여할 수 있어요."
+        if added_quantity != requested_quantity:
+            if reason is None:
+                purpose_keyword = next(
+                    purpose["keyword"]
+                    for purpose in purpose_list
+                    if purpose["priority"] == purpose_priority
+                )
 
-            if added_quantity == 0:
-                reason = "OUT_OF_STOCK"
-            elif added_quantity < requested_quantity:
-                reason = "PARTIALLY_ADDED"
+                msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개까지 대여할 수 있어요."
+                
+                if added_quantity == 0:
+                    reason = "OUT_OF_STOCK"
+                elif added_quantity < requested_quantity:
+                    reason = "PARTIALLY_ADDED"
+                    msg += f" 장바구니에 이미 {len(available_item_list) - added_quantity}개가 담겨있어 {added_quantity}개만 추가했어요."
+
+            elif reason and added_quantity != 0 and added_quantity < requested_quantity:
+                msg += f" 장바구니에 이미 {int(''.join([char for char in msg if char.isdigit()])) - added_quantity}개가 담겨있어 {added_quantity}개만 추가했어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])
