@@ -520,6 +520,7 @@ function initForm() {
 
 function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
+    const id_modal_checkout = code(id_modal, "_checkout");
     const id_modal_share = code(id_modal, "_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
@@ -534,6 +535,7 @@ function updateForm(action, datasetObj = null) {
     if (action === "filter") {
         id_modal_filter.hidden = false;
         id_modal_cart.hidden = true;
+        id_modal_checkout.hidden = true;
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
@@ -552,6 +554,7 @@ function updateForm(action, datasetObj = null) {
     else if (action === "view_cart") {
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
+        id_modal_checkout.hidden = true;
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
@@ -636,9 +639,10 @@ function updateForm(action, datasetObj = null) {
             id_modal_cart.classList.remove("-mb-5");
 
             const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
-
+            
             id_filter_or_checkout_text.innerText = "예약하기";
             id_filter_or_checkout.classList.replace("hidden", "inline-flex");
+            id_filter_or_checkout.classList.add("class-checkout");
         };
 
         initModal(); // Run to read the newly created class-remove-from-cart
@@ -660,10 +664,25 @@ function updateForm(action, datasetObj = null) {
         initModal(); // Run to read the newly created class-remove-from-cart
     }
 
+    // Middle action: checkout
+    else if (action === "checkout") {
+        id_modal_filter.hidden = true;
+        id_modal_cart.hidden = false;
+        id_modal_checkout.hidden = false;
+        id_modal_share.hidden = true;
+
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "예약하기";
+        });
+
+        id_filter_or_checkout.classList.remove("class-checkout");
+    }
+
     // Middle action: share
     else if (action === "share") {
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = true;
+        id_modal_checkout.hidden = true;
         id_modal_share.hidden = false;
 
         class_keywords.forEach(keyword => {
@@ -684,6 +703,7 @@ function initModal() {
     const class_filters = document.querySelectorAll(".class-filter");
     const class_view_carts = document.querySelectorAll(".class-view-cart");
     const class_remove_from_carts = document.querySelectorAll(".class-remove-from-cart");
+    const class_checkouts = document.querySelectorAll(".class-checkout");
     const class_shares = document.querySelectorAll(".class-share");
 
     class_filters.forEach(filter => {
@@ -701,6 +721,16 @@ function initModal() {
             view_cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     updateForm("view_cart");
+                };
+            });
+        });
+    });
+
+    class_checkouts.forEach(checkout => {
+        ["click", "keyup"].forEach(type => {
+            checkout.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("checkout");
                 };
             });
         });
@@ -1035,7 +1065,7 @@ function initRequest() {
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                    if (isItOkayToSubmitForm()) {
+                    if (id_filter_or_checkout.innerText === "적용하기" && isItOkayToSubmitForm()) {
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
@@ -1051,8 +1081,9 @@ function initRequest() {
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
                         } else {
+                            
                             return; // Under construction
-                        }
+                        };
                     } else {
                         inputs.forEach((input) => {
                             controlError(input);
