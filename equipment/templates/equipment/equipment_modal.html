@@ -16,7 +16,8 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-    <div id="id_scrollable_part_of_modal" class="fixed inset-0 z-10 overflow-y-auto">
+    <div id="id_scrollable_part_of_modal"
+         class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div x-show="open"
                  x-transition:enter="ease-out duration-300"
@@ -295,18 +296,46 @@
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_period_error" hidden></p>
                             </div>
                         </div>
-                        <!-- Cart -->
+                        <!-- Cart & Checkout -->
                         <div id="id_modal_cart" class="-mb-5" hidden>
                             <ul role="list" class="divide-y divide-gray-100 text-sm">
                                 <li class="flex justify-center items-center text-gray-500 text-sm font-medium">
                                     <div class="flex min-w-0 gap-x-4 items-center h-[89px]">장바구니가 비어 있어요.</div>
                                 </li>
                             </ul>
-                            <div class="rounded-md bg-gray-50 p-4 mt-4">
+                            <div class="rounded-md bg-gray-50 p-4 mt-5">
                                 <div class="flex justify-between items-center text-sm text-gray-700">
                                     <div class="flex font-semibold">총 수량</div>
                                     <div class="flex">
                                         <span class="class-total-quantity">0</span>개
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="id_modal_checkout"
+                                 class="rounded-md shadow bg-flamingo-50 p-4 mt-5"
+                                 hidden>
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-flamingo-400"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 20 20"
+                                             fill="currentColor"
+                                             aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-flamingo-800">
+                                            <span class="class-keyword">예약하기</span> 전 꼭 읽어주세요.
+                                        </h3>
+                                        <div class="mt-2 text-sm text-flamingo-700">
+                                            <ul role="list" class="list-disc space-y-1 pl-5">
+                                                <li>기자재 예약 및 취소 권한은 연출, 촬영, 동시녹음 담당에게 있어요.</li>
+                                                <li>대여와 반납은 촬영, 동시녹음 담당이 직접 진행해야 해요.</li>
+                                                <li>대여 목적 및 기간 미준수 시 불이익이 발생할 수 있어요.</li>
+                                                <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 기자재 예약 및 취소 내역을 조회할 수 있어요.</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

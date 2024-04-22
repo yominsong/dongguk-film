@@ -3057,10 +3057,6 @@ select {
     visibility: hidden;
   }
 
-  .sm\:relative {
-    position: relative;
-  }
-
   .sm\:z-10 {
     z-index: 10;
   }
