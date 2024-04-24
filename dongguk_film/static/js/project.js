@@ -13,6 +13,8 @@ const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
 const id_position = document.getElementById("id_position");
 const id_original_purpose = code("id_original_", id_purpose);
+const id_production_end_date = document.getElementById("id_production_end_date");
+const id_original_production_end_date = code("id_original_", id_production_end_date);
 const id_select_position = code("id_select_", id_position);
 const id_found_position_list = document.getElementById("id_found_position_list");
 const id_name = document.getElementById("id_name");
@@ -223,7 +225,7 @@ function areArraysIdentical(a, b) {
     if (a.length !== b.length) return false; // Different lengths, not identical
 
     for (let i = 0; i < a.length; i++) {
-        if (!areObjectsEqual(a[i], b[i])) return false; // Use areObjectsEqual to compare objects
+        if (!areObjectsEqual(a[i], b[i])) return false; // Use areObjectsEqual() to compare objects
     };
 
     return true;
@@ -595,6 +597,8 @@ function initForm() {
     id_purpose.value = null;
     id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
+    id_production_end_date.value = null;
+    id_production_end_date.placeholder = yyyymmddOfAfter90DaysWithDash;
 
     initStaffBox();
 
@@ -645,6 +649,8 @@ function updateForm(action, datasetObj = null) {
         id_purpose.value = data.purpose;
         code(id_purpose, `_${data.purpose}`).click();
         id_original_purpose.value = data.originalPurpose;
+        id_production_end_date.value = data.productionEndDate;
+        id_original_production_end_date.value = data.originalProductionEndDate;
 
         const staffArray = JSON.parse(data.staff.replace(/'/g, '"'));
 
@@ -720,6 +726,7 @@ function requestCreateProject() {
     formData.append("id", "create_project");
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
+    formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
         formData.append(`staffPk_${index}`, staff.pk);
@@ -750,6 +757,7 @@ function requestUpdateProject() {
     formData.append("page_id", id_page_id.value);
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
+    formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
         formData.append(`staffPk_${index}`, staff.pk);
@@ -777,7 +785,7 @@ function requestDeleteProject() {
     const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, production_end_date: `${id_production_end_date.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

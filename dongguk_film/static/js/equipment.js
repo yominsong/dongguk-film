@@ -15,6 +15,7 @@ const id_purpose_badge = code(id_purpose, "_badge");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
 const id_filter_or_checkout = document.getElementById("id_filter_or_checkout");
+const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
 const id_url = document.getElementById("id_url");
 const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
@@ -23,6 +24,7 @@ const id_copy_url_descr = code(id_copy_url, "_descr");
 
 // detail
 const id_detail = document.getElementById("id_detail");
+const id_detail_limit = code(id_detail, "_limit");
 const id_requested_quantity = document.getElementById("id_requested_quantity");
 
 // classes
@@ -192,6 +194,9 @@ function executeWhenCartIsUpdated() {
 executeWhenCartIsUpdated();
 
 function executeWhenGroupLimitIsExceeded() {
+    const id_close_modal = code("id_close_", id_modal);
+
+    setTimeout(() => { id_close_modal.click() }, 10);
     id_detail_limit.scrollIntoView({ behavior: "smooth" })
 
     if (id_detail_limit.getAttribute("aria-expanded") === "false") {
@@ -426,6 +431,18 @@ function initCalendar() {
     };
 }
 
+function initFoundProjectList(resResult = null) {
+    // FAIL
+    if (resResult === null) {
+        console.log("실패");
+    }
+
+    // DONE
+    else {
+        console.log("찾음");
+    };
+}
+
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
     const class_categories = document.querySelectorAll(".class-category");
@@ -522,6 +539,7 @@ function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_checkout = code(id_modal, "_checkout");
     const id_modal_share = code(id_modal, "_share");
+    const id_total_quantity = document.getElementById("id_total_quantity");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
     // First action: all
@@ -543,9 +561,6 @@ function updateForm(action, datasetObj = null) {
         });
 
         initForm();
-
-        const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
-
         id_filter_or_checkout_text.innerText = "적용하기";
         id_filter_or_checkout.classList.replace("hidden", "inline-flex");
     }
@@ -554,6 +569,7 @@ function updateForm(action, datasetObj = null) {
     else if (action === "view_cart") {
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
+        id_total_quantity.hidden = false;
         id_modal_checkout.hidden = true;
         id_modal_share.hidden = true;
 
@@ -637,9 +653,6 @@ function updateForm(action, datasetObj = null) {
             });
 
             id_modal_cart.classList.remove("-mb-5");
-
-            const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
-            
             id_filter_or_checkout_text.innerText = "예약하기";
             id_filter_or_checkout.classList.replace("hidden", "inline-flex");
             id_filter_or_checkout.classList.add("class-checkout");
@@ -666,8 +679,12 @@ function updateForm(action, datasetObj = null) {
 
     // Middle action: checkout
     else if (action === "checkout") {
+        if (userPk === null || userName === null || userStudentId === null) return;
+        if (id_filter_or_checkout_text.innerText !== "예약하기") return;
+
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
+        id_total_quantity.hidden = true;
         id_modal_checkout.hidden = false;
         id_modal_share.hidden = true;
 
@@ -763,7 +780,6 @@ function initDetail() {
     if (id_detail === null) return;
 
     const id_detail_purpose = code(id_detail, "_purpose");
-    const id_detail_limit = code(id_detail, "_limit");
     const id_detail_precaution = code(id_detail, "_precaution");
 
     [id_detail_purpose, id_detail_limit, id_detail_precaution].forEach(accordion => {
@@ -1050,6 +1066,16 @@ function requestAddToCart() {
     request = {};
 };
 
+function requestFindProject() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "find_project" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
@@ -1065,7 +1091,7 @@ function initRequest() {
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                    if (id_filter_or_checkout.innerText === "적용하기" && isItOkayToSubmitForm()) {
+                    if (id_filter_or_checkout_text.innerText === "적용하기" && isItOkayToSubmitForm()) {
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
@@ -1073,7 +1099,7 @@ function initRequest() {
                         const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
 
                         id_filter_or_checkout_spin.classList.remove("hidden");
-                    } else if (id_filter_or_checkout.innerText === "예약하기") {
+                    } else if (id_filter_or_checkout_text.innerText === "예약하기") {
                         if (userPk === null || userName === null || userStudentId === null) {
                             let params = {};
 
@@ -1081,7 +1107,8 @@ function initRequest() {
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
                         } else {
-                            
+                            console.log("checkout");
+                            requestFindProject();
                             return; // Under construction
                         };
                     } else {

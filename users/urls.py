@@ -10,4 +10,5 @@ urlpatterns = [
     path("utils/delete-expired-vcodes/", delete_expired_vcodes),
     path("utils/vcode/", vcode),
     path("utils/verify-authentication/", verify_authentication),
+    path("utils/pinpoint-user/", pinpoint_user),
 ]

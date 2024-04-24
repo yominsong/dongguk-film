@@ -5,6 +5,7 @@
 let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
 let userPk, userName, userStudentId; // User authentication verification results
+let userPinpointed = false; // User pinpointing results
 
 //
 // Sub functions
@@ -226,6 +227,15 @@ function handleAjaxCallback(response) {
         };
     }
 
+    // requestPinpointUser()
+    else if (resID === "pinpoint_user") {
+        if (resResult.status === "DONE") {
+            userPinpointed = true;
+        } else if (resResult.status === "FAIL") {
+            userPinpointed = false;
+        };
+    }
+
     // requestWeather()
     else if (resID === "weather") {
         let notified = false;
@@ -339,6 +349,15 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+    }
+
+    // requestFindProject()
+    else if (resID === "find_project") {
+        if (resResult.status === "DONE") {
+            initFoundProjectList(resResult);
+        } else if (resResult.status === "FAIL") {
+            initFoundProjectList();
+        };
     }
 
     // requestFindUser()
@@ -584,6 +603,16 @@ function requestVerifyAuthentication() {
     request.url = `${location.origin}/users/utils/verify-authentication/`;
     request.type = "GET";
     request.data = { id: "verify_authentication" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestPinpointUser() {
+    request.url = `${location.origin}/users/utils/pinpoint-user/`;
+    request.type = "POST";
+    request.data = { id: "pinpoint_user", pk: userPk, name: userName, student_id: userStudentId };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);

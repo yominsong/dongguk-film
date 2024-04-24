@@ -24,6 +24,7 @@ def project(request):
     # Notion
     project_list = notion("query", "db", data={"db_name": "project"})
     project_count = len(project_list)
+    print(project_list)
 
     # Search box
     query = request.GET.get("q")

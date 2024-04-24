@@ -567,6 +567,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - title
         - category
         - purpose
+        - production_end_date | `str`
         - content
         - keyword
         - img_key_list
@@ -586,6 +587,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         title = data.get("title", None)
         category = data.get("category", None)
         purpose = data.get("purpose", None)
+        production_end_date = data.get("production_end_date", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
         img_key_list = data.get("img_key_list", None)
@@ -653,6 +655,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     ][0]["keyword"]
 
                     title = properties["Title"]["title"][0]["plain_text"]
+                    production_end_date = properties["Production end date"]["date"][
+                        "start"
+                    ]
                     user = str(properties["User"]["number"])
 
                     project = {
@@ -662,6 +667,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                             "keyword": purpose_keyword,
                         },
                         "title": title,
+                        "production_end_date": production_end_date,
                         "user": user,
                         "created_date": created_time.strftime("%Y-%m-%d"),
                     }
@@ -794,6 +800,13 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 "properties": {
                     "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
                     "Title": {"title": [{"text": {"content": title}}]},
+                    "Production end date": {
+                        "date": {
+                            "start": production_end_date,
+                            "end": None,
+                            "time_zone": None,
+                        }
+                    },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "User": {"number": int(str(user))},
                 },
@@ -886,6 +899,13 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 "properties": {
                     "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
                     "Title": {"title": [{"text": {"content": title}}]},
+                    "Production end date": {
+                        "date": {
+                            "start": production_end_date,
+                            "end": None,
+                            "time_zone": None,
+                        }
+                    },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "User": {"number": int(str(user))},
                 },
@@ -1053,3 +1073,86 @@ def ncp_clova(action: str, target: str, data: dict = None):
         result = response
 
     return result
+
+
+# {
+#     "Last edited time": {
+#         "id": "DiBG",
+#         "type": "last_edited_time",
+#         "last_edited_time": "2024-04-24T03:34:00.000Z",
+#     },
+#     "Production end date": {
+#         "id": "Evf%3C",
+#         "type": "date",
+#         "date": {"start": "2024-04-24", "end": None, "time_zone": None},
+#     },
+#     "Staff": {
+#         "id": "N%3Fy_",
+#         "type": "rich_text",
+#         "rich_text": [
+#             {
+#                 "type": "text",
+#                 "text": {
+#                     "content": "[{'position_priority': ['A01', 'B01', 'C01', 'E02'], 'student_id': '2015113035'}]",
+#                     "link": None,
+#                 },
+#                 "annotations": {
+#                     "bold": False,
+#                     "italic": False,
+#                     "strikethrough": False,
+#                     "underline": False,
+#                     "code": False,
+#                     "color": "default",
+#                 },
+#                 "plain_text": "[{'position_priority': ['A01', 'B01', 'C01', 'E02'], 'student_id': '2015113035'}]",
+#                 "href": None,
+#             }
+#         ],
+#     },
+#     "Purpose": {
+#         "id": "%5Bh_H",
+#         "type": "rich_text",
+#         "rich_text": [
+#             {
+#                 "type": "text",
+#                 "text": {"content": "G", "link": None},
+#                 "annotations": {
+#                     "bold": False,
+#                     "italic": False,
+#                     "strikethrough": False,
+#                     "underline": False,
+#                     "code": False,
+#                     "color": "default",
+#                 },
+#                 "plain_text": "G",
+#                 "href": None,
+#             }
+#         ],
+#     },
+#     "User": {"id": "dqsw", "type": "number", "number": 2015113035},
+#     "Created time": {
+#         "id": "hYVx",
+#         "type": "created_time",
+#         "created_time": "2024-03-20T03:38:00.000Z",
+#     },
+#     "Title": {
+#         "id": "title",
+#         "type": "title",
+#         "title": [
+#             {
+#                 "type": "text",
+#                 "text": {"content": "<사의 찬미>", "link": None},
+#                 "annotations": {
+#                     "bold": False,
+#                     "italic": False,
+#                     "strikethrough": False,
+#                     "underline": False,
+#                     "code": False,
+#                     "color": "default",
+#                 },
+#                 "plain_text": "<사의 찬미>",
+#                 "href": None,
+#             }
+#         ],
+#     },
+# }

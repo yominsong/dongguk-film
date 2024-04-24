@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from urllib.parse import urlencode
 from .models import Cart
+from project.utils import get_project_policy
 from utility.hangul import handle_hangul
-from utility.utils import airtable
+from utility.utils import airtable, notion
 from utility.msg import send_msg
 
 import json
@@ -203,7 +204,7 @@ def is_within_limits(
 
             if group_items_count >= limit:
                 reason = "EXCEED_GROUP_LIMIT"
-                msg = f'{collection["name"]} 기자재는 특정 기자재와 함께 도합 최대 {limit}개 대여할 수 있어요.'
+                msg = f'{collection["name"]} 기자재는 특정 기자재와 함께 도합 최대 {limit}개까지 대여할 수 있어요.'
 
                 return False, reason, msg
 
@@ -395,6 +396,11 @@ def equipment(request):
                         "category": collection["category"],
                         "subcategory": collection["subcategory"],
                         "order": collection["order"],
+                        "purpose": next(
+                            purpose
+                            for purpose in purpose_list
+                            if purpose["priority"] == purpose_priority
+                        ),
                         "purpose_priority": purpose_priority,
                         "period": period,
                     }
@@ -411,15 +417,15 @@ def equipment(request):
                 )
 
                 msg = f"현재 {collection['name']} 기자재는 {purpose_keyword} 목적으로 최대 {len(available_item_list)}개까지 대여할 수 있어요."
-                
+
                 if added_quantity == 0:
                     reason = "OUT_OF_STOCK"
                 elif added_quantity < requested_quantity:
                     reason = "PARTIALLY_ADDED"
-                    msg += f" 장바구니에 이미 {len(available_item_list) - added_quantity}개가 담겨있어 {added_quantity}개만 추가했어요."
+                    msg += f" 장바구니에 이미 {len(available_item_list) - added_quantity}개가 담겨 있어 {added_quantity}개만 추가했어요."
 
             elif reason and added_quantity != 0 and added_quantity < requested_quantity:
-                msg += f" 장바구니에 이미 {int(''.join([char for char in msg if char.isdigit()])) - added_quantity}개가 담겨있어 {added_quantity}개만 추가했어요."
+                msg += f" 장바구니에 이미 {int(''.join([char for char in msg if char.isdigit()])) - added_quantity}개가 담겨 있어 {added_quantity}개만 추가했어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])
@@ -431,6 +437,35 @@ def equipment(request):
                 "reason": reason,
                 "msg": msg,
                 "cart": cart,
+            },
+        }
+
+    # id: find_project
+    elif id == "find_project":
+        project_list = notion("query", "db", data={"db_name": "project"})
+        selected_project = []
+
+        print(project_list)
+
+        for project in project_list:
+            for staff in project["staff"]:
+                if int(staff["pk"]) == request.user.pk and (
+                    "A01" in staff["position_priority"]
+                    or "C01" in staff["position_priority"]
+                    or "E02" in staff["position_priority"]
+                ):
+                    selected_project.append(project)
+
+        if len(selected_project) > 0:
+            status = "DONE"
+        else:
+            status = "FAIL"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "selected_project": selected_project,
             },
         }
 

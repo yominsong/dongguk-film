@@ -157,7 +157,7 @@ def validation(data: dict):
 def verify_authentication(request):
     if request.GET["id"] == "verify_authentication":
         id = request.GET["id"]
-        
+
         if request.user.is_authenticated:
             status = "DONE"
             pk = request.user.pk
@@ -176,8 +176,39 @@ def verify_authentication(request):
             "pk": pk,
             "name": name,
             "student_id": student_id,
-            }
-        }
+        },
+    }
+
+    return JsonResponse(response)
+
+
+def pinpoint_user(request):
+    if request.POST["id"] == "pinpoint_user":
+        id = request.POST["id"]
+        pk = request.POST["pk"]
+        name = request.POST["name"]
+        student_id = request.POST["student_id"]
+
+        user = User.objects.get(pk=pk)
+        actual_pk = user.pk
+        actual_name = user.metadata.name
+        actual_student_id = user.username
+
+        if (
+            (int(pk) == actual_pk)
+            and (name == actual_name)
+            and (student_id == actual_student_id)
+        ):
+            status = "DONE"
+        else:
+            status = "FAIL"
+
+    response = {
+        "id": id,
+        "result": {
+            "status": status,
+        },
+    }
 
     return JsonResponse(response)
 

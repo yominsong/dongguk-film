@@ -117,6 +117,7 @@ def project(request):
     page_id = request.POST.get("page_id")
     title = request.POST.get("title")
     purpose = request.POST.get("purpose")
+    production_end_date = request.POST.get("production_end_date")
     name = request.POST.get("name")
 
     status = None
@@ -161,6 +162,7 @@ def project(request):
             "db_name": "project",
             "title": title,
             "purpose": purpose,
+            "production_end_date": production_end_date,
             "staff": staff,
             "user": request.user,
         }
@@ -204,6 +206,7 @@ def project(request):
             "page_id": page_id,
             "title": title,
             "purpose": purpose,
+            "production_end_date": production_end_date,
             "staff": staff,
             "user": request.user,
         }

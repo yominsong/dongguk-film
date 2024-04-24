@@ -300,21 +300,77 @@
                         <div id="id_modal_cart" class="-mb-5" hidden>
                             <ul role="list" class="divide-y divide-gray-100 text-sm">
                                 <li class="flex justify-center items-center text-gray-500 text-sm font-medium">
-                                    <div class="flex min-w-0 gap-x-4 items-center h-[89px]">장바구니가 비어 있어요.</div>
+                                    <div class="flex min-w-0 items-center h-[89px]">장바구니가 비어 있어요.</div>
                                 </li>
                             </ul>
-                            <div class="rounded-md bg-gray-50 p-4 mt-5">
+                            <div id="id_total_quantity" class="rounded-md bg-gray-50 p-4 mt-5">
                                 <div class="flex justify-between items-center text-sm text-gray-700">
-                                    <div class="flex font-semibold">총 수량</div>
-                                    <div class="flex">
+                                    <div class="flex">총 수량</div>
+                                    <div class="flex font-semibold">
                                         <span class="class-total-quantity">0</span>개
                                     </div>
                                 </div>
                             </div>
-                            <div id="id_modal_checkout"
-                                 class="rounded-md shadow bg-flamingo-50 p-4 mt-5"
-                                 hidden>
-                                <div class="flex">
+                            <!-- <div id="id_modal_checkout"
+                                 class="mt-5 pt-4 border-t border-gray-100"
+                                 hidden> -->
+                            <div id="id_modal_checkout" hidden>
+                                <fieldset class="mt-4">
+                                    <legend class="text-sm font-medium leading-6 text-gray-900">프로젝트</legend>
+                                    <div class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
+                                        {% for category in category_list %}
+                                            <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
+                                                <input id="id_project_{{ category.priority }}"
+                                                       name="id_project"
+                                                       type="radio"
+                                                       value="{{ category.priority }}"
+                                                       class="sr-only class-first class-radio class-category"
+                                                       aria-labelledby="id_project_{{ category.priority }}_label">
+                                                <span class="flex flex-1">
+                                                    <span id="id_project_{{ category.priority }}_label"
+                                                          class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline:8 }}</span>
+                                                </span>
+                                                <span id="id_project_{{ category.priority }}_descr" hidden></span>
+                                                <span id="id_project_{{ category.priority }}_error" hidden></span>
+                                                <svg class="h-5 w-5 ml-1 text-flamingo"
+                                                     viewBox="0 0 16 20"
+                                                     fill="currentColor"
+                                                     aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="pointer-events-none absolute -inset-px rounded-md"
+                                                      aria-hidden="true"></span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    <label for="id_project" hidden>프로젝트</label>
+                                    <!-- <input id="id_project"
+                                           class="class-first alt-radio"
+                                           type="text"
+                                           value=""
+                                           required
+                                           hidden> -->
+                                    <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
+                                </fieldset>
+                                <div class="rounded-md bg-gray-50 p-4 mt-5 divide-y divide-gray-100">
+                                    <div class="flex justify-between items-center text-sm text-gray-700 pb-4">
+                                        <div class="flex">대여 목적</div>
+                                        <div class="flex font-semibold text-right">캡스톤 디자인</div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm text-gray-700 py-4">
+                                        <div class="flex">대여 기간</div>
+                                        <div class="flex font-semibold text-right">18일(2024-04-26 ~ 2024-04-26)</div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm text-gray-700 pt-4">
+                                        <div class="flex">총 수량</div>
+                                        <div class="flex font-semibold text-right">
+                                            <span class="class-total-quantity">0</span>개
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex rounded-md shadow bg-flamingo-50 mt-5 p-4">
                                     <div class="flex-shrink-0">
                                         <svg class="h-5 w-5 text-flamingo-400"
                                              xmlns="http://www.w3.org/2000/svg"
@@ -331,7 +387,7 @@
                                         <div class="mt-2 text-sm text-flamingo-700">
                                             <ul role="list" class="list-disc space-y-1 pl-5">
                                                 <li>기자재 예약 및 취소 권한은 연출, 촬영, 동시녹음 담당에게 있어요.</li>
-                                                <li>대여와 반납은 촬영, 동시녹음 담당이 직접 진행해야 해요.</li>
+                                                <li>기자재 대여 및 반납은 촬영, 동시녹음 담당이 직접 진행해야 해요.</li>
                                                 <li>대여 목적 및 기간 미준수 시 불이익이 발생할 수 있어요.</li>
                                                 <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 기자재 예약 및 취소 내역을 조회할 수 있어요.</li>
                                             </ul>
