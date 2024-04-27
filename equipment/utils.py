@@ -27,7 +27,7 @@ JSON_PATH = (
 
 
 def synchronize_equipment_data(request):
-    target_list = ["category", "purpose", "limit", "collection"]
+    target_list = ["category", "purpose", "limit", "collection", "hour"]
     result_list = []
 
     for target in target_list:
@@ -55,6 +55,13 @@ def synchronize_equipment_data(request):
         elif target == "collection":
             data = {
                 "table_name": "equipment-collection",
+                "params": {
+                    "view": "Grid view",
+                },
+            }
+        elif target == "hour":
+            data = {
+                "table_name": "equipment-hour",
                 "params": {
                     "view": "Grid view",
                 },
@@ -224,6 +231,8 @@ def equipment(request):
     period = request.POST.get("period")
     requested_quantity = request.POST.get("requestedQuantity")
     cart = request.POST.get("cart")
+    start_day = request.POST.get("startDay")
+    end_day = request.POST.get("endDay")
 
     # id: filter_equipment
     if id == "filter_equipment":
@@ -425,7 +434,7 @@ def equipment(request):
                     msg += f" 장바구니에 이미 {len(available_item_list) - added_quantity}개가 담겨 있어 {added_quantity}개만 추가했어요."
 
             elif reason and added_quantity != 0 and added_quantity < requested_quantity:
-                msg += f" 장바구니에 이미 {int(''.join([char for char in msg if char.isdigit()])) - added_quantity}개가 담겨 있어 {added_quantity}개만 추가했어요."
+                msg += f" 장바구니에 이미 {int([char for char in msg if char.isdigit()][-1]) - added_quantity}개가 담겨 있어 {added_quantity}개만 추가했어요."
 
         status = "DONE" if item_to_add else "FAIL"
         cart.sort(key=lambda item: item["order"])
@@ -443,9 +452,7 @@ def equipment(request):
     # id: find_project
     elif id == "find_project":
         project_list = notion("query", "db", data={"db_name": "project"})
-        selected_project = []
-
-        print(project_list)
+        found_project_list = []
 
         for project in project_list:
             for staff in project["staff"]:
@@ -454,9 +461,9 @@ def equipment(request):
                     or "C01" in staff["position_priority"]
                     or "E02" in staff["position_priority"]
                 ):
-                    selected_project.append(project)
+                    found_project_list.append(project)
 
-        if len(selected_project) > 0:
+        if len(found_project_list) > 0:
             status = "DONE"
         else:
             status = "FAIL"
@@ -465,8 +472,35 @@ def equipment(request):
             "id": id,
             "result": {
                 "status": status,
-                "selected_project": selected_project,
+                "found_project_list": found_project_list,
             },
         }
+    
+    # id: find_hour
+    elif id == "find_hour":
+        hour_list = get_equipment_data("hour")
+        start_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(start_day)]
+        end_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(end_day)]
+        available_start_hour_list = []
+        available_end_hour_list = []
 
+        for hour in hour_list:
+            if hour["day_of_the_week"] == start_day:
+                available_start_hour_list.append(hour["time"])
+            if hour["day_of_the_week"] == end_day:
+                available_end_hour_list.append(hour["time"])
+        
+        if len(available_start_hour_list) > 0 and len(available_end_hour_list) > 0:
+            status = "DONE"
+        else:
+            status = "FAIL"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "available_start_hour_list": available_start_hour_list,
+                "available_end_hour_list": available_end_hour_list,
+            },
+        }
     return JsonResponse(response)

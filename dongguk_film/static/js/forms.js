@@ -16,6 +16,7 @@ const class_calendars = document.querySelectorAll(".class-calendar");
 let spins = document.querySelectorAll(".animate-spin");
 let buttons = document.querySelectorAll("button");
 let inputs = [];
+let filteredInputs = [];
 
 const eventTypes = ["focusin", "focusout", "blur", "compositionstart", "compositionupdate", "compositionend", "keydown", "keypress", "keyup", "mouseenter", "mouseover", "mousemove", "mousedown", "mouseup", "click", "contextmenu", "mouseleave", "mouseout", "select"];
 const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Ctrl", "c", "v", "a", "Alt", "HangulMode", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
@@ -180,10 +181,8 @@ function initValidation(array, button) {
 function isValid(input) {
     return input.type === "checkbox" ? input.checked : controlError(input) === false && code(input, "_descr").hidden && code(input, "_error").hidden;
 }
-let filteredInputs = [];
-function isItOkayToSubmitForm() {
-    // let filteredInputs = [];
 
+function isItOkayToSubmitForm() {
     Array.from(class_radios).forEach(radio => {
         let idx = inputs.indexOf(radio);
 

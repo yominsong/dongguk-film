@@ -360,6 +360,15 @@ function handleAjaxCallback(response) {
         };
     }
 
+    // requestFindHour()
+    else if (resID === "find_hour") {
+        if (resResult.status === "DONE") {
+            initFoundHourList(resResult);
+        } else if (resResult.status === "FAIL") {
+            initFoundHourList();
+        };
+    }
+
     // requestFindUser()
     else if (resID === "find_user") {
         if (resResult.status === "DONE") {

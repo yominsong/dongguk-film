@@ -311,66 +311,93 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div id="id_modal_checkout"
-                                 class="mt-5 pt-4 border-t border-gray-100"
-                                 hidden> -->
-                            <div id="id_modal_checkout" hidden>
-                                <fieldset class="mt-4">
-                                    <legend class="text-sm font-medium leading-6 text-gray-900">프로젝트</legend>
-                                    <div class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
-                                        {% for category in category_list %}
-                                            <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
-                                                <input id="id_project_{{ category.priority }}"
-                                                       name="id_project"
-                                                       type="radio"
-                                                       value="{{ category.priority }}"
-                                                       class="sr-only class-first class-radio class-category"
-                                                       aria-labelledby="id_project_{{ category.priority }}_label">
-                                                <span class="flex flex-1">
-                                                    <span id="id_project_{{ category.priority }}_label"
-                                                          class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline:8 }}</span>
-                                                </span>
-                                                <span id="id_project_{{ category.priority }}_descr" hidden></span>
-                                                <span id="id_project_{{ category.priority }}_error" hidden></span>
-                                                <svg class="h-5 w-5 ml-1 text-flamingo"
-                                                     viewBox="0 0 16 20"
-                                                     fill="currentColor"
-                                                     aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                </svg>
-                                                <span class="pointer-events-none absolute -inset-px rounded-md"
-                                                      aria-hidden="true"></span>
-                                            </label>
-                                        {% endfor %}
-                                    </div>
-                                    <label for="id_project" hidden>프로젝트</label>
-                                    <!-- <input id="id_project"
-                                           class="class-first alt-radio"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden> -->
-                                    <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
-                                </fieldset>
-                                <div class="rounded-md bg-gray-50 p-4 mt-5 divide-y divide-gray-100">
-                                    <div class="flex justify-between items-center text-sm text-gray-700 pb-4">
+                            <div id="id_modal_checkout" class="space-y-5 mt-5" hidden>
+                                <div class="rounded-md bg-gray-50 p-4 text-sm text-gray-700 divide-y divide-gray-100">
+                                    <div class="flex justify-between items-center pb-4">
                                         <div class="flex">대여 목적</div>
-                                        <div class="flex font-semibold text-right">캡스톤 디자인</div>
+                                        <div id="id_purpose_in_cart"
+                                             class="animate-pulse pulse-on mt-0.5 h-4 w-20 bg-gray-200 rounded"></div>
                                     </div>
-                                    <div class="flex justify-between items-center text-sm text-gray-700 py-4">
-                                        <div class="flex">대여 기간</div>
-                                        <div class="flex font-semibold text-right">18일(2024-04-26 ~ 2024-04-26)</div>
+                                    <div class="flex flex-col space-y-2 py-4">
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex">대여 기간</div>
+                                            <div id="id_period_in_cart"
+                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-6 bg-gray-200 rounded">
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex">└ 희망 대여일</div>
+                                            <div id="id_start_date_in_cart"
+                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex">└ 희망 반납일</div>
+                                            <div id="id_end_date_in_cart"
+                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between items-center text-sm text-gray-700 pt-4">
+                                    <div class="flex justify-between items-center pt-4">
                                         <div class="flex">총 수량</div>
                                         <div class="flex font-semibold text-right">
                                             <span class="class-total-quantity">0</span>개
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="flex rounded-md shadow bg-flamingo-50 mt-5 p-4">
+                                <fieldset>
+                                    <legend class="text-sm font-medium leading-6 text-gray-900">프로젝트</legend>
+                                    <div id="id_found_project_list" class="mt-2 grid gap-4">
+                                        <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                            <div class="flex flex-1 justify-center">
+                                                <span id="id_found_project_list_help"
+                                                      class="text-sm text-center text-gray-500">선택 가능한 프로젝트를 찾고 있어요.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label for="id_project" hidden>프로젝트</label>
+                                    <input id="id_project"
+                                           class="class-second alt-radio"
+                                           type="text"
+                                           value=""
+                                           required
+                                           hidden>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
+                                </fieldset>
+                                <fieldset>
+                                    <legend class="text-sm font-medium leading-6 text-gray-900">희망 대여시각</legend>
+                                    <div id="id_start_time_list"
+                                         class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
+                                    </div>
+                                    <label for="id_start_time" hidden>희망 대여시각</label>
+                                    <input id="id_start_time"
+                                           class="class-second alt-radio"
+                                           type="text"
+                                           value=""
+                                           required
+                                           hidden>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_start_time_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600"
+                                       id="id_start_time_error"
+                                       hidden></p>
+                                </fieldset>
+                                <fieldset>
+                                    <legend class="text-sm font-medium leading-6 text-gray-900">희망 반납시각</legend>
+                                    <div id="id_end_time_list"
+                                         class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
+                                    </div>
+                                    <label for="id_end_time" hidden>희망 반납시각</label>
+                                    <input id="id_end_time"
+                                           class="class-second alt-radio"
+                                           type="text"
+                                           value=""
+                                           required
+                                           hidden>
+                                    <p class="mt-2 text-sm text-gray-500" id="id_end_time_descr" hidden></p>
+                                    <p class="mt-2 text-sm text-flamingo-600" id="id_end_time_error" hidden></p>
+                                </fieldset>
+                                <div class="flex rounded-md shadow bg-flamingo-50 p-4">
                                     <div class="flex-shrink-0">
                                         <svg class="h-5 w-5 text-flamingo-400"
                                              xmlns="http://www.w3.org/2000/svg"

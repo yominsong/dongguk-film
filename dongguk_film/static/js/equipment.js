@@ -14,6 +14,11 @@ const id_period = document.getElementById("id_period");
 const id_purpose_badge = code(id_purpose, "_badge");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
+let id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
+let id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
+const id_project = document.getElementById("id_project");
+const id_start_time = document.getElementById("id_start_time");
+const id_end_time = document.getElementById("id_end_time");
 const id_filter_or_checkout = document.getElementById("id_filter_or_checkout");
 const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
 const id_url = document.getElementById("id_url");
@@ -30,7 +35,7 @@ const id_requested_quantity = document.getElementById("id_requested_quantity");
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
 
-// Boolean
+// boolean
 let is_quantity_button_updated = false;
 
 // miscellaneous
@@ -111,6 +116,15 @@ function closeNoti() {
     displayNoti(false, "EGL");
     displayNoti(false, "EQL");
     displayNoti(false, "PTA");
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 function executeWhenUserGoesToSelectPurpose() {
@@ -432,15 +446,282 @@ function initCalendar() {
 }
 
 function initFoundProjectList(resResult = null) {
+    const id_found_project_list = document.getElementById("id_found_project_list");
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
+
+    id_found_project_list.innerHTML = "";
+
     // FAIL
     if (resResult === null) {
-        console.log("실패");
+        const placeholderElement = document.createElement("div");
+
+        placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+
+        placeholderElement.innerHTML = `
+            <div class="flex flex-1 justify-center">
+                <span id="id_found_project_list_help"
+                      class="text-sm text-center text-gray-500">선택 가능한 ${cart !== null ? cart[0].purpose.keyword : null} 프로젝트가 없어요.</span>
+            </div>
+        `;
+
+        id_found_project_list.appendChild(placeholderElement);
     }
 
     // DONE
     else {
-        console.log("찾음");
+        const id_purpose_in_cart = code(id_purpose, "_in_cart");
+        const id_period_in_cart = code(id_period, "_in_cart");
+        const cart = JSON.parse(sessionStorage.getItem("cart"));
+        const daysFromNow = cart[0].period.split(",")[0];
+        const duration = cart[0].period.split(",")[1];
+        const startDate = formatDateInFewDays(now, daysFromNow);
+        const endDate = formatDateInFewDays(startDate, duration);
+        const cartPurposePriority = cart[0].purpose.priority;
+
+        id_purpose_in_cart.innerText = cart[0].purpose.keyword;
+        id_period_in_cart.innerText = duration > 0 ? `${duration}일` : "당일";
+        id_start_date_in_cart.innerText = startDate;
+        id_end_date_in_cart.innerText = endDate;
+
+        [id_purpose_in_cart, id_period_in_cart, id_start_date_in_cart, id_end_date_in_cart].forEach(element => {
+            element.className = "flex font-semibold text-right";
+        });
+
+        resResult.found_project_list.forEach(newlyFoundProject => {
+            const productionEndDate = new Date(newlyFoundProject.production_end_date);
+            const today = new Date();
+
+            productionEndDate.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+
+            const is_production_over = productionEndDate < today;
+            const projectPurposePriority = newlyFoundProject.purpose.priority;
+            const is_purpose_incorrect = projectPurposePriority !== cartPurposePriority;
+
+            if (is_production_over || is_purpose_incorrect) {
+                initFoundProjectList();
+                return;
+            };
+
+            const newlyFoundProjectElement = document.createElement("label");
+            const data_project = newlyFoundProjectElement.dataset;
+
+            data_project.pageId = newlyFoundProject.page_id;
+            data_project.title = newlyFoundProject.title;
+            data_project.directorName = newlyFoundProject.director_name;
+            data_project.producerName = newlyFoundProject.producer_name;
+            newlyFoundProjectElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+
+            newlyFoundProjectElement.innerHTML = `
+                <input id="id_project_${data_project.pageId}"
+                        name="id_project"
+                        type="radio"
+                        value="${data_project.pageId}"
+                        class="sr-only class-second class-radio class-project"
+                        aria-labelledby="id_project_${data_project.pageId}_label"
+                        aria-describedby="id_project_${data_project.pageId}_descr">
+                <div class="flex flex-1">
+                    <span class="flex flex-col">
+                        <span id="id_project_${data_project.pageId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.title)}</span>
+                        <span id="id_project_${data_project.pageId}_descr" class="mt-1 flex items-center text-sm text-gray-500">
+                            연출&nbsp;
+                            <span class="font-semibold">${data_project.directorName}</span>
+                            &nbsp;·&nbsp;제작&nbsp;
+                            <span class="font-semibold">${data_project.producerName}</span>
+                        </span>
+                        <p id="id_project_${data_project.pageId}_error" class="mt-2 text-flamingo-600" hidden=""></p>
+                    </span>
+                </div>
+                <svg class="h-5 w-5 ml-1 text-flamingo"
+                    viewBox="0 0 16 20"
+                    fill="currentColor"
+                    aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="pointer-events-none absolute -inset-px rounded-md"
+                    aria-hidden="true"></span>
+            `;
+
+            id_found_project_list.appendChild(newlyFoundProjectElement);
+        });
+
+        const class_projects = document.querySelectorAll(".class-project");
+
+        class_projects.forEach((project) => {
+            if (id_project.value === project.value) {
+                project.click();
+            };
+            
+            const label = project.closest("label");
+            const svg = label.querySelector("svg");
+    
+            project.addEventListener("click", () => {
+                if (project.id.indexOf("project") !== -1) {
+                    id_project.value = project.value;
+                };
+            });
+    
+            project.addEventListener("focus", () => {
+                label.classList.add("df-focus-ring-inset");
+                svg.classList.remove("invisible");
+            });
+    
+            project.addEventListener("blur", () => {
+                if (!project.checked) {
+                    svg.classList.add("invisible");
+                } else if (project.checked) {
+                    label.classList.add("df-ring-inset-flamingo");
+                };
+    
+                label.classList.remove("df-focus-ring-inset");
+            });
+    
+            project.addEventListener("change", () => {
+                const otherInputs = [...class_projects].filter(i => i !== project);
+    
+                if (project.checked) {
+                    label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                    svg.classList.remove("invisible");
+                } else {
+                    svg.classList.add("invisible");
+                };
+    
+                otherInputs.forEach(i => {
+                    const otherLabel = i.closest("label");
+                    const otherSvg = otherLabel.querySelector("svg");
+    
+                    if (!i.checked) {
+                        otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                        otherSvg.classList.add("invisible");
+                    };
+                });
+            });
+    
+            if (!project.checked) {
+                label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                svg.classList.add("invisible");
+            } else {
+                label.classList.add("df-ring-inset-flamingo");
+            };
+        });
     };
+}
+
+function initFoundHourList(resResult = null) {
+    const id_start_time_list = document.getElementById("id_start_time_list");
+    const id_end_time_list = document.getElementById("id_end_time_list");
+
+    id_start_time_list.innerHTML = "";
+    id_end_time_list.innerHTML = "";
+
+    // FAIL
+    if (resResult === null) return;
+
+    // DONE
+    const available_start_hour_list = resResult.available_start_hour_list;
+    const available_end_hour_list = resResult.available_end_hour_list;
+
+    [available_start_hour_list, available_end_hour_list].forEach((hourList, index) => {
+        const targetList = index === 0 ? id_start_time_list : id_end_time_list;
+        const targetId = index === 0 ? id_start_time : id_end_time;
+        const targetClass = index === 0 ? "class-start-time" : "class-end-time";
+
+        hourList.forEach(newlyFoundHour => {
+            const newlyFoundHourElement = document.createElement("label");
+
+            newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+
+            newlyFoundHourElement.innerHTML = `
+                <input id="${targetId.id}_${newlyFoundHour}"
+                        name="${targetId.id}"
+                        type="radio"
+                        value="${newlyFoundHour}"
+                        class="sr-only class-second class-radio ${targetClass}"
+                        aria-labelledby="${targetId}_${newlyFoundHour}_label">
+                <span class="flex flex-1">
+                    <span id="${targetId.id}_${newlyFoundHour}_label"
+                            class="block whitespace-pre-line text-sm font-medium text-gray-900">${newlyFoundHour}</span>
+                </span>
+                <span id="${targetId.id}_${newlyFoundHour}_descr" hidden></span>
+                <span id="${targetId.id}_${newlyFoundHour}_error" hidden></span>
+                <svg class="h-5 w-5 ml-1 text-flamingo"
+                        viewBox="0 0 16 20"
+                        fill="currentColor"
+                        aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="pointer-events-none absolute -inset-px rounded-md"
+                        aria-hidden="true"></span>
+            `;
+
+            targetList.appendChild(newlyFoundHourElement);
+        });
+
+        const class_start_times = document.querySelectorAll(".class-start-time");
+        const class_end_times = document.querySelectorAll(".class-end-time");
+
+        [class_start_times, class_end_times].forEach((class_times, index) => {
+            const targetId = index === 0 ? id_start_time : id_end_time;
+            
+            class_times.forEach((time) => {
+                if (targetId.value === time.value) {
+                    time.click();
+                };
+                
+                const label = time.closest("label");
+                const svg = label.querySelector("svg");
+        
+                time.addEventListener("click", () => {
+                    if (time.id.indexOf("time") !== -1) {
+                        targetId.value = time.value;
+                    };
+                });
+        
+                time.addEventListener("focus", () => {
+                    label.classList.add("df-focus-ring-inset");
+                    svg.classList.remove("invisible");
+                });
+        
+                time.addEventListener("blur", () => {
+                    if (!time.checked) {
+                        svg.classList.add("invisible");
+                    } else if (time.checked) {
+                        label.classList.add("df-ring-inset-flamingo");
+                    };
+        
+                    label.classList.remove("df-focus-ring-inset");
+                });
+        
+                time.addEventListener("change", () => {
+                    const otherInputs = [...class_times].filter(i => i !== time);
+        
+                    if (time.checked) {
+                        label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                        svg.classList.remove("invisible");
+                    } else {
+                        svg.classList.add("invisible");
+                    };
+        
+                    otherInputs.forEach(i => {
+                        const otherLabel = i.closest("label");
+                        const otherSvg = otherLabel.querySelector("svg");
+        
+                        if (!i.checked) {
+                            otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                            otherSvg.classList.add("invisible");
+                        };
+                    });
+                });
+        
+                if (!time.checked) {
+                    label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                    svg.classList.add("invisible");
+                } else {
+                    label.classList.add("df-ring-inset-flamingo");
+                };
+            });
+        });
+    });
 }
 
 function initForm() {
@@ -561,6 +842,7 @@ function updateForm(action, datasetObj = null) {
         });
 
         initForm();
+        
         id_filter_or_checkout_text.innerText = "적용하기";
         id_filter_or_checkout.classList.replace("hidden", "inline-flex");
     }
@@ -1076,6 +1358,26 @@ function requestFindProject() {
     request = {};
 }
 
+function requestFindHour() {
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
+    const daysFromNow = cart[0].period.split(",")[0];
+    const duration = cart[0].period.split(",")[1];
+    const startDate = formatDateInFewDays(now, daysFromNow);
+    const endDate = formatDateInFewDays(startDate, duration);
+
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = {
+        id: "find_hour",
+        startDay: (new Date(startDate)).getDay(),
+        endDay: (new Date(endDate)).getDay()
+    };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
@@ -1107,8 +1409,8 @@ function initRequest() {
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
                         } else {
-                            console.log("checkout");
                             requestFindProject();
+                            requestFindHour();
                             return; // Under construction
                         };
                     } else {

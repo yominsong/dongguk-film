@@ -515,6 +515,22 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     record_list.append(collection)
             except:
                 pass
+        
+        elif table_name == "equipment-hour":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    hour = {
+                        "name": fields.get("Name", None),
+                        "day_of_the_week": fields.get("Day of the week", None),
+                        "time": fields.get("Time", None),
+                        "max_capacity": fields.get("Max capacity", None),
+                    }
+
+                    record_list.append(hour)
+            except:
+                pass
 
         elif table_name == "project-position":
             try:
