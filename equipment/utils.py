@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from .models import Cart
 from project.utils import get_project_policy
 from utility.hangul import handle_hangul
-from utility.utils import airtable, notion
+from utility.utils import airtable, notion, convert_datetime
 from utility.msg import send_msg
 from fake_useragent import UserAgent
 from requests.sessions import Session
@@ -191,6 +191,20 @@ def filter_limit_list(limit_list, collection):
             filtered_limit_list.append(limit)
 
     return filtered_limit_list
+
+
+def get_start_end_date(cart):
+    cart = json.loads(cart)
+    days_from_now, duration = split_period(cart[0]["period"])
+    user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
+    user_end_date = user_start_date + timezone.timedelta(days=duration)
+
+    user_start_date, user_end_date = (
+        user_start_date.date(),
+        user_end_date.date(),
+    )
+
+    return user_start_date, user_end_date
 
 
 def is_within_limits(
@@ -413,19 +427,7 @@ def equipment(request):
                         msg = f"검색 필터에 대여 목적을 {purpose_keyword_with_josa} 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break
                     elif not any(it["period"] == period for it in cart):
-                        days_from_now, duration = split_period(cart[0]["period"])
-                        user_start_date = timezone.now() + timezone.timedelta(
-                            days=days_from_now
-                        )
-
-                        user_end_date = user_start_date + timezone.timedelta(
-                            days=duration
-                        )
-
-                        user_start_date, user_end_date = (
-                            user_start_date.date(),
-                            user_end_date.date(),
-                        )
+                        user_start_date, user_end_date = get_start_end_date(cart)
 
                         reason = "MISMATCHED_PERIOD"
                         msg = f"검색 필터에 대여 기간을 '{user_start_date} 대여 ~ {user_end_date} 반납'으로 적용하거나 장바구니를 비우고 다시 담아주세요."
@@ -500,13 +502,19 @@ def equipment(request):
     elif id == "find_project":
         project_list = notion("query", "db", data={"db_name": "project"})
         found_project_list = []
+        cart_start_date, cart_end_date = get_start_end_date(cart)
 
         for project in project_list:
             for staff in project["staff"]:
-                if int(staff["pk"]) == request.user.pk and (
-                    "A01" in staff["position_priority"]
-                    or "C01" in staff["position_priority"]
-                    or "E02" in staff["position_priority"]
+                if (
+                    int(staff["pk"]) == request.user.pk
+                    and (
+                        "A01" in staff["position_priority"]
+                        or "C01" in staff["position_priority"]
+                        or "E02" in staff["position_priority"]
+                    )
+                    and convert_datetime(project["production_end_date"]).date()
+                    >= cart_end_date
                 ):
                     found_project_list.append(project)
 

@@ -471,23 +471,7 @@ function initFoundProjectList(resResult = null) {
 
     // DONE
     else {
-        const id_purpose_in_cart = code(id_purpose, "_in_cart");
-        const id_period_in_cart = code(id_period, "_in_cart");
-        const cart = JSON.parse(sessionStorage.getItem("cart"));
-        const daysFromNow = cart[0].period.split(",")[0];
-        const duration = cart[0].period.split(",")[1];
-        const startDate = formatDateInFewDays(now, daysFromNow);
-        const endDate = formatDateInFewDays(startDate, duration);
         const cartPurposePriority = cart[0].purpose.priority;
-
-        id_purpose_in_cart.innerText = cart[0].purpose.keyword;
-        id_period_in_cart.innerText = duration > 0 ? `${duration}일` : "당일";
-        id_start_date_in_cart.innerText = startDate;
-        id_end_date_in_cart.innerText = endDate;
-
-        [id_purpose_in_cart, id_period_in_cart, id_start_date_in_cart, id_end_date_in_cart].forEach(element => {
-            element.className = "flex font-semibold text-right";
-        });
 
         resResult.found_project_list.forEach(newlyFoundProject => {
             const productionEndDate = new Date(newlyFoundProject.production_end_date);
@@ -824,6 +808,7 @@ function updateForm(action, datasetObj = null) {
     const id_modal_share = code(id_modal, "_share");
     const id_total_quantity = document.getElementById("id_total_quantity");
     const class_keywords = document.querySelectorAll(".class-keyword");
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
 
     // First action: all
     isModalOpen = true;
@@ -863,7 +848,6 @@ function updateForm(action, datasetObj = null) {
 
         executeWhenCartIsUpdated();
 
-        const cart = JSON.parse(sessionStorage.getItem("cart"));
         const cartList = id_modal_cart.querySelector("ul");
 
         cartList.innerHTML = "";
@@ -948,7 +932,6 @@ function updateForm(action, datasetObj = null) {
     // Middle action: remove_from_cart
     else if (action === "remove_from_cart") {
         const data = datasetObj.dataset;
-        const cart = JSON.parse(sessionStorage.getItem("cart"));
         let updatedCart;
 
         if (cart !== null) {
@@ -974,6 +957,22 @@ function updateForm(action, datasetObj = null) {
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "예약하기";
+        });
+
+        const id_purpose_in_cart = code(id_purpose, "_in_cart");
+        const id_period_in_cart = code(id_period, "_in_cart");
+        const daysFromNow = cart[0].period.split(",")[0];
+        const duration = cart[0].period.split(",")[1];
+        const startDate = formatDateInFewDays(now, daysFromNow);
+        const endDate = formatDateInFewDays(startDate, duration);
+
+        id_purpose_in_cart.innerText = cart[0].purpose.keyword;
+        id_period_in_cart.innerText = duration > 0 ? `${duration}일` : "당일";
+        id_start_date_in_cart.innerText = startDate;
+        id_end_date_in_cart.innerText = endDate;
+
+        [id_purpose_in_cart, id_period_in_cart, id_start_date_in_cart, id_end_date_in_cart].forEach(element => {
+            element.className = "flex font-semibold text-right";
         });
 
         id_filter_or_checkout.classList.remove("class-checkout");
@@ -1353,7 +1352,7 @@ function requestAddToCart() {
 function requestFindProject() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
-    request.data = { id: "find_project" };
+    request.data = { id: "find_project", cart: sessionStorage.getItem("cart") };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);
