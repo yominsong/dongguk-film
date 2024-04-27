@@ -113,6 +113,8 @@ function adjustDetailHeight() {
 adjustDetailHeight();
 
 function closeNoti() {
+    displayNoti(false, "MPP");
+    displayNoti(false, "MDP");
     displayNoti(false, "EGL");
     displayNoti(false, "EQL");
     displayNoti(false, "PTA");

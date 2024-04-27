@@ -71,7 +71,7 @@ def is_registered_student(student_id: str, name: str):
 
     with Session() as session:
         session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get(DMD_URL, params=params, headers=headers)
+        response = session.get(DMD_URL["directory"], params=params, headers=headers)
         student_info = response.json()["out"]
         matched_element = [
             element for element in student_info if element["stdNo"] == student_id

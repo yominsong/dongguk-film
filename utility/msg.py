@@ -159,8 +159,9 @@ def send_msg(request, type: str, channel: str, extra=None):
         for i, item in enumerate(extra[1]["purpose"]):
             new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
             sub_content += new_line
-        sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개 정책"
-        sub_content += f"\nㆍ[시간] 총 {len(extra[4]['hour'])}개 시각"
+        sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개"
+        sub_content += f"\nㆍ[시간] 총 {len(extra[4]['hour'])}개"
+        sub_content += f"\nㆍ[과목] 총 {len(extra[5]['subject'])}개"
         main_content = {
             "important": False,
             "picture_url": default_picture_url,

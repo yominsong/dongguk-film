@@ -8,8 +8,14 @@ from project.utils import get_project_policy
 from utility.hangul import handle_hangul
 from utility.utils import airtable, notion
 from utility.msg import send_msg
-
+from fake_useragent import UserAgent
+from requests.sessions import Session
+from requests.adapters import HTTPAdapter
 import json
+
+DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
+DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
+headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
 # Global variables
@@ -27,7 +33,7 @@ JSON_PATH = (
 
 
 def synchronize_equipment_data(request):
-    target_list = ["category", "purpose", "limit", "collection", "hour"]
+    target_list = ["category", "purpose", "limit", "collection", "hour", "subject"]
     result_list = []
 
     for target in target_list:
@@ -66,8 +72,49 @@ def synchronize_equipment_data(request):
                     "view": "Grid view",
                 },
             }
+        elif target == "subject":
+            headers["Cookie"] = DMD_COOKIE
 
-        record_list = airtable("get_all", "records", data=data)
+            params = {
+                "strCampFg": "S",
+                "strUnivGrscFg": "U0001001",
+                "strLtYy": timezone.now().strftime("%Y"),
+                "strLtShtmCd": "U0002001" if timezone.now().month < 7 else "U0002002",
+                "strFindType": "CODE",
+                "strSbjt": "FIL",
+            }
+
+            record_list = []
+            subject_dict = {}
+
+            with Session() as session:
+                session.mount("https://", HTTPAdapter(max_retries=3))
+                response = session.get(
+                    DMD_URL["timetable"], params=params, headers=headers
+                )
+                subject_list = response.json()["out"]["DS_COUR110"]
+
+                for subject in subject_list:
+                    key = (subject["sbjtKorNm"], subject["sbjtEngNm"])
+                    instructor = subject["ltSprfNm"]
+
+                    if key not in subject_dict:
+                        subject_dict[key] = set()
+
+                    subject_dict[key].add(instructor)
+
+            for (kor_name, eng_name), instructors in subject_dict.items():
+                record = {
+                    "kor_name": kor_name,
+                    "eng_name": eng_name,
+                    "instructor": list(instructors),
+                }
+
+                record_list.append(record)
+
+        if target != "subject":
+            record_list = airtable("get_all", "records", data=data)
+
         result_list.append({target: record_list})
 
         with open(JSON_PATH, "r+") as f:
@@ -475,7 +522,7 @@ def equipment(request):
                 "found_project_list": found_project_list,
             },
         }
-    
+
     # id: find_hour
     elif id == "find_hour":
         hour_list = get_equipment_data("hour")
@@ -489,7 +536,7 @@ def equipment(request):
                 available_start_hour_list.append(hour["time"])
             if hour["day_of_the_week"] == end_day:
                 available_end_hour_list.append(hour["time"])
-        
+
         if len(available_start_hour_list) > 0 and len(available_end_hour_list) > 0:
             status = "DONE"
         else:
