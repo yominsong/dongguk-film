@@ -63,6 +63,12 @@ function getYyyymmdd(date, dash = false) {
     return result;
 }
 
+function getDayOfWeek(date) {
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    
+    return days[new Date(date).getDay()];
+}
+
 function validateDate(input) {
     function isValidDate(dateString) {
         let regex = /^\d{4}-\d{2}-\d{2}$/;

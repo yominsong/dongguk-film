@@ -14,8 +14,8 @@ const id_period = document.getElementById("id_period");
 const id_purpose_badge = code(id_purpose, "_badge");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
-let id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
-let id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
+const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
+const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
 const id_project = document.getElementById("id_project");
 const id_start_time = document.getElementById("id_start_time");
 const id_end_time = document.getElementById("id_end_time");
@@ -467,145 +467,173 @@ function initFoundProjectList(resResult = null) {
         `;
 
         id_found_project_list.appendChild(placeholderElement);
-    }
+
+        return;
+    };
 
     // DONE
-    else {
-        const cartPurposePriority = cart[0].purpose.priority;
+    const cartPurposePriority = cart[0].purpose.priority;
 
-        resResult.found_project_list.forEach(newlyFoundProject => {
-            const productionEndDate = new Date(newlyFoundProject.production_end_date);
-            const today = new Date();
+    resResult.found_project_list.forEach(newlyFoundProject => {
+        const productionEndDate = new Date(newlyFoundProject.production_end_date);
+        const today = new Date();
 
-            productionEndDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
+        productionEndDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
 
-            const is_production_over = productionEndDate < today;
-            const projectPurposePriority = newlyFoundProject.purpose.priority;
-            const is_purpose_incorrect = projectPurposePriority !== cartPurposePriority;
+        const is_production_over = productionEndDate < today;
+        const projectPurposePriority = newlyFoundProject.purpose.priority;
+        const is_purpose_incorrect = projectPurposePriority !== cartPurposePriority;
 
-            if (is_production_over || is_purpose_incorrect) {
-                initFoundProjectList();
-                return;
-            };
+        if (is_production_over || is_purpose_incorrect) {
+            initFoundProjectList();
+            return;
+        };
 
-            const newlyFoundProjectElement = document.createElement("label");
-            const data_project = newlyFoundProjectElement.dataset;
+        const newlyFoundProjectElement = document.createElement("label");
+        const data_project = newlyFoundProjectElement.dataset;
 
-            data_project.pageId = newlyFoundProject.page_id;
-            data_project.title = newlyFoundProject.title;
-            data_project.directorName = newlyFoundProject.director_name;
-            data_project.producerName = newlyFoundProject.producer_name;
-            newlyFoundProjectElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+        data_project.pageId = newlyFoundProject.page_id;
+        data_project.title = newlyFoundProject.title;
+        data_project.directorName = newlyFoundProject.director_name;
+        data_project.producerName = newlyFoundProject.producer_name;
+        newlyFoundProjectElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
 
-            newlyFoundProjectElement.innerHTML = `
-                <input id="id_project_${data_project.pageId}"
-                        name="id_project"
-                        type="radio"
-                        value="${data_project.pageId}"
-                        class="sr-only class-second class-radio class-project"
-                        aria-labelledby="id_project_${data_project.pageId}_label"
-                        aria-describedby="id_project_${data_project.pageId}_descr">
-                <div class="flex flex-1">
-                    <span class="flex flex-col">
-                        <span id="id_project_${data_project.pageId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.title)}</span>
-                        <span id="id_project_${data_project.pageId}_descr" class="mt-1 flex items-center text-sm text-gray-500">
-                            연출&nbsp;
-                            <span class="font-semibold">${data_project.directorName}</span>
-                            &nbsp;·&nbsp;제작&nbsp;
-                            <span class="font-semibold">${data_project.producerName}</span>
-                        </span>
-                        <p id="id_project_${data_project.pageId}_error" class="mt-2 text-flamingo-600" hidden=""></p>
+        newlyFoundProjectElement.innerHTML = `
+            <input id="id_project_${data_project.pageId}"
+                    name="id_project"
+                    type="radio"
+                    value="${data_project.pageId}"
+                    class="sr-only class-second class-radio class-project"
+                    aria-labelledby="id_project_${data_project.pageId}_label"
+                    aria-describedby="id_project_${data_project.pageId}_descr">
+            <div class="flex flex-1">
+                <span class="flex flex-col">
+                    <span id="id_project_${data_project.pageId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.title)}</span>
+                    <span id="id_project_${data_project.pageId}_descr" class="mt-1 flex items-center text-sm text-gray-500">
+                        연출&nbsp;
+                        <span class="font-semibold">${data_project.directorName}</span>
+                        &nbsp;·&nbsp;제작&nbsp;
+                        <span class="font-semibold">${data_project.producerName}</span>
                     </span>
-                </div>
-                <svg class="h-5 w-5 ml-1 text-flamingo"
-                    viewBox="0 0 16 20"
-                    fill="currentColor"
-                    aria-hidden="true">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                </svg>
-                <span class="pointer-events-none absolute -inset-px rounded-md"
-                    aria-hidden="true"></span>
-            `;
+                    <p id="id_project_${data_project.pageId}_error" class="mt-2 text-flamingo-600" hidden=""></p>
+                </span>
+            </div>
+            <svg class="h-5 w-5 ml-1 text-flamingo"
+                viewBox="0 0 16 20"
+                fill="currentColor"
+                aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="pointer-events-none absolute -inset-px rounded-md"
+                aria-hidden="true"></span>
+        `;
 
-            id_found_project_list.appendChild(newlyFoundProjectElement);
+        id_found_project_list.appendChild(newlyFoundProjectElement);
+    });
+
+    const class_projects = document.querySelectorAll(".class-project");
+
+    class_projects.forEach((project) => {
+        if (id_project.value === project.value) {
+            project.click();
+        };
+        
+        const label = project.closest("label");
+        const svg = label.querySelector("svg");
+
+        project.addEventListener("click", () => {
+            if (project.id.indexOf("project") !== -1) {
+                id_project.value = project.value;
+            };
         });
 
-        const class_projects = document.querySelectorAll(".class-project");
+        project.addEventListener("focus", () => {
+            label.classList.add("df-focus-ring-inset");
+            svg.classList.remove("invisible");
+        });
 
-        class_projects.forEach((project) => {
-            if (id_project.value === project.value) {
-                project.click();
-            };
-            
-            const label = project.closest("label");
-            const svg = label.querySelector("svg");
-    
-            project.addEventListener("click", () => {
-                if (project.id.indexOf("project") !== -1) {
-                    id_project.value = project.value;
-                };
-            });
-    
-            project.addEventListener("focus", () => {
-                label.classList.add("df-focus-ring-inset");
-                svg.classList.remove("invisible");
-            });
-    
-            project.addEventListener("blur", () => {
-                if (!project.checked) {
-                    svg.classList.add("invisible");
-                } else if (project.checked) {
-                    label.classList.add("df-ring-inset-flamingo");
-                };
-    
-                label.classList.remove("df-focus-ring-inset");
-            });
-    
-            project.addEventListener("change", () => {
-                const otherInputs = [...class_projects].filter(i => i !== project);
-    
-                if (project.checked) {
-                    label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
-                    svg.classList.remove("invisible");
-                } else {
-                    svg.classList.add("invisible");
-                };
-    
-                otherInputs.forEach(i => {
-                    const otherLabel = i.closest("label");
-                    const otherSvg = otherLabel.querySelector("svg");
-    
-                    if (!i.checked) {
-                        otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-                        otherSvg.classList.add("invisible");
-                    };
-                });
-            });
-    
+        project.addEventListener("blur", () => {
             if (!project.checked) {
-                label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
                 svg.classList.add("invisible");
-            } else {
+            } else if (project.checked) {
                 label.classList.add("df-ring-inset-flamingo");
             };
+
+            label.classList.remove("df-focus-ring-inset");
         });
-    };
+
+        project.addEventListener("change", () => {
+            const otherInputs = [...class_projects].filter(i => i !== project);
+
+            if (project.checked) {
+                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                svg.classList.remove("invisible");
+            } else {
+                svg.classList.add("invisible");
+            };
+
+            otherInputs.forEach(i => {
+                const otherLabel = i.closest("label");
+                const otherSvg = otherLabel.querySelector("svg");
+
+                if (!i.checked) {
+                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                    otherSvg.classList.add("invisible");
+                };
+            });
+        });
+
+        if (!project.checked) {
+            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+            svg.classList.add("invisible");
+        } else {
+            label.classList.add("df-ring-inset-flamingo");
+        };
+    });
 }
 
-function initFoundHourList(resResult = null) {
+// TODO: Refactor this function
+function initFoundHourList(resResult) {
+    const available_start_hour_list = resResult.available_start_hour_list;
+    const available_end_hour_list = resResult.available_end_hour_list;
     const id_start_time_list = document.getElementById("id_start_time_list");
     const id_end_time_list = document.getElementById("id_end_time_list");
 
     id_start_time_list.innerHTML = "";
     id_end_time_list.innerHTML = "";
 
-    // FAIL
-    if (resResult === null) return;
+    if (available_start_hour_list.length === 0 || available_end_hour_list.length === 0) {
+        if (available_start_hour_list.length === 0) {
+            const placeholderElement = document.createElement("label");
 
-    // DONE
-    const available_start_hour_list = resResult.available_start_hour_list;
-    const available_end_hour_list = resResult.available_end_hour_list;
+            placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+
+            placeholderElement.innerHTML = `
+                <div class="flex flex-1 justify-center">
+                    <span id="${id_start_time_list.id}_help"
+                        class="text-sm text-center text-gray-500">${id_start_date_in_cart.innerText.split("(")[1][0]}요일에는 기자재를 대여할 수 없어요.</span>
+                </div>
+            `;
+
+            id_start_time_list.appendChild(placeholderElement);
+        };
+
+        if (available_end_hour_list.length === 0) {
+            const placeholderElement = document.createElement("label");
+
+            placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+
+            placeholderElement.innerHTML = `
+                <div class="flex flex-1 justify-center">
+                    <span id="${id_end_time_list.id}_help"
+                        class="text-sm text-center text-gray-500">${id_end_date_in_cart.innerText.split("(")[1][0]}요일에는 기자재를 반납할 수 없어요.</span>
+                </div>
+            `;
+
+            id_end_time_list.appendChild(placeholderElement);
+        };
+    };
 
     [available_start_hour_list, available_end_hour_list].forEach((hourList, index) => {
         const targetList = index === 0 ? id_start_time_list : id_end_time_list;
@@ -968,8 +996,8 @@ function updateForm(action, datasetObj = null) {
 
         id_purpose_in_cart.innerText = cart[0].purpose.keyword;
         id_period_in_cart.innerText = duration > 0 ? `${duration}일` : "당일";
-        id_start_date_in_cart.innerText = startDate;
-        id_end_date_in_cart.innerText = endDate;
+        id_start_date_in_cart.innerText = `${startDate}(${getDayOfWeek(startDate)})`;
+        id_end_date_in_cart.innerText = `${endDate}(${getDayOfWeek(endDate)})`;
 
         [id_purpose_in_cart, id_period_in_cart, id_start_date_in_cart, id_end_date_in_cart].forEach(element => {
             element.className = "flex font-semibold text-right";
