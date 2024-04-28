@@ -179,14 +179,14 @@
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                         {% for collection in page_value %}
                             <a href="{% url 'equipment:equipment_detail' collection.collection_id %}"
-                               class="class-detail rounded-md group outline-none"
+                               class="class-detail rounded-md group focus:df-focus-ring-offset-white-2"
                                alt="">
                                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
                                     <img src="{{ collection.thumbnail }}"
                                          width=""
                                          height=""
                                          alt=""
-                                         class="class-thumbnail h-full w-full p-6 rounded-lg object-cover object-center group-hover:opacity-75 group-focus:df-focus-ring-inset">
+                                         class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
                                 </div>
                                 <h3 class="mt-4 text-sm text-gray-500">{{ collection.brand }}</h3>
                                 <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
