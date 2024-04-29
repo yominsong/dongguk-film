@@ -1422,7 +1422,7 @@ function initRequest() {
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                    if (id_filter_or_checkout_text.innerText === "적용하기" && isItOkayToSubmitForm()) {
+                    if (id_filter_or_checkout_text.innerText.trim() === "적용하기" && isItOkayToSubmitForm()) {
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
@@ -1430,7 +1430,7 @@ function initRequest() {
                         const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
 
                         id_filter_or_checkout_spin.classList.remove("hidden");
-                    } else if (id_filter_or_checkout_text.innerText === "예약하기") {
+                    } else if (id_filter_or_checkout_text.innerText.trim() === "예약하기") {
                         if (userPk === null || userName === null || userStudentId === null) {
                             let params = {};
 

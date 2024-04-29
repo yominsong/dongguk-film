@@ -822,9 +822,9 @@ function initRequest() {
                     if (isItOkayToSubmitProjectForm()) {
                         const id_create_or_update_spin = code(id_create_or_update, "_spin");
 
-                        if (id_create_or_update.innerText === "등록하기") {
+                        if (id_create_or_update.innerText.trim() === "등록하기") {
                             requestCreateProject();
-                        } else if (id_create_or_update.innerText === "수정하기") {
+                        } else if (id_create_or_update.innerText.trim() === "수정하기") {
                             requestUpdateProject();
                         };
 

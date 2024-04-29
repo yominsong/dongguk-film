@@ -212,9 +212,9 @@ function initRequest() {
                         if (isItOkayToSubmitForm()) {
                             const id_create_or_update_spin = code(id_create_or_update, "_spin");
 
-                            if (id_create_or_update.innerText === "만들기") {
+                            if (id_create_or_update.innerText.trim() === "만들기") {
                                 requestCreateDflink();
-                            } else if (id_create_or_update.innerText === "수정하기") {
+                            } else if (id_create_or_update.innerText.trim() === "수정하기") {
                                 requestUpdateDflink();
                             };
 
