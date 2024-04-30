@@ -458,6 +458,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "up_to": fields.get("Up to", None),
                         "max": fields.get("Max", None),
                         "in_a_nutshell": fields.get("In a nutshell", None),
+                        "curricular": fields.get("Curricular", False),
                         "for_instructor": fields.get("For instructor", False),
                     }
 

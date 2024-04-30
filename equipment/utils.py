@@ -194,7 +194,6 @@ def filter_limit_list(limit_list, collection):
 
 
 def get_start_end_date(cart):
-    cart = json.loads(cart)
     days_from_now, duration = split_period(cart[0]["period"])
     user_start_date = timezone.now() + timezone.timedelta(days=days_from_now)
     user_end_date = user_start_date + timezone.timedelta(days=duration)
@@ -500,23 +499,24 @@ def equipment(request):
 
     # id: find_project
     elif id == "find_project":
+        cart = json.loads(cart)
         project_list = notion("query", "db", data={"db_name": "project"})
         found_project_list = []
         cart_start_date, cart_end_date = get_start_end_date(cart)
 
         for project in project_list:
-            for staff in project["staff"]:
-                if (
-                    int(staff["pk"]) == request.user.pk
-                    and (
+            if (
+                project["purpose"]["priority"] == cart[0]["purpose"]["priority"]
+                and convert_datetime(project["production_end_date"]).date()
+                >= cart_end_date
+            ):
+                for staff in project["staff"]:
+                    if int(staff["pk"]) == request.user.pk and (
                         "A01" in staff["position_priority"]
                         or "C01" in staff["position_priority"]
                         or "E02" in staff["position_priority"]
-                    )
-                    and convert_datetime(project["production_end_date"]).date()
-                    >= cart_end_date
-                ):
-                    found_project_list.append(project)
+                    ):
+                        found_project_list.append(project)
 
         if len(found_project_list) > 0:
             status = "DONE"
