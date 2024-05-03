@@ -367,11 +367,12 @@ function handleAjaxCallback(response) {
 
     // requestFindInstructor()
     else if (resID === "find_instructor") {
-        if (resResult.status === "DONE") {
-            initFoundInstructorList(resResult);
-        } else if (resResult.status === "FAIL") {
-            initFoundInstructorList();
-        };
+        initFoundInstructorList(resResult);
+        // if (resResult.status === "DONE") {
+        //     initFoundInstructorList(resResult);
+        // } else if (resResult.status === "FAIL") {
+        //     initFoundInstructorList();
+        // };
     }
 
     // requestFindUser()

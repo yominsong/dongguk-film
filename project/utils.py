@@ -239,13 +239,20 @@ def project(request):
 
         if len(found_instructor_list) > 0:
             status = "DONE"
+            reason = None
         else:
             status = "FAIL"
+
+            if not purpose_curricular:
+                reason = "NOT_CURRICULAR_PROJECT"
+            else:
+                reason = "NO_SUBJECTS_FOUND"
 
         response = {
             "id": id,
             "result": {
                 "status": status,
+                "reason": reason,
                 "found_instructor_list": found_instructor_list,
             },
         }

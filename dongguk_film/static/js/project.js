@@ -260,7 +260,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     displayError(false, id_instructor);
 
     if (selectedPurpose) {
-        initFoundInstructorList();
+        initFoundInstructorList({ status: null });
 
         const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
 
@@ -271,7 +271,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     };
 
     id_instructor.classList.add("class-first");
-;
+    ;
     const class_firsts = document.querySelectorAll(".class-first");
 
     initValidation(class_firsts, id_create_or_update);
@@ -476,13 +476,28 @@ function addStaff(userData, blink = false) {
     id_name.parentElement.classList.remove("rounded-b-md");
 }
 
-function initFoundInstructorList(resResult = null) {
+function initFoundInstructorList(resResult) {
+    const status = resResult.status;
     const id_found_instructor_list = document.getElementById("id_found_instructor_list");
 
     id_found_instructor_list.innerHTML = "";
 
     // FAIL
-    if (resResult === null) {
+    if (status === "FAIL" || status === null) {
+        let placeholder;
+
+        if (status === null) {
+            placeholder = "유형을 선택하면 선택 가능한 교원이 표시돼요.";
+        } else {
+            const reason = resResult.reason;
+
+            if (reason === "NOT_CURRICULAR_PROJECT") {
+                placeholder = "개인 프로젝트는 교원을 선택하지 않아도 돼요.";
+            } else if (reason === "NO_SUBJECTS_FOUND") {
+                placeholder = "개설 교과목이 없어 교원을 선택할 수 없어요.";
+            };
+        };
+
         const placeholderElement = document.createElement("div");
 
         placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50"
@@ -490,7 +505,7 @@ function initFoundInstructorList(resResult = null) {
         placeholderElement.innerHTML = `
             <div class="flex flex-1 justify-center">
                 <span id="id_found_instructor_list_help"
-                    class="text-sm text-center text-gray-500">개인 프로젝트는 교원을 선택하지 않아도 돼요.</span>
+                    class="text-sm text-center text-gray-500">${placeholder}.</span>
             </div>
         `;
 
@@ -499,7 +514,7 @@ function initFoundInstructorList(resResult = null) {
         Array.from(inputs).forEach(input => {
             if (input.id.indexOf("instructor") !== -1) {
                 let idx = inputs.indexOf(input);
-    
+
                 while (idx > -1) {
                     inputs.splice(idx, 1);
                     idx = inputs.indexOf(input);
@@ -787,14 +802,15 @@ function updateForm(action, datasetObj = null) {
 
     // action: "create"
     if (action === "create") {
-        baseDate = new Date().toISOString().slice(0, 10);
+        // baseDate = new Date().toISOString().slice(0, 10);
+        baseDate = "2023-12-31";
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "등록하기";
         });
 
         initForm();
-        initFoundInstructorList();
+        initFoundInstructorList({ status: null });
 
         const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
 
