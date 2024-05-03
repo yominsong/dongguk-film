@@ -505,7 +505,7 @@ function initFoundInstructorList(resResult) {
         placeholderElement.innerHTML = `
             <div class="flex flex-1 justify-center">
                 <span id="id_found_instructor_list_help"
-                    class="text-sm text-center text-gray-500">${placeholder}.</span>
+                    class="text-sm text-center text-gray-500">${placeholder}</span>
             </div>
         `;
 
