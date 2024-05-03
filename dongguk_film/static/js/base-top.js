@@ -365,6 +365,15 @@ function handleAjaxCallback(response) {
         initFoundHourList(resResult);
     }
 
+    // requestFindInstructor()
+    else if (resID === "find_instructor") {
+        if (resResult.status === "DONE") {
+            initFoundInstructorList(resResult);
+        } else if (resResult.status === "FAIL") {
+            initFoundInstructorList();
+        };
+    }
+
     // requestFindUser()
     else if (resID === "find_user") {
         if (resResult.status === "DONE") {

@@ -454,11 +454,13 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "name": fields.get("Name", None),
                         "priority": fields.get("Priority", None),
                         "keyword": fields.get("Keyword", None),
+                        "secondary_keyword": fields.get("Secondary keyword", None),
                         "at_least": fields.get("At least", None),
                         "up_to": fields.get("Up to", None),
                         "max": fields.get("Max", None),
                         "in_a_nutshell": fields.get("In a nutshell", None),
                         "curricular": fields.get("Curricular", False),
+                        "for_senior_project": fields.get("For senior project", False),
                         "for_instructor": fields.get("For instructor", False),
                     }
 
@@ -516,7 +518,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     record_list.append(collection)
             except:
                 pass
-        
+
         elif table_name == "equipment-hour":
             try:
                 for record in records:
@@ -609,6 +611,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         keyword = data.get("keyword", None)
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
+        instructor = data.get("instructor", None)
         staff = data.get("staff", None)
         user = data.get("user", None)
 
@@ -675,6 +678,16 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     production_end_date = properties["Production end date"]["date"][
                         "start"
                     ]
+                    instructor = properties.get("Instructor", {}).get("rich_text", [{}])
+
+                    if instructor:
+                        instructor = instructor[0].get("plain_text", None)
+
+                    # subject = properties.get("Subject", {}).get("rich_text", [{}])
+
+                    # if subject:
+                    #     subject = subject[0].get("plain_text", None)
+
                     user = str(properties["User"]["number"])
 
                     project = {
@@ -685,6 +698,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         },
                         "title": title,
                         "production_end_date": production_end_date,
+                        "instructor": instructor,
+                        # "subject": subject,
                         "user": user,
                         "created_date": created_time.strftime("%Y-%m-%d"),
                     }
@@ -825,6 +840,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         }
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
+                    "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
                     "User": {"number": int(str(user))},
                 },
             }
@@ -924,6 +940,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         }
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
+                    "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
                     "User": {"number": int(str(user))},
                 },
             }
@@ -1090,86 +1107,3 @@ def ncp_clova(action: str, target: str, data: dict = None):
         result = response
 
     return result
-
-
-# {
-#     "Last edited time": {
-#         "id": "DiBG",
-#         "type": "last_edited_time",
-#         "last_edited_time": "2024-04-24T03:34:00.000Z",
-#     },
-#     "Production end date": {
-#         "id": "Evf%3C",
-#         "type": "date",
-#         "date": {"start": "2024-04-24", "end": None, "time_zone": None},
-#     },
-#     "Staff": {
-#         "id": "N%3Fy_",
-#         "type": "rich_text",
-#         "rich_text": [
-#             {
-#                 "type": "text",
-#                 "text": {
-#                     "content": "[{'position_priority': ['A01', 'B01', 'C01', 'E02'], 'student_id': '2015113035'}]",
-#                     "link": None,
-#                 },
-#                 "annotations": {
-#                     "bold": False,
-#                     "italic": False,
-#                     "strikethrough": False,
-#                     "underline": False,
-#                     "code": False,
-#                     "color": "default",
-#                 },
-#                 "plain_text": "[{'position_priority': ['A01', 'B01', 'C01', 'E02'], 'student_id': '2015113035'}]",
-#                 "href": None,
-#             }
-#         ],
-#     },
-#     "Purpose": {
-#         "id": "%5Bh_H",
-#         "type": "rich_text",
-#         "rich_text": [
-#             {
-#                 "type": "text",
-#                 "text": {"content": "G", "link": None},
-#                 "annotations": {
-#                     "bold": False,
-#                     "italic": False,
-#                     "strikethrough": False,
-#                     "underline": False,
-#                     "code": False,
-#                     "color": "default",
-#                 },
-#                 "plain_text": "G",
-#                 "href": None,
-#             }
-#         ],
-#     },
-#     "User": {"id": "dqsw", "type": "number", "number": 2015113035},
-#     "Created time": {
-#         "id": "hYVx",
-#         "type": "created_time",
-#         "created_time": "2024-03-20T03:38:00.000Z",
-#     },
-#     "Title": {
-#         "id": "title",
-#         "type": "title",
-#         "title": [
-#             {
-#                 "type": "text",
-#                 "text": {"content": "<사의 찬미>", "link": None},
-#                 "annotations": {
-#                     "bold": False,
-#                     "italic": False,
-#                     "strikethrough": False,
-#                     "underline": False,
-#                     "code": False,
-#                     "color": "default",
-#                 },
-#                 "plain_text": "<사의 찬미>",
-#                 "href": None,
-#             }
-#         ],
-#     },
-# }

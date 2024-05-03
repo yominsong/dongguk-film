@@ -10,7 +10,6 @@ const onlyEmails = document.querySelectorAll(".only-email");
 const onlyUrls = document.querySelectorAll(".only-url");
 const onlySlugs = document.querySelectorAll(".only-slug");
 const labels = document.querySelectorAll("label");
-const class_radios = document.querySelectorAll(".class-radio");
 const class_calendars = document.querySelectorAll(".class-calendar");
 
 let spins = document.querySelectorAll(".animate-spin");
@@ -31,7 +30,6 @@ const regNotNumberWithDash = /[^0-9\-]/g;
 const regUrl = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g;
 
 let lastFocusedElement;
-
 
 //
 // Sub functions
@@ -111,6 +109,7 @@ function freezeForm(bool) {
             };
         } else if (input.classList.contains("alt-radio")) {
             const originalInputs = document.querySelectorAll(`input[name="${input.id}"]`);
+            let class_radios = document.querySelectorAll(".class-radio");
 
             originalInputs.forEach(input => {
                 // invisible radio button
@@ -183,6 +182,8 @@ function isValid(input) {
 }
 
 function isItOkayToSubmitForm() {
+    let class_radios = document.querySelectorAll(".class-radio");
+
     Array.from(class_radios).forEach(radio => {
         let idx = inputs.indexOf(radio);
 
@@ -664,10 +665,10 @@ function displayError(bool, input, errorType = null) {
             setTimeout(() => {
                 textboxViewRoot.style.backgroundColor = "#FCDBCF";
                 textboxViewRoot.style.boxShadow = "none";
-                textboxViewRoot.addEventListener("mouseenter", () => {adjustTextboxStyle(true, "mouseenter")});
-                textboxViewRoot.addEventListener("mouseleave", () => {adjustTextboxStyle(true, "mouseleave")});
-                textboxViewRoot.removeEventListener("mouseenter", () => {adjustTextboxStyle(false, "mouseenter")});
-                textboxViewRoot.removeEventListener("mouseleave", () => {adjustTextboxStyle(false, "mouseleave")});
+                textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
+                textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
+                textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
+                textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
             }, 1);
         }
 
@@ -766,10 +767,10 @@ function displayError(bool, input, errorType = null) {
             setTimeout(() => {
                 textboxViewRoot.style.backgroundColor = "#FFFFFF";
                 textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-                textboxViewRoot.addEventListener("mouseenter", () => {adjustTextboxStyle(false, "mouseenter")});
-                textboxViewRoot.addEventListener("mouseleave", () => {adjustTextboxStyle(false, "mouseleave")});
-                textboxViewRoot.removeEventListener("mouseenter", () => {adjustTextboxStyle(true, "mouseenter")});
-                textboxViewRoot.removeEventListener("mouseleave", () => {adjustTextboxStyle(true, "mouseleave")});
+                textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
+                textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
+                textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
+                textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
             }, 1);
         }
 

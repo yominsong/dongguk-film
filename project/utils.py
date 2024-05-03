@@ -2,10 +2,19 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from equipment.utils import get_equipment_data
 from utility.utils import airtable, notion
 from utility.msg import send_msg
+from fake_useragent import UserAgent
+from requests.sessions import Session
+from requests.adapters import HTTPAdapter
 from users.models import Metadata
 import json, re
+
+DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
+DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
+headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
 # Global variables
@@ -73,6 +82,62 @@ def get_project_policy(policy: str):
         return item_list
 
 
+def get_subject(base_date: str):
+    base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
+    base_year = base_date.year
+    base_month = base_date.month
+    headers["Cookie"] = DMD_COOKIE
+
+    params = {
+        "strCampFg": "S",
+        "strUnivGrscFg": "U0001001",
+        "strLtYy": str(base_year),
+        "strLtShtmCd": "U0002001" if base_month < 7 else "U0002002",
+        "strFindType": "CODE",
+        "strSbjt": "FIL",
+    }
+
+    result_list = []
+    subject_dict = {}
+
+    with Session() as session:
+        session.mount("https://", HTTPAdapter(max_retries=3))
+        response = session.get(DMD_URL["timetable"], params=params, headers=headers)
+        subject_list = response.json()["out"]["DS_COUR110"]
+
+    for subject in subject_list:
+        key = (
+            subject["sbjtKorNm"],
+            subject["sbjtEngNm"],
+            subject["haksuNo"],
+            subject["openShyrNm"],
+        )
+
+        instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
+
+        if key not in subject_dict:
+            subject_dict[key] = [instructor]
+        else:
+            subject_dict[key].append(instructor)
+
+    for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
+        target_year = [
+            int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
+        ]
+
+        result = {
+            "kor_name": kor_name,
+            "eng_name": eng_name,
+            "code": code,
+            "target_year": target_year,
+            "instructor": instructors,
+        }
+
+        result_list.append(result)
+
+    return result_list
+
+
 def has_hangul_chars(input_str):
     valid_hangul_or_non_hangul_regex = re.compile(r"([\uAC00-\uD7A3]|[^ㄱ-ㅎㅏ-ㅣ])+")
     hangul_syllable_regex = re.compile(r"[\uAC00-\uD7A3]")
@@ -117,13 +182,76 @@ def project(request):
     page_id = request.POST.get("page_id")
     title = request.POST.get("title")
     purpose = request.POST.get("purpose")
+    instructor = request.POST.get("instructor")
     production_end_date = request.POST.get("production_end_date")
     name = request.POST.get("name")
+    base_date = request.POST.get("base_date")
 
     status = None
 
+    # id: find_instructor
+    if id == "find_instructor":
+        purpose_list = get_equipment_data("purpose")
+
+        for purpose_item in purpose_list:
+            if purpose_item["priority"] == purpose:
+                purpose_keyword = purpose_item["keyword"].replace(" ", "")
+                purpose_secondary_keyword = purpose_item.get("secondary_keyword", None)
+                purpose_secondary_keyword = (
+                    purpose_secondary_keyword.replace(" ", "")
+                    if purpose_secondary_keyword
+                    else None
+                )
+                purpose_curricular = purpose_item["curricular"]
+                purpose_for_senior_project = purpose_item["for_senior_project"]
+                break
+
+        found_instructor_list = []
+
+        if purpose_curricular:
+            subject_list = get_subject(base_date)
+
+            for subject in subject_list:
+                if (
+                    purpose_keyword in subject["kor_name"]
+                    or (
+                        purpose_secondary_keyword in subject["kor_name"]
+                        if purpose_secondary_keyword
+                        else False
+                    )
+                ) and (
+                    subject["target_year"] == [4]  # 졸업
+                    if purpose_for_senior_project
+                    else subject["target_year"] != [4]  # exclude 졸업
+                ):
+                    for instructor in subject["instructor"]:
+                        found_instructor = {
+                            "id": instructor["id"],
+                            "name": instructor["name"],
+                            "subject": subject["kor_name"],
+                            "code": subject["code"],
+                        }
+
+                        if found_instructor not in found_instructor_list:
+                            found_instructor_list.append(found_instructor)
+
+        found_instructor_list.sort(key=lambda x: (x["code"], x["name"]))
+
+        if len(found_instructor_list) > 0:
+            status = "DONE"
+        else:
+            status = "FAIL"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "found_instructor_list": found_instructor_list,
+            },
+        }
+
     # id: find_user
-    if id == "find_user":
+    elif id == "find_user":
         if has_hangul_chars(name):
             found_user_query_set = Metadata.objects.filter(name__icontains=name).values(
                 "user", "name", "student_id"
@@ -162,6 +290,7 @@ def project(request):
             "db_name": "project",
             "title": title,
             "purpose": purpose,
+            "instructor": instructor,
             "production_end_date": production_end_date,
             "staff": staff,
             "user": request.user,
@@ -206,6 +335,7 @@ def project(request):
             "page_id": page_id,
             "title": title,
             "purpose": purpose,
+            "instructor": instructor,
             "production_end_date": production_end_date,
             "staff": staff,
             "user": request.user,

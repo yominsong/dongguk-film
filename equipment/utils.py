@@ -4,14 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from urllib.parse import urlencode
 from .models import Cart
-from project.utils import get_project_policy
 from utility.hangul import handle_hangul
 from utility.utils import airtable, notion, convert_datetime
 from utility.msg import send_msg
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
-import json
+import json, re
 
 DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
 DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
@@ -94,23 +93,35 @@ def synchronize_equipment_data(request):
                 )
                 subject_list = response.json()["out"]["DS_COUR110"]
 
-                for subject in subject_list:
-                    key = (subject["sbjtKorNm"], subject["sbjtEngNm"])
-                    instructor = subject["ltSprfNm"]
+            for subject in subject_list:
+                key = (
+                    subject["sbjtKorNm"],
+                    subject["sbjtEngNm"],
+                    subject["haksuNo"],
+                    subject["openShyrNm"],
+                )
 
-                    if key not in subject_dict:
-                        subject_dict[key] = set()
+                instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
 
-                    subject_dict[key].add(instructor)
+                if key not in subject_dict:
+                    subject_dict[key] = [instructor]
+                else:
+                    subject_dict[key].append(instructor)
 
-            for (kor_name, eng_name), instructors in subject_dict.items():
-                record = {
+            for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
+                target_year = [
+                    int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
+                ]
+
+                result = {
                     "kor_name": kor_name,
                     "eng_name": eng_name,
-                    "instructor": list(instructors),
+                    "code": code,
+                    "target_year": target_year,
+                    "instructor": instructors,
                 }
 
-                record_list.append(record)
+                record_list.append(result)
 
         if target != "subject":
             record_list = airtable("get_all", "records", data=data)

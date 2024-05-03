@@ -11,6 +11,8 @@ const id_purpose = document.getElementById("id_purpose");
 const id_select_purpose = code("id_select_", id_purpose);
 const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
+const id_instructor = document.getElementById("id_instructor");
+const id_original_instructor = code("id_original_", id_instructor);
 const id_position = document.getElementById("id_position");
 const id_original_purpose = code("id_original_", id_purpose);
 const id_production_end_date = document.getElementById("id_production_end_date");
@@ -36,6 +38,7 @@ let isItDoubleChecked = false;
 
 // miscellaneous
 const staffBoxElements = [id_select_position, id_found_position_list, id_name];
+let baseDate;
 let positionData; // This is an object like {"priority": "A01", "keyword": "연출", "required": "True"}
 let requiredPositions = [];
 let addedRequiredPositions = []; // This is an array like [{"priority": "A01", "keyword": "연출", "required": "True"}, {"priority": "B01", "keyword": "제작", "required": "True"}]
@@ -98,7 +101,7 @@ function controlErrorInPurpose() {
 
 function validatePurpose() {
     let isPurposeListOpen = false;
-    
+
     ["click", "keydown"].forEach(type => {
         id_select_purpose.addEventListener(type, event => {
             if (type === "click" || event.key === "Enter" || event.key === " " || event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -254,10 +257,24 @@ function isItOkayToSubmitProjectForm() {
 
 function executeWhenPurposeIsSelected(selectedPurpose = null) {
     displayErrorInPurpose(false);
+    displayError(false, id_instructor);
 
     if (selectedPurpose) {
+        initFoundInstructorList();
+
+        const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
+
+        id_instructor.value = null;
+        id_found_instructor_list_help.innerText = "선택 가능한 교원을 찾고 있어요.";
         id_purpose.value = selectedPurpose.priority;
+        requestFindInstructor();
     };
+
+    id_instructor.classList.add("class-first");
+;
+    const class_firsts = document.querySelectorAll(".class-first");
+
+    initValidation(class_firsts, id_create_or_update);
 }
 
 function executeWhenPositionIsSelected(selectedPosition = null) {
@@ -459,6 +476,145 @@ function addStaff(userData, blink = false) {
     id_name.parentElement.classList.remove("rounded-b-md");
 }
 
+function initFoundInstructorList(resResult = null) {
+    const id_found_instructor_list = document.getElementById("id_found_instructor_list");
+
+    id_found_instructor_list.innerHTML = "";
+
+    // FAIL
+    if (resResult === null) {
+        const placeholderElement = document.createElement("div");
+
+        placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50"
+
+        placeholderElement.innerHTML = `
+            <div class="flex flex-1 justify-center">
+                <span id="id_found_instructor_list_help"
+                    class="text-sm text-center text-gray-500">개인 프로젝트는 교원을 선택하지 않아도 돼요.</span>
+            </div>
+        `;
+
+        id_found_instructor_list.appendChild(placeholderElement);
+
+        Array.from(inputs).forEach(input => {
+            if (input.id.indexOf("instructor") !== -1) {
+                let idx = inputs.indexOf(input);
+    
+                while (idx > -1) {
+                    inputs.splice(idx, 1);
+                    idx = inputs.indexOf(input);
+                };
+            };
+        });
+
+        return;
+    };
+
+    resResult.found_instructor_list.forEach(newlyFoundInstructor => {
+        const newlyFoundInstructorElement = document.createElement("label");
+        const data_instructor = newlyFoundInstructorElement.dataset;
+
+        data_instructor.id = newlyFoundInstructor.id;
+        data_instructor.name = newlyFoundInstructor.name;
+        data_instructor.subject = newlyFoundInstructor.subject;
+        data_instructor.code = newlyFoundInstructor.code;
+        newlyFoundInstructorElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+
+        newlyFoundInstructorElement.innerHTML = `
+            <input id="id_instructor_${data_instructor.id}"
+                    name="id_instructor"
+                    type="radio"
+                    value="${data_instructor.id}"
+                    class="sr-only class-first class-radio class-instuctor"
+                    aria-labelledby="id_instructor_${data_instructor.id}_label"
+                    aria-describedby="id_instructor_${data_instructor.id}_descr">
+            <div class="flex flex-1">
+                <span class="flex flex-col">
+                    <span id="id_instructor_${data_instructor.id}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${data_instructor.name}</span>
+                    <span id="id_instructor_${data_instructor.id}_descr" class="mt-1 flex items-center text-sm text-gray-500">
+                        ${data_instructor.code} ${data_instructor.subject}
+                    </span>
+                    <p id="id_instructor_${data_instructor.id}_error" class="mt-2 text-flamingo-600" hidden=""></p>
+                </span>
+            </div>
+            <svg class="h-5 w-5 ml-1 text-flamingo"
+                viewBox="0 0 16 20"
+                fill="currentColor"
+                aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="pointer-events-none absolute -inset-px rounded-md"
+                aria-hidden="true"></span>
+        `;
+
+        id_found_instructor_list.appendChild(newlyFoundInstructorElement);
+    });
+
+    const class_instructors = document.querySelectorAll(".class-instuctor");
+
+    class_instructors.forEach((instructor) => {
+        if (id_instructor.value === instructor.value) {
+            instructor.click();
+        };
+
+        const label = instructor.closest("label");
+        const svg = label.querySelector("svg");
+
+        instructor.addEventListener("click", () => {
+            if (instructor.id.indexOf("instructor") !== -1) {
+                id_instructor.value = instructor.value;
+            };
+        });
+
+        instructor.addEventListener("focus", () => {
+            label.classList.add("df-focus-ring-inset");
+            svg.classList.remove("invisible");
+        });
+
+        instructor.addEventListener("blur", () => {
+            if (!instructor.checked) {
+                svg.classList.add("invisible");
+            } else if (instructor.checked) {
+                label.classList.add("df-ring-inset-flamingo");
+            };
+
+            label.classList.remove("df-focus-ring-inset");
+        });
+
+        instructor.addEventListener("change", () => {
+            const otherInputs = [...class_instructors].filter(i => i !== instructor);
+
+            if (instructor.checked) {
+                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                svg.classList.remove("invisible");
+            } else {
+                svg.classList.add("invisible");
+            };
+
+            otherInputs.forEach(i => {
+                const otherLabel = i.closest("label");
+                const otherSvg = otherLabel.querySelector("svg");
+
+                if (!i.checked) {
+                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                    otherSvg.classList.add("invisible");
+                };
+            });
+        });
+
+        if (!instructor.checked) {
+            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+            svg.classList.add("invisible");
+        } else {
+            label.classList.add("df-ring-inset-flamingo");
+        };
+    });
+
+    const class_firsts = document.querySelectorAll(".class-first");
+
+    initValidation(class_firsts, id_create_or_update);
+}
+
 function initFoundUserList(resResult = null) {
     // FAIL
     if (resResult === null) {
@@ -597,6 +753,8 @@ function initForm() {
     id_purpose.value = null;
     id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
+    id_instructor.value = null;
+    id_instructor.classList.remove("class-first");
     id_production_end_date.value = null;
     id_production_end_date.placeholder = yyyymmddOfAfter90DaysWithDash;
 
@@ -611,6 +769,10 @@ function initForm() {
     [id_create_or_update, id_delete].forEach(button => {
         displayButtonMsg(false, button, "error");
     });
+
+    const class_firsts = document.querySelectorAll(".class-first");
+
+    initValidation(class_firsts, id_create_or_update);
 }
 
 function updateForm(action, datasetObj = null) {
@@ -625,11 +787,18 @@ function updateForm(action, datasetObj = null) {
 
     // action: "create"
     if (action === "create") {
+        baseDate = new Date().toISOString().slice(0, 10);
+
         class_keywords.forEach(keyword => {
             keyword.innerText = "등록하기";
         });
 
         initForm();
+        initFoundInstructorList();
+
+        const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
+
+        id_found_instructor_list_help.innerText = "유형을 선택하면 선택 가능한 교원이 표시돼요.";
         id_delete.classList.replace("inline-flex", "hidden");
     }
 
@@ -643,14 +812,20 @@ function updateForm(action, datasetObj = null) {
             keyword.innerText = "수정하기";
         });
 
+        const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
+
+        baseDate = data.createdDate;
+        id_found_instructor_list_help.innerText = "선택 가능한 교원을 찾고 있어요.";
         id_page_id.value = data.pageId;
         id_title.value = data.title;
-        id_original_title.value = data.originalTitle;
+        id_original_title.value = data.title;
         id_purpose.value = data.purpose;
         code(id_purpose, `_${data.purpose}`).click();
-        id_original_purpose.value = data.originalPurpose;
+        id_original_purpose.value = data.purpose;
+        id_instructor.value = data.instructor;
+        id_original_instructor.value = data.instructor;
         id_production_end_date.value = data.productionEndDate;
-        id_original_production_end_date.value = data.originalProductionEndDate;
+        id_original_production_end_date.value = data.productionEndDate;
 
         const staffArray = JSON.parse(data.staff.replace(/'/g, '"'));
 
@@ -710,6 +885,16 @@ function initModal() {
 
 initModal();
 
+function requestFindInstructor() {
+    request.url = `${location.origin}/project/utils/project/`;
+    request.type = "POST";
+    request.data = { id: "find_instructor", purpose: `${id_purpose.value}`, base_date: baseDate };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestFindUser() {
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
@@ -726,6 +911,7 @@ function requestCreateProject() {
     formData.append("id", "create_project");
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
+    formData.append("instructor", id_instructor.value);
     formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
@@ -757,6 +943,7 @@ function requestUpdateProject() {
     formData.append("page_id", id_page_id.value);
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
+    formData.append("instructor", id_instructor.value);
     formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
@@ -785,7 +972,7 @@ function requestDeleteProject() {
     const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, production_end_date: `${id_production_end_date.value}`, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, instructor: `${id_original_instructor.value}`, production_end_date: `${id_production_end_date.value}`, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -796,7 +983,7 @@ function requestDeleteProject() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
-        
+
         if (id_modal === null) return;
 
         const class_firsts = document.querySelectorAll(".class-first");
