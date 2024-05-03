@@ -802,8 +802,7 @@ function updateForm(action, datasetObj = null) {
 
     // action: "create"
     if (action === "create") {
-        // baseDate = new Date().toISOString().slice(0, 10);
-        baseDate = "2023-12-31";
+        baseDate = new Date().toISOString().slice(0, 10);
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "등록하기";
