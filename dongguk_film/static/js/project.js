@@ -33,6 +33,7 @@ const id_delete_text = code(id_delete, "_text");
 let isUserFound = false;
 let isInteractingWithList = false;
 let isPurposeSelected = false;
+let isSyllabusUpdated = false;
 let isUserProducer = false;
 let isItDoubleChecked = false;
 
@@ -1038,7 +1039,7 @@ function initRequest() {
                             controlError(input);
                             controlErrorInPurpose();
                             controlErrorInStaffBox();
-                            if (addedStaffs.length > 0 && !isUserProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작자(Producer)만 프로젝트를 생성할 수 있어요.") };
+                            if (addedStaffs.length > 0 && !isUserProducer) { displayButtonMsg(true, id_create_or_update, "error", "제작 담당(Producer)만 프로젝트를 등록할 수 있어요.") };
                         });
                     };
                 };
