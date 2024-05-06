@@ -13,6 +13,7 @@ const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
 const id_instructor = document.getElementById("id_instructor");
 const id_original_instructor = code("id_original_", id_instructor);
+const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
 const id_position = document.getElementById("id_position");
 const id_original_purpose = code("id_original_", id_purpose);
 const id_production_end_date = document.getElementById("id_production_end_date");
@@ -480,7 +481,6 @@ function initFoundInstructorList(resResult) {
     const status = resResult.status;
     const targetAcademicYearAndSemester = resResult.target_academic_year_and_semester;
     const id_found_instructor_list = document.getElementById("id_found_instructor_list");
-    const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
 
     id_found_instructor_list.innerHTML = "";
 
@@ -776,6 +776,7 @@ function initForm() {
     firstPurpose.style.setProperty("border-top", "none", "important");
     id_instructor.value = null;
     id_instructor.classList.remove("class-first");
+    id_target_academic_year_and_semester.innerText = null;
     id_production_end_date.value = null;
     id_production_end_date.placeholder = yyyymmddOfAfter90DaysWithDash;
 
