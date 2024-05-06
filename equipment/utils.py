@@ -71,57 +71,57 @@ def synchronize_equipment_data(request):
                     "view": "Grid view",
                 },
             }
-        elif target == "subject":
-            headers["Cookie"] = DMD_COOKIE
+        # elif target == "subject":
+        #     headers["Cookie"] = DMD_COOKIE
 
-            params = {
-                "strCampFg": "S",
-                "strUnivGrscFg": "U0001001",
-                "strLtYy": timezone.now().strftime("%Y"),
-                "strLtShtmCd": "U0002001" if timezone.now().month < 7 else "U0002002",
-                "strFindType": "CODE",
-                "strSbjt": "FIL",
-            }
+        #     params = {
+        #         "strCampFg": "S",
+        #         "strUnivGrscFg": "U0001001",
+        #         "strLtYy": timezone.now().strftime("%Y"),
+        #         "strLtShtmCd": "U0002001" if timezone.now().month < 7 else "U0002002",
+        #         "strFindType": "CODE",
+        #         "strSbjt": "FIL",
+        #     }
 
-            record_list = []
-            subject_dict = {}
+        #     record_list = []
+        #     subject_dict = {}
 
-            with Session() as session:
-                session.mount("https://", HTTPAdapter(max_retries=3))
-                response = session.get(
-                    DMD_URL["timetable"], params=params, headers=headers
-                )
-                subject_list = response.json()["out"]["DS_COUR110"]
+        #     with Session() as session:
+        #         session.mount("https://", HTTPAdapter(max_retries=3))
+        #         response = session.get(
+        #             DMD_URL["timetable"], params=params, headers=headers
+        #         )
+        #         subject_list = response.json()["out"]["DS_COUR110"]
 
-            for subject in subject_list:
-                key = (
-                    subject["sbjtKorNm"],
-                    subject["sbjtEngNm"],
-                    subject["haksuNo"],
-                    subject["openShyrNm"],
-                )
+        #     for subject in subject_list:
+        #         key = (
+        #             subject["sbjtKorNm"],
+        #             subject["sbjtEngNm"],
+        #             subject["haksuNo"],
+        #             subject["openShyrNm"],
+        #         )
 
-                instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
+        #         instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
 
-                if key not in subject_dict:
-                    subject_dict[key] = [instructor]
-                else:
-                    subject_dict[key].append(instructor)
+        #         if key not in subject_dict:
+        #             subject_dict[key] = [instructor]
+        #         else:
+        #             subject_dict[key].append(instructor)
 
-            for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
-                target_year = [
-                    int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
-                ]
+        #     for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
+        #         target_year = [
+        #             int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
+        #         ]
 
-                result = {
-                    "kor_name": kor_name,
-                    "eng_name": eng_name,
-                    "code": code,
-                    "target_year": target_year,
-                    "instructor": instructors,
-                }
+        #         result = {
+        #             "kor_name": kor_name,
+        #             "eng_name": eng_name,
+        #             "code": code,
+        #             "target_year": target_year,
+        #             "instructor": instructors,
+        #         }
 
-                record_list.append(result)
+        #         record_list.append(result)
 
         if target != "subject":
             record_list = airtable("get_all", "records", data=data)

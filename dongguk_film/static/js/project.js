@@ -33,7 +33,6 @@ const id_delete_text = code(id_delete, "_text");
 let isUserFound = false;
 let isInteractingWithList = false;
 let isPurposeSelected = false;
-let isSyllabusUpdated = false;
 let isUserProducer = false;
 let isItDoubleChecked = false;
 
@@ -479,7 +478,9 @@ function addStaff(userData, blink = false) {
 
 function initFoundInstructorList(resResult) {
     const status = resResult.status;
+    const targetAcademicYearAndSemester = resResult.target_academic_year_and_semester;
     const id_found_instructor_list = document.getElementById("id_found_instructor_list");
+    const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
 
     id_found_instructor_list.innerHTML = "";
 
@@ -494,8 +495,10 @@ function initFoundInstructorList(resResult) {
 
             if (reason === "NOT_CURRICULAR_PROJECT") {
                 placeholder = "개인 프로젝트는 교원을 선택하지 않아도 돼요.";
+                id_target_academic_year_and_semester.innerText = null;
             } else if (reason === "NO_SUBJECTS_FOUND") {
                 placeholder = "개설 교과목이 없어 교원을 선택할 수 없어요.";
+                id_target_academic_year_and_semester.innerText = targetAcademicYearAndSemester;
             };
         };
 
@@ -525,6 +528,8 @@ function initFoundInstructorList(resResult) {
 
         return;
     };
+
+    id_target_academic_year_and_semester.innerText = targetAcademicYearAndSemester;
 
     resResult.found_instructor_list.forEach(newlyFoundInstructor => {
         const newlyFoundInstructorElement = document.createElement("label");

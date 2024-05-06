@@ -92,7 +92,7 @@ def get_subject(base_date: str):
         "strCampFg": "S",
         "strUnivGrscFg": "U0001001",
         "strLtYy": str(base_year),
-        "strLtShtmCd": "U0002001" if base_month < 7 else "U0002002",
+        "strLtShtmCd": "U0002001" if base_month < 7 else "U0002003",
         "strFindType": "CODE",
         "strSbjt": "FIL",
     }
@@ -120,16 +120,16 @@ def get_subject(base_date: str):
         else:
             subject_dict[key].append(instructor)
 
-    for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
-        target_year = [
-            int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
+    for (kor_name, eng_name, code, target_university_year), instructors in subject_dict.items():
+        target_university_year = [
+            int(num) for num in re.sub(r"[^\d,]", "", target_university_year).split(",")
         ]
 
         result = {
             "kor_name": kor_name,
             "eng_name": eng_name,
             "code": code,
-            "target_year": target_year,
+            "target_university_year": target_university_year,
             "instructor": instructors,
         }
 
@@ -220,9 +220,9 @@ def project(request):
                         else False
                     )
                 ) and (
-                    subject["target_year"] == [4]  # 졸업
+                    subject["target_university_year"] == [4]  # 졸업
                     if purpose_for_senior_project
-                    else subject["target_year"] != [4]  # exclude 졸업
+                    else subject["target_university_year"] != [4]  # exclude 졸업
                 ):
                     for instructor in subject["instructor"]:
                         found_instructor = {
@@ -236,6 +236,11 @@ def project(request):
                             found_instructor_list.append(found_instructor)
 
         found_instructor_list.sort(key=lambda x: (x["code"], x["name"]))
+
+        base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
+        base_year = base_date.year
+        base_month = base_date.month
+        target_academic_year_and_semester = f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
 
         if len(found_instructor_list) > 0:
             status = "DONE"
@@ -253,6 +258,7 @@ def project(request):
             "result": {
                 "status": status,
                 "reason": reason,
+                "target_academic_year_and_semester": target_academic_year_and_semester,
                 "found_instructor_list": found_instructor_list,
             },
         }
