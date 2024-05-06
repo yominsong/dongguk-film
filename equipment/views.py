@@ -171,7 +171,7 @@ def equipment(request):
         query_result_list = []
         for equipment in equipment_collection_list:
             for k, v in equipment.items():
-                if v is not None:
+                if isinstance(v, str):
                     v = v.lower().replace(" ", "")
                     if equipment not in query_result_list:
                         if query in v:
