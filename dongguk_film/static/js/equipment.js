@@ -595,16 +595,16 @@ function initFoundProjectList(resResult = null) {
 
 // TODO: Refactor this function
 function initFoundHourList(resResult) {
-    const available_start_hour_list = resResult.available_start_hour_list;
-    const available_end_hour_list = resResult.available_end_hour_list;
+    const start_hour_list = resResult.start_hour_list;
+    const end_hour_list = resResult.end_hour_list;
     const id_start_time_list = document.getElementById("id_start_time_list");
     const id_end_time_list = document.getElementById("id_end_time_list");
 
     id_start_time_list.innerHTML = "";
     id_end_time_list.innerHTML = "";
 
-    if (available_start_hour_list.length === 0 || available_end_hour_list.length === 0) {
-        if (available_start_hour_list.length === 0) {
+    if (start_hour_list.length === 0 || end_hour_list.length === 0) {
+        if (start_hour_list.length === 0) {
             const placeholderElement = document.createElement("label");
 
             placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
@@ -619,7 +619,7 @@ function initFoundHourList(resResult) {
             id_start_time_list.appendChild(placeholderElement);
         };
 
-        if (available_end_hour_list.length === 0) {
+        if (end_hour_list.length === 0) {
             const placeholderElement = document.createElement("label");
 
             placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
@@ -635,38 +635,50 @@ function initFoundHourList(resResult) {
         };
     };
 
-    [available_start_hour_list, available_end_hour_list].forEach((hourList, index) => {
+    [start_hour_list, end_hour_list].forEach((hourList, index) => {
         const targetList = index === 0 ? id_start_time_list : id_end_time_list;
         const targetId = index === 0 ? id_start_time : id_end_time;
         const targetClass = index === 0 ? "class-start-time" : "class-end-time";
 
         hourList.forEach(newlyFoundHour => {
             const newlyFoundHourElement = document.createElement("label");
+            const available = newlyFoundHour.available;
+            const time = newlyFoundHour.time;
 
-            newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+            if (available === true) {
+                newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+            
+                newlyFoundHourElement.innerHTML = `
+                    <input id="${targetId.id}_${time}"
+                            name="${targetId.id}"
+                            type="radio"
+                            value="${time}"
+                            class="sr-only class-second class-radio ${targetClass}"
+                            aria-labelledby="${targetId}_${time}_label">
+                    <span class="flex flex-1">
+                        <span id="${targetId.id}_${time}_label"
+                                class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
+                    </span>
+                    <span id="${targetId.id}_${time}_descr" hidden></span>
+                    <span id="${targetId.id}_${time}_error" hidden></span>
+                    <svg class="h-5 w-5 ml-1 text-flamingo"
+                            viewBox="0 0 16 20"
+                            fill="currentColor"
+                            aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="pointer-events-none absolute -inset-px rounded-md"
+                            aria-hidden="true"></span>
+                `;
+            } else {
+                newlyFoundHourElement.className = "relative flex items-center cursor-not-allowed h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-100";
 
-            newlyFoundHourElement.innerHTML = `
-                <input id="${targetId.id}_${newlyFoundHour}"
-                        name="${targetId.id}"
-                        type="radio"
-                        value="${newlyFoundHour}"
-                        class="sr-only class-second class-radio ${targetClass}"
-                        aria-labelledby="${targetId}_${newlyFoundHour}_label">
-                <span class="flex flex-1">
-                    <span id="${targetId.id}_${newlyFoundHour}_label"
-                            class="block whitespace-pre-line text-sm font-medium text-gray-900">${newlyFoundHour}</span>
-                </span>
-                <span id="${targetId.id}_${newlyFoundHour}_descr" hidden></span>
-                <span id="${targetId.id}_${newlyFoundHour}_error" hidden></span>
-                <svg class="h-5 w-5 ml-1 text-flamingo"
-                        viewBox="0 0 16 20"
-                        fill="currentColor"
-                        aria-hidden="true">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                </svg>
-                <span class="pointer-events-none absolute -inset-px rounded-md"
-                        aria-hidden="true"></span>
-            `;
+                newlyFoundHourElement.innerHTML = `
+                    <span class="flex flex-1">
+                        <span class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
+                    </span>
+                `;
+            };
 
             targetList.appendChild(newlyFoundHourElement);
         });
@@ -974,7 +986,7 @@ function updateForm(action, datasetObj = null) {
 
     // Middle action: checkout
     else if (action === "checkout") {
-        if (userPk === null || userName === null || userStudentId === null) return;
+        if (!isAuthenticated()) return;
         if (id_filter_or_checkout_text.innerText !== "예약하기") return;
 
         id_modal_filter.hidden = true;
@@ -1375,7 +1387,7 @@ function requestAddToCart() {
     freezeForm(true);
     makeAjaxCall(request);
     request = {};
-};
+}
 
 function requestFindProject() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
@@ -1398,11 +1410,25 @@ function requestFindHour() {
     request.type = "POST";
     request.data = {
         id: "find_hour",
+        startDate: startDate,
+        endDate: endDate,
         startDay: (new Date(startDate)).getDay(),
         endDay: (new Date(endDate)).getDay()
     };
     request.async = true;
     request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+// TODO: Under construction
+function requestApplication() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "request_application", cart: sessionStorage.getItem("cart") };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -1431,7 +1457,7 @@ function initRequest() {
 
                         id_filter_or_checkout_spin.classList.remove("hidden");
                     } else if (id_filter_or_checkout_text.innerText.trim() === "예약하기") {
-                        if (userPk === null || userName === null || userStudentId === null) {
+                        if (!isAuthenticated()) {
                             let params = {};
 
                             params.next = `${location.pathname}${location.search}`;
@@ -1440,7 +1466,7 @@ function initRequest() {
                         } else {
                             requestFindProject();
                             requestFindHour();
-                            return; // Under construction
+                            return; // TODO: Under construction
                         };
                     } else {
                         inputs.forEach((input) => {

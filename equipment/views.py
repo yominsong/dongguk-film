@@ -6,7 +6,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from urllib.parse import urlencode
 from .utils import get_equipment_data, split_period, filter_limit_list
 from utility.img import get_hero_img
-from utility.utils import convert_datetime, airtable
+from utility.utils import convert_datetime, notion, airtable
 import random, json
 
 #
@@ -36,6 +36,21 @@ def is_not_two_numeric_format(period):
     parts = period.split(",")
 
     return not (len(parts) == 2 and all(part.isnumeric() for part in parts))
+
+
+def has_equipment_room_permission(request):
+    operator_list = notion("query", "db", data={"db_name": "operator"})
+    has_equipment_room_permission = False
+
+    for operator in operator_list:
+        if operator["student_id"] == request.user.username and (
+            operator["permission"] == "EQUIPMENT_ROOM"
+            or operator["permission"] == "ADMIN"
+        ):
+            has_equipment_room_permission = True
+            break
+
+    return has_equipment_room_permission
 
 
 def redirect_with_query_string(base_url, query_string):
@@ -136,8 +151,7 @@ def equipment(request):
             if (
                 equipment["category"]["priority"] == category_priority
                 and any(
-                    purpose_priority in purpose
-                    for purpose in equipment["item_purpose"]
+                    purpose_priority in purpose for purpose in equipment["item_purpose"]
                 )
             )
         ]
@@ -200,6 +214,7 @@ def equipment(request):
             "equipment_collection_count": equipment_collection_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
+            "has_equipment_room_permission": has_equipment_room_permission(request),
             "page_value": page_value,
             "page_range": page_range,
             "category_list": category_list,
@@ -239,7 +254,7 @@ def equipment_detail(request, collection_id):
 
     collection = airtable("get", "record", data=data)
     equipment_collection_list = get_equipment_data("collection")
-    
+
     for ec in equipment_collection_list:
         if ec["record_id"] == record_id:
             collection["thumbnail"] = ec["thumbnail"]
@@ -256,7 +271,7 @@ def equipment_detail(request, collection_id):
         }
 
         return redirect_with_query_string(base_url, query_string)
-    
+
     if is_query_string_invalid(
         category_priority, purpose_priority, period, category_list, purpose_list
     ):
@@ -401,6 +416,7 @@ def equipment_detail(request, collection_id):
             "purpose": purpose,
             "purpose_priority": purpose_priority,
             "period": period,
+            "has_equipment_room_permission": has_equipment_room_permission(request),
             "collection": collection,
             "stock_list": stock_list,
             "available_from": available_from,

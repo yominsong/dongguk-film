@@ -523,12 +523,17 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             try:
                 for record in records:
                     fields = record["fields"]
+                    project_and_date = fields.get("Project and date", None)
+
+                    if project_and_date:
+                        project_and_date = json.loads(project_and_date.replace("'", '"'))
 
                     hour = {
                         "name": fields.get("Name", None),
                         "day_of_the_week": fields.get("Day of the week", None),
                         "time": fields.get("Time", None),
                         "max_capacity": fields.get("Max capacity", None),
+                        "project_and_date": project_and_date,
                     }
 
                     record_list.append(hour)
@@ -637,7 +642,30 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         if limit:
             payload["page_size"] = limit
 
-        if db_name == "project":
+        if db_name == "operator":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
+                    student_id = properties["Title"]["title"][0]["plain_text"]
+                    permission = properties["Permission"]["select"]["name"]
+
+                    operator = {
+                        "student_id": student_id,
+                        "permission": permission,
+                    }
+
+                    item_list.append(operator)
+            except:
+                pass
+
+        elif db_name == "project":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -683,11 +711,6 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     if instructor:
                         instructor = instructor[0].get("plain_text", None)
 
-                    # subject = properties.get("Subject", {}).get("rich_text", [{}])
-
-                    # if subject:
-                    #     subject = subject[0].get("plain_text", None)
-
                     user = str(properties["User"]["number"])
 
                     project = {
@@ -699,7 +722,6 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "title": title,
                         "production_end_date": production_end_date,
                         "instructor": instructor,
-                        # "subject": subject,
                         "user": user,
                         "created_date": created_time.strftime("%Y-%m-%d"),
                     }

@@ -11,6 +11,10 @@ let userPinpointed = false; // User pinpointing results
 // Sub functions
 //
 
+function isAuthenticated() {
+    return userPk !== null && userName !== null && userStudentId !== null
+}
+
 /**
  * - `String/Number.getLastNumInKor()`: Return the last letter in Hangul
  * - `Number.toTwoDigits()`: Pad with zero to make a two digit number **(type: string)**

@@ -72,13 +72,13 @@ function hasOnlyImages(htmlData) {
     const hasImage = /<img\s+[^>]*src=["'][^"']*["'][^>]*>/gi.test(htmlData);
     const textWithoutTags = htmlData.replaceAll("&nbsp;", "").replace(/<[^>]*>/g, "");
     const hasText = /\S/.test(textWithoutTags);
-  
+
     if (hasImage && !hasText) {
-      return true;
+        return true;
     };
-  
+
     return false;
-  }
+}
 
 function handleModalWidth(bool) {
     if (bool) {
@@ -113,6 +113,24 @@ function adjustTextboxStyle(bool, type) {  // Adding and removing event listener
         };
     };
 }
+
+function executeWhenUserHasNoPermission() {
+    const class_no_permissions = document.querySelectorAll(".class-no-permission");
+
+    if (class_no_permissions.length === 0) return;
+
+    class_no_permissions.forEach(noPermission => {
+        ["click", "keyup"].forEach(type => {
+            noPermission.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    displayNoti(true, "NPN");
+                };
+            });
+        });
+    });
+}
+
+executeWhenUserHasNoPermission();
 
 //
 // Main functions
@@ -784,7 +802,7 @@ copyUrl();
 
 function share() {
     if (id_detail == null) { return };
-    
+
     const data = id_detail.dataset;
     const id_kakaotalk = document.getElementById("id_kakaotalk");
     const id_x = document.getElementById("id_x");

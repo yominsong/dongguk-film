@@ -18,6 +18,13 @@ def notice(request):
     # Notion
     notice_list = notion("query", "db", data={"db_name": "notice"})
     notice_count = len(notice_list)
+    operator_list = notion("query", "db", data={"db_name": "operator"})
+    has_notice_permission = False
+
+    for operator in operator_list:
+        if operator["student_id"] == request.user.username:
+            has_notice_permission = True
+            break
 
     # Search box
     query = request.GET.get("q")
@@ -98,6 +105,7 @@ def notice(request):
             "notice_count": notice_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
+            "has_notice_permission": has_notice_permission,
             "page_value": page_value,
             "page_range": page_range,
         },

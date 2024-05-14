@@ -31,6 +31,7 @@ function editXDate(notiType, bool) {
  * - `PTA`: PaTially Added
  * - `RBG`: Recommend Web Browser for Google Login
  * - `INL`: Inform Nonexistent Link
+ * - `NPN`: No Permission to create Notice
  * - `RYS`: Request YouTube Share Link
  * - `RAT`: Request Alternative Text
  * - `RDI`: Request Description of Image
@@ -157,21 +158,29 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = locationIcon;
             notiTitle = "지금 계신 지역의 날씨를 확인해보세요.";
             notiContent = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
-        } else if (notiType === "RRL") {
+        }
+        
+        else if (notiType === "RRL") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치 정보가 부정확한가요?";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 위치 정보를 다시 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RRL'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType === "CWF") {
+        }
+        
+        else if (notiType === "CWF") {
             notiIcon = locationIcon;
             notiTitle = "기상 정보를 마저 불러올 수 있어요.";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 기상 정보를 계속 불러올 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'CWF'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType === "RNP") {
+        }
+        
+        else if (notiType === "RNP") {
             notiIcon = bellIcon;
             notiTitle = "디닷에프 푸시 알림을 받아보세요.";
             notiContent = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
-        } else if (notiType === "WNU") {
+        }
+        
+        else if (notiType === "WNU") {
             notiIcon = smileIcon;
             notiTitle = `반가워요, ${param}님! 🖐️`;
             notiContent = `디닷에프가 ${param}님의 학과 생활에 도움이 되어드릴게요!`;
@@ -240,38 +249,58 @@ function displayNoti(bool, notiType, param = null) {
         }
 
         // notice
+        else if (notiType == "NPN") {
+            notiIcon = exclamationIcon;
+            notiTitle = "공지사항 작성 권한이 없어요.";
+            notiContent = "공지사항은 운영진만 작성할 수 있어요.";
+        }
+
         else if (notiType === "RYS") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
             notiContent = "'youtu.be'로 시작하는 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
-        } else if (notiType === "RAT") {
+        }
+        
+        else if (notiType === "RAT") {
             notiIcon = imageIcon;
             notiTitle = "이미지 대체 텍스트를 입력해주세요.";
             notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://terms.naver.com/entry.naver?cid=42346&docId=3436471&categoryId=42346', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType === "RDI") {
+        }
+        
+        else if (notiType === "RDI") {
             notiIcon = imageIcon;
             notiTitle = "내용에 텍스트를 포함해주세요.";
             notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType === "SDI") {
+        }
+        
+        else if (notiType === "SDI") {
             notiIcon = imageIcon;
             notiTitle = "이미지는 텍스트와 함께 사용해주세요.";
             notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
-        } else if (notiType === "EIS") {
+        }
+        
+        else if (notiType === "EIS") {
             notiIcon = textIcon;
             notiTitle = "텍스트 추출이 완료되었어요.";
             notiContent = "부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
-        } else if (notiType === "EIF") {
+        }
+        
+        else if (notiType === "EIF") {
             notiIcon = exclamationIcon;
             notiTitle = "텍스트 추출에 실패했어요.";
             notiContent = "이미지를 직접 내려받아 삽입한 후 다시 시도해주세요.";
-        } else if (notiType === "LDF") {
+        }
+        
+        else if (notiType === "LDF") {
             notiIcon = infoIcon;
             notiTitle = "이미 첨부된 파일이 있어요.";
             notiContent = `'${param}' 파일이 이미 첨부되어 있어요. 첨부 파일 목록을 확인해주세요.`;
-        } else if (notiType === "LFS") {
+        }
+        
+        else if (notiType === "LFS") {
             notiIcon = exclamationIcon;
             notiTitle = "파일은 총합 5MB까지 첨부할 수 있어요.";
             notiContent = `${param}개의 파일이 용량 제한으로 첨부되지 않았어요.`;

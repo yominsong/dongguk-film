@@ -8,17 +8,26 @@ from utility.hangul import handle_hangul
 from utility.utils import airtable, notion, convert_datetime
 from utility.msg import send_msg
 from fake_useragent import UserAgent
-from requests.sessions import Session
-from requests.adapters import HTTPAdapter
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 import json, re
-
-DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
-DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
-headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
 # Global variables
 #
+
+DMD_URL = getattr(settings, "DMD_URL", None)
+DMD_COOKIE = getattr(settings, "DMD_COOKIE", None)
+headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+
+GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
+    getattr(settings, "GOOGLE_SA_CREDS", None),
+    scopes=["https://www.googleapis.com/auth/drive"],
+)
+
+GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
+GOOGLE_DOCS = build("docs", "v1", credentials=GOOGLE_SA_CREDS)
+GOOGLE_DOCS_TEMPLATE_ID = getattr(settings, "GOOGLE_DOCS_TEMPLATE_ID", None)
 
 JSON_PATH = (
     "dongguk_film/static/json/equipment.json"
@@ -32,7 +41,7 @@ JSON_PATH = (
 
 
 def synchronize_equipment_data(request):
-    target_list = ["category", "purpose", "limit", "collection", "hour", "subject"]
+    target_list = ["category", "purpose", "limit", "collection", "hour"]
     result_list = []
 
     for target in target_list:
@@ -71,61 +80,8 @@ def synchronize_equipment_data(request):
                     "view": "Grid view",
                 },
             }
-        # elif target == "subject":
-        #     headers["Cookie"] = DMD_COOKIE
 
-        #     params = {
-        #         "strCampFg": "S",
-        #         "strUnivGrscFg": "U0001001",
-        #         "strLtYy": timezone.now().strftime("%Y"),
-        #         "strLtShtmCd": "U0002001" if timezone.now().month < 7 else "U0002002",
-        #         "strFindType": "CODE",
-        #         "strSbjt": "FIL",
-        #     }
-
-        #     record_list = []
-        #     subject_dict = {}
-
-        #     with Session() as session:
-        #         session.mount("https://", HTTPAdapter(max_retries=3))
-        #         response = session.get(
-        #             DMD_URL["timetable"], params=params, headers=headers
-        #         )
-        #         subject_list = response.json()["out"]["DS_COUR110"]
-
-        #     for subject in subject_list:
-        #         key = (
-        #             subject["sbjtKorNm"],
-        #             subject["sbjtEngNm"],
-        #             subject["haksuNo"],
-        #             subject["openShyrNm"],
-        #         )
-
-        #         instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
-
-        #         if key not in subject_dict:
-        #             subject_dict[key] = [instructor]
-        #         else:
-        #             subject_dict[key].append(instructor)
-
-        #     for (kor_name, eng_name, code, target_year), instructors in subject_dict.items():
-        #         target_year = [
-        #             int(num) for num in re.sub(r"[^\d,]", "", target_year).split(",")
-        #         ]
-
-        #         result = {
-        #             "kor_name": kor_name,
-        #             "eng_name": eng_name,
-        #             "code": code,
-        #             "target_year": target_year,
-        #             "instructor": instructors,
-        #         }
-
-        #         record_list.append(result)
-
-        if target != "subject":
-            record_list = airtable("get_all", "records", data=data)
-
+        record_list = airtable("get_all", "records", data=data)
         result_list.append({target: record_list})
 
         with open(JSON_PATH, "r+") as f:
@@ -302,6 +258,8 @@ def equipment(request):
     period = request.POST.get("period")
     requested_quantity = request.POST.get("requestedQuantity")
     cart = request.POST.get("cart")
+    start_date = request.POST.get("startDate")
+    end_date = request.POST.get("endDate")
     start_day = request.POST.get("startDay")
     end_day = request.POST.get("endDay")
 
@@ -544,19 +502,38 @@ def equipment(request):
 
     # id: find_hour
     elif id == "find_hour":
-        hour_list = get_equipment_data("hour")
+        data = {
+            "table_name": "equipment-hour",
+            "params": {
+                "view": "Grid view",
+            },
+        }
+
+        hour_list = airtable("get_all", "records", data=data)
         start_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(start_day)]
         end_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(end_day)]
-        available_start_hour_list = []
-        available_end_hour_list = []
+        project_and_date_list = []
+        start_hour_list = []
+        end_hour_list = []
 
         for hour in hour_list:
-            if hour["day_of_the_week"] == start_day:
-                available_start_hour_list.append(hour["time"])
-            if hour["day_of_the_week"] == end_day:
-                available_end_hour_list.append(hour["time"])
+            hour["available"] = True
+            
+            if hour["project_and_date"] is not None:
+                for project_and_date in hour["project_and_date"]:
+                    if project_and_date["date"] == start_date or project_and_date["date"] == end_date:
+                        project_and_date_list.append(project_and_date)
 
-        if len(available_start_hour_list) > 0 and len(available_end_hour_list) > 0:
+                if len(project_and_date_list) >= hour["max_capacity"]:
+                    hour["available"] = False
+
+            if hour["day_of_the_week"] == start_day:
+                start_hour_list.append(hour)
+
+            if hour["day_of_the_week"] == end_day:
+                end_hour_list.append(hour)
+
+        if len(start_hour_list) > 0 and len(end_hour_list) > 0:
             status = "DONE"
         else:
             status = "FAIL"
@@ -565,8 +542,18 @@ def equipment(request):
             "id": id,
             "result": {
                 "status": status,
-                "available_start_hour_list": available_start_hour_list,
-                "available_end_hour_list": available_end_hour_list,
+                "start_hour_list": start_hour_list,
+                "end_hour_list": end_hour_list,
             },
         }
+
+    # id: request_application
+    elif id == "request_application":
+        # TODO: Implement this function
+
+        GOOGLE_DRIVE.files().copy(
+            fileId=GOOGLE_DOCS_TEMPLATE_ID["equipment_use_request_form"],
+            body={"name": "기자재 사용 신청서"},
+        ).execute()
+
     return JsonResponse(response)
