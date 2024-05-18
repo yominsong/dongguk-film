@@ -6,6 +6,7 @@
 const id_modal = document.getElementById("id_modal");
 const id_modal_base = code(id_modal, "_base");
 const id_modal_filter = code(id_modal, "_filter");
+const id_modal_checkout = code(id_modal, "_checkout");
 const id_scrollable_part_of_modal = code("id_scrollable_part_of_", id_modal);
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
@@ -43,6 +44,7 @@ let isSignaturePlaceholderCleared = false;
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
+const id_user_name = document.getElementById("id_user_name").innerText;
 
 //
 // Sub functions
@@ -640,6 +642,10 @@ function initFoundProjectList(resResult = null) {
             label.classList.add("df-ring-inset-flamingo");
         };
     });
+
+    const class_seconds = document.querySelectorAll(".class-second");
+
+    initValidation(class_seconds, id_filter_or_checkout);
 }
 
 // TODO: Refactor this function
@@ -693,23 +699,24 @@ function initFoundHourList(resResult) {
             const newlyFoundHourElement = document.createElement("label");
             const available = newlyFoundHour.available;
             const time = newlyFoundHour.time;
+            const timeWihtoutColon = time.replace(":", "");
 
             if (available === true) {
                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
 
                 newlyFoundHourElement.innerHTML = `
-                    <input id="${targetId.id}_${time}"
+                    <input id="${targetId.id}_${timeWihtoutColon}"
                             name="${targetId.id}"
                             type="radio"
-                            value="${time}"
+                            value="${timeWihtoutColon}"
                             class="sr-only class-second class-radio ${targetClass}"
-                            aria-labelledby="${targetId}_${time}_label">
+                            aria-labelledby="${targetId.id}_${timeWihtoutColon}_label">
                     <span class="flex flex-1">
-                        <span id="${targetId.id}_${time}_label"
+                        <span id="${targetId.id}_${timeWihtoutColon}_label"
                                 class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
                     </span>
-                    <span id="${targetId.id}_${time}_descr" hidden></span>
-                    <span id="${targetId.id}_${time}_error" hidden></span>
+                    <span id="${targetId.id}_${timeWihtoutColon}_descr" hidden></span>
+                    <span id="${targetId.id}_${timeWihtoutColon}_error" hidden></span>
                     <svg class="h-5 w-5 ml-1 text-flamingo"
                             viewBox="0 0 16 20"
                             fill="currentColor"
@@ -797,95 +804,138 @@ function initFoundHourList(resResult) {
             });
         });
     });
+
+    const class_seconds = document.querySelectorAll(".class-second");
+
+    initValidation(class_seconds, id_filter_or_checkout);
 }
 
 function initSignatureCanvas() {
     if (isSignatureCanvasReady === true) return;
 
     const id_signature_canvas = document.getElementById("id_signature_canvas");
-    const id_clear_signature_canvas = code("id_clear_", id_signature_canvas);
+    const id_clear_signature_canvas = document.getElementById("id_clear_signature_canvas");
     const ctx = id_signature_canvas.getContext("2d");
     let isDrawing = false;
     let lastPoint = null;
+    let isSignaturePlaceholderCleared = false;
+    let points = [];
+    let isCanvasDisabled = false;
 
-    id_signature_canvas.width = id_signature_canvas.offsetWidth;
-    id_signature_canvas.height = id_signature_canvas.offsetHeight;
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    function setCanvasSize() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = id_signature_canvas.getBoundingClientRect();
+
+        id_signature_canvas.width = rect.width * dpr;
+        id_signature_canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+    }
+
+    function adjustLineWidth() {
+        ctx.lineWidth = 3.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+    }
 
     function drawPlaceholder() {
-        ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
-        ctx.font = "1rem 'Noto Sans KR'";
+        setCanvasSize();
+        adjustLineWidth();
+
+        const rect = id_signature_canvas.getBoundingClientRect();
+        const fontSize = rect.width / 20;
+
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        ctx.font = `${fontSize}px "Noto Sans KR"`;
         ctx.fillStyle = "rgb(156 163 175)";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const lineHeight = 20;
-        const middleY = id_signature_canvas.height / 2;
+        const lineHeight = fontSize * 1.25;
+        const middleY = rect.height / 2;
 
-        if (userName.length > 10) {
-            const line1Y = middleY - lineHeight * 1.5;
-            const line2Y = middleY - lineHeight * 0.5;
-            const line3Y = middleY + lineHeight * 0.5;
-            const line4Y = middleY + lineHeight * 1.5;
-
-            ctx.fillText(`${userName}님의`, id_signature_canvas.width / 2, line1Y);
-            ctx.fillText(`성명 ${getKoreanCharacterCount(userName)} 글자를`, id_signature_canvas.width / 2, line2Y);
-            ctx.fillText("제3자가 알아볼 수 있도록", id_signature_canvas.width / 2, line3Y);
-            ctx.fillText("정자체로 쓰세요.", id_signature_canvas.width / 2, line4Y);
+        if (isCanvasDisabled) {
+            ctx.fillText("새로고침 후 다시 시도해주세요.", rect.width / 2, middleY);
         } else {
-            const line1Y = middleY - lineHeight;
-            const line2Y = middleY;
-            const line3Y = middleY + lineHeight;
+            if (id_user_name.length > 5) {
+                const line1Y = middleY - lineHeight * 1.5;
+                const line2Y = middleY - lineHeight * 0.5;
+                const line3Y = middleY + lineHeight * 0.5;
+                const line4Y = middleY + lineHeight * 1.5;
 
-            ctx.fillText(`${userName}님의 성명 ${getKoreanCharacterCount(userName)} 글자를`, id_signature_canvas.width / 2, line1Y);
-            ctx.fillText("제3자가 알아볼 수 있도록", id_signature_canvas.width / 2, line2Y);
-            ctx.fillText("정자체로 쓰세요.", id_signature_canvas.width / 2, line3Y);
-        };
+                ctx.fillText(`${id_user_name}님의`, rect.width / 2, line1Y);
+                ctx.fillText(`성명 첫 다섯 글자 '${id_user_name.slice(0, 5)}'${matchJosa(id_user_name[4], "을를", "OJS")}`, rect.width / 2, line2Y);
+                ctx.fillText("제3자가 알아볼 수 있도록", rect.width / 2, line3Y);
+                ctx.fillText("정자체로 써주세요.", rect.width / 2, line4Y);
+            } else {
+                const line1Y = middleY - lineHeight;
+                const line2Y = middleY;
+                const line3Y = middleY + lineHeight;
+
+                ctx.fillText(`${id_user_name}님의 성명 ${getKoreanCharacterCount(id_user_name)} 글자를`, rect.width / 2, line1Y);
+                ctx.fillText("제3자가 알아볼 수 있도록", rect.width / 2, line2Y);
+                ctx.fillText("정자체로 써주세요.", rect.width / 2, line3Y);
+            }
+        }
     }
 
     function startDrawing(e) {
+        if (isCanvasDisabled) return;
+
         if (!isSignaturePlaceholderCleared) {
             ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
             isSignaturePlaceholderCleared = true;
-        };
+        }
 
         isDrawing = true;
+        adjustLineWidth();
+        points = [];
 
         const { offsetX, offsetY } = getEventPosition(e);
 
         lastPoint = { x: offsetX, y: offsetY };
+        points.push(lastPoint);
         ctx.beginPath();
         ctx.moveTo(offsetX, offsetY);
         id_clear_signature_canvas.hidden = false;
     }
 
     function draw(e) {
-        if (!isDrawing) return;
+        if (!isDrawing || isCanvasDisabled) return;
 
         const { offsetX, offsetY } = getEventPosition(e);
+        const point = { x: offsetX, y: offsetY };
 
-        ctx.beginPath();
-        ctx.moveTo(lastPoint.x, lastPoint.y);
-        ctx.lineTo(offsetX, offsetY);
-        ctx.stroke();
-        lastPoint = { x: offsetX, y: offsetY };
+        points.push(point);
+
+        if (points.length > 2) {
+            const prevPoint = points[points.length - 2];
+            const cp = {
+                x: (prevPoint.x + point.x) / 2,
+                y: (prevPoint.y + point.y) / 2
+            };
+
+            ctx.quadraticCurveTo(prevPoint.x, prevPoint.y, cp.x, cp.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cp.x, cp.y);
+        }
+
+        lastPoint = point;
         id_clear_signature_canvas.hidden = false;
     }
 
     function stopDrawing() {
-        if (!isDrawing) return;
+        if (!isDrawing || isCanvasDisabled) return;
         isDrawing = false;
         ctx.closePath();
+        points = [];
         id_clear_signature_canvas.hidden = false;
     }
 
     function getEventPosition(e) {
         if (e.touches) {
             const rect = id_signature_canvas.getBoundingClientRect();
-            
+
             return {
                 offsetX: e.touches[0].clientX - rect.left,
                 offsetY: e.touches[0].clientY - rect.top
@@ -896,6 +946,26 @@ function initSignatureCanvas() {
                 offsetY: e.offsetY
             };
         }
+    }
+
+    function downloadSignature() {
+        if (isCanvasDisabled) return;
+
+        const downloadCanvas = document.createElement("canvas");
+        const downloadCtx = downloadCanvas.getContext("2d");
+        const fixedWidth = 320;
+        const fixedHeight = 180;
+
+        downloadCanvas.width = fixedWidth;
+        downloadCanvas.height = fixedHeight;
+        downloadCtx.drawImage(id_signature_canvas, 0, 0, fixedWidth, fixedHeight);
+
+        const dataURL = downloadCanvas.toDataURL("image/png");
+        const link = document.createElement("a");
+
+        link.href = dataURL;
+        link.download = "signature.png";
+        link.click();
     }
 
     id_signature_canvas.onmousedown = startDrawing;
@@ -928,13 +998,24 @@ function initSignatureCanvas() {
                 id_clear_signature_canvas.hidden = true;
                 isSignaturePlaceholderCleared = false;
                 drawPlaceholder();
-            };
+            }
         });
     });
 
     drawPlaceholder();
+
+    window.addEventListener("resize", () => {
+        isCanvasDisabled = true;
+        drawPlaceholder();
+        id_clear_signature_canvas.hidden = true;
+        id_signature_canvas.classList.add("cursor-not-allowed");
+        id_signature_canvas.classList.remove("hover:bg-gray-50");
+        id_signature_canvas.classList.add("bg-gray-100");
+    });
+
     isSignatureCanvasReady = true;
 }
+
 
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
@@ -1030,7 +1111,6 @@ function initForm() {
 
 function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
-    const id_modal_checkout = code(id_modal, "_checkout");
     const id_modal_share = code(id_modal, "_share");
     const id_total_quantity = document.getElementById("id_total_quantity");
     const class_keywords = document.querySelectorAll(".class-keyword");
@@ -1208,7 +1288,15 @@ function updateForm(action, datasetObj = null) {
 
             id_clear_signature_canvas.click();
         };
-        
+
+        const id_signature_canvas_help = document.getElementById("id_signature_canvas_help");
+
+        if (id_user_name.length >= 5) {
+            id_signature_canvas_help.innerText = `${id_user_name}님의 성명 첫 다섯 글자 '${id_user_name.slice(0, 5)}'${matchJosa(id_user_name[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
+        } else {
+            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.";
+        };
+    
         id_filter_or_checkout.classList.remove("class-checkout");
     }
 
@@ -1661,10 +1749,14 @@ function initRequest() {
                             params.next = `${location.pathname}${location.search}`;
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
-                        } else {
+                        } else if (id_modal_checkout.hidden) {
                             requestFindProject();
                             requestFindHour();
-                            return; // TODO: Under construction
+
+                            // const class_seconds = document.querySelectorAll(".class-second");
+
+                            // initValidation(class_seconds, id_filter_or_checkout);
+                        } else if (id_modal_checkout.hidden === false && !isItOkayToSubmitForm()) {
                         };
                     } else {
                         inputs.forEach((input) => {

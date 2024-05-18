@@ -269,7 +269,8 @@ function validate() {
                 displayError(false, input);
             });
         } else if (input.classList.contains("class-radio")) {
-            const altInput = code(input.id.replace(`_${input.id.split("_")[2]}`, ""));
+            const lastUnderscoreIndex = input.id.lastIndexOf("_");
+            const altInput = code(input.id.substring(0, lastUnderscoreIndex));
 
             input.addEventListener("click", () => {
                 displayError(false, altInput);

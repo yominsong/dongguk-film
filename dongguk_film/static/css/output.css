@@ -1008,6 +1008,11 @@ select {
   margin-bottom: 1rem;
 }
 
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
 .-mb-5 {
   margin-bottom: -1.25rem;
 }
@@ -1336,6 +1341,14 @@ select {
   width: 512px;
 }
 
+.w-\[full\] {
+  width: full;
+}
+
+.w-\[parent\] {
+  width: parent;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -1362,6 +1375,10 @@ select {
 
 .max-w-sm {
   max-width: 24rem;
+}
+
+.max-w-screen-lg {
+  max-width: 1024px;
 }
 
 .flex-1 {
@@ -1682,6 +1699,16 @@ select {
 .divide-red-500 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(239 68 68 / var(--tw-divide-opacity));
+}
+
+.divide-red-100 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(254 226 226 / var(--tw-divide-opacity));
+}
+
+.divide-red-600 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgb(220 38 38 / var(--tw-divide-opacity));
 }
 
 .justify-self-end {
@@ -3214,6 +3241,10 @@ select {
     margin-top: 2rem;
   }
 
+  .sm\:-ml-6 {
+    margin-left: -1.5rem;
+  }
+
   .sm\:block {
     display: block;
   }
@@ -3264,6 +3295,10 @@ select {
 
   .sm\:w-full {
     width: 100%;
+  }
+
+  .sm\:w-\[512px\] {
+    width: 512px;
   }
 
   .sm\:max-w-3xl {

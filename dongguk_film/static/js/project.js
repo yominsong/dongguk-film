@@ -272,7 +272,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     };
 
     id_instructor.classList.add("class-first");
-    ;
+    
     const class_firsts = document.querySelectorAll(".class-first");
 
     initValidation(class_firsts, id_create_or_update);
