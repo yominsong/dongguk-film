@@ -311,126 +311,174 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="id_modal_checkout" class="space-y-5 mt-5" hidden>
-                                <div class="rounded-md bg-gray-50 p-4 text-sm text-gray-700 divide-y divide-gray-100">
-                                    <div class="flex justify-between items-center pb-4">
-                                        <div class="flex">대여 목적</div>
-                                        <div id="id_purpose_in_cart"
-                                             class="animate-pulse pulse-on mt-0.5 h-4 w-20 bg-gray-200 rounded"></div>
-                                    </div>
-                                    <div class="flex flex-col space-y-2 py-4">
-                                        <div class="flex justify-between items-center">
-                                            <div class="flex">대여 기간</div>
-                                            <div id="id_period_in_cart"
-                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-6 bg-gray-200 rounded">
+                            <div id="id_modal_checkout" class="mt-5 space-y-5" hidden>
+                                <div class="space-y-5">
+                                    <div class="rounded-md bg-gray-50 p-4 text-sm text-gray-700 divide-y divide-gray-100">
+                                        <div class="flex justify-between items-center pb-4">
+                                            <div class="flex">대여 목적</div>
+                                            <div id="id_purpose_in_cart"
+                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-20 bg-gray-200 rounded">
                                             </div>
                                         </div>
-                                        <div class="flex justify-between items-center">
-                                            <div class="flex">└ 희망 대여일</div>
-                                            <div id="id_start_date_in_cart"
-                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                        <div class="flex flex-col space-y-2 py-4">
+                                            <div class="flex justify-between items-center">
+                                                <div class="flex">대여 기간</div>
+                                                <div id="id_period_in_cart"
+                                                     class="animate-pulse pulse-on mt-0.5 h-4 w-6 bg-gray-200 rounded">
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <div class="flex">└ 희망 대여일</div>
+                                                <div id="id_start_date_in_cart"
+                                                     class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                                </div>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <div class="flex">└ 희망 반납일</div>
+                                                <div id="id_end_date_in_cart"
+                                                     class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="flex justify-between items-center">
-                                            <div class="flex">└ 희망 반납일</div>
-                                            <div id="id_end_date_in_cart"
-                                                 class="animate-pulse pulse-on mt-0.5 h-4 w-24 bg-gray-200 rounded">
+                                        <div class="flex justify-between items-center pt-4">
+                                            <div class="flex">총 수량</div>
+                                            <div class="flex font-semibold text-right">
+                                                <span class="class-total-quantity">0</span>개
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex justify-between items-center pt-4">
-                                        <div class="flex">총 수량</div>
-                                        <div class="flex font-semibold text-right">
-                                            <span class="class-total-quantity">0</span>개
+                                    <fieldset>
+                                        <legend class="text-sm font-medium leading-6 text-gray-900">프로젝트</legend>
+                                        <div id="id_found_project_list" class="mt-2 grid gap-4">
+                                            <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                                <div class="flex flex-1 justify-center">
+                                                    <span id="id_found_project_list_help"
+                                                          class="text-sm text-center text-gray-500">선택 가능한 프로젝트를 찾고 있어요.</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <label for="id_project" hidden>프로젝트</label>
+                                        <input id="id_project"
+                                               class="class-second alt-radio"
+                                               type="text"
+                                               value=""
+                                               required
+                                               hidden>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend class="text-sm font-medium leading-6 text-gray-900">희망 대여시각</legend>
+                                        <div id="id_start_time_list"
+                                             class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
+                                            <div class="relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                                <div class="flex flex-1 justify-center">
+                                                    <span id="id_start_time_list_help"
+                                                          class="text-sm text-center text-gray-500">선택 가능한 대여시각을 찾고 있어요.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label for="id_start_time" hidden>희망 대여시각</label>
+                                        <input id="id_start_time"
+                                               class="class-second alt-radio"
+                                               type="text"
+                                               value=""
+                                               required
+                                               hidden>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_start_time_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_start_time_error"
+                                           hidden></p>
+                                    </fieldset>
+                                    <fieldset>
+                                        <legend class="text-sm font-medium leading-6 text-gray-900">희망 반납시각</legend>
+                                        <div id="id_end_time_list"
+                                             class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
+                                            <div class="relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                                <div class="flex flex-1 justify-center">
+                                                    <span id="id_end_time_list_help" class="text-sm text-center text-gray-500">선택 가능한 반납시각을 찾고 있어요.</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label for="id_end_time" hidden>희망 반납시각</label>
+                                        <input id="id_end_time"
+                                               class="class-second alt-radio"
+                                               type="text"
+                                               value=""
+                                               required
+                                               hidden>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_end_time_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600" id="id_end_time_error" hidden></p>
+                                    </fieldset>
                                 </div>
-                                <fieldset>
-                                    <legend class="text-sm font-medium leading-6 text-gray-900">프로젝트</legend>
-                                    <div id="id_found_project_list" class="mt-2 grid gap-4">
-                                        <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
-                                            <div class="flex flex-1 justify-center">
-                                                <span id="id_found_project_list_help"
-                                                      class="text-sm text-center text-gray-500">선택 가능한 프로젝트를 찾고 있어요.</span>
+                                <div class="border-t border-gray-100 mt-5 z-50 w-[512px] -ml-6"></div>
+                                <div class="space-y-5">
+                                    <div class="flex rounded-md bg-gray-50 p-4">
+                                        <div>
+                                            <h3 class="text-sm font-semibold text-gray-800">
+                                                <!-- <span class="class-keyword">예약하기</span> 전 꼭 읽어주세요. -->
+                                                기자재 사용 신청을 위한 서약
+                                            </h3>
+                                            <div class="mt-2 text-sm text-gray-700 space-y-2">
+                                                <p>본인은 다음 사항을 숙지하고 있습니다.</p>
+                                                <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    <li>디닷에프는 디닷에프의 시설사용 서비스를 통하여 실제로 학과 시설을 사용한 회원의 학번을 영구 보유하며 해당 회원의 파기 요청 접수 시 또는 운영진 판단 하 보유 필요성 부재 시 파기함.</li>
+                                                    <li>기자재 예약 및 취소에 대한 권한과 책임은 연출, 촬영, 동시녹음 담당에게 있음.</li>
+                                                    <li>대여 시 촬영, 동시녹음 담당이 기자재를 직접 점검해야 함.</li>
+                                                    <li>촬영, 동시녹음 담당의 기자재 취급 및 운용 역량이 부족할 경우 대여가 거부될 수 있음.</li>
+                                                    <li>대여 목적 및 기간을 준수하지 않을 경우 불이익이 발생할 수 있음.</li>
+                                                </ul>
+                                                <p>상기 내용은 사실과 다름이 없으며 허위 내용이 포함된 경우 관련 규정에 의거한 처분 및 그 외 모든 조치에 대해 이의를 제기하지 않을 것을 서약합니다.</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <label for="id_project" hidden>프로젝트</label>
-                                    <input id="id_project"
-                                           class="class-second alt-radio"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
-                                </fieldset>
-                                <fieldset>
-                                    <legend class="text-sm font-medium leading-6 text-gray-900">희망 대여시각</legend>
-                                    <div id="id_start_time_list"
-                                         class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
-                                         <div class="relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
-                                            <div class="flex flex-1 justify-center">
-                                                <span id="id_start_time_list_help"
-                                                      class="text-sm text-center text-gray-500">선택 가능한 대여시각을 찾고 있어요.</span>
+                                    <div>
+                                        <div class="flex justify-between items-center">
+                                            <label id="id_signature_canvas_label"
+                                                   class="block text-sm font-medium leading-6 text-gray-900"
+                                                   for="id_signature_canvas">서명</label>
+                                            <div id="id_clear_signature_canvas"
+                                                 class="text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                                                 tabindex="0"
+                                                 hidden>
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     stroke-width="1.5"
+                                                     stroke="currentColor"
+                                                     class="w-4 h-4"
+                                                     aria-hidden="true">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                                </svg>
+                                                <span class="sr-only">서명 초기화</span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <label for="id_start_time" hidden>희망 대여시각</label>
-                                    <input id="id_start_time"
-                                           class="class-second alt-radio"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_start_time_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600"
-                                       id="id_start_time_error"
-                                       hidden></p>
-                                </fieldset>
-                                <fieldset>
-                                    <legend class="text-sm font-medium leading-6 text-gray-900">희망 반납시각</legend>
-                                    <div id="id_end_time_list"
-                                         class="mt-2 grid gap-4 max-[370px]:grid-cols-2 max-[480px]:grid-cols-3 min-[480px]:grid-cols-4">
-                                         <div class="relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
-                                            <div class="flex flex-1 justify-center">
-                                                <span id="id_end_time_list_help"
-                                                      class="text-sm text-center text-gray-500">선택 가능한 반납시각을 찾고 있어요.</span>
-                                            </div>
+                                        <div class="aspect-w-16 aspect-h-9 mt-2">
+                                            <canvas id="id_signature_canvas"
+                                                    class="rounded-md shadow w-full h-full df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset"
+                                                    aria-labelledby="id_signature_canvas_label"
+                                                    tabindex="0"></canvas>
                                         </div>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_signature_canvas_help">서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.</p>
                                     </div>
-                                    <label for="id_end_time" hidden>희망 반납시각</label>
-                                    <input id="id_end_time"
-                                           class="class-second alt-radio"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden>
-                                    <p class="mt-2 text-sm text-gray-500" id="id_end_time_descr" hidden></p>
-                                    <p class="mt-2 text-sm text-flamingo-600" id="id_end_time_error" hidden></p>
-                                </fieldset>
-                                <div class="flex rounded-md shadow bg-flamingo-50 p-4">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 text-flamingo-400"
-                                             xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 20 20"
-                                             fill="currentColor"
-                                             aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-flamingo-800">
-                                            <span class="class-keyword">예약하기</span> 전 꼭 읽어주세요.
-                                        </h3>
-                                        <div class="mt-2 text-sm text-flamingo-700">
-                                            <ul role="list" class="list-disc space-y-1 pl-5">
-                                                <li>기자재 예약 및 취소 권한은 연출, 촬영, 동시녹음 담당에게 있어요.</li>
-                                                <li>대여 시 촬영, 동시녹음 담당이 기자재를 직접 점검해야 해요.</li>
-                                                <li>촬영, 동시녹음 담당의 기자재 취급 및 운용 역량이 부족할 경우 대여가 거절될 수 있어요.</li>
-                                                <li>대여 목적 및 기간을 준수하지 않을 경우 불이익이 발생할 수 있어요.</li>
-                                                <li>안정적인 서비스 제공을 위해 운영진은 {{ user.metadata.name }}님의 기자재 예약 및 취소 내역을 조회할 수 있어요.</li>
-                                            </ul>
+                                    <div class="flex rounded-md shadow bg-flamingo-50 p-4">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-flamingo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-flamingo-800">
+                                                <span class="class-keyword">예약하기</span> 전 꼭 읽어주세요.
+                                            </h3>
+                                            <div class="mt-2 text-sm text-flamingo-700">
+                                                <ul role="list" class="list-disc space-y-1 pl-5">
+                                                    <li>본 예약은 기자재 사용 가능을 의미하지 않으며 운영진 확인 후 예약 확정 여부가 결정돼요.</li>
+                                                    <li>예약 확정 여부는 문자 메시지와 이메일로 안내돼요.</li>
+                                                    <li>안정적인 서비스 제공을 위해 운영진은 본 프로젝트의 기자재 예약 및 취소 내역을 조회할 수 있어요.</li>
+                                                    <li>하단의 '<span class="class-keyword">예약하기</span>' 버튼 클릭 시 서명체 판별, 신청서 작성 및 제출이 진행돼요.</li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -446,7 +494,7 @@
                                 <div class="relative flex flex-grow items-stretch">
                                     <input type="text"
                                            id="id_url"
-                                           class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 text-sm leading-6 focus:df-focus-ring-inset focus:z-10"
+                                           class="block w-full rounded-none rounded-l-md py-1.5 text-gray-900 df-ring-inset-gray placeholder:text-gray-400 text-sm leading-6 hover:bg-gray-50 focus:df-focus-ring-inset focus:z-10"
                                            placeholder="https://dongguk.film/equipment/..."
                                            value="https://dongguk.film/equipment/{{ collection.collection_id }}"
                                            readonly>

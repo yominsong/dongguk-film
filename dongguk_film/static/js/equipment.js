@@ -36,7 +36,9 @@ const id_requested_quantity = document.getElementById("id_requested_quantity");
 let class_firsts = document.querySelectorAll(".class-first");
 
 // boolean
-let is_quantity_button_updated = false;
+let isQuantityButtonUpdated = false;
+let isSignatureCanvasReady = false;
+let isSignaturePlaceholderCleared = false;
 
 // miscellaneous
 const data_purpose = id_purpose.dataset;
@@ -127,6 +129,53 @@ function escapeHtml(unsafe) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function getKoreanCharacterCount(str) {
+    const length = str.length;
+
+    switch (length) {
+        case 1:
+            return "한";
+        case 2:
+            return "두";
+        case 3:
+            return "세";
+        case 4:
+            return "네";
+        case 5:
+            return "다섯";
+        case 6:
+            return "여섯";
+        case 7:
+            return "일곱";
+        case 8:
+            return "여덟";
+        case 9:
+            return "아홉";
+        case 10:
+            return "열";
+        case 11:
+            return "열한";
+        case 12:
+            return "열두";
+        case 13:
+            return "열세";
+        case 14:
+            return "열네";
+        case 15:
+            return "열다섯";
+        case 16:
+            return "열여섯";
+        case 17:
+            return "열일곱";
+        case 18:
+            return "열여덟";
+        case 19:
+            return "열아홉";
+        default:
+            return `${length}`;
+    };
 }
 
 function executeWhenUserGoesToSelectPurpose() {
@@ -538,7 +587,7 @@ function initFoundProjectList(resResult = null) {
         if (id_project.value === project.value) {
             project.click();
         };
-        
+
         const label = project.closest("label");
         const svg = label.querySelector("svg");
 
@@ -647,7 +696,7 @@ function initFoundHourList(resResult) {
 
             if (available === true) {
                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
-            
+
                 newlyFoundHourElement.innerHTML = `
                     <input id="${targetId.id}_${time}"
                             name="${targetId.id}"
@@ -675,7 +724,7 @@ function initFoundHourList(resResult) {
 
                 newlyFoundHourElement.innerHTML = `
                     <span class="flex flex-1">
-                        <span class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
+                        <span class="block whitespace-pre-line text-sm font-medium text-gray-600">${time} 마감</span>
                     </span>
                 `;
             };
@@ -688,57 +737,57 @@ function initFoundHourList(resResult) {
 
         [class_start_times, class_end_times].forEach((class_times, index) => {
             const targetId = index === 0 ? id_start_time : id_end_time;
-            
+
             class_times.forEach((time) => {
                 if (targetId.value === time.value) {
                     time.click();
                 };
-                
+
                 const label = time.closest("label");
                 const svg = label.querySelector("svg");
-        
+
                 time.addEventListener("click", () => {
                     if (time.id.indexOf("time") !== -1) {
                         targetId.value = time.value;
                     };
                 });
-        
+
                 time.addEventListener("focus", () => {
                     label.classList.add("df-focus-ring-inset");
                     svg.classList.remove("invisible");
                 });
-        
+
                 time.addEventListener("blur", () => {
                     if (!time.checked) {
                         svg.classList.add("invisible");
                     } else if (time.checked) {
                         label.classList.add("df-ring-inset-flamingo");
                     };
-        
+
                     label.classList.remove("df-focus-ring-inset");
                 });
-        
+
                 time.addEventListener("change", () => {
                     const otherInputs = [...class_times].filter(i => i !== time);
-        
+
                     if (time.checked) {
                         label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
                         svg.classList.remove("invisible");
                     } else {
                         svg.classList.add("invisible");
                     };
-        
+
                     otherInputs.forEach(i => {
                         const otherLabel = i.closest("label");
                         const otherSvg = otherLabel.querySelector("svg");
-        
+
                         if (!i.checked) {
                             otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
                             otherSvg.classList.add("invisible");
                         };
                     });
                 });
-        
+
                 if (!time.checked) {
                     label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
                     svg.classList.add("invisible");
@@ -748,6 +797,143 @@ function initFoundHourList(resResult) {
             });
         });
     });
+}
+
+function initSignatureCanvas() {
+    if (isSignatureCanvasReady === true) return;
+
+    const id_signature_canvas = document.getElementById("id_signature_canvas");
+    const id_clear_signature_canvas = code("id_clear_", id_signature_canvas);
+    const ctx = id_signature_canvas.getContext("2d");
+    let isDrawing = false;
+    let lastPoint = null;
+
+    id_signature_canvas.width = id_signature_canvas.offsetWidth;
+    id_signature_canvas.height = id_signature_canvas.offsetHeight;
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    function drawPlaceholder() {
+        ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
+        ctx.font = "1rem 'Noto Sans KR'";
+        ctx.fillStyle = "rgb(156 163 175)";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const lineHeight = 20;
+        const middleY = id_signature_canvas.height / 2;
+
+        if (userName.length > 10) {
+            const line1Y = middleY - lineHeight * 1.5;
+            const line2Y = middleY - lineHeight * 0.5;
+            const line3Y = middleY + lineHeight * 0.5;
+            const line4Y = middleY + lineHeight * 1.5;
+
+            ctx.fillText(`${userName}님의`, id_signature_canvas.width / 2, line1Y);
+            ctx.fillText(`성명 ${getKoreanCharacterCount(userName)} 글자를`, id_signature_canvas.width / 2, line2Y);
+            ctx.fillText("제3자가 알아볼 수 있도록", id_signature_canvas.width / 2, line3Y);
+            ctx.fillText("정자체로 쓰세요.", id_signature_canvas.width / 2, line4Y);
+        } else {
+            const line1Y = middleY - lineHeight;
+            const line2Y = middleY;
+            const line3Y = middleY + lineHeight;
+
+            ctx.fillText(`${userName}님의 성명 ${getKoreanCharacterCount(userName)} 글자를`, id_signature_canvas.width / 2, line1Y);
+            ctx.fillText("제3자가 알아볼 수 있도록", id_signature_canvas.width / 2, line2Y);
+            ctx.fillText("정자체로 쓰세요.", id_signature_canvas.width / 2, line3Y);
+        };
+    }
+
+    function startDrawing(e) {
+        if (!isSignaturePlaceholderCleared) {
+            ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
+            isSignaturePlaceholderCleared = true;
+        };
+
+        isDrawing = true;
+
+        const { offsetX, offsetY } = getEventPosition(e);
+
+        lastPoint = { x: offsetX, y: offsetY };
+        ctx.beginPath();
+        ctx.moveTo(offsetX, offsetY);
+        id_clear_signature_canvas.hidden = false;
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+
+        const { offsetX, offsetY } = getEventPosition(e);
+
+        ctx.beginPath();
+        ctx.moveTo(lastPoint.x, lastPoint.y);
+        ctx.lineTo(offsetX, offsetY);
+        ctx.stroke();
+        lastPoint = { x: offsetX, y: offsetY };
+        id_clear_signature_canvas.hidden = false;
+    }
+
+    function stopDrawing() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        ctx.closePath();
+        id_clear_signature_canvas.hidden = false;
+    }
+
+    function getEventPosition(e) {
+        if (e.touches) {
+            const rect = id_signature_canvas.getBoundingClientRect();
+            
+            return {
+                offsetX: e.touches[0].clientX - rect.left,
+                offsetY: e.touches[0].clientY - rect.top
+            };
+        } else {
+            return {
+                offsetX: e.offsetX,
+                offsetY: e.offsetY
+            };
+        }
+    }
+
+    id_signature_canvas.onmousedown = startDrawing;
+    id_signature_canvas.onmousemove = draw;
+    id_signature_canvas.onmouseup = stopDrawing;
+    id_signature_canvas.onmouseleave = stopDrawing;
+
+    id_signature_canvas.ontouchstart = function (e) {
+        e.preventDefault();
+        id_clear_signature_canvas.hidden = false;
+        startDrawing(e);
+    };
+
+    id_signature_canvas.ontouchmove = function (e) {
+        e.preventDefault();
+        id_clear_signature_canvas.hidden = false;
+        draw(e);
+    };
+
+    id_signature_canvas.ontouchend = function (e) {
+        e.preventDefault();
+        id_clear_signature_canvas.hidden = false;
+        stopDrawing();
+    };
+
+    ["click", "keyup"].forEach(type => {
+        id_clear_signature_canvas.addEventListener(type, event => {
+            if (type === "click" || event.key === "Enter" || event.key === " ") {
+                ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
+                id_clear_signature_canvas.hidden = true;
+                isSignaturePlaceholderCleared = false;
+                drawPlaceholder();
+            };
+        });
+    });
+
+    drawPlaceholder();
+    isSignatureCanvasReady = true;
 }
 
 function initForm() {
@@ -869,7 +1055,7 @@ function updateForm(action, datasetObj = null) {
         });
 
         initForm();
-        
+
         id_filter_or_checkout_text.innerText = "적용하기";
         id_filter_or_checkout.classList.replace("hidden", "inline-flex");
     }
@@ -1015,6 +1201,14 @@ function updateForm(action, datasetObj = null) {
             element.className = "flex font-semibold text-right";
         });
 
+        if (isSignatureCanvasReady === false) {
+            initSignatureCanvas();
+        } else {
+            const id_clear_signature_canvas = document.getElementById("id_clear_signature_canvas");
+
+            id_clear_signature_canvas.click();
+        };
+        
         id_filter_or_checkout.classList.remove("class-checkout");
     }
 
@@ -1172,13 +1366,17 @@ function initDetail() {
 
     updateButtons();
 
-    if (is_quantity_button_updated) return;
+    if (isQuantityButtonUpdated) return;
 
     id_requested_quantity.addEventListener("input", () => {
         if (document.activeElement !== id_requested_quantity) return;
 
         if (id_requested_quantity.value === "0") {
             id_requested_quantity.value = "1";
+        };
+
+        if (id_requested_quantity.value.length > 2) {
+            id_requested_quantity.value = id_requested_quantity.value.slice(0, 2);
         };
 
         updateButtons();
@@ -1210,7 +1408,7 @@ function initDetail() {
         updateButtons();
     });
 
-    is_quantity_button_updated = true;
+    isQuantityButtonUpdated = true;
 }
 
 initDetail();
