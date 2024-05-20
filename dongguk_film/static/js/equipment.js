@@ -20,6 +20,9 @@ const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
 const id_project = document.getElementById("id_project");
 const id_start_time = document.getElementById("id_start_time");
 const id_end_time = document.getElementById("id_end_time");
+const id_signature_canvas = document.getElementById("id_signature_canvas");
+const id_clear_signature_canvas = code("id_clear_", id_signature_canvas);
+const id_signature_canvas_error = code(id_signature_canvas, "_error");
 const id_filter_or_checkout = document.getElementById("id_filter_or_checkout");
 const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
 const id_url = document.getElementById("id_url");
@@ -40,11 +43,12 @@ let class_firsts = document.querySelectorAll(".class-first");
 let isQuantityButtonUpdated = false;
 let isSignatureCanvasReady = false;
 let isSignaturePlaceholderCleared = false;
+let isSignatureCanvasDisabled = false;
+let isSignatureDrawn = false;
 
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
-const id_user_name = document.getElementById("id_user_name").innerText;
 
 //
 // Sub functions
@@ -178,6 +182,53 @@ function getKoreanCharacterCount(str) {
         default:
             return `${length}`;
     };
+}
+
+function displayErrorInSignatureCanvas(bool, errorType = null) {
+    if (bool) {
+        if (errorType === "empty") {
+            id_signature_canvas_error.innerText = "기자재 사용 신청을 위해 서약해주세요.";
+        };
+
+        id_signature_canvas_error.hidden = false;
+        id_signature_canvas.classList.replace("df-ring-inset-gray", "ring-transparent");
+        id_signature_canvas.classList.add("bg-flamingo-50");
+        id_signature_canvas.classList.add("hover:df-ring-inset-gray");
+    } else {
+        id_signature_canvas_error.innerText = null;
+        id_signature_canvas_error.hidden = true;
+        id_signature_canvas.classList.replace("ring-transparent", "df-ring-inset-gray");
+        id_signature_canvas.classList.remove("bg-flamingo-50");
+        id_signature_canvas.classList.remove("hover:df-ring-inset-gray");
+    };
+}
+
+function controlErrorInSignatureCanvas() {
+    if (isSignatureDrawn === false) {
+        displayErrorInSignatureCanvas(true, "empty");
+    } else {
+        return false;
+    };
+}
+
+function validateSignatureCanvas() {
+    ["click", "touchstart"].forEach(type => {
+        id_signature_canvas.addEventListener(type, () => {
+            displayErrorInSignatureCanvas(false);
+        });
+    });
+
+    id_signature_canvas.addEventListener("focusout", () => {
+        controlErrorInSignatureCanvas();
+    });
+
+    id_signature_canvas.addEventListener("focusin", () => {
+        displayErrorInSignatureCanvas(false);
+    });
+}
+
+function initSignatureCanvasValidation() {
+    validateSignatureCanvas();
 }
 
 function executeWhenUserGoesToSelectPurpose() {
@@ -813,14 +864,10 @@ function initFoundHourList(resResult) {
 function initSignatureCanvas() {
     if (isSignatureCanvasReady === true) return;
 
-    const id_signature_canvas = document.getElementById("id_signature_canvas");
-    const id_clear_signature_canvas = document.getElementById("id_clear_signature_canvas");
     const ctx = id_signature_canvas.getContext("2d");
     let isDrawing = false;
     let lastPoint = null;
-    let isSignaturePlaceholderCleared = false;
     let points = [];
-    let isCanvasDisabled = false;
 
     function setCanvasSize() {
         const dpr = window.devicePixelRatio || 1;
@@ -853,17 +900,17 @@ function initSignatureCanvas() {
         const lineHeight = fontSize * 1.25;
         const middleY = rect.height / 2;
 
-        if (isCanvasDisabled) {
+        if (isSignatureCanvasDisabled) {
             ctx.fillText("새로고침 후 다시 시도해주세요.", rect.width / 2, middleY);
         } else {
-            if (id_user_name.length > 5) {
+            if (userName.length > 5) {
                 const line1Y = middleY - lineHeight * 1.5;
                 const line2Y = middleY - lineHeight * 0.5;
                 const line3Y = middleY + lineHeight * 0.5;
                 const line4Y = middleY + lineHeight * 1.5;
 
-                ctx.fillText(`${id_user_name}님의`, rect.width / 2, line1Y);
-                ctx.fillText(`성명 첫 다섯 글자 '${id_user_name.slice(0, 5)}'${matchJosa(id_user_name[4], "을를", "OJS")}`, rect.width / 2, line2Y);
+                ctx.fillText(`${userName}님의`, rect.width / 2, line1Y);
+                ctx.fillText(`성명 첫 다섯 글자 '${userName.slice(0, 5)}'${matchJosa(userName[4], "을를", "OJS")}`, rect.width / 2, line2Y);
                 ctx.fillText("제3자가 알아볼 수 있도록", rect.width / 2, line3Y);
                 ctx.fillText("정자체로 써주세요.", rect.width / 2, line4Y);
             } else {
@@ -871,22 +918,23 @@ function initSignatureCanvas() {
                 const line2Y = middleY;
                 const line3Y = middleY + lineHeight;
 
-                ctx.fillText(`${id_user_name}님의 성명 ${getKoreanCharacterCount(id_user_name)} 글자를`, rect.width / 2, line1Y);
+                ctx.fillText(`${userName}님의 성명 ${getKoreanCharacterCount(userName)} 글자를`, rect.width / 2, line1Y);
                 ctx.fillText("제3자가 알아볼 수 있도록", rect.width / 2, line2Y);
                 ctx.fillText("정자체로 써주세요.", rect.width / 2, line3Y);
-            }
-        }
+            };
+        };
     }
 
     function startDrawing(e) {
-        if (isCanvasDisabled) return;
+        if (isSignatureCanvasDisabled) return;
 
         if (!isSignaturePlaceholderCleared) {
             ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
             isSignaturePlaceholderCleared = true;
-        }
+        };
 
         isDrawing = true;
+        isSignatureDrawn = true;
         adjustLineWidth();
         points = [];
 
@@ -899,8 +947,9 @@ function initSignatureCanvas() {
         id_clear_signature_canvas.hidden = false;
     }
 
+
     function draw(e) {
-        if (!isDrawing || isCanvasDisabled) return;
+        if (!isDrawing || isSignatureCanvasDisabled) return;
 
         const { offsetX, offsetY } = getEventPosition(e);
         const point = { x: offsetX, y: offsetY };
@@ -918,14 +967,14 @@ function initSignatureCanvas() {
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(cp.x, cp.y);
-        }
+        };
 
         lastPoint = point;
         id_clear_signature_canvas.hidden = false;
     }
 
     function stopDrawing() {
-        if (!isDrawing || isCanvasDisabled) return;
+        if (!isDrawing || isSignatureCanvasDisabled) return;
         isDrawing = false;
         ctx.closePath();
         points = [];
@@ -945,11 +994,11 @@ function initSignatureCanvas() {
                 offsetX: e.offsetX,
                 offsetY: e.offsetY
             };
-        }
+        };
     }
 
     function downloadSignature() {
-        if (isCanvasDisabled) return;
+        if (isSignatureCanvasDisabled) return;
 
         const downloadCanvas = document.createElement("canvas");
         const downloadCtx = downloadCanvas.getContext("2d");
@@ -975,19 +1024,16 @@ function initSignatureCanvas() {
 
     id_signature_canvas.ontouchstart = function (e) {
         e.preventDefault();
-        id_clear_signature_canvas.hidden = false;
         startDrawing(e);
     };
 
     id_signature_canvas.ontouchmove = function (e) {
         e.preventDefault();
-        id_clear_signature_canvas.hidden = false;
         draw(e);
     };
 
     id_signature_canvas.ontouchend = function (e) {
         e.preventDefault();
-        id_clear_signature_canvas.hidden = false;
         stopDrawing();
     };
 
@@ -997,16 +1043,18 @@ function initSignatureCanvas() {
                 ctx.clearRect(0, 0, id_signature_canvas.width, id_signature_canvas.height);
                 id_clear_signature_canvas.hidden = true;
                 isSignaturePlaceholderCleared = false;
+                isSignatureDrawn = false;
                 drawPlaceholder();
-            }
+            };
         });
     });
 
     drawPlaceholder();
 
     window.addEventListener("resize", () => {
-        isCanvasDisabled = true;
+        isSignatureCanvasDisabled = true;
         drawPlaceholder();
+        id_clear_signature_canvas.click();
         id_clear_signature_canvas.hidden = true;
         id_signature_canvas.classList.add("cursor-not-allowed");
         id_signature_canvas.classList.remove("hover:bg-gray-50");
@@ -1015,7 +1063,6 @@ function initSignatureCanvas() {
 
     isSignatureCanvasReady = true;
 }
-
 
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
@@ -1283,21 +1330,17 @@ function updateForm(action, datasetObj = null) {
 
         if (isSignatureCanvasReady === false) {
             initSignatureCanvas();
-        } else {
-            const id_clear_signature_canvas = document.getElementById("id_clear_signature_canvas");
-
-            id_clear_signature_canvas.click();
         };
 
         const id_signature_canvas_help = document.getElementById("id_signature_canvas_help");
 
-        if (id_user_name.length >= 5) {
-            id_signature_canvas_help.innerText = `${id_user_name}님의 성명 첫 다섯 글자 '${id_user_name.slice(0, 5)}'${matchJosa(id_user_name[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
+        if (userName.length >= 5) {
+            id_signature_canvas_help.innerText = `${userName}님의 성명 첫 다섯 글자 '${userName.slice(0, 5)}'${matchJosa(userName[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
         } else {
             id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.";
         };
-    
-        id_filter_or_checkout.classList.remove("class-checkout");
+
+        // id_filter_or_checkout.classList.remove("class-checkout");
     }
 
     // Middle action: share
@@ -1731,6 +1774,7 @@ function initRequest() {
         ["click", "keyup"].forEach(type => {
             id_filter_or_checkout.addEventListener(type, event => {
                 const targetTagName = event.target.tagName;
+                const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
@@ -1738,9 +1782,6 @@ function initRequest() {
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
-
-                        const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
-
                         id_filter_or_checkout_spin.classList.remove("hidden");
                     } else if (id_filter_or_checkout_text.innerText.trim() === "예약하기") {
                         if (!isAuthenticated()) {
@@ -1750,13 +1791,26 @@ function initRequest() {
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
                         } else if (id_modal_checkout.hidden) {
+                            // Remove the previous error message of 'class_seconds' if it exists
+                            inputs.forEach((input) => {
+                                displayError(false, input);
+                            });
+                        
+                            displayErrorInSignatureCanvas(false);
                             requestFindProject();
                             requestFindHour();
-
-                            // const class_seconds = document.querySelectorAll(".class-second");
-
-                            // initValidation(class_seconds, id_filter_or_checkout);
-                        } else if (id_modal_checkout.hidden === false && !isItOkayToSubmitForm()) {
+                            // Vaildation for class_seconds is handled by initFoundProjectList() and initFoundHourList()
+                            initSignatureCanvasValidation();
+                        } else if (id_modal_checkout.hidden === false) {
+                            if (isItOkayToSubmitForm() && isSignatureDrawn) {
+                                console.log("UNDER CONSTRUCTION");
+                                freezeForm(true);
+                                displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
+                                displayButtonMsg(false, id_filter_or_checkout, "error");
+                                id_filter_or_checkout_spin.classList.remove("hidden");
+                            } else if (!isSignatureDrawn) {
+                                controlErrorInSignatureCanvas();
+                            };
                         };
                     } else {
                         inputs.forEach((input) => {
