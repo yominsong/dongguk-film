@@ -571,7 +571,14 @@ function controlError(input) {
             displayError(true, input, "insufficient");
         } else if (!validateDate(input)) {
             displayError(true, input, "invalid");
-        } else if (id_production_end_date.getAttribute("min") !== null && id_production_end_date.getAttribute("max") !== null) {
+        // } else if (location.pathname.indexOf("production") !== -1) {
+        //     if (id_production_end_date.getAttribute("min") !== null && id_production_end_date.getAttribute("max") !== null) {
+        //         if (Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
+        //             Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, ""))) {
+        //             displayError(true, input, "out of range");
+        //         };
+        //     };
+        } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null) {
             if (Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
                 Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, ""))) {
                 displayError(true, input, "out of range");
