@@ -572,8 +572,9 @@ function controlError(input) {
         } else if (!validateDate(input)) {
             displayError(true, input, "invalid");
         // } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null) {
-        } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null && Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
-            Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, ""))) {
+        } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null &&
+            (Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
+            Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, "")))) {
             displayError(true, input, "out of range");
         } else {
             return false;
