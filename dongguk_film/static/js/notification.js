@@ -17,6 +17,7 @@ function editXDate(notiType, bool) {
 /**
  * @param {boolean} bool Show/hide the notification
  * @param {string} notiType Notification type
+ * - `WIP`: Work In Progress
  * - `RLP`: Request Location Permission
  * - `RRL`: Request to Reload Location
  * - `CWF`: Complete Weather Fetch
@@ -153,8 +154,15 @@ function displayNoti(bool, notiType, param = null) {
         </svg>
         `;
 
+        // all
+        if (notiType === "WIP") {
+            notiIcon = infoIcon;
+            notiTitle = "잠시만 기다려주세요.";
+            notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
+        }
+
         // home
-        if (notiType === "RLP") {
+        else if (notiType === "RLP") {
             notiIcon = locationIcon;
             notiTitle = "지금 계신 지역의 날씨를 확인해보세요.";
             notiContent = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
@@ -279,7 +287,7 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = imageIcon;
             notiTitle = "이미지는 텍스트와 함께 사용해주세요.";
             notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'SDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         }
         
         else if (notiType === "EIS") {
