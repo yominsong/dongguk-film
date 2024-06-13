@@ -12,6 +12,10 @@ const onlySlugs = document.querySelectorAll(".only-slug");
 const labels = document.querySelectorAll("label");
 const class_calendars = document.querySelectorAll(".class-calendar");
 
+let originalClasses = {};
+let originalStyles = {};
+let originalParentClasses = {};
+let originalParentStyles = {};
 let spins = document.querySelectorAll(".animate-spin");
 let buttons = document.querySelectorAll("button");
 let inputs = [];
@@ -87,6 +91,10 @@ function findLabel(input) {
     return foundLabel;
 }
 
+function preventDefaultHandler(event) {
+    event.preventDefault();
+}
+
 function freezeForm(bool) {
     /*
      * bool: Freeze or Unfreeze active inputs and buttons
@@ -146,6 +154,90 @@ function freezeForm(bool) {
 
     buttons.forEach(button => {
         bool ? button.disabled = true : button.disabled = false;
+    });
+
+    const links = document.querySelectorAll("a");
+
+    links.forEach(link => {
+        const parentWithClassDownload = link.closest('.class-download');
+        const linkId = link.dataset.linkId || `link-${Math.random().toString(36).substr(2, 9)}`;
+
+        link.dataset.linkId = linkId;
+
+        if (bool) {
+            if (!originalClasses[linkId]) { originalClasses[linkId] = Array.from(link.classList) };
+            if (!originalStyles[linkId]) { originalStyles[linkId] = link.getAttribute("style") || "" };
+
+            const focusHoverClasses = Array.from(link.classList).filter(cls => cls.startsWith("hover:") || cls.startsWith("focus:"));
+
+            focusHoverClasses.forEach(cls => { link.classList.remove(cls) });
+            link.addEventListener("click", preventDefaultHandler);
+            link.classList.add("cursor-not-allowed", "outline-none", "pointer-events-none");
+            link.setAttribute("tabindex", "-1");
+            link.blur();
+
+            if (!link.querySelector(`span[data-blocker-id="${linkId}"]`)) {
+                const span = document.createElement("span");
+                span.classList.add("absolute", "inset-0", "bg-transparent", "pointer-events-auto", "cursor-not-allowed");
+                span.dataset.blockerId = linkId;
+                link.style.position = "relative";
+                link.appendChild(span);
+            };
+
+            if (parentWithClassDownload) {
+                const parentId = parentWithClassDownload.dataset.parentId || `parent-${Math.random().toString(36).substr(2, 9)}`;
+
+                parentWithClassDownload.dataset.parentId = parentId;
+
+                if (!originalParentClasses[parentId]) {
+                    originalParentClasses[parentId] = Array.from(parentWithClassDownload.classList);
+                };
+
+                if (!originalParentStyles[parentId]) {
+                    originalParentStyles[parentId] = parentWithClassDownload.getAttribute("style") || "";
+                };
+
+                parentWithClassDownload.classList.add("cursor-not-allowed");
+
+                const parentHoverClasses = Array.from(parentWithClassDownload.classList).filter(cls => cls.startsWith("hover:"));
+
+                parentHoverClasses.forEach(cls => {
+                    parentWithClassDownload.classList.remove(cls);
+                });
+
+                parentWithClassDownload.addEventListener("click", preventDefaultHandler);
+            };
+        } else {
+            if (originalClasses[linkId]) {
+                link.className = originalClasses[linkId].join(" ");
+                delete originalClasses[linkId];
+                link.removeEventListener("click", preventDefaultHandler);
+
+                const span = link.querySelector(`span[data-blocker-id="${linkId}"]`);
+
+                if (span) { span.remove() };
+                link.classList.remove("pointer-events-none");
+                link.removeAttribute("tabindex");
+                link.setAttribute("style", originalStyles[linkId]);
+                delete originalStyles[linkId];
+            };
+
+            if (parentWithClassDownload) {
+                const parentId = parentWithClassDownload.dataset.parentId;
+
+                if (originalParentClasses[parentId]) {
+                    parentWithClassDownload.className = originalParentClasses[parentId].join(" ");
+                    delete originalParentClasses[parentId];
+                };
+
+                if (originalParentStyles[parentId]) {
+                    parentWithClassDownload.setAttribute("style", originalParentStyles[parentId]);
+                    delete originalParentStyles[parentId];
+                };
+
+                parentWithClassDownload.removeEventListener("click", preventDefaultHandler);
+            };
+        };
     });
 }
 
