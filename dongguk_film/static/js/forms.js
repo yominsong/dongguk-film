@@ -101,11 +101,7 @@ function freezeForm(bool) {
      */
 
     inputs.forEach(input => {
-        if (input.type === "text") {
-            bool ? input.readOnly = true : input.readOnly = false;
-        } else if (input.type === "checkbox") {
-            bool ? input.disabled = true : input.disabled = false;
-        } else if (input.classList.contains("alt-calendar")) {
+        if (input.classList.contains("alt-calendar")) {
             const calendar = code(input.id + "_calendar");
 
             if (bool) {
@@ -135,8 +131,12 @@ function freezeForm(bool) {
 
                 bool ? class_radios.forEach(radio => { radio.disabled = true }) : class_radios.forEach(radio => { radio.disabled = false });
             });
+        } else if (input.type === "text") {
+            bool ? input.readOnly = true : input.readOnly = false;
         } else if (input.type === "textarea" && ckEditor) {
             bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
+        } else if (input.type === "checkbox") {
+            bool ? input.disabled = true : input.disabled = false;
         } else {
             bool ? input.readOnly = true : input.readOnly = false;
         };
