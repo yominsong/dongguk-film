@@ -221,3 +221,11 @@
 .ck-content .image img {
     border-radius: 0.375rem !important;
 }
+
+.ck-media__wrapper[data-oembed-url*="x.com"] .ck.ck-media__placeholder {
+    background: #14171a !important;
+}
+
+.ck-media__wrapper[data-oembed-url*="x.com"] .ck.ck-media__placeholder .ck-media__placeholder__icon {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSIxMjI3IiB2aWV3Qm94PSIwIDAgMTIwMCAxMjI3IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNzE0LjE2MyA1MTkuMjg0TDExNjAuODkgMEgxMDU1LjAzTDY2Ny4xMzcgNDUwLjg4N0wzNTcuMzI4IDBIMEw0NjguNDkyIDY4MS44MjFMMCAxMjI2LjM3SDEwNS44NjZMNTE1LjQ5MSA3NTAuMjE4TDg0Mi42NzIgMTIyNi4zN0gxMjAwTDcxNC4xMzcgNTE5LjI4NEg3MTQuMTYzWk01NjkuMTY1IDY4Ny44MjhMNTIxLjY5NyA2MTkuOTM0TDE0NC4wMTEgNzkuNjk0NEgzMDYuNjE1TDYxMS40MTIgNTE1LjY4NUw2NTguODggNTgzLjU3OUwxMDU1LjA4IDExNTAuM0g4OTIuNDc2TDU2OS4xNjUgNjg3Ljg1NFY2ODcuODI4WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==) !important;
+}

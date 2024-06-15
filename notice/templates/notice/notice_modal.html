@@ -1,5 +1,5 @@
 {% load static %}
-<div id="id_modal"
+<div id="id_modal_container"
      x-data="{ open: false }"
      @keydown.window.escape="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
      x-show="open"
@@ -26,7 +26,7 @@
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
-                 id="id_modal_base"
+                 id="id_modal"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button id="id_modal_close"
@@ -142,7 +142,7 @@
                                 <div>
                                     <label for="id_content"
                                            class="block text-sm font-medium leading-6 text-gray-900">내용</label>
-                                    <div class="mt-2 rounded-md shadow-sm" id="id_content_base">
+                                    <div class="mt-2 rounded-md shadow-sm" id="id_content_container">
                                         <textarea id="id_content" class="class-first" required></textarea>
                                     </div>
                                     <p class="mt-2 text-sm text-gray-500" id="id_content_descr" hidden></p>
@@ -154,13 +154,13 @@
                                     <input id="id_file" type="file" class="sr-only" tabindex="-1" multiple>
                                     <div class="relative rounded-md shadow-sm">
                                         <ul role="list"
-                                            id="id_drop_file"
+                                            id="id_receive_file"
                                             class="mt-2 divide-y divide-gray-100 overflow-hidden rounded-md">
                                             <li class="relative flex flex-col justify-between p-4">
                                                 <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
-                                                    <span class="class-count class-desktop hidden sm:block">파일을 이곳에 끌어다 놓으세요.</span>
-                                                    <span class="class-count class-mobile sm:hidden">파일을 첨부하세요.</span>
-                                                    <span class="class-measure text-xs">0.00MB/5MB</span>
+                                                    <span class="class-file-quantity class-desktop hidden sm:block">파일을 이곳에 끌어다 놓으세요.</span>
+                                                    <span class="class-file-quantity class-mobile sm:hidden">파일을 첨부하세요.</span>
+                                                    <span class="class-file-size text-xs">0.00MB/5MB</span>
                                                 </div>
                                             </li>
                                             <li id="id_attach_file"
@@ -384,7 +384,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span id="id_delete_text">삭제하기</span>
+                            <span id="id_delete_confirmation_text">삭제하기</span>
                         </button>
                     </div>
                 </div>

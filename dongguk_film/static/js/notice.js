@@ -3,8 +3,8 @@
 //
 
 // modal
+const id_modal_container = document.getElementById("id_modal_container");
 const id_modal = document.getElementById("id_modal");
-const id_modal_base = code(id_modal, "_base");
 const id_page_id = document.getElementById("id_page_id");
 const id_block_id_list = document.getElementById("id_block_id_list");
 const id_title = document.getElementById("id_title");
@@ -13,12 +13,12 @@ const id_category_serv = code(id_category, "_serv");
 const id_category_dept = code(id_category, "_dept");
 const id_content = document.getElementById("id_content");
 const id_file = document.getElementById("id_file");
-const id_drop_file = code("id_drop_", id_file);
+const id_receive_file = code("id_receive_", id_file);
 const id_attach_file = code("id_attach_", id_file);
 const id_keyword = document.getElementById("id_keyword");
 const id_create_or_update = document.getElementById("id_create_or_update");
 const id_delete = document.getElementById("id_delete");
-const id_delete_text = code(id_delete, "_text");
+const id_delete_confirmation_text = code(id_delete, "_confirmation_text");
 const id_url = document.getElementById("id_url");
 const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
@@ -29,15 +29,15 @@ const id_copy_url_descr = code(id_copy_url, "_descr");
 const id_detail = document.getElementById("id_detail");
 
 // classes
-const class_counts = document.querySelectorAll(".class-count");
-const class_measures = document.querySelectorAll(".class-measure");
+const class_file_quantities = document.querySelectorAll(".class-file-quantity");
+const class_file_sizes = document.querySelectorAll(".class-file-size");
 
 // boolean
 let isFocused = false;
 let isHovered = false;
 let isDragging = false;
-let isEventListenersAddedToFileForm = false;
-let isItDoubleChecked = false;
+let isAddedToFileForm = false;
+let isDoubleChecked = false;
 
 // miscellaneous
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
@@ -52,32 +52,20 @@ let doubleCheckTimer;
 
 function adjustModalWidth() {
     const id_list = document.getElementById("id_list");
-    const id_content_base = code(id_content, "_base");
-    let basisForWidth;
+    const id_content_container = code(id_content, "_container");
+    let widthBasis;
 
     if (id_list !== null) {  // notice.html
-        basisForWidth = id_list;
+        widthBasis = id_list;
     } else if (id_detail !== null) {  // notice_detail.html
-        basisForWidth = id_detail;
+        widthBasis = id_detail;
     };
 
-    if (id_modal_base !== null) {
-        id_modal_base.style.setProperty("width", basisForWidth.offsetWidth + "px", "important");
-        id_content_base.style.setProperty("width", basisForWidth.querySelector("div").offsetWidth + "px", "important");
-        id_drop_file.style.setProperty("width", basisForWidth.querySelector("div").offsetWidth + "px", "important");
+    if (id_modal !== null) {
+        id_modal.style.setProperty("width", widthBasis.offsetWidth + "px", "important");
+        id_content_container.style.setProperty("width", widthBasis.querySelector("div").offsetWidth + "px", "important");
+        id_receive_file.style.setProperty("width", widthBasis.querySelector("div").offsetWidth + "px", "important");
     };
-}
-
-function hasOnlyImages(htmlData) {
-    const hasImage = /<img\s+[^>]*src=["'][^"']*["'][^>]*>/gi.test(htmlData);
-    const textWithoutTags = htmlData.replaceAll("&nbsp;", "").replace(/<[^>]*>/g, "");
-    const hasText = /\S/.test(textWithoutTags);
-
-    if (hasImage && !hasText) {
-        return true;
-    };
-
-    return false;
 }
 
 function handleModalWidth(bool) {
@@ -85,7 +73,7 @@ function handleModalWidth(bool) {
         adjustModalWidth();
         window.addEventListener("resize", adjustModalWidth);
     } else if (!bool) {
-        id_modal_base.style = "display: none";
+        id_modal.style = "display: none";
         window.removeEventListener("resize", adjustModalWidth);
     };
 }
@@ -112,6 +100,15 @@ function adjustTextboxStyle(bool, type) {  // Adding and removing event listener
             textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
         };
     };
+}
+
+function hasOnlyImages(htmlData) {
+    const hasImage = /<img\s+[^>]*src=["'][^"']*["'][^>]*>/gi.test(htmlData);
+    const textWithoutTags = htmlData.replaceAll("&nbsp;", "").replace(/<[^>]*>/g, "");
+    const hasText = /\S/.test(textWithoutTags);
+
+    if (hasImage && !hasText) return true;
+    return false;
 }
 
 function executeWhenUserHasNoPermission() {
@@ -158,9 +155,9 @@ function initCkEditor() {
                 textboxViewRoot = ckEditor.editing.view.getDomRoot();
 
                 textboxModel.on("change:data", () => {
-                    let data = ckEditor.getData();
-                    let hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
-                    let hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
+                    const data = ckEditor.getData();
+                    const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
+                    const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
 
                     if (hasYouTubeShareLink) {
                         displayNoti(false, "RYS");
@@ -179,6 +176,7 @@ function initCkEditor() {
 
                 ckElements.forEach((ck) => {
                     ck.addEventListener("focus", () => { displayError(false, id_content) });
+
                     ck.addEventListener("blur", event => {
                         if (!ckElements.includes(event.relatedTarget)) {
                             if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
@@ -188,6 +186,7 @@ function initCkEditor() {
                             };
                         };
                     });
+
                     ck.addEventListener("keydown", event => {
                         if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
                             const id_category_error = code(id_category, "_error");
@@ -204,7 +203,9 @@ function initCkEditor() {
                             };
                         };
                     });
+
                     ck.addEventListener("click", () => { displayError(false, id_content) });
+
                     eventTypes.forEach(type => {
                         ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
                     });
@@ -255,6 +256,7 @@ function attachFile(event = null, sudo = false) {
             console.warn(`The file ${name} is already attached.`);
         } else if (totalSizeOfFiles + size <= 5 * 1024 * 1024) {
             totalSizeOfFiles += size;
+
             if (sudo === true) {
                 id = file.id;
                 key = file.key;
@@ -264,9 +266,11 @@ function attachFile(event = null, sudo = false) {
                 key = `${id}_${name}`;
                 fileObj = { file: file, id: id, name: name, key: key, size: size, readableSize: readableSize };
             };
+
             fileElement = document.createElement("li");
             fileElement.id = id;
             fileElement.classList.add("class-file", "relative", "flex", "items-center", "justify-between", "p-4", "text-sm", "leading-6");
+
             fileElement.innerHTML = `
                 <div class="flex w-0 flex-1 items-center">
                     <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
@@ -294,15 +298,16 @@ function attachFile(event = null, sudo = false) {
                     </svg>
                 </div>
             `;
+
             attachedFiles.push(fileObj);
             id_attach_file.parentNode.insertBefore(fileElement, id_attach_file);
 
-            class_counts.forEach(count => {
-                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
+            class_file_quantities.forEach(quantity => {
+                quantity.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             });
 
-            class_measures.forEach(measure => {
-                measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
+            class_file_sizes.forEach(size => {
+                size.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
             });
         } else {
             failureCount += 1;
@@ -312,7 +317,6 @@ function attachFile(event = null, sudo = false) {
 
     if (isDuplicate) { displayNoti(true, "LDF", duplicateFiles.join(", ")) };
     if (failureCount !== 0) { displayNoti(true, "LFS", failureCount) };
-
     id_file.value = "";
     id_file.tabIndex = "-1";
     failureCount = 0;
@@ -329,20 +333,20 @@ function detachFile(fileUUID = null) {
             fileElement.remove();
         };
 
-        class_counts.forEach(count => {
+        class_file_quantities.forEach(quantity => {
             if (attachedFiles.length === 0) {
-                if (count.classList.contains("class-desktop")) {
-                    count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-                } else if (count.classList.contains("class-mobile")) {
-                    count.innerText = "파일을 첨부하세요.";
+                if (quantity.classList.contains("class-desktop")) {
+                    quantity.innerText = "파일을 이곳에 끌어다 놓으세요.";
+                } else if (quantity.classList.contains("class-mobile")) {
+                    quantity.innerText = "파일을 첨부하세요.";
                 };
             } else {
-                count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
+                quantity.innerText = `총 ${attachedFiles.length}개 첨부됨`;
             };
         });
 
-        class_measures.forEach(measure => {
-            measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
+        class_file_sizes.forEach(size => {
+            size.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
         });
     });
 }
@@ -353,20 +357,20 @@ function styleFileForm() {
     let attachBoxShadow = "none";
     let attachBackgroundColor = "transparent";
 
-    class_counts.forEach(count => {
+    class_file_quantities.forEach(quantity => {
         if (attachedFiles.length === 0) {
-            if (count.classList.contains("class-desktop")) {
-                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-            } else if (count.classList.contains("class-mobile")) {
-                count.innerText = "파일을 첨부하세요.";
+            if (quantity.classList.contains("class-desktop")) {
+                quantity.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (quantity.classList.contains("class-mobile")) {
+                quantity.innerText = "파일을 첨부하세요.";
             };
         } else {
-            count.innerText = `총 ${attachedFiles.length}개 첨부됨`;
+            quantity.innerText = `총 ${attachedFiles.length}개 첨부됨`;
         };
     });
 
-    class_measures.forEach(measure => {
-        measure.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
+    class_file_sizes.forEach(size => {
+        size.innerText = `${(totalSizeOfFiles / (1024 * 1024)).toFixed(2)}MB/5MB`;
     });
 
     if (isFocused && isHovered) {
@@ -380,11 +384,11 @@ function styleFileForm() {
     } else if (isDragging) {
         dropBoxShadow = "inset 0 0 0 2px #F15922";
         dropBackgroundColor = "rgb(249 250 251)";
-        class_counts.forEach(count => { count.innerText = "파일을 놓으세요." });
+        class_file_quantities.forEach(quantity => { quantity.innerText = "파일을 놓으세요." });
     };
 
-    id_drop_file.style.boxShadow = dropBoxShadow;
-    id_drop_file.style.backgroundColor = dropBackgroundColor;
+    id_receive_file.style.boxShadow = dropBoxShadow;
+    id_receive_file.style.backgroundColor = dropBackgroundColor;
     id_attach_file.style.outline = "none";
     id_attach_file.style.boxShadow = attachBoxShadow;
     id_attach_file.style.backgroundColor = attachBackgroundColor;
@@ -394,39 +398,38 @@ function freezeFileForm(boolean) {
     const class_detaches = document.querySelectorAll(".class-detach");
 
     if (boolean) {
-        id_drop_file.style.backgroundColor = "rgb(243 244 246)";
-        id_drop_file.nextElementSibling.classList.remove("hidden");
+        id_receive_file.style.backgroundColor = "rgb(243 244 246)";
+        id_receive_file.nextElementSibling.classList.remove("hidden");
         id_attach_file.tabIndex = -1;
         class_detaches.forEach(detach => { detach.tabIndex = -1 });
         id_file.disabled = true;
 
-        class_counts.forEach(count => {
-            count.innerText = "잠시만 기다려주세요.";
+        class_file_quantities.forEach(quantity => {
+            quantity.innerText = "잠시만 기다려주세요.";
         });
     } else if (!boolean) {
-        id_drop_file.style.backgroundColor = "transparent";
-        id_drop_file.nextElementSibling.classList.add("hidden");
+        id_receive_file.style.backgroundColor = "transparent";
+        id_receive_file.nextElementSibling.classList.add("hidden");
         id_attach_file.tabIndex = 0;
         class_detaches.forEach(detach => { detach.tabIndex = 0 });
         id_file.disabled = false;
 
-        class_counts.forEach(count => {
-            if (count.classList.contains("class-desktop")) {
-                count.innerText = "파일을 이곳에 끌어다 놓으세요.";
-            } else if (count.classList.contains("class-mobile")) {
-                count.innerText = "파일을 첨부하세요.";
+        class_file_quantities.forEach(quantity => {
+            if (quantity.classList.contains("class-desktop")) {
+                quantity.innerText = "파일을 이곳에 끌어다 놓으세요.";
+            } else if (quantity.classList.contains("class-mobile")) {
+                quantity.innerText = "파일을 첨부하세요.";
             };
         });
     };
 }
 
 function addEventListenersToFileForm() {
-    isEventListenersAddedToFileForm = true;
-
+    isAddedToFileForm = true;
     id_file.addEventListener("change", attachFile);
-    id_drop_file.addEventListener("dragover", event => { event.preventDefault(); id_file.focus(); isDragging = true; styleFileForm() });
-    id_drop_file.addEventListener("dragleave", () => { isDragging = false; styleFileForm() });
-    id_drop_file.addEventListener("drop", event => { event.preventDefault(); isDragging = false; styleFileForm(); attachFile(event) });
+    id_receive_file.addEventListener("dragover", event => { event.preventDefault(); id_file.focus(); isDragging = true; styleFileForm() });
+    id_receive_file.addEventListener("dragleave", () => { isDragging = false; styleFileForm() });
+    id_receive_file.addEventListener("drop", event => { event.preventDefault(); isDragging = false; styleFileForm(); attachFile(event) });
     id_attach_file.addEventListener("focus", () => { isFocused = true; styleFileForm() });
     id_attach_file.addEventListener("blur", () => { isFocused = false; styleFileForm() });
     id_attach_file.addEventListener("mouseenter", () => { isHovered = true; styleFileForm() });
@@ -545,13 +548,12 @@ function initForm() {
     });
 
     ckEditor.setData("");
-
     id_file.value = null;
     class_files.forEach(file => { file.remove() });
     attachedFiles.length = 0;
     totalSizeOfFiles = 0;
     styleFileForm();
-    if (!isEventListenersAddedToFileForm) { addEventListenersToFileForm() };
+    if (!isAddedToFileForm) { addEventListenersToFileForm() };
 
     inputs.forEach((input) => {
         displayError(false, input);
@@ -563,15 +565,15 @@ function initForm() {
 }
 
 function updateForm(action, datasetObj = null) {
-    const id_modal_notice = code(id_modal, "_notice")
-    const id_modal_share = code(id_modal, "_share")
+    const id_modal_notice = document.getElementById("id_modal_notice");
+    const id_modal_share = document.getElementById("id_modal_share");
     const class_keywords = document.querySelectorAll(".class-keyword");
 
     // action: all
     isModalOpen = true;
-    id_modal.hidden = false;
-    id_modal.setAttribute("x-data", "{ open: true }");
-    handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
+    id_modal_container.hidden = false;
+    id_modal_container.setAttribute("x-data", "{ open: true }");
+    handleFocusForModal(true, id_modal_container);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
     // action: "create"
@@ -619,8 +621,8 @@ function updateForm(action, datasetObj = null) {
         svg.classList.remove("invisible");
         id_keyword.value = data.keyword;
         id_delete.classList.replace("hidden", "inline-flex");
-        id_delete_text.innerText = "삭제하기";
-        isItDoubleChecked = false;
+        id_delete_confirmation_text.innerText = "삭제하기";
+        isDoubleChecked = false;
         clearTimeout(doubleCheckTimer);
         setTimeout(() => { freezeCkEditor() }, 0.00001);
         requestReadNotice();
@@ -727,38 +729,38 @@ function embedMediaInCkEditor() {
                     let mediaName, newStructure;
 
                     if (url.includes("instagram.com")) {
-                        mediaName = "인스타그램";
+                        mediaName = "Instagram";
                     } else if (url.includes("facebook.com") || url.includes("fb.watch")) {
-                        mediaName = "페이스북";
-                    } else if (url.includes("twitter.com")) {
-                        mediaName = "트위터";
+                        mediaName = "Facebook";
+                    } else if (url.includes("x.com")) {
+                        mediaName = "X";
                     } else if (url.includes("goo.gl")) {
-                        mediaName = "구글 지도";
+                        mediaName = "Google Maps";
                     };
 
                     newStructure = `
-                    <figure class="media ck-widget" contenteditable="false">
-                        <div class="ck-media__wrapper"
-                            data-oembed-url="${url}">
-                            <div class="ck ck-reset_all ck-media__placeholder">
-                                <div class="ck-media__placeholder__icon">
-                                    <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
-                                        viewBox="0 0 64 42">
-                                        <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
-                                        </path>
-                                    </svg>
+                        <figure class="media ck-widget" contenteditable="false">
+                            <div class="ck-media__wrapper"
+                                data-oembed-url="${url}">
+                                <div class="ck ck-reset_all ck-media__placeholder">
+                                    <div class="ck-media__placeholder__icon">
+                                        <svg class="ck ck-icon ck-reset_all-excluded ck-icon_inherit-color"
+                                            viewBox="0 0 64 42">
+                                            <path d="M47.426 17V3.713L63.102 0v19.389h-.001l.001.272c0 1.595-2.032 3.43-4.538 4.098-2.506.668-4.538-.083-4.538-1.678 0-1.594 2.032-3.43 4.538-4.098.914-.244 2.032-.565 2.888-.603V4.516L49.076 7.447v9.556A1.014 1.014 0 0 0 49 17h-1.574zM29.5 17h-8.343a7.073 7.073 0 1 0-4.657 4.06v3.781H3.3a2.803 2.803 0 0 1-2.8-2.804V8.63a2.803 2.803 0 0 1 2.8-2.805h4.082L8.58 2.768A1.994 1.994 0 0 1 10.435 1.5h8.985c.773 0 1.477.448 1.805 1.149l1.488 3.177H26.7c1.546 0 2.8 1.256 2.8 2.805V17zm-11.637 0H17.5a1 1 0 0 0-1 1v.05A4.244 4.244 0 1 1 17.863 17zm29.684 2c.97 0 .953-.048.953.889v20.743c0 .953.016.905-.953.905H19.453c-.97 0-.953.048-.953-.905V19.89c0-.937-.016-.889.97-.889h28.077zm-4.701 19.338V22.183H24.154v16.155h18.692zM20.6 21.375v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616v-1.616H20.6zm0 3.231v1.616h1.616V37.53H20.6zm24.233-16.155v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615v-1.616h-1.615zm0 3.231v1.616h1.615V37.53h-1.615zM29.485 25.283a.4.4 0 0 1 .593-.35l9.05 4.977a.4.4 0 0 1 0 .701l-9.05 4.978a.4.4 0 0 1-.593-.35v-9.956z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <a class="ck-media__placeholder__url"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href="${url}"
+                                        title="새 탭에서 ${mediaName} 열기">
+                                        <span class="ck-media__placeholder__url__text">${url}</span>
+                                        <span class="!sr-only">새 탭에서 ${mediaName} 열기</span>
+                                    </a>
                                 </div>
-                                <a class="ck-media__placeholder__url"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    href="${url}"
-                                    title="새 탭에서 ${mediaName} 열기">
-                                    <span class="ck-media__placeholder__url__text">${url}</span>
-                                    <span class="!sr-only">새 탭에서 ${mediaName} 열기</span>
-                                </a>
                             </div>
-                        </div>
-                    </figure>
+                        </figure>
                     `;
 
                     return newStructure;
@@ -792,7 +794,6 @@ function copyUrl() {
             id_copy_url_done.classList.remove("hidden");
             id_copy_url_descr.hidden = false;
             id_copy_url_done.classList.add("blink");
-
             setTimeout(() => { id_copy_url_done.classList.remove("blink") }, 3000);
         });
     };
@@ -841,6 +842,8 @@ function share() {
     });
 
     id_x.addEventListener("click", () => {
+        const noticeTitle = data.title;
+        const noticeKeyword = data.keyword;
         const hashtags = noticeKeyword.replace(/\s+/g, "").replace(/#/g, ",").substring(1);
         const xUrl = `https://twitter.com/intent/tweet?text=${noticeTitle}&url=${location.origin}${location.pathname}&hashtags=${hashtags}`;
 
@@ -995,7 +998,7 @@ function requestDeleteNotice() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        if (id_modal !== null) {
+        if (id_modal_container !== null) {
             const class_firsts = document.querySelectorAll(".class-first");
 
             initValidation(class_firsts, id_create_or_update);
@@ -1046,15 +1049,15 @@ function initRequest() {
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (!isItDoubleChecked) {
-                            id_delete_text.innerText = "정말 삭제하기";
-                            isItDoubleChecked = true;
+                        if (!isDoubleChecked) {
+                            id_delete_confirmation_text.innerText = "정말 삭제하기";
+                            isDoubleChecked = true;
 
                             doubleCheckTimer = setTimeout(() => {
-                                id_delete_text.innerText = "삭제하기";
-                                isItDoubleChecked = false;
+                                id_delete_confirmation_text.innerText = "삭제하기";
+                                isDoubleChecked = false;
                             }, 5000);
-                        } else if (isItDoubleChecked) {
+                        } else if (isDoubleChecked) {
                             const id_delete_spin = code(id_delete, "_spin");
 
                             clearTimeout(doubleCheckTimer);
@@ -1068,7 +1071,7 @@ function initRequest() {
                             displayNoti(false, "EIF");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
-                            isItDoubleChecked = false;
+                            isDoubleChecked = false;
                         };
                     };
                 });
