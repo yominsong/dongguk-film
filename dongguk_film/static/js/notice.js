@@ -713,7 +713,7 @@ function styleFileList() {
 
 styleFileList();
 
-function embedMediaInCkEditor() {
+function overrideEmbeddedMedia() {
     const mediaElements = document.querySelectorAll("figure.media");
 
     if (mediaElements) {
@@ -774,7 +774,7 @@ function embedMediaInCkEditor() {
     };
 }
 
-embedMediaInCkEditor();
+overrideEmbeddedMedia();
 
 function copyUrl() {
     if (id_copy_url !== null) {

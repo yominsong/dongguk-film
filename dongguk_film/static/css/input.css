@@ -43,4 +43,8 @@
     .df-focus-ring-offset-flamingo {
         @apply outline-none ring-2 ring-offset-2 ring-offset-flamingo-50 ring-flamingo
     }
+
+    .df-focus-ring-offset-flamingo-2 {
+        @apply outline-none ring-2 ring-offset-2 ring-offset-flamingo-900 ring-flamingo
+    }
 }
