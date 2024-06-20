@@ -12,6 +12,8 @@ const id_select_purpose = code("id_select_", id_purpose);
 const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
 const id_instructor = document.getElementById("id_instructor");
+const id_subject_code = document.getElementById("id_subject_code");
+const id_subject_name = document.getElementById("id_subject_name");
 const id_original_instructor = code("id_original_", id_instructor);
 const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
 const id_position = document.getElementById("id_position");
@@ -266,6 +268,8 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
         const id_found_instructor_list_help = document.getElementById("id_found_instructor_list_help");
 
         id_instructor.value = null;
+        id_subject_code.value = null;
+        id_subject_name.value = null;
         id_found_instructor_list_help.innerText = "선택 가능한 교원을 찾고 있어요.";
         id_purpose.value = selectedPurpose.priority;
         requestFindInstructor();
@@ -537,8 +541,8 @@ function initFoundInstructorList(resResult) {
 
         data_instructor.id = newlyFoundInstructor.id;
         data_instructor.name = newlyFoundInstructor.name;
-        data_instructor.subject = newlyFoundInstructor.subject;
         data_instructor.code = newlyFoundInstructor.code;
+        data_instructor.subject = newlyFoundInstructor.subject;
         newlyFoundInstructorElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
 
         newlyFoundInstructorElement.innerHTML = `
@@ -584,6 +588,8 @@ function initFoundInstructorList(resResult) {
         instructor.addEventListener("click", () => {
             if (instructor.id.indexOf("instructor") !== -1) {
                 id_instructor.value = instructor.value;
+                id_subject_code.value = instructor.parentElement.dataset.code;
+                id_subject_name.value = instructor.parentElement.dataset.subject;
             };
         });
 
@@ -775,7 +781,11 @@ function initForm() {
     id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
     id_instructor.value = null;
+    id_subject_code.value = null;
+    id_subject_name.value = null;
     id_instructor.classList.remove("class-first");
+    id_subject_code.value = null;
+    id_subject_name.value = null;
     id_target_academic_year_and_semester.innerText = null;
     id_production_end_date.value = null;
     id_production_end_date.placeholder = yyyymmddOfAfter90DaysWithDash;
@@ -845,6 +855,8 @@ function updateForm(action, datasetObj = null) {
         code(id_purpose, `_${data.purpose}`).click();
         id_original_purpose.value = data.purpose;
         id_instructor.value = data.instructor;
+        id_subject_code.value = data.subjectCode;
+        id_subject_name.value = data.subjectName;
         id_original_instructor.value = data.instructor;
         id_production_end_date.value = data.productionEndDate;
         id_original_production_end_date.value = data.productionEndDate;
@@ -872,7 +884,7 @@ function updateForm(action, datasetObj = null) {
             });
         });
 
-        id_original_staff_list.value = data.originalStaff;
+        id_original_staff_list.value = data.staff;
         id_delete.classList.replace("hidden", "inline-flex");
         id_delete_text.innerText = "삭제하기";
         isItDoubleChecked = false;
@@ -934,6 +946,8 @@ function requestCreateProject() {
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
     formData.append("instructor", id_instructor.value);
+    formData.append("subject_code", id_subject_code.value);
+    formData.append("subject_name", id_subject_name.value);
     formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
@@ -966,6 +980,8 @@ function requestUpdateProject() {
     formData.append("title", id_title.value);
     formData.append("purpose", id_purpose.value);
     formData.append("instructor", id_instructor.value);
+    formData.append("subject_code", id_subject_code.value);
+    formData.append("subject_name", id_subject_name.value);
     formData.append("production_end_date", id_production_end_date.value);
 
     addedStaffs.forEach((staff, index) => {
@@ -992,6 +1008,7 @@ function requestUpdateProject() {
 
 function requestDeleteProject() {
     const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
+    
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
     request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, instructor: `${id_original_instructor.value}`, production_end_date: `${id_production_end_date.value}`, staff: `${JSON.stringify(staffList)}` };

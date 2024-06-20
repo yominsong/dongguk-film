@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.utils import timezone
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -133,6 +134,134 @@ def append_item(item, item_list: list):
         item_list.append(item)
 
     return item_list
+
+
+def get_equipment_data(target: str):
+    JSON_PATH = (
+        "dongguk_film/static/json/equipment.json"
+        if settings.DEBUG
+        else "dongguk_film/staticfiles/json/equipment.json"
+    )
+
+    with open(JSON_PATH, "r") as f:
+        item_list = json.load(f)[target]
+        f.close()
+
+    return item_list
+
+
+def get_subject(base_date: str):
+    DMD_URL = getattr(settings, "DMD_URL", None)
+    DMD_COOKIE = getattr(settings, "DMD_COOKIE", None)
+    headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
+
+    try:
+        base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
+    except:
+        base_date = timezone.datetime.fromisoformat(str(base_date)).date()
+
+    base_year = base_date.year
+    base_month = base_date.month
+    headers["Cookie"] = DMD_COOKIE
+
+    params = {
+        "strCampFg": "S",
+        "strUnivGrscFg": "U0001001",
+        "strLtYy": str(base_year),
+        "strLtShtmCd": "U0002001" if base_month < 7 else "U0002003",
+        "strFindType": "CODE",
+        "strSbjt": "FIL",
+    }
+
+    result_list = []
+    subject_dict = {}
+
+    with Session() as session:
+        session.mount("https://", HTTPAdapter(max_retries=3))
+        response = session.get(DMD_URL["timetable"], params=params, headers=headers)
+        subject_list = response.json()["out"]["DS_COUR110"]
+
+    for subject in subject_list:
+        key = (
+            subject["sbjtKorNm"],
+            subject["sbjtEngNm"],
+            subject["haksuNo"],
+            subject["openShyrNm"],
+        )
+
+        instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
+
+        if key not in subject_dict:
+            subject_dict[key] = [instructor]
+        else:
+            subject_dict[key].append(instructor)
+
+    for (kor_name, eng_name, code, target_university_year), instructors in subject_dict.items():
+        target_university_year = [
+            int(num) for num in re.sub(r"[^\d,]", "", target_university_year).split(",")
+        ]
+
+        result = {
+            "kor_name": kor_name,
+            "eng_name": eng_name,
+            "code": code,
+            "target_university_year": target_university_year,
+            "instructor": instructors,
+        }
+
+        result_list.append(result)
+
+    return result_list
+
+
+def find_instructor(purpose: str, base_date: str):
+    purpose_list = get_equipment_data("purpose")
+
+    for purpose_item in purpose_list:
+        if purpose_item["priority"] == purpose:
+            purpose_keyword = purpose_item["keyword"].replace(" ", "")
+            purpose_secondary_keyword = purpose_item.get("secondary_keyword", None)
+            purpose_secondary_keyword = (
+                purpose_secondary_keyword.replace(" ", "")
+                if purpose_secondary_keyword
+                else None
+            )
+            purpose_curricular = purpose_item["curricular"]
+            purpose_for_senior_project = purpose_item["for_senior_project"]
+            break
+
+    found_instructor_list = []
+
+    if purpose_curricular:
+        subject_list = get_subject(base_date)
+
+        for subject in subject_list:
+            if (
+                purpose_keyword in subject["kor_name"]
+                or (
+                    purpose_secondary_keyword in subject["kor_name"]
+                    if purpose_secondary_keyword
+                    else False
+                )
+            ) and (
+                subject["target_university_year"] == [4]  # 졸업
+                if purpose_for_senior_project
+                else subject["target_university_year"] != [4]  # exclude 졸업
+            ):
+                for instructor in subject["instructor"]:
+                    found_instructor = {
+                        "id": instructor["id"],
+                        "name": instructor["name"],
+                        "subject": subject["kor_name"],
+                        "code": subject["code"],
+                    }
+
+                    if found_instructor not in found_instructor_list:
+                        found_instructor_list.append(found_instructor)
+
+    found_instructor_list.sort(key=lambda x: (x["code"], x["name"]))
+
+    return found_instructor_list, purpose_curricular
 
 
 #
@@ -617,6 +746,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
         instructor = data.get("instructor", None)
+        subject_code = data.get("subject_code", None)
+        subject_name = data.get("subject_name", None)
         staff = data.get("staff", None)
         user = data.get("user", None)
 
@@ -710,6 +841,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
                     if instructor:
                         instructor = instructor[0].get("plain_text", None)
+                        subject_code = properties.get("Subject code", {}).get("rich_text", [{}])
+                        subject_name = properties.get("Subject name", {}).get("rich_text", [{}])
 
                     user = str(properties["User"]["number"])
 
@@ -722,6 +855,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         "title": title,
                         "production_end_date": production_end_date,
                         "instructor": instructor,
+                        "subject_code": subject_code,
+                        "subject_name": subject_name,
                         "user": user,
                         "created_date": created_time.strftime("%Y-%m-%d"),
                     }
@@ -863,6 +998,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
+                    "Subject code": {"rich_text": [{"text": {"content": str(subject_code)}}]},
+                    "Subject name": {"rich_text": [{"text": {"content": str(subject_name)}}]},
                     "User": {"number": int(str(user))},
                 },
             }
@@ -963,6 +1100,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
                     "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
+                    "Subject code": {"rich_text": [{"text": {"content": str(subject_code)}}]},
+                    "Subject name": {"rich_text": [{"text": {"content": str(subject_name)}}]},
                     "User": {"number": int(str(user))},
                 },
             }

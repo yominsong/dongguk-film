@@ -231,6 +231,17 @@ function initSignatureCanvasValidation() {
     validateSignatureCanvas();
 }
 
+function convertSignatureToFile() {
+    if (isSignatureCanvasDisabled) return null;
+    
+    return new Promise((resolve) => {
+        id_signature_canvas.toBlob(function (blob) {
+            resolve(blob);
+        }, "image/png");
+    });
+}
+
+
 function executeWhenUserGoesToSelectPurpose() {
     if (id_detail !== null) {
         const id_open_modal_and_focus_on_purpose = document.getElementById("id_open_modal_and_focus_on_purpose");
@@ -997,25 +1008,25 @@ function initSignatureCanvas() {
         };
     }
 
-    function downloadSignature() {
-        if (isSignatureCanvasDisabled) return;
+    // function downloadSignature() {
+    //     if (isSignatureCanvasDisabled) return;
 
-        const downloadCanvas = document.createElement("canvas");
-        const downloadCtx = downloadCanvas.getContext("2d");
-        const fixedWidth = 320;
-        const fixedHeight = 180;
+    //     const downloadCanvas = document.createElement("canvas");
+    //     const downloadCtx = downloadCanvas.getContext("2d");
+    //     const fixedWidth = 320;
+    //     const fixedHeight = 180;
 
-        downloadCanvas.width = fixedWidth;
-        downloadCanvas.height = fixedHeight;
-        downloadCtx.drawImage(id_signature_canvas, 0, 0, fixedWidth, fixedHeight);
+    //     downloadCanvas.width = fixedWidth;
+    //     downloadCanvas.height = fixedHeight;
+    //     downloadCtx.drawImage(id_signature_canvas, 0, 0, fixedWidth, fixedHeight);
 
-        const dataURL = downloadCanvas.toDataURL("image/png");
-        const link = document.createElement("a");
+    //     const dataURL = downloadCanvas.toDataURL("image/png");
+    //     const link = document.createElement("a");
 
-        link.href = dataURL;
-        link.download = "signature.png";
-        link.click();
-    }
+    //     link.href = dataURL;
+    //     link.download = "signature.png";
+    //     link.click();
+    // }
 
     id_signature_canvas.onmousedown = startDrawing;
     id_signature_canvas.onmousemove = draw;
@@ -1062,6 +1073,22 @@ function initSignatureCanvas() {
     });
 
     isSignatureCanvasReady = true;
+}
+
+function freezeSignatureCanvas(bool) {
+    if (bool) {
+        isSignatureCanvasDisabled = true;
+        id_clear_signature_canvas.hidden = true;
+        id_signature_canvas.classList.add("cursor-not-allowed");
+        id_signature_canvas.classList.remove("hover:bg-gray-50");
+        id_signature_canvas.classList.add("bg-gray-100");
+    } else {
+        isSignatureCanvasDisabled = false;
+        id_clear_signature_canvas.hidden = false;
+        id_signature_canvas.classList.remove("cursor-not-allowed");
+        id_signature_canvas.classList.add("hover:bg-gray-50");
+        id_signature_canvas.classList.remove("bg-gray-100");
+    };
 }
 
 function initForm() {
@@ -1234,7 +1261,7 @@ function updateForm(action, datasetObj = null) {
                 const itemCount = group.length;
                 const addedItemElement = document.createElement("li");
 
-                addedItemElement.className = "flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6";
+                addedItemElement.className = "class-link-list-item flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6";
 
                 let blinkClass = "";
 
@@ -1255,7 +1282,7 @@ function updateForm(action, datasetObj = null) {
                         </div>
                     </div>
                     <div class="flex shrink-0 items-center z-10">
-                        <button class="class-remove-from-cart rounded-md text-gray-500 hover:underline focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
+                        <button class="class-remove-from-cart rounded-md text-gray-500 hover:underline focus:df-focus-ring-offset-white disabled:cursor-not-allowed disabled:hover:no-underline"
                                 type="button"
                                 data-collection-id="${firstItem.collection_id}">
                             삭제하기
@@ -1750,14 +1777,29 @@ function requestFindHour() {
     request = {};
 }
 
-// TODO: Under construction
-function requestApplication() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "request_application", cart: sessionStorage.getItem("cart") };
-    request.async = true;
-    request.headers = null;
+async function requestApplication() {
+    let formData = new FormData();
+    
+    formData.append("id", "request_application");
+    formData.append("cart", sessionStorage.getItem("cart"));
+    formData.append("project", id_project.value);
+    formData.append("startTime", id_start_time.value);
+    formData.append("endTime", id_end_time.value);
+
+    const signatureBlob = await convertSignatureToFile();
+
+    formData.append("signature", signatureBlob, `${id_project.value}_${id_start_time.value}_${id_end_time.value}_signature.png`);
+
+    let request = {
+        url: `${location.origin}/equipment/utils/equipment/`,
+        type: "POST",
+        data: formData,
+        async: true,
+        headers: null
+    };
+
     freezeForm(true);
+    freezeSignatureCanvas(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -1803,7 +1845,7 @@ function initRequest() {
                             initSignatureCanvasValidation();
                         } else if (id_modal_checkout.hidden === false) {
                             if (isItOkayToSubmitForm() && isSignatureDrawn) {
-                                console.log("UNDER CONSTRUCTION");
+                                requestApplication();
                                 freezeForm(true);
                                 displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                                 displayButtonMsg(false, id_filter_or_checkout, "error");

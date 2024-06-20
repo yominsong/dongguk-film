@@ -3722,6 +3722,10 @@ select {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.disabled\:hover\:no-underline:hover:disabled {
+  text-decoration-line: none;
+}
+
 .group:hover .group-hover\:bg-\[\#05b34d\] {
   --tw-bg-opacity: 1;
   background-color: rgb(5 179 77 / var(--tw-bg-opacity));

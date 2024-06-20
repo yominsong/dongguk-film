@@ -152,6 +152,8 @@ function freezeForm(bool) {
         };
     });
 
+    buttons = document.querySelectorAll("button");
+
     buttons.forEach(button => {
         bool ? button.disabled = true : button.disabled = false;
     });
@@ -159,7 +161,7 @@ function freezeForm(bool) {
     const links = document.querySelectorAll("a");
 
     links.forEach(link => {
-        const parentWithClassDownload = link.closest('.class-download');
+        const linkListItem = link.closest(".class-link-list-item");
         const linkId = link.dataset.linkId || `link-${Math.random().toString(36).substr(2, 9)}`;
 
         link.dataset.linkId = linkId;
@@ -180,32 +182,32 @@ function freezeForm(bool) {
                 const span = document.createElement("span");
                 span.classList.add("absolute", "inset-0", "bg-transparent", "pointer-events-auto", "cursor-not-allowed");
                 span.dataset.blockerId = linkId;
-                link.style.position = "relative";
+                if (!link.classList.contains("absolute")) { link.style.position = "relative" };
                 link.appendChild(span);
             };
 
-            if (parentWithClassDownload) {
-                const parentId = parentWithClassDownload.dataset.parentId || `parent-${Math.random().toString(36).substr(2, 9)}`;
+            if (linkListItem) {
+                const parentId = linkListItem.dataset.parentId || `parent-${Math.random().toString(36).substr(2, 9)}`;
 
-                parentWithClassDownload.dataset.parentId = parentId;
+                linkListItem.dataset.parentId = parentId;
 
                 if (!originalParentClasses[parentId]) {
-                    originalParentClasses[parentId] = Array.from(parentWithClassDownload.classList);
+                    originalParentClasses[parentId] = Array.from(linkListItem.classList);
                 };
 
                 if (!originalParentStyles[parentId]) {
-                    originalParentStyles[parentId] = parentWithClassDownload.getAttribute("style") || "";
+                    originalParentStyles[parentId] = linkListItem.getAttribute("style") || "";
                 };
 
-                parentWithClassDownload.classList.add("cursor-not-allowed");
+                linkListItem.classList.add("cursor-not-allowed");
 
-                const parentHoverClasses = Array.from(parentWithClassDownload.classList).filter(cls => cls.startsWith("hover:"));
+                const parentHoverClasses = Array.from(linkListItem.classList).filter(cls => cls.startsWith("hover:"));
 
                 parentHoverClasses.forEach(cls => {
-                    parentWithClassDownload.classList.remove(cls);
+                    linkListItem.classList.remove(cls);
                 });
 
-                parentWithClassDownload.addEventListener("click", preventDefaultHandler);
+                linkListItem.addEventListener("click", preventDefaultHandler);
             };
         } else {
             if (originalClasses[linkId]) {
@@ -222,20 +224,20 @@ function freezeForm(bool) {
                 delete originalStyles[linkId];
             };
 
-            if (parentWithClassDownload) {
-                const parentId = parentWithClassDownload.dataset.parentId;
+            if (linkListItem) {
+                const parentId = linkListItem.dataset.parentId;
 
                 if (originalParentClasses[parentId]) {
-                    parentWithClassDownload.className = originalParentClasses[parentId].join(" ");
+                    linkListItem.className = originalParentClasses[parentId].join(" ");
                     delete originalParentClasses[parentId];
                 };
 
                 if (originalParentStyles[parentId]) {
-                    parentWithClassDownload.setAttribute("style", originalParentStyles[parentId]);
+                    linkListItem.setAttribute("style", originalParentStyles[parentId]);
                     delete originalParentStyles[parentId];
                 };
 
-                parentWithClassDownload.removeEventListener("click", preventDefaultHandler);
+                linkListItem.removeEventListener("click", preventDefaultHandler);
             };
         };
     });
@@ -663,10 +665,10 @@ function controlError(input) {
             displayError(true, input, "insufficient");
         } else if (!validateDate(input)) {
             displayError(true, input, "invalid");
-        // } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null) {
+            // } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null) {
         } else if (input.getAttribute("min") !== null && input.getAttribute("max") !== null &&
             (Number(input.value.replace(/-/g, "")) < Number(input.getAttribute("min").replace(/-/g, "")) ||
-            Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, "")))) {
+                Number(input.value.replace(/-/g, "")) > Number(input.getAttribute("max").replace(/-/g, "")))) {
             displayError(true, input, "out of range");
         } else {
             return false;
