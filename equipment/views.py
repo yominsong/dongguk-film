@@ -350,14 +350,14 @@ def equipment_detail(request, collection_id):
             for item in collection["item"]:
                 if purpose["name"] in item["purpose"] and "🟢" in item["validation"]:
                     item_start_date = (
-                        convert_datetime(item["start_date"]).date()
-                        if item["start_date"]
+                        convert_datetime(item["start_datetime"]).date()
+                        if item["start_datetime"]
                         else None
                     )
 
                     item_end_date = (
-                        convert_datetime(item["end_date"]).date()
-                        if item["end_date"]
+                        convert_datetime(item["end_datetime"]).date()
+                        if item["end_datetime"]
                         else None
                     )
 

@@ -1226,6 +1226,7 @@ function updateForm(action, datasetObj = null) {
             keyword.innerText = "장바구니";
         });
 
+        initForm();
         executeWhenCartIsUpdated();
 
         const cartList = id_modal_cart.querySelector("ul");
@@ -1261,6 +1262,7 @@ function updateForm(action, datasetObj = null) {
                 const itemCount = group.length;
                 const addedItemElement = document.createElement("li");
 
+                addedItemElement.id = `id_${firstItem.collection_id}`;
                 addedItemElement.className = "class-link-list-item flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6";
 
                 let blinkClass = "";
@@ -1278,7 +1280,7 @@ function updateForm(action, datasetObj = null) {
                                 alt="${firstItem.name} 사진">
                         <div class="min-w-0 flex-auto">
                             <p class="font-semibold leading-6 text-gray-900 ${blinkClass}">${firstItem.name}</p>
-                            <p class="mt-1 truncate leading-5 text-gray-500 ${blinkClass}">${firstItem.collection_id} · ${itemCount}개</p>
+                            <p class="class-collection-id-and-quantity mt-1 truncate leading-5 text-gray-500 ${blinkClass}">${firstItem.collection_id} · ${itemCount}개</p>
                         </div>
                     </div>
                     <div class="flex shrink-0 items-center z-10">
@@ -1777,10 +1779,10 @@ function requestFindHour() {
     request = {};
 }
 
-async function requestApplication() {
+async function requestCreateApplication() {
     let formData = new FormData();
     
-    formData.append("id", "request_application");
+    formData.append("id", "create_application");
     formData.append("cart", sessionStorage.getItem("cart"));
     formData.append("project", id_project.value);
     formData.append("startTime", id_start_time.value);
@@ -1845,7 +1847,7 @@ function initRequest() {
                             initSignatureCanvasValidation();
                         } else if (id_modal_checkout.hidden === false) {
                             if (isItOkayToSubmitForm() && isSignatureDrawn) {
-                                requestApplication();
+                                requestCreateApplication();
                                 freezeForm(true);
                                 displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                                 displayButtonMsg(false, id_filter_or_checkout, "error");

@@ -469,6 +469,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
     - action | `str`:
         - get
         - get_all
+        - update
     - target | `str`:
         - record
         - records
@@ -539,9 +540,10 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "item_id": fields["ID"],
                 "serial_number": fields["Serial number"],
                 "purpose": fields["Purpose name"],
-                "project": fields.get("Project", None),
-                "start_date": fields.get("Start date", None),
-                "end_date": fields.get("End date", None),
+                "project_id": fields.get("Project ID", None),
+                "project_name": fields.get("Project name", None),
+                "start_datetime": fields.get("Start datetime", None),
+                "end_datetime": fields.get("End datetime", None),
                 "status": fields["Status"],
                 "validation": fields["Validation"],
             }
@@ -648,6 +650,23 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             except:
                 pass
 
+        elif table_name == "equipment-item":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    item = {
+                        "record_id": record["id"],
+                        "item_id": fields.get("ID", None),
+                        "collection_id": fields.get("Collection ID", [None])[0],
+                        "name": fields.get("Name", None),
+                        "status": fields.get("Status", None),
+                    }
+
+                    record_list.append(item)
+            except:
+                pass
+
         elif table_name == "equipment-hour":
             try:
                 for record in records:
@@ -690,6 +709,14 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 pass
 
         result = record_list
+
+    # action: update / target: records
+    elif action == "update" and target == "records":
+        records_to_update = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).batch_update(
+            params.get("records_to_update", None),
+        )
+
+        result = records_to_update
 
     return result
 

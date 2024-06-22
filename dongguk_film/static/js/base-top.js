@@ -369,6 +369,46 @@ function handleAjaxCallback(response) {
         initFoundHourList(resResult);
     }
 
+    // requestCreateApplication()
+    else if (resID === "create_application") {
+        if (resResult.status === "DONE") {
+        } else if (resResult.status === "FAIL") {
+            freezeSignatureCanvas(false);
+            freezeForm(false);
+
+            const id_cart_alert = document.getElementById("id_cart_alert");
+            const occupiedItems = resResult.occupied_item_list;
+            const id_modal_cart = document.getElementById("id_modal_cart");
+
+            if (!id_cart_alert.hidden) {
+                const id_decrease_quantity = document.getElementById("id_decrease_quantity");
+                const id_requested_quantity = document.getElementById("id_requested_quantity");
+                const id_increase_quantity = document.getElementById("id_increase_quantity");
+                const id_add_to_cart = document.getElementById("id_add_to_cart");
+
+                id_decrease_quantity.disabled = true;
+                id_requested_quantity.readOnly = true;
+                id_increase_quantity.disabled = true;
+                id_add_to_cart.disabled = true;
+            };
+
+            occupiedItems.forEach((item) => {
+                const targetItem = id_modal_cart.querySelector(`#id_${item.collection_id}`);
+                const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
+                
+                targetItem.classList.add("bg-flamingo-50");
+                targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
+            });
+            
+            displayButtonMsg(false, id_filter_or_checkout, "descr");
+            displayButtonMsg(true, id_filter_or_checkout, "error", resResult.msg);
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestFindInstructor()
     else if (resID === "find_instructor") {
         initFoundInstructorList(resResult);
