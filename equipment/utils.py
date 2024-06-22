@@ -723,6 +723,7 @@ def equipment(request):
     elif id == "create_application":
         cart = json.loads(cart)
         occupied_item_list = []
+        alternative_item_list = []
         status = "FAIL"
         msg = "앗, 대여할 수 없는 기자재가 있어요!"
         application_id = None
@@ -740,24 +741,24 @@ def equipment(request):
 
         occupied_item_list = airtable(
             "get_all", "records", data=data
-        )  # Occupied items are items that have a status of 'Pending', 'Reserved', or 'In Use'
+        )  # Occupied items are items that have a status of 'Pending', 'Reserved', 'In Use', or 'Unavailable'
 
         if (len(occupied_item_list)) > 0:
-            for item in occupied_item_list:
-                collection_id = item["collection_id"]
-                formula = (
-                    f"AND({{Collection ID}} = '{collection_id}', Status = 'Available')"
-                )
+            collection_id_list = [f"{{Collection ID}} = '{item['collection_id']}'" for item in occupied_item_list]
+            collection_id_string = ", ".join(collection_id_list)
+            formula = f"AND(OR({collection_id_string}), Status = 'Available')"
 
-                data = {
-                    "table_name": "equipment-item",
-                    "params": {
-                        "view": "Grid view",
-                        "formula": formula,
-                    },
-                }
+            data = {
+                "table_name": "equipment-item",
+                "params": {
+                    "view": "Grid view",
+                    "formula": formula,
+                },
+            }
 
-                alternative_item_list = airtable("get_all", "records", data=data)
+            alternative_item_list = airtable("get_all", "records", data=data)
+        
+        print(alternative_item_list)
 
         if len(alternative_item_list) > 0:
             alternative_items_by_collection = {}

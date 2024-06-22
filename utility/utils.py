@@ -660,7 +660,6 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                         "item_id": fields.get("ID", None),
                         "collection_id": fields.get("Collection ID", [None])[0],
                         "name": fields.get("Name", None),
-                        "status": fields.get("Status", None),
                     }
 
                     record_list.append(item)

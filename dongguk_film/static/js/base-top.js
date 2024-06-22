@@ -397,7 +397,10 @@ function handleAjaxCallback(response) {
                 const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
                 
                 targetItem.classList.add("bg-flamingo-50");
-                targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
+                
+                if (!targetItemInfo.innerHTML.includes("대여 불가")) {
+                    targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
+                };
             });
             
             displayButtonMsg(false, id_filter_or_checkout, "descr");
