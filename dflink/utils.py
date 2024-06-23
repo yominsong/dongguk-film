@@ -141,7 +141,14 @@ def is_well_known(target_url: str):
     if "://" in target_url:
         target_url = urlparse(target_url).netloc
 
-    openai_response = chat_gpt(f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.")
+    prompt = [
+        {
+            "type": "text",
+            "text": f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.",
+        }
+    ]
+
+    openai_response = chat_gpt("3.5-turbo", prompt)
 
     if "True" in openai_response:
         result = True
@@ -161,9 +168,14 @@ def is_harmless(target_url: str):
     if "://" in target_url:
         target_url = urlparse(target_url).netloc
 
-    openai_response = chat_gpt(
-        f"{target_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘."
-    )
+    prompt = [
+        {
+            "type": "text",
+            "text": f"{target_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘.",
+        }
+    ]
+
+    openai_response = chat_gpt("3.5-turbo", prompt)
 
     if "True" in openai_response:
         result = True
@@ -214,9 +226,14 @@ def is_correct_expiration_date(expiration_date: str):
 
 
 def is_not_swearing(slug_or_title: str):
-    openai_response = chat_gpt(
-        f"'{slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘."
-    )
+    prompt = [
+        {
+            "type": "text",
+            "text": f"'{slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘.",
+        }
+    ]
+
+    openai_response = chat_gpt("3.5-turbo", prompt)
 
     if "False" in openai_response:
         result = True

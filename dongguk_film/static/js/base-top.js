@@ -392,16 +392,20 @@ function handleAjaxCallback(response) {
                 id_add_to_cart.disabled = true;
             };
 
-            occupiedItems.forEach((item) => {
-                const targetItem = id_modal_cart.querySelector(`#id_${item.collection_id}`);
-                const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
-                
-                targetItem.classList.add("bg-flamingo-50");
-                
-                if (!targetItemInfo.innerHTML.includes("대여 불가")) {
-                    targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
-                };
-            });
+            if (resResult.reason === "OCCUPIED_ITEM") {
+                occupiedItems.forEach((item) => {
+                    const targetItem = id_modal_cart.querySelector(`#id_${item.collection_id}`);
+                    const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
+                    
+                    // targetItem.classList.add("bg-flamingo-50");
+                    
+                    if (!targetItemInfo.innerHTML.includes("대여 불가")) {
+                        targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
+                    };
+                });
+            } else if (resResult.reason === "INVALID_SIGNATURE") {
+                displayErrorInSignatureCanvas(true, "invalid");
+            };
             
             displayButtonMsg(false, id_filter_or_checkout, "descr");
             displayButtonMsg(true, id_filter_or_checkout, "error", resResult.msg);

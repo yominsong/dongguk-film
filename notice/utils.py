@@ -44,9 +44,14 @@ def is_description_text_included(content: str):
 
 
 def is_not_swearing(title_or_content: str):
-    openai_response = chat_gpt(
-        f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘."
-    )
+    prompt = [
+        {
+            "type": "text",
+            "text": f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘.",
+        }
+    ]
+
+    openai_response = chat_gpt("3.5-turbo", prompt)
 
     if "False" in openai_response:
         result = True
@@ -128,9 +133,15 @@ def create_hashtag(content):
         .replace("  ", " ")
         .replace("   ", " ")
     )
-    keywords = chat_gpt(
-        f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마."
-    )
+
+    prompt = [
+        {
+            "type": "text",
+            "text": f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마.",
+        }
+    ]
+
+    keywords = chat_gpt("3.5-turbo", prompt)
 
     if keywords == "":
         okt = Okt()
@@ -628,9 +639,11 @@ def notice(request):
                 "status": status,
                 "reason": reason,
                 "msg": msg,
-                "notion_url": f'https://www.notion.so/{response.json()["results"][0]["parent"]["page_id"].replace("-", "")}'
-                if status == "DONE"
-                else None,
+                "notion_url": (
+                    f'https://www.notion.so/{response.json()["results"][0]["parent"]["page_id"].replace("-", "")}'
+                    if status == "DONE"
+                    else None
+                ),
                 "title": title,
                 "category": category,
                 "keyword": data["keyword"] if status == "DONE" else None,

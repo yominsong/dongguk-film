@@ -196,7 +196,12 @@ def get_subject(base_date: str):
         else:
             subject_dict[key].append(instructor)
 
-    for (kor_name, eng_name, code, target_university_year), instructors in subject_dict.items():
+    for (
+        kor_name,
+        eng_name,
+        code,
+        target_university_year,
+    ), instructors in subject_dict.items():
         target_university_year = [
             int(num) for num in re.sub(r"[^\d,]", "", target_university_year).split(",")
         ]
@@ -337,14 +342,14 @@ def reg_test(value: str, type: str):
     return result
 
 
-def chat_gpt(prompt: str):
+def chat_gpt(model: str, prompt: list):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
 
     url = "https://api.openai.com/v1/chat/completions"
     data = {
-        "model": "gpt-3.5-turbo",
+        "model": f"gpt-{model}",
         "messages": [
             {
                 "role": "user",
@@ -354,12 +359,12 @@ def chat_gpt(prompt: str):
         "temperature": 0,
     }
 
-    try:
-        openai_response = requests.post(
-            url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
-        ).json()["choices"][0]["message"]["content"]
-    except:
-        openai_response = ""
+    # try:
+    openai_response = requests.post(
+        url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
+    ).json()["choices"][0]["message"]["content"]
+    # except:
+    #     openai_response = ""
 
     return openai_response
 
@@ -673,7 +678,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     project_and_date = fields.get("Project and date", None)
 
                     if project_and_date:
-                        project_and_date = json.loads(project_and_date.replace("'", '"'))
+                        project_and_date = json.loads(
+                            project_and_date.replace("'", '"')
+                        )
 
                     hour = {
                         "name": fields.get("Name", None),
@@ -711,7 +718,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
 
     # action: update / target: records
     elif action == "update" and target == "records":
-        records_to_update = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).batch_update(
+        records_to_update = AIRTABLE.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).batch_update(
             params.get("records_to_update", None),
         )
 
@@ -867,8 +876,12 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
 
                     if instructor:
                         instructor = instructor[0].get("plain_text", None)
-                        subject_code = properties.get("Subject code", {}).get("rich_text", [{}])
-                        subject_name = properties.get("Subject name", {}).get("rich_text", [{}])
+                        subject_code = properties.get("Subject code", {}).get(
+                            "rich_text", [{}]
+                        )
+                        subject_name = properties.get("Subject name", {}).get(
+                            "rich_text", [{}]
+                        )
 
                     user = str(properties["User"]["number"])
 
@@ -1023,9 +1036,15 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         }
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
-                    "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
-                    "Subject code": {"rich_text": [{"text": {"content": str(subject_code)}}]},
-                    "Subject name": {"rich_text": [{"text": {"content": str(subject_name)}}]},
+                    "Instructor": {
+                        "rich_text": [{"text": {"content": str(instructor)}}]
+                    },
+                    "Subject code": {
+                        "rich_text": [{"text": {"content": str(subject_code)}}]
+                    },
+                    "Subject name": {
+                        "rich_text": [{"text": {"content": str(subject_name)}}]
+                    },
                     "User": {"number": int(str(user))},
                 },
             }
@@ -1125,9 +1144,15 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                         }
                     },
                     "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
-                    "Instructor": {"rich_text": [{"text": {"content": str(instructor)}}]},
-                    "Subject code": {"rich_text": [{"text": {"content": str(subject_code)}}]},
-                    "Subject name": {"rich_text": [{"text": {"content": str(subject_name)}}]},
+                    "Instructor": {
+                        "rich_text": [{"text": {"content": str(instructor)}}]
+                    },
+                    "Subject code": {
+                        "rich_text": [{"text": {"content": str(subject_code)}}]
+                    },
+                    "Subject name": {
+                        "rich_text": [{"text": {"content": str(subject_name)}}]
+                    },
                     "User": {"number": int(str(user))},
                 },
             }

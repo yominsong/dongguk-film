@@ -8,6 +8,7 @@ from utility.hangul import handle_hangul
 from utility.utils import (
     get_equipment_data,
     find_instructor,
+    chat_gpt,
     airtable,
     notion,
     convert_datetime,
@@ -18,7 +19,9 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from collections import Counter
-import json, ast
+from PIL import Image, ImageOps
+from io import BytesIO
+import json, ast, base64
 
 #
 # Global variables
@@ -414,6 +417,32 @@ def insert_signature(document_id, signature_id):
     )
 
 
+def is_invalid_signature(signature_bs64_encoded_data, student_name):
+    image_url = f"data:image/png;base64,{signature_bs64_encoded_data}"
+
+    prompt = [
+        {
+            "type": "text",
+            "text": f"이 이미지에 포함된 한글이 '{student_name}' 문자열과 동일한지 'True' 또는 'False'로만 답해줘.",
+        },
+        {
+            "type": "image_url",
+            "image_url": {"url": image_url},
+        },
+    ]
+
+    openai_response = chat_gpt("4o", prompt)
+
+    if "True" in openai_response:
+        result = False
+    elif "False" in openai_response:
+        result = True
+    else:
+        result = True
+
+    return result
+
+
 #
 # Main functions
 #
@@ -721,12 +750,13 @@ def equipment(request):
 
     # id: create_application
     elif id == "create_application":
+        application_id = None
         cart = json.loads(cart)
         occupied_item_list = []
         alternative_item_list = []
         status = "FAIL"
+        reason = "OCCUPIED_ITEM"
         msg = "앗, 대여할 수 없는 기자재가 있어요!"
-        application_id = None
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         formula = f"AND(OR({item_id_string}), Status != 'Available')"
@@ -744,9 +774,15 @@ def equipment(request):
         )  # Occupied items are items that have a status of 'Pending', 'Reserved', 'In Use', or 'Unavailable'
 
         if (len(occupied_item_list)) > 0:
-            collection_id_list = [f"{{Collection ID}} = '{item['collection_id']}'" for item in occupied_item_list]
+            purpose_keyword = cart[0]["purpose"]["keyword"]
+
+            collection_id_list = [
+                f"{{Collection ID}} = '{item['collection_id']}'"
+                for item in occupied_item_list
+            ]
+
             collection_id_string = ", ".join(collection_id_list)
-            formula = f"AND(OR({collection_id_string}), Status = 'Available')"
+            formula = f"AND(OR({collection_id_string}), FIND('{purpose_keyword}', Purpose), Status = 'Available')"
 
             data = {
                 "table_name": "equipment-item",
@@ -793,15 +829,29 @@ def equipment(request):
                             and occupied_item["item_id"] == cart_item_id
                         )
                     ]
+        
+        signature = request.FILES.get("signature")
+        signature_file_data = signature.read()
+        signature_image = Image.open(BytesIO(signature_file_data))
+        r, g, b, a = signature_image.split()
+        white_signature_image = Image.new("RGBA", signature_image.size, (255, 255, 255, 0))
+        white_signature_image.paste(signature_image, (0, 0), mask=a)
+        buffered = BytesIO()
+        white_signature_image.save(buffered, format="PNG")
+        signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        student_name = request.user.metadata.name
 
-        if len(occupied_item_list) == 0:
+        if is_invalid_signature(signature_bs64_encoded_data, student_name):
+            reason = "INVALID_SIGNATURE"
+            msg = "앗, 서명이 잘못된 것 같아요!"
+
+        elif len(occupied_item_list) == 0:
             status = "DONE"
+            reason = None
             msg = "기자재 사용 신청서가 제출되었어요! 👍"
             project_id = request.POST.get("project")
             start_time = request.POST.get("startTime")
             end_time = request.POST.get("endTime")
-            student_id = request.user.username
-            signature = request.FILES.get("signature")
 
             project = notion("retrieve", "page", data={"page_id": project_id}).json()
             project_properties = project["properties"]
@@ -872,6 +922,8 @@ def equipment(request):
             date_str = timezone.now().strftime("%Y-%m-%d")
             time_str = timezone.now().strftime("%H:%M:%S")
             datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
+            student_id = request.user.username
+            student_name = request.user.metadata.name
 
             replacements = {
                 "project_name": project_name,
@@ -895,8 +947,8 @@ def equipment(request):
                 "start_datetime": start_datetime,
                 "end_datetime": end_datetime,
                 "datetime": datetime,
-                "student_id": request.user.username,
-                "student_name": request.user.metadata.name,
+                "student_id": student_id,
+                "student_name": student_name,
                 "signature": "",
             }
 
@@ -938,6 +990,7 @@ def equipment(request):
             "id": id,
             "result": {
                 "status": status,
+                "reason": reason,
                 "msg": msg,
                 "application_id": application_id,
                 "occupied_item_list": occupied_item_list,

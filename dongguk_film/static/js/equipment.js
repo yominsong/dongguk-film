@@ -188,6 +188,8 @@ function displayErrorInSignatureCanvas(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
             id_signature_canvas_error.innerText = "기자재 사용 신청을 위해 서약해주세요.";
+        } else if (errorType === "invalid") {
+            id_signature_canvas_error.innerText = `${userName}님의 성명을 정자체로 다시 써주세요.`;
         };
 
         id_signature_canvas_error.hidden = false;
@@ -215,6 +217,7 @@ function validateSignatureCanvas() {
     ["click", "touchstart"].forEach(type => {
         id_signature_canvas.addEventListener(type, () => {
             displayErrorInSignatureCanvas(false);
+            displayButtonMsg(false, id_filter_or_checkout, "error");
         });
     });
 
@@ -224,6 +227,7 @@ function validateSignatureCanvas() {
 
     id_signature_canvas.addEventListener("focusin", () => {
         displayErrorInSignatureCanvas(false);
+        displayButtonMsg(false, id_filter_or_checkout, "error");
     });
 }
 
@@ -1007,26 +1011,6 @@ function initSignatureCanvas() {
             };
         };
     }
-
-    // function downloadSignature() {
-    //     if (isSignatureCanvasDisabled) return;
-
-    //     const downloadCanvas = document.createElement("canvas");
-    //     const downloadCtx = downloadCanvas.getContext("2d");
-    //     const fixedWidth = 320;
-    //     const fixedHeight = 180;
-
-    //     downloadCanvas.width = fixedWidth;
-    //     downloadCanvas.height = fixedHeight;
-    //     downloadCtx.drawImage(id_signature_canvas, 0, 0, fixedWidth, fixedHeight);
-
-    //     const dataURL = downloadCanvas.toDataURL("image/png");
-    //     const link = document.createElement("a");
-
-    //     link.href = dataURL;
-    //     link.download = "signature.png";
-    //     link.click();
-    // }
 
     id_signature_canvas.onmousedown = startDrawing;
     id_signature_canvas.onmousemove = draw;
