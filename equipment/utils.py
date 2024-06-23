@@ -757,8 +757,6 @@ def equipment(request):
             }
 
             alternative_item_list = airtable("get_all", "records", data=data)
-        
-        print(alternative_item_list)
 
         if len(alternative_item_list) > 0:
             alternative_items_by_collection = {}

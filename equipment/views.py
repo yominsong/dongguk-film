@@ -362,8 +362,11 @@ def equipment_detail(request, collection_id):
                     )
 
                     if item["status"] == "Available" or (
-                        user_start_date > item_end_date
-                        or user_end_date < item_start_date
+                        item["status"] != "Unavailable"
+                        and (
+                            user_start_date > item_end_date
+                            or user_end_date < item_start_date
+                        )
                     ):
                         in_stock = True
 
