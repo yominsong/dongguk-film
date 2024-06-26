@@ -756,16 +756,16 @@ function displayError(bool, input, errorType = null) {
         }
 
         // textarea (CKEditor)
-        else if (input.type === "textarea" && input.id === "id_content") {
-            setTimeout(() => {
-                textboxViewRoot.style.backgroundColor = "#FCDBCF";
-                textboxViewRoot.style.boxShadow = "none";
-                textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
-                textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
-                textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
-                textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
-            }, 1);
-        }
+        // else if (input.type === "textarea" && input.id === "id_content") {
+        //     setTimeout(() => {
+        //         textboxViewRoot.style.backgroundColor = "#FCDBCF";
+        //         textboxViewRoot.style.boxShadow = "none";
+        //         textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
+        //         textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
+        //         textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
+        //         textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
+        //     }, 1);
+        // }
 
         // else
         else {
@@ -858,16 +858,16 @@ function displayError(bool, input, errorType = null) {
 
         // textarea (CKEditor)
         // Don't need to do anything because CKEditor will initialize its style
-        else if (input.type === "textarea" && input.id === "id_content") {
-            setTimeout(() => {
-                textboxViewRoot.style.backgroundColor = "#FFFFFF";
-                textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-                textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
-                textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
-                textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
-                textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
-            }, 1);
-        }
+        // else if (input.type === "textarea" && input.id === "id_content") {
+        //     setTimeout(() => {
+        //         textboxViewRoot.style.backgroundColor = "#FFFFFF";
+        //         textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
+        //         textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
+        //         textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
+        //         textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
+        //         textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
+        //     }, 1);
+        // }
 
         // else
         else {

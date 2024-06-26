@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from .models import Cart
 from utility.hangul import handle_hangul
 from utility.utils import (
+    mask_personal_information,
     get_equipment_data,
     find_instructor,
     chat_gpt,
@@ -270,7 +271,37 @@ def is_within_limits(
     return True, None, None
 
 
-def copy_equipment_use_request_form(project_name, student_id):
+def is_invalid_signature(signature_bs64_encoded_data, student_name):
+    image_url = f"data:image/png;base64,{signature_bs64_encoded_data}"
+
+    prompt = [
+        {
+            "type": "text",
+            "text": f"이 이미지에 포함된 한글이 '{student_name}' 문자열과 동일한지 'True' 또는 'False'로만 답해줘.",
+        },
+        {
+            "type": "image_url",
+            "image_url": {"url": image_url},
+        },
+    ]
+
+    openai_response = chat_gpt("4o", prompt)
+
+    if "True" in openai_response:
+        result = False
+    elif "False" in openai_response:
+        result = True
+    else:
+        result = True
+
+    return result
+
+
+def copy_equipment_use_request_form(project_name, student_id, public=False):
+    student_id = (
+        mask_personal_information("student_id", student_id) if public else student_id
+    )
+
     copied_document = (
         GOOGLE_DRIVE.files()
         .copy(
@@ -415,32 +446,6 @@ def insert_signature(document_id, signature_id):
         .batchUpdate(documentId=document_id, body={"requests": requests})
         .execute()
     )
-
-
-def is_invalid_signature(signature_bs64_encoded_data, student_name):
-    image_url = f"data:image/png;base64,{signature_bs64_encoded_data}"
-
-    prompt = [
-        {
-            "type": "text",
-            "text": f"이 이미지에 포함된 한글이 '{student_name}' 문자열과 동일한지 'True' 또는 'False'로만 답해줘.",
-        },
-        {
-            "type": "image_url",
-            "image_url": {"url": image_url},
-        },
-    ]
-
-    openai_response = chat_gpt("4o", prompt)
-
-    if "True" in openai_response:
-        result = False
-    elif "False" in openai_response:
-        result = True
-    else:
-        result = True
-
-    return result
 
 
 #
@@ -765,6 +770,7 @@ def equipment(request):
             "table_name": "equipment-item",
             "params": {
                 "view": "Grid view",
+                "fields": ["Collection ID", "ID"],
                 "formula": formula,
             },
         }
@@ -788,6 +794,7 @@ def equipment(request):
                 "table_name": "equipment-item",
                 "params": {
                     "view": "Grid view",
+                    "fields": ["Collection ID"],
                     "formula": formula,
                 },
             }
@@ -829,16 +836,20 @@ def equipment(request):
                             and occupied_item["item_id"] == cart_item_id
                         )
                     ]
-        
+
         signature = request.FILES.get("signature")
         signature_file_data = signature.read()
         signature_image = Image.open(BytesIO(signature_file_data))
         r, g, b, a = signature_image.split()
-        white_signature_image = Image.new("RGBA", signature_image.size, (255, 255, 255, 0))
+        white_signature_image = Image.new(
+            "RGBA", signature_image.size, (255, 255, 255, 0)
+        )
         white_signature_image.paste(signature_image, (0, 0), mask=a)
         buffered = BytesIO()
         white_signature_image.save(buffered, format="PNG")
-        signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode(
+            "utf-8"
+        )
         student_name = request.user.metadata.name
 
         if is_invalid_signature(signature_bs64_encoded_data, student_name):
@@ -986,6 +997,75 @@ def equipment(request):
             add_equipment_to_table(application_id, cart)
             replace_text(application_id, replacements)
 
+            replacements["instructor_id"] = mask_personal_information(
+                "instructor_id", instructor_id
+            )
+            replacements["instructor_name"] = mask_personal_information(
+                "name", instructor_name
+            )
+            replacements["director_student_id"] = mask_personal_information(
+                "student_id", director_student_id
+            )
+            replacements["director_name"] = mask_personal_information(
+                "name", director_name
+            )
+            replacements["director_phone_number"] = mask_personal_information(
+                "phone_number", director_phone_number
+            )
+            replacements["director_of_photography_student_id"] = (
+                mask_personal_information(
+                    "student_id", director_of_photography_student_id
+                )
+            )
+            replacements["director_of_photography_name"] = mask_personal_information(
+                "name", director_of_photography_name
+            )
+            replacements["director_of_photography_phone_number"] = (
+                mask_personal_information(
+                    "phone_number", director_of_photography_phone_number
+                )
+            )
+            replacements["production_sound_mixer_student_id"] = (
+                mask_personal_information(
+                    "student_id", production_sound_mixer_student_id
+                )
+            )
+            replacements["production_sound_mixer_name"] = mask_personal_information(
+                "name", production_sound_mixer_name
+            )
+            replacements["production_sound_mixer_phone_number"] = (
+                mask_personal_information(
+                    "phone_number", production_sound_mixer_phone_number
+                )
+            )
+            replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
+            replacements["student_id"] = mask_personal_information(
+                "student_id", student_id
+            )
+            replacements["student_name"] = mask_personal_information(
+                "name", student_name
+            )
+            replacements["signature"] = "(서명 마스킹됨)"
+
+            public_application_id = copy_equipment_use_request_form(
+                project_name, student_id, public=True
+            )
+            add_editor_permission(public_application_id)
+            add_equipment_to_table(public_application_id, cart)
+            replace_text(public_application_id, replacements)
+            make_file_public(public_application_id)
+
+            data = {
+                "db_name": "application",
+                "category": "기자재",
+                "title": f"{project_name} {student_id} 기자재 사용 신청서",
+                "project": project_id,
+                "public_application_id": public_application_id,
+                "private_application_id": application_id,
+            }
+
+            notion("create", "page", data=data)
+
         response = {
             "id": id,
             "result": {
@@ -994,6 +1074,38 @@ def equipment(request):
                 "msg": msg,
                 "application_id": application_id,
                 "occupied_item_list": occupied_item_list,
+            },
+        }
+
+    # id: find_application
+    elif id == "find_application":
+        application_list = notion("query", "db", data={"db_name": "application"})
+        additional_application_data_list = []
+
+        for application in application_list:
+            data = {
+                "table_name": "equipment-item",
+                "params": {
+                    "view": "Grid view",
+                    "fields": ["Start datetime", "End datetime", "Status"],
+                    "formula": f"{{Project ID}} = '{application['project']}'",
+                },
+            }
+
+            additional_application_data = airtable("get_all", "records", data=data, limit=1)[0]
+            additional_application_data_list.append(additional_application_data)
+        
+        for i in range(len(application_list)):
+            application = application_list[i]
+            additional_data = additional_application_data_list[i]
+            merged_application = {**application, **additional_data}
+            application_list[i] = merged_application
+
+        response = {
+            "id": id,
+            "result": {
+                "status": "DONE",
+                "found_application_list": application_list,
             },
         }
 

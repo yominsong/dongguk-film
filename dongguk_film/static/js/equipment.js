@@ -237,7 +237,7 @@ function initSignatureCanvasValidation() {
 
 function convertSignatureToFile() {
     if (isSignatureCanvasDisabled) return null;
-    
+
     return new Promise((resolve) => {
         id_signature_canvas.toBlob(function (blob) {
             resolve(blob);
@@ -659,6 +659,12 @@ function initFoundProjectList(resResult = null) {
         const label = project.closest("label");
         const svg = label.querySelector("svg");
 
+        project.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                project.click();
+            };
+        });
+
         project.addEventListener("click", () => {
             if (project.id.indexOf("project") !== -1) {
                 id_project.value = project.value;
@@ -818,6 +824,12 @@ function initFoundHourList(resResult) {
 
                 const label = time.closest("label");
                 const svg = label.querySelector("svg");
+
+                time.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        time.click();
+                    };
+                });
 
                 time.addEventListener("click", () => {
                     if (time.id.indexOf("time") !== -1) {
@@ -1210,7 +1222,7 @@ function updateForm(action, datasetObj = null) {
             keyword.innerText = "장바구니";
         });
 
-        initForm();
+        // initForm();
         executeWhenCartIsUpdated();
 
         const cartList = id_modal_cart.querySelector("ul");
@@ -1404,21 +1416,21 @@ function initModal() {
         });
     });
 
-    class_checkouts.forEach(checkout => {
-        ["click", "keyup"].forEach(type => {
-            checkout.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    updateForm("checkout");
-                };
-            });
-        });
-    });
-
     class_remove_from_carts.forEach(remove_from_cart => {
         ["click", "keyup"].forEach(type => {
             remove_from_cart.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     updateForm("remove_from_cart", remove_from_cart);
+                };
+            });
+        });
+    });
+
+    class_checkouts.forEach(checkout => {
+        ["click", "keyup"].forEach(type => {
+            checkout.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("checkout");
                 };
             });
         });
@@ -1765,7 +1777,7 @@ function requestFindHour() {
 
 async function requestCreateApplication() {
     let formData = new FormData();
-    
+
     formData.append("id", "create_application");
     formData.append("cart", sessionStorage.getItem("cart"));
     formData.append("project", id_project.value);
@@ -1823,7 +1835,7 @@ function initRequest() {
                             inputs.forEach((input) => {
                                 displayError(false, input);
                             });
-                        
+
                             displayErrorInSignatureCanvas(false);
                             requestFindProject();
                             requestFindHour();
@@ -1832,7 +1844,6 @@ function initRequest() {
                         } else if (id_modal_checkout.hidden === false) {
                             if (isItOkayToSubmitForm() && isSignatureDrawn) {
                                 requestCreateApplication();
-                                freezeForm(true);
                                 displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                                 displayButtonMsg(false, id_filter_or_checkout, "error");
                                 id_filter_or_checkout_spin.classList.remove("hidden");

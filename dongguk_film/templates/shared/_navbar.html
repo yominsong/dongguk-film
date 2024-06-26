@@ -304,7 +304,7 @@
                                    id="user-menu-item-0"
                                    @mouseenter="activeIndex = 0"
                                    @mouseleave="activeIndex = -1"
-                                   @click="open = false; focusButton()">내 프로필</a>
+                                   @click="open = false; focusButton()">내 계정</a>
                                 <a href="{% url 'account_logout' %}"
                                    class="logout-button block px-4 py-2 text-sm text-gray-700"
                                    :class="{ 'bg-gray-100': activeIndex === 1 }"
@@ -500,7 +500,7 @@
                             <div class="ml-auto">
                                 <button type="button"
                                         class="flex-shrink-0 bg-white text-gray-500 rounded-full focus:df-focus-ring-offset-white under-construction">
-                                    <span class="sr-only">내 프로필</span>
+                                    <span class="sr-only">내 계정</span>
                                     <svg class="h-6 w-6"
                                          fill="none"
                                          viewBox="0 0 24 24"

@@ -121,6 +121,10 @@
 }
 
 /* CKEditor toolbar */
+.ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
+    border: none !important;
+}
+
 .ck-rounded-corners .ck.ck-editor__top .ck-sticky-panel .ck-toolbar,
 .ck.ck-editor__top .ck-sticky-panel .ck-toolbar.ck-rounded-corners {
     margin-bottom: -2px !important;

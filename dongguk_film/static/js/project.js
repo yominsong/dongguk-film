@@ -585,6 +585,12 @@ function initFoundInstructorList(resResult) {
         const label = instructor.closest("label");
         const svg = label.querySelector("svg");
 
+        instructor.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                instructor.click();
+            };
+        });
+
         instructor.addEventListener("click", () => {
             if (instructor.id.indexOf("instructor") !== -1) {
                 id_instructor.value = instructor.value;

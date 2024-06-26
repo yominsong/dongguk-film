@@ -416,6 +416,15 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestFindApplication()
+    else if (resID === "find_application") {
+        if (resResult.status === "DONE") {
+            initFoundApplicationList(resResult);
+        } else if (resResult.status === "FAIL") {
+            initFoundApplicationList();
+        };
+    }
+
     // requestFindInstructor()
     else if (resID === "find_instructor") {
         initFoundInstructorList(resResult);
@@ -559,8 +568,8 @@ function handleAjaxCallback(response) {
         displayButtonMsg(false, id_create_or_update, "descr");
 
         if (resResult.status === "DONE") {
-            ckEditor.setData(resResult.content);
-            ckEditor.disableReadOnlyMode("id_content");
+            watchdog.editor.setData(resResult.content);
+            watchdog.editor.disableReadOnlyMode("id_content");
             displayNoti(true, "EIS");
         } else if (resResult.status === "FAIL") {
             displayNoti(true, "EIF");
@@ -600,8 +609,8 @@ function handleAjaxCallback(response) {
     // requestReadNotice()
     else if (resID === "read_notice") {
         if (resResult.status === "DONE") {
-            ckEditor.setData(resResult.content);
-            ckEditor.disableReadOnlyMode("id_content");
+            watchdog.editor.setData(resResult.content);
+            watchdog.editor.disableReadOnlyMode("id_content");
             id_block_id_list.value = resResult.block_id_list;
             freezeFileForm(false);
             selectedFiles = resResult.file;

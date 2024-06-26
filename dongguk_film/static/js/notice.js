@@ -40,6 +40,7 @@ let isAddedToFileForm = false;
 let isDoubleChecked = false;
 
 // miscellaneous
+const watchdog = new CKSource.EditorWatchdog();
 let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let selectedFiles;
 let attachedFiles = [];
@@ -137,7 +138,84 @@ function initCkEditor() {
     const isUserAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
 
     if (isUserAuthenticated) {
-        ClassicEditor
+        window.watchdog = watchdog;
+
+        watchdog.setCreator( ( element, config ) => {
+            return CKSource.Editor
+                .create( element, config )
+                .then( editor => {
+                    ckEditor = editor;
+                    ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
+                    toolbarViewRoot = ckEditor.ui.view.toolbar.element;
+                    textboxModel = ckEditor.model.document;
+                    textboxViewRoot = ckEditor.editing.view.getDomRoot();
+
+                    textboxModel.on("change:data", () => {
+                        const data = ckEditor.getData();
+                        const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
+                        const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
+
+                        if (hasYouTubeShareLink) {
+                            displayNoti(false, "RYS");
+                        } else if (hasYouTubeRegularLink) {
+                            displayNoti(true, "RYS");
+                        };
+
+                        if (!hasOnlyImages(data)) {
+                            displayNoti(false, "SDI");
+                        } else if (hasOnlyImages(data)) {
+                            displayNoti(true, "SDI");
+                        };
+
+                        id_content.value = ckEditor.getData();
+                    });
+
+                    ckElements.forEach((ck) => {
+                        ck.addEventListener("focus", () => { displayError(false, id_content) });
+
+                        ck.addEventListener("blur", event => {
+                            if (!ckElements.includes(event.relatedTarget)) {
+                                if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
+                                    displayError(true, id_content, "empty");
+                                } else {
+                                    displayError(false, id_content);
+                                };
+                            };
+                        });
+
+                        ck.addEventListener("keydown", event => {
+                            if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
+                                const id_category_error = code(id_category, "_error");
+
+                                if (id_category_error.innerText.length === 0) {
+                                    setTimeout(() => {
+                                        toolbarViewRoot.querySelector(".ck-toolbar__items").querySelector("button").focus();
+                                        displayError(false, id_category);
+                                    });
+                                } else {
+                                    setTimeout(() => {
+                                        toolbarViewRoot.querySelector(".ck-toolbar__items").querySelector("button").focus();
+                                    });
+                                };
+                            };
+                        });
+
+                        ck.addEventListener("click", () => { displayError(false, id_content) });
+
+                        eventTypes.forEach(type => {
+                            ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
+                        });
+                    });
+
+                    return editor;
+                } );
+        } );
+
+        watchdog.setDestructor( editor => {
+            return editor.destroy();
+        } );
+
+        watchdog
             .create(document.querySelector("#id_content"), {
                 removePlugins: ["Title", "Markdown"],
                 language: "ko",
@@ -147,70 +225,70 @@ function initCkEditor() {
                     previewsInData: true
                 }
             })
-            .then(editor => {
-                ckEditor = editor;
-                ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
-                toolbarViewRoot = ckEditor.ui.view.toolbar.element;
-                textboxModel = ckEditor.model.document;
-                textboxViewRoot = ckEditor.editing.view.getDomRoot();
+            // .then(editor => {
+            //     ckEditor = editor;
+            //     ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
+            //     toolbarViewRoot = ckEditor.ui.view.toolbar.element;
+            //     textboxModel = ckEditor.model.document;
+            //     textboxViewRoot = ckEditor.editing.view.getDomRoot();
 
-                textboxModel.on("change:data", () => {
-                    const data = ckEditor.getData();
-                    const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
-                    const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
+            //     textboxModel.on("change:data", () => {
+            //         const data = ckEditor.getData();
+            //         const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
+            //         const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
 
-                    if (hasYouTubeShareLink) {
-                        displayNoti(false, "RYS");
-                    } else if (hasYouTubeRegularLink) {
-                        displayNoti(true, "RYS");
-                    };
+            //         if (hasYouTubeShareLink) {
+            //             displayNoti(false, "RYS");
+            //         } else if (hasYouTubeRegularLink) {
+            //             displayNoti(true, "RYS");
+            //         };
 
-                    if (!hasOnlyImages(data)) {
-                        displayNoti(false, "SDI");
-                    } else if (hasOnlyImages(data)) {
-                        displayNoti(true, "SDI");
-                    };
+            //         if (!hasOnlyImages(data)) {
+            //             displayNoti(false, "SDI");
+            //         } else if (hasOnlyImages(data)) {
+            //             displayNoti(true, "SDI");
+            //         };
 
-                    id_content.value = ckEditor.getData();
-                });
+            //         id_content.value = ckEditor.getData();
+            //     });
 
-                ckElements.forEach((ck) => {
-                    ck.addEventListener("focus", () => { displayError(false, id_content) });
+            //     ckElements.forEach((ck) => {
+            //         ck.addEventListener("focus", () => { displayError(false, id_content) });
 
-                    ck.addEventListener("blur", event => {
-                        if (!ckElements.includes(event.relatedTarget)) {
-                            if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
-                                displayError(true, id_content, "empty");
-                            } else {
-                                displayError(false, id_content);
-                            };
-                        };
-                    });
+            //         ck.addEventListener("blur", event => {
+            //             if (!ckElements.includes(event.relatedTarget)) {
+            //                 if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
+            //                     displayError(true, id_content, "empty");
+            //                 } else {
+            //                     displayError(false, id_content);
+            //                 };
+            //             };
+            //         });
 
-                    ck.addEventListener("keydown", event => {
-                        if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
-                            const id_category_error = code(id_category, "_error");
+            //         ck.addEventListener("keydown", event => {
+            //             if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
+            //                 const id_category_error = code(id_category, "_error");
 
-                            if (id_category_error.innerText.length === 0) {
-                                setTimeout(() => {
-                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-                                    displayError(false, id_category);
-                                });
-                            } else {
-                                setTimeout(() => {
-                                    toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-                                });
-                            };
-                        };
-                    });
+            //                 if (id_category_error.innerText.length === 0) {
+            //                     setTimeout(() => {
+            //                         toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+            //                         displayError(false, id_category);
+            //                     });
+            //                 } else {
+            //                     setTimeout(() => {
+            //                         toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
+            //                     });
+            //                 };
+            //             };
+            //         });
 
-                    ck.addEventListener("click", () => { displayError(false, id_content) });
+            //         ck.addEventListener("click", () => { displayError(false, id_content) });
 
-                    eventTypes.forEach(type => {
-                        ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
-                    });
-                });
-            })
+            //         eventTypes.forEach(type => {
+            //             ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
+            //         });
+            //     });
+            // })
             .catch(err => {
                 console.error(err.stack);
             });
@@ -220,8 +298,8 @@ function initCkEditor() {
 initCkEditor();
 
 function freezeCkEditor() {
-    ckEditor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
-    ckEditor.enableReadOnlyMode("id_content");
+    watchdog.editor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
+    watchdog.editor.enableReadOnlyMode("id_content");
 }
 
 function attachFile(event = null, sudo = false) {
@@ -547,7 +625,7 @@ function initForm() {
         };
     });
 
-    ckEditor.setData("");
+    watchdog.editor.setData("");
     id_file.value = null;
     class_files.forEach(file => { file.remove() });
     attachedFiles.length = 0;

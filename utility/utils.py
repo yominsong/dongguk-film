@@ -129,6 +129,23 @@ def generate_random_string(int: int):
     return random_string
 
 
+def mask_personal_information(type: str, string: str):
+    if type == "instructor_id":
+        masked_string = f"{'*' * 4}{string[-4:]}"
+    elif type == "student_id":
+        masked_string = f"{string[:2]}{'*' * 5}{string[-3:]}"
+    elif type == "name":
+        if len(string) == 2:
+            masked_string = f"{string[0]}*"
+        else:
+            masked_string = f"{string[0]}{'*' * (len(string) - 2)}{string[-1]}"
+    elif type == "phone_number":
+        split_string = string.split("-")
+        masked_string = f"{split_string[0]}-{split_string[1][:2]}**-**{split_string[2][2:]}"
+
+    return masked_string
+
+
 def append_item(item, item_list: list):
     if item not in item_list:
         item_list.append(item)
@@ -659,12 +676,19 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             try:
                 for record in records:
                     fields = record["fields"]
+                    start_datetime = fields.get("Start datetime", None)
+                    start_datetime = convert_datetime(start_datetime) if start_datetime else None
+                    end_datetime = fields.get("End datetime", None)
+                    end_datetime = convert_datetime(end_datetime) if end_datetime else None
 
                     item = {
                         "record_id": record["id"],
                         "item_id": fields.get("ID", None),
                         "collection_id": fields.get("Collection ID", [None])[0],
                         "name": fields.get("Name", None),
+                        "start_datetime": start_datetime,
+                        "end_datetime": end_datetime,
+                        "status": fields.get("Status", None),
                     }
 
                     record_list.append(item)
@@ -828,6 +852,35 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     }
 
                     item_list.append(operator)
+            except:
+                pass
+        
+        elif db_name == "application":
+            response = requests.post(
+                url, json=payload, headers=set_headers("NOTION")
+            ).json()
+            items = response["results"]
+            item_list = []
+
+            try:
+                for item in items:
+                    properties = item["properties"]
+
+                    category = properties["Category"]["select"]["name"]
+                    title = properties["Title"]["title"][0]["plain_text"]
+                    project = properties["Project"]["relation"][0]["id"]
+                    public_application_id = properties["Public application ID"]["rich_text"][0]["plain_text"]
+                    private_application_id = properties["Private application ID"]["rich_text"][0]["plain_text"]
+
+                    application = {
+                        "category": category,
+                        "title": title,
+                        "project": project,
+                        "public_application_id": public_application_id,
+                        "private_application_id": private_application_id,
+                    }
+
+                    item_list.append(application)
             except:
                 pass
 
@@ -1022,7 +1075,28 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "project":
+        if db_name == "application":
+            project = data.get("project", None)
+            public_application_id = data.get("public_application_id", None)
+            private_application_id = data.get("private_application_id", None)
+
+            payload = {
+                "parent": {"database_id": NOTION_DB_ID[db_name]},
+                "properties": {
+                    "Category": {"select": {"name": category}},
+                    "Title": {"title": [{"text": {"content": title}}]},
+                    "Project": {"relation": [{"id": project}]},
+                    "Public application ID": {
+                        "rich_text": [{"text": {"content": public_application_id}}]
+                    },
+                    "Private application ID": {
+                        "rich_text": [{"text": {"content": private_application_id}}]
+                    },
+                },
+            }
+            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
+
+        elif db_name == "project":
             payload = {
                 "parent": {"database_id": NOTION_DB_ID[db_name]},
                 "properties": {
