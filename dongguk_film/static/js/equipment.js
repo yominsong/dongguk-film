@@ -11,12 +11,12 @@ const id_scrollable_part_of_modal = code("id_scrollable_part_of_", id_modal);
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_initialize_purpose = code("id_initialize_", id_purpose);
-const id_purpose_descr = code(id_purpose, "_descr");
 const id_purpose_badge = code(id_purpose, "_badge");
+const id_purpose_cart_reset_msg = code(id_purpose, "_cart_reset_msg");
 const id_period = document.getElementById("id_period");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
-const id_period_descr = code(id_period, "_descr");
+const id_period_cart_reset_msg = code(id_period, "_cart_reset_msg");
 const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
 const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
 const id_project = document.getElementById("id_project");
@@ -59,6 +59,25 @@ const currentPeriod = urlParams.get("period");
 //
 // Sub functions
 //
+
+function initUrlParams() {
+    const cart = getCart();
+
+    if (cart === null) return;
+
+    const url = new URL(location.href);
+    const params = new URLSearchParams(url.search);
+    const purposeInCart = cart[0].purpose.priority;
+    const periodInCart = cart[0].period
+
+    if (params.has("purposePriority") && params.has("period")) return;
+
+    params.set("purposePriority", purposeInCart);
+    params.set("period", periodInCart);
+    url.search = params.toString();
+    window.history.replaceState(null, null, url);
+    window.location.reload();
+}
 
 function notifyRentalLimit() {
     const params = new URLSearchParams(window.location.search);
@@ -550,22 +569,19 @@ function initCalendar() {
                     const isThereSomethingInCart = getCart() !== null;
     
                     if (isPeriodAlreadySelected && isPeriodChanged && isThereSomethingInCart) {
-                        id_period_descr.hidden = false;
-                        id_period_descr.classList.replace("text-gray-500", "text-flamingo-600");
-                        id_period_descr.innerText = "대여 기간이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                        id_period_cart_reset_msg.hidden = false;
+                        id_period_cart_reset_msg.innerText = "대여 기간이 변경되면 장바구니가 초기화되므로 유의해주세요.";
                         id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
                     } else {
-                        id_period_descr.hidden = true;
-                        id_period_descr.classList.replace("text-flamingo-600", "text-gray-500");
-                        id_period_descr.innerText = "";
+                        id_period_cart_reset_msg.hidden = true;
+                        id_period_cart_reset_msg.innerText = "";
                         id_filter_or_checkout_text.innerText = "적용하기";
                     };
                 };
-
-                setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
             };
         };
-
+        
+        setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
         updateCalendar();
     }
 
@@ -1241,32 +1257,18 @@ function initForm() {
             const isThereSomethingInCart = getCart() !== null;
 
             if (isPurposeAlreadySelected && isPurposeChanged && isThereSomethingInCart) {
-                id_purpose_descr.hidden = false;
-                id_purpose_descr.classList.replace("text-gray-500", "text-flamingo-600");
-                id_purpose_descr.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
-                id_period_descr.hidden = true;
-                id_period_descr.innerText = "";
+                id_purpose_cart_reset_msg.hidden = false;
+                id_purpose_cart_reset_msg.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                id_period_cart_reset_msg.hidden = true;
+                id_period_cart_reset_msg.innerText = "";
                 id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
             } else {
-                id_purpose_descr.hidden = true;
-                id_purpose_descr.classList.replace("text-flamingo-600", "text-gray-500");
-                id_purpose_descr.innerText = "";
+                id_purpose_cart_reset_msg.hidden = true;
+                id_purpose_cart_reset_msg.innerText = "";
                 id_filter_or_checkout_text.innerText = "적용하기";
             };
         });
     });
-
-    // const cart = getCart();
-
-    // if (currentPurpose !== null && currentPurpose !== "") {
-    //     code("id_purpose_", urlParams.get("purposePriority")).click();
-
-    //     if (currentPurpose !== id_purpose.value && cart !== null) {
-    //         id_purpose_help.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
-    //     } else {
-    //         id_purpose_help.innerText = "";
-    //     };
-    // };
 
     id_purpose.addEventListener("change", () => {
         const otherInputs = [...class_purposes].filter(i => i !== id_purpose);
@@ -1957,6 +1959,7 @@ function initFeedback() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
+        initUrlParams();
         requestVerifyAuthentication();
         initFeedback();
 
