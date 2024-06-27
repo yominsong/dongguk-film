@@ -191,7 +191,7 @@ function displayErrorInSignatureCanvas(bool, errorType = null) {
         if (errorType === "empty") {
             id_signature_canvas_error.innerText = "기자재 사용 신청을 위해 서약해주세요.";
         } else if (errorType === "invalid") {
-            id_signature_canvas_error.innerText = `${userName}님의 성명을 정자체로 다시 써주세요.`;
+            id_signature_canvas_error.innerText = `${userName}님의 성명 ${getKoreanCharacterCount(userName)} 글자를 정자체로 써주세요.`;
         };
 
         id_signature_canvas_error.hidden = false;
@@ -723,75 +723,225 @@ function initFoundProjectList(resResult = null) {
 }
 
 // TODO: Refactor this function
+// function initFoundHourList(resResult) {
+//     const start_hour_list = resResult.start_hour_list;
+//     const end_hour_list = resResult.end_hour_list;
+//     const id_start_time_list = document.getElementById("id_start_time_list");
+//     const id_end_time_list = document.getElementById("id_end_time_list");
+
+//     id_start_time_list.innerHTML = "";
+//     id_end_time_list.innerHTML = "";
+
+//     [start_hour_list, end_hour_list].forEach((hourList) => {
+//         if (hourList.length === 0) {
+//             const placeholderElement = document.createElement("label");
+//             const timeList = hourList === start_hour_list ? id_start_time_list : id_end_time_list;
+//             const dateInCart = hourList === start_hour_list ? id_start_date_in_cart : id_end_date_in_cart;
+//             const keyword = hourList === start_hour_list ? "대여" : "반납";
+
+//             placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+
+//             placeholderElement.innerHTML = `
+//                 <div class="flex flex-1 justify-center">
+//                     <span id="${timeList.id}_help"
+//                         class="text-sm text-center text-gray-500">${dateInCart.innerText.split("(")[1][0]}요일에는 기자재를 ${keyword}할 수 없어요.</span>
+//                 </div>
+//             `;
+
+//             timeList.appendChild(placeholderElement);
+//         };
+//     });
+
+//     [start_hour_list, end_hour_list].forEach((hourList, index) => {
+//         const targetList = index === 0 ? id_start_time_list : id_end_time_list;
+//         const targetId = index === 0 ? id_start_time : id_end_time;
+//         const targetClass = index === 0 ? "class-start-time" : "class-end-time";
+
+//         hourList.forEach(newlyFoundHour => {
+//             const newlyFoundHourElement = document.createElement("label");
+//             const available = newlyFoundHour.available;
+//             const time = newlyFoundHour.time;
+//             const timeWihtoutColon = time.replace(":", "");
+
+//             if (available === true) {
+//                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+
+//                 newlyFoundHourElement.innerHTML = `
+//                     <input id="${targetId.id}_${timeWihtoutColon}"
+//                             name="${targetId.id}"
+//                             type="radio"
+//                             value="${timeWihtoutColon}"
+//                             class="sr-only class-second class-radio ${targetClass}"
+//                             aria-labelledby="${targetId.id}_${timeWihtoutColon}_label">
+//                     <span class="flex flex-1">
+//                         <span id="${targetId.id}_${timeWihtoutColon}_label"
+//                                 class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
+//                     </span>
+//                     <span id="${targetId.id}_${timeWihtoutColon}_descr" hidden></span>
+//                     <span id="${targetId.id}_${timeWihtoutColon}_error" hidden></span>
+//                     <svg class="h-5 w-5 ml-1 text-flamingo"
+//                             viewBox="0 0 16 20"
+//                             fill="currentColor"
+//                             aria-hidden="true">
+//                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+//                     </svg>
+//                     <span class="pointer-events-none absolute -inset-px rounded-md"
+//                             aria-hidden="true"></span>
+//                 `;
+//             } else {
+//                 newlyFoundHourElement.className = "relative flex items-center cursor-not-allowed h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-100";
+
+//                 newlyFoundHourElement.innerHTML = `
+//                     <span class="flex flex-1">
+//                         <span class="block whitespace-pre-line text-sm font-medium text-gray-600">${time} 마감</span>
+//                     </span>
+//                 `;
+//             };
+
+//             targetList.appendChild(newlyFoundHourElement);
+//         });
+
+//         const class_start_times = document.querySelectorAll(".class-start-time");
+//         const class_end_times = document.querySelectorAll(".class-end-time");
+
+//         [class_start_times, class_end_times].forEach((class_times, index) => {
+//             const targetId = index === 0 ? id_start_time : id_end_time;
+
+//             class_times.forEach((time) => {
+//                 if (targetId.value === time.value) {
+//                     time.click();
+//                 };
+
+//                 const label = time.closest("label");
+//                 const svg = label.querySelector("svg");
+
+//                 time.addEventListener("keydown", (event) => {
+//                     if (event.key === "Enter" || event.key === " ") {
+//                         time.click();
+//                     };
+//                 });
+
+//                 time.addEventListener("click", () => {
+//                     if (time.id.indexOf("time") !== -1) {
+//                         targetId.value = time.value;
+//                     };
+//                 });
+
+//                 time.addEventListener("focus", () => {
+//                     label.classList.add("df-focus-ring-inset");
+//                     svg.classList.remove("invisible");
+//                 });
+
+//                 time.addEventListener("blur", () => {
+//                     if (!time.checked) {
+//                         svg.classList.add("invisible");
+//                     } else if (time.checked) {
+//                         label.classList.add("df-ring-inset-flamingo");
+//                     };
+
+//                     label.classList.remove("df-focus-ring-inset");
+//                 });
+
+//                 time.addEventListener("change", () => {
+//                     const otherInputs = [...class_times].filter(i => i !== time);
+
+//                     if (time.checked) {
+//                         label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+//                         svg.classList.remove("invisible");
+//                     } else {
+//                         svg.classList.add("invisible");
+//                     };
+
+//                     otherInputs.forEach(i => {
+//                         const otherLabel = i.closest("label");
+//                         const otherSvg = otherLabel.querySelector("svg");
+
+//                         if (!i.checked) {
+//                             otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+//                             otherSvg.classList.add("invisible");
+//                         };
+//                     });
+//                 });
+
+//                 if (!time.checked) {
+//                     label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+//                     svg.classList.add("invisible");
+//                 } else {
+//                     label.classList.add("df-ring-inset-flamingo");
+//                 };
+//             });
+//         });
+//     });
+
+//     const class_seconds = document.querySelectorAll(".class-second");
+
+//     initValidation(class_seconds, id_filter_or_checkout);
+// }
+
 function initFoundHourList(resResult) {
     const start_hour_list = resResult.start_hour_list;
     const end_hour_list = resResult.end_hour_list;
     const id_start_time_list = document.getElementById("id_start_time_list");
     const id_end_time_list = document.getElementById("id_end_time_list");
+    const id_start_time = document.getElementById("id_start_time");
+    const id_end_time = document.getElementById("id_end_time");
+    const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
+    const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
+    const currentStartTime = id_start_time.value;
+    const currentEndTime = id_end_time.value;
 
     id_start_time_list.innerHTML = "";
     id_end_time_list.innerHTML = "";
 
-    if (start_hour_list.length === 0 || end_hour_list.length === 0) {
-        if (start_hour_list.length === 0) {
+    [start_hour_list, end_hour_list].forEach((hourList) => {
+        if (hourList.length === 0) {
             const placeholderElement = document.createElement("label");
+            const timeList = hourList === start_hour_list ? id_start_time_list : id_end_time_list;
+            const dateInCart = hourList === start_hour_list ? id_start_date_in_cart : id_end_date_in_cart;
+            const keyword = hourList === start_hour_list ? "대여" : "반납";
 
             placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
 
             placeholderElement.innerHTML = `
                 <div class="flex flex-1 justify-center">
-                    <span id="${id_start_time_list.id}_help"
-                        class="text-sm text-center text-gray-500">${id_start_date_in_cart.innerText.split("(")[1][0]}요일에는 기자재를 대여할 수 없어요.</span>
+                    <span id="${timeList.id}_help"
+                        class="text-sm text-center text-gray-500">${dateInCart.innerText.split("(")[1][0]}요일에는 기자재를 ${keyword}할 수 없어요.</span>
                 </div>
             `;
 
-            id_start_time_list.appendChild(placeholderElement);
+            timeList.appendChild(placeholderElement);
         };
-
-        if (end_hour_list.length === 0) {
-            const placeholderElement = document.createElement("label");
-
-            placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
-
-            placeholderElement.innerHTML = `
-                <div class="flex flex-1 justify-center">
-                    <span id="${id_end_time_list.id}_help"
-                        class="text-sm text-center text-gray-500">${id_end_date_in_cart.innerText.split("(")[1][0]}요일에는 기자재를 반납할 수 없어요.</span>
-                </div>
-            `;
-
-            id_end_time_list.appendChild(placeholderElement);
-        };
-    };
+    });
 
     [start_hour_list, end_hour_list].forEach((hourList, index) => {
         const targetList = index === 0 ? id_start_time_list : id_end_time_list;
         const targetId = index === 0 ? id_start_time : id_end_time;
         const targetClass = index === 0 ? "class-start-time" : "class-end-time";
+        const currentTime = index === 0 ? currentStartTime : currentEndTime;
 
         hourList.forEach(newlyFoundHour => {
             const newlyFoundHourElement = document.createElement("label");
             const available = newlyFoundHour.available;
             const time = newlyFoundHour.time;
-            const timeWihtoutColon = time.replace(":", "");
+            const timeWithoutColon = time.replace(":", "");
 
             if (available === true) {
                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
-
                 newlyFoundHourElement.innerHTML = `
-                    <input id="${targetId.id}_${timeWihtoutColon}"
+                    <input id="${targetId.id}_${timeWithoutColon}"
                             name="${targetId.id}"
                             type="radio"
-                            value="${timeWihtoutColon}"
+                            value="${timeWithoutColon}"
                             class="sr-only class-second class-radio ${targetClass}"
-                            aria-labelledby="${targetId.id}_${timeWihtoutColon}_label">
+                            aria-labelledby="${targetId.id}_${timeWithoutColon}_label"
+                            ${currentTime === timeWithoutColon ? 'checked' : ''}>
                     <span class="flex flex-1">
-                        <span id="${targetId.id}_${timeWihtoutColon}_label"
+                        <span id="${targetId.id}_${timeWithoutColon}_label"
                                 class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
                     </span>
-                    <span id="${targetId.id}_${timeWihtoutColon}_descr" hidden></span>
-                    <span id="${targetId.id}_${timeWihtoutColon}_error" hidden></span>
-                    <svg class="h-5 w-5 ml-1 text-flamingo"
+                    <span id="${targetId.id}_${timeWithoutColon}_descr" hidden></span>
+                    <span id="${targetId.id}_${timeWithoutColon}_error" hidden></span>
+                    <svg class="h-5 w-5 ml-1 text-flamingo ${currentTime === timeWithoutColon ? '' : 'invisible'}"
                             viewBox="0 0 16 20"
                             fill="currentColor"
                             aria-hidden="true">
@@ -800,9 +950,12 @@ function initFoundHourList(resResult) {
                     <span class="pointer-events-none absolute -inset-px rounded-md"
                             aria-hidden="true"></span>
                 `;
+
+                if (currentTime === timeWithoutColon) {
+                    newlyFoundHourElement.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                };
             } else {
                 newlyFoundHourElement.className = "relative flex items-center cursor-not-allowed h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-100";
-
                 newlyFoundHourElement.innerHTML = `
                     <span class="flex flex-1">
                         <span class="block whitespace-pre-line text-sm font-medium text-gray-600">${time} 마감</span>
@@ -812,78 +965,117 @@ function initFoundHourList(resResult) {
 
             targetList.appendChild(newlyFoundHourElement);
         });
+    });
 
-        const class_start_times = document.querySelectorAll(".class-start-time");
-        const class_end_times = document.querySelectorAll(".class-end-time");
+    const class_start_times = document.querySelectorAll(".class-start-time");
+    const class_end_times = document.querySelectorAll(".class-end-time");
+    const isSameDay = id_start_date_in_cart.innerText === id_end_date_in_cart.innerText;
 
-        [class_start_times, class_end_times].forEach((class_times, index) => {
-            const targetId = index === 0 ? id_start_time : id_end_time;
+    function updateEndTimes() {
+        if (!isSameDay) return;
 
-            class_times.forEach((time) => {
-                if (targetId.value === time.value) {
-                    time.click();
-                };
+        const selectedStartTime = document.querySelector(".class-start-time:checked");
+        
+        if (selectedStartTime) {
+            const startTimeValue = parseInt(selectedStartTime.value);
+            let endTimeUpdated = false;
 
-                const label = time.closest("label");
-                const svg = label.querySelector("svg");
+            class_end_times.forEach(endTime => {
+                const endTimeValue = parseInt(endTime.value);
+                const label = endTime.closest("label");
+                
+                if (endTimeValue <= startTimeValue) {
+                    label.classList.add("cursor-not-allowed", "bg-gray-100");
+                    label.classList.remove("cursor-pointer", "hover:bg-gray-50");
+                    endTime.disabled = true;
 
-                time.addEventListener("keydown", (event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                        time.click();
-                    };
-                });
-
-                time.addEventListener("click", () => {
-                    if (time.id.indexOf("time") !== -1) {
-                        targetId.value = time.value;
-                    };
-                });
-
-                time.addEventListener("focus", () => {
-                    label.classList.add("df-focus-ring-inset");
-                    svg.classList.remove("invisible");
-                });
-
-                time.addEventListener("blur", () => {
-                    if (!time.checked) {
-                        svg.classList.add("invisible");
-                    } else if (time.checked) {
-                        label.classList.add("df-ring-inset-flamingo");
-                    };
-
-                    label.classList.remove("df-focus-ring-inset");
-                });
-
-                time.addEventListener("change", () => {
-                    const otherInputs = [...class_times].filter(i => i !== time);
-
-                    if (time.checked) {
-                        label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
-                        svg.classList.remove("invisible");
-                    } else {
-                        svg.classList.add("invisible");
-                    };
-
-                    otherInputs.forEach(i => {
-                        const otherLabel = i.closest("label");
-                        const otherSvg = otherLabel.querySelector("svg");
-
-                        if (!i.checked) {
-                            otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-                            otherSvg.classList.add("invisible");
-                        };
-                    });
-                });
-
-                if (!time.checked) {
-                    label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-                    svg.classList.add("invisible");
+                    if (endTime.checked) {
+                        endTime.checked = false;
+                        label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                        label.querySelector("svg").classList.add("invisible");
+                        id_end_time.value = "";
+                        endTimeUpdated = true;
+                    }
                 } else {
-                    label.classList.add("df-ring-inset-flamingo");
+                    label.classList.remove("cursor-not-allowed", "bg-gray-100");
+                    label.classList.add("cursor-pointer", "hover:bg-gray-50");
+                    endTime.disabled = false;
                 };
             });
+
+            if (endTimeUpdated) {
+                const firstValidEndTime = document.querySelector(".class-end-time:not(:disabled)");
+
+                if (firstValidEndTime) firstValidEndTime.click();
+            };
+        };
+    }
+
+    [class_start_times, class_end_times].forEach((class_times, index) => {
+        const targetId = index === 0 ? id_start_time : id_end_time;
+
+        class_times.forEach((time) => {
+            if (targetId.value === time.value) time.click();
+
+            const label = time.closest("label");
+            const svg = label.querySelector("svg");
+
+            label.classList.add("cursor-pointer", "hover:bg-gray-50");
+
+            time.addEventListener("click", () => {
+                if (time.id.indexOf("time") !== -1) targetId.value = time.value;
+                if (index === 0 && isSameDay) updateEndTimes();
+            });
+
+            time.addEventListener("focus", () => {
+                label.classList.add("df-focus-ring-inset");
+                svg.classList.remove("invisible");
+            });
+
+            time.addEventListener("blur", () => {
+                if (!time.checked) {
+                    svg.classList.add("invisible");
+                } else if (time.checked) {
+                    label.classList.add("df-ring-inset-flamingo");
+                };
+                
+                label.classList.remove("df-focus-ring-inset");
+            });
+
+            time.addEventListener("change", () => {
+                const otherInputs = [...class_times].filter(i => i !== time);
+
+                if (time.checked) {
+                    label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                    svg.classList.remove("invisible");
+                    targetId.value = time.value;
+
+                    if (index === 0 && isSameDay) updateEndTimes();
+                } else {
+                    svg.classList.add("invisible");
+                };
+
+                otherInputs.forEach(i => {
+                    const otherLabel = i.closest("label");
+                    const otherSvg = otherLabel.querySelector("svg");
+
+                    if (!i.checked) {
+                        otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                        otherSvg.classList.add("invisible");
+                    };
+                });
+            });
+
+            if (!time.checked) {
+                label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                svg.classList.add("invisible");
+            } else {
+                label.classList.add("df-ring-inset-flamingo");
+            };
         });
     });
+
+    if (isSameDay) updateEndTimes();
 
     const class_seconds = document.querySelectorAll(".class-second");
 
