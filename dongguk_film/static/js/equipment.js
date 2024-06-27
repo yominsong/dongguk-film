@@ -11,10 +11,12 @@ const id_scrollable_part_of_modal = code("id_scrollable_part_of_", id_modal);
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_initialize_purpose = code("id_initialize_", id_purpose);
-const id_period = document.getElementById("id_period");
+const id_purpose_descr = code(id_purpose, "_descr");
 const id_purpose_badge = code(id_purpose, "_badge");
+const id_period = document.getElementById("id_period");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
+const id_period_descr = code(id_period, "_descr");
 const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
 const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
 const id_project = document.getElementById("id_project");
@@ -51,6 +53,8 @@ let isUnhidden = false;
 // miscellaneous
 const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
+const currentPurpose = urlParams.get("purposePriority");
+const currentPeriod = urlParams.get("period");
 
 //
 // Sub functions
@@ -186,6 +190,10 @@ function getKoreanCharacterCount(str) {
     };
 }
 
+function getCart() {
+    return JSON.parse(sessionStorage.getItem("cart"));
+}
+
 function displayErrorInSignatureCanvas(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
@@ -317,7 +325,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
 
 function executeWhenCartIsUpdated() {
     const class_total_quantities = document.querySelectorAll(".class-total-quantity");
-    const cart = JSON.parse(sessionStorage.getItem("cart"));
+    const cart = getCart();
 
     if (cart === null) return;
 
@@ -500,8 +508,8 @@ function initCalendar() {
     function handleDateSelection(date) {
         if (!isDateInRange(date)) return;
 
-        const id_period_error = code(id_period, "_error");
         const formattedDate = formatDate(date);
+        const id_period_error = code(id_period, "_error");
 
         if (!startDate || endDate) {
             startDate = date;
@@ -533,6 +541,28 @@ function initCalendar() {
                 id_period_help.hidden = false;
                 id_period_help.innerText = `대여 기간이 ${durationToDisplay}일(${data_period.startDate} ~ ${data_period.endDate})로 선택되었어요.`;
                 id_period_error.hidden = true;
+
+                const isPurposeChanged = currentPurpose !== id_purpose.value;
+
+                if (!isPurposeChanged) {
+                    const isPeriodAlreadySelected = currentPeriod !== null;
+                    const isPeriodChanged = currentPeriod !== id_period.value;
+                    const isThereSomethingInCart = getCart() !== null;
+    
+                    if (isPeriodAlreadySelected && isPeriodChanged && isThereSomethingInCart) {
+                        id_period_descr.hidden = false;
+                        id_period_descr.classList.replace("text-gray-500", "text-flamingo-600");
+                        id_period_descr.innerText = "대여 기간이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                        id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
+                    } else {
+                        id_period_descr.hidden = true;
+                        id_period_descr.classList.replace("text-flamingo-600", "text-gray-500");
+                        id_period_descr.innerText = "";
+                        id_filter_or_checkout_text.innerText = "적용하기";
+                    };
+                };
+
+                setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
             };
         };
 
@@ -568,7 +598,7 @@ function initCalendar() {
 
 function initFoundProjectList(resResult = null) {
     const id_found_project_list = document.getElementById("id_found_project_list");
-    const cart = JSON.parse(sessionStorage.getItem("cart"));
+    const cart = getCart();
 
     id_found_project_list.innerHTML = "";
 
@@ -722,162 +752,6 @@ function initFoundProjectList(resResult = null) {
     initValidation(class_seconds, id_filter_or_checkout);
 }
 
-// TODO: Refactor this function
-// function initFoundHourList(resResult) {
-//     const start_hour_list = resResult.start_hour_list;
-//     const end_hour_list = resResult.end_hour_list;
-//     const id_start_time_list = document.getElementById("id_start_time_list");
-//     const id_end_time_list = document.getElementById("id_end_time_list");
-
-//     id_start_time_list.innerHTML = "";
-//     id_end_time_list.innerHTML = "";
-
-//     [start_hour_list, end_hour_list].forEach((hourList) => {
-//         if (hourList.length === 0) {
-//             const placeholderElement = document.createElement("label");
-//             const timeList = hourList === start_hour_list ? id_start_time_list : id_end_time_list;
-//             const dateInCart = hourList === start_hour_list ? id_start_date_in_cart : id_end_date_in_cart;
-//             const keyword = hourList === start_hour_list ? "대여" : "반납";
-
-//             placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
-
-//             placeholderElement.innerHTML = `
-//                 <div class="flex flex-1 justify-center">
-//                     <span id="${timeList.id}_help"
-//                         class="text-sm text-center text-gray-500">${dateInCart.innerText.split("(")[1][0]}요일에는 기자재를 ${keyword}할 수 없어요.</span>
-//                 </div>
-//             `;
-
-//             timeList.appendChild(placeholderElement);
-//         };
-//     });
-
-//     [start_hour_list, end_hour_list].forEach((hourList, index) => {
-//         const targetList = index === 0 ? id_start_time_list : id_end_time_list;
-//         const targetId = index === 0 ? id_start_time : id_end_time;
-//         const targetClass = index === 0 ? "class-start-time" : "class-end-time";
-
-//         hourList.forEach(newlyFoundHour => {
-//             const newlyFoundHourElement = document.createElement("label");
-//             const available = newlyFoundHour.available;
-//             const time = newlyFoundHour.time;
-//             const timeWihtoutColon = time.replace(":", "");
-
-//             if (available === true) {
-//                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
-
-//                 newlyFoundHourElement.innerHTML = `
-//                     <input id="${targetId.id}_${timeWihtoutColon}"
-//                             name="${targetId.id}"
-//                             type="radio"
-//                             value="${timeWihtoutColon}"
-//                             class="sr-only class-second class-radio ${targetClass}"
-//                             aria-labelledby="${targetId.id}_${timeWihtoutColon}_label">
-//                     <span class="flex flex-1">
-//                         <span id="${targetId.id}_${timeWihtoutColon}_label"
-//                                 class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
-//                     </span>
-//                     <span id="${targetId.id}_${timeWihtoutColon}_descr" hidden></span>
-//                     <span id="${targetId.id}_${timeWihtoutColon}_error" hidden></span>
-//                     <svg class="h-5 w-5 ml-1 text-flamingo"
-//                             viewBox="0 0 16 20"
-//                             fill="currentColor"
-//                             aria-hidden="true">
-//                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-//                     </svg>
-//                     <span class="pointer-events-none absolute -inset-px rounded-md"
-//                             aria-hidden="true"></span>
-//                 `;
-//             } else {
-//                 newlyFoundHourElement.className = "relative flex items-center cursor-not-allowed h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-100";
-
-//                 newlyFoundHourElement.innerHTML = `
-//                     <span class="flex flex-1">
-//                         <span class="block whitespace-pre-line text-sm font-medium text-gray-600">${time} 마감</span>
-//                     </span>
-//                 `;
-//             };
-
-//             targetList.appendChild(newlyFoundHourElement);
-//         });
-
-//         const class_start_times = document.querySelectorAll(".class-start-time");
-//         const class_end_times = document.querySelectorAll(".class-end-time");
-
-//         [class_start_times, class_end_times].forEach((class_times, index) => {
-//             const targetId = index === 0 ? id_start_time : id_end_time;
-
-//             class_times.forEach((time) => {
-//                 if (targetId.value === time.value) {
-//                     time.click();
-//                 };
-
-//                 const label = time.closest("label");
-//                 const svg = label.querySelector("svg");
-
-//                 time.addEventListener("keydown", (event) => {
-//                     if (event.key === "Enter" || event.key === " ") {
-//                         time.click();
-//                     };
-//                 });
-
-//                 time.addEventListener("click", () => {
-//                     if (time.id.indexOf("time") !== -1) {
-//                         targetId.value = time.value;
-//                     };
-//                 });
-
-//                 time.addEventListener("focus", () => {
-//                     label.classList.add("df-focus-ring-inset");
-//                     svg.classList.remove("invisible");
-//                 });
-
-//                 time.addEventListener("blur", () => {
-//                     if (!time.checked) {
-//                         svg.classList.add("invisible");
-//                     } else if (time.checked) {
-//                         label.classList.add("df-ring-inset-flamingo");
-//                     };
-
-//                     label.classList.remove("df-focus-ring-inset");
-//                 });
-
-//                 time.addEventListener("change", () => {
-//                     const otherInputs = [...class_times].filter(i => i !== time);
-
-//                     if (time.checked) {
-//                         label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
-//                         svg.classList.remove("invisible");
-//                     } else {
-//                         svg.classList.add("invisible");
-//                     };
-
-//                     otherInputs.forEach(i => {
-//                         const otherLabel = i.closest("label");
-//                         const otherSvg = otherLabel.querySelector("svg");
-
-//                         if (!i.checked) {
-//                             otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-//                             otherSvg.classList.add("invisible");
-//                         };
-//                     });
-//                 });
-
-//                 if (!time.checked) {
-//                     label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
-//                     svg.classList.add("invisible");
-//                 } else {
-//                     label.classList.add("df-ring-inset-flamingo");
-//                 };
-//             });
-//         });
-//     });
-
-//     const class_seconds = document.querySelectorAll(".class-second");
-
-//     initValidation(class_seconds, id_filter_or_checkout);
-// }
-
 function initFoundHourList(resResult) {
     const start_hour_list = resResult.start_hour_list;
     const end_hour_list = resResult.end_hour_list;
@@ -885,8 +759,6 @@ function initFoundHourList(resResult) {
     const id_end_time_list = document.getElementById("id_end_time_list");
     const id_start_time = document.getElementById("id_start_time");
     const id_end_time = document.getElementById("id_end_time");
-    const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
-    const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
     const currentStartTime = id_start_time.value;
     const currentEndTime = id_end_time.value;
 
@@ -975,7 +847,7 @@ function initFoundHourList(resResult) {
         if (!isSameDay) return;
 
         const selectedStartTime = document.querySelector(".class-start-time:checked");
-        
+
         if (selectedStartTime) {
             const startTimeValue = parseInt(selectedStartTime.value);
             let endTimeUpdated = false;
@@ -983,7 +855,7 @@ function initFoundHourList(resResult) {
             class_end_times.forEach(endTime => {
                 const endTimeValue = parseInt(endTime.value);
                 const label = endTime.closest("label");
-                
+
                 if (endTimeValue <= startTimeValue) {
                     label.classList.add("cursor-not-allowed", "bg-gray-100");
                     label.classList.remove("cursor-pointer", "hover:bg-gray-50");
@@ -1038,7 +910,7 @@ function initFoundHourList(resResult) {
                 } else if (time.checked) {
                     label.classList.add("df-ring-inset-flamingo");
                 };
-                
+
                 label.classList.remove("df-focus-ring-inset");
             });
 
@@ -1356,12 +1228,59 @@ function initForm() {
     id_initialize_purpose.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
-    if (urlParams.get("purposePriority") !== null &&
-        urlParams.get("purposePriority") !== "") {
-        const currentPurpose = code("id_purpose_", urlParams.get("purposePriority"));
-
-        currentPurpose.click();
+    if (currentPurpose !== null && currentPurpose !== "") {
+        code("id_purpose_", currentPurpose).click();
     };
+
+    const class_purposes = document.querySelectorAll(".class-purpose");
+
+    class_purposes.forEach((purpose) => {
+        purpose.addEventListener("click", () => {
+            const isPurposeAlreadySelected = currentPurpose !== null;
+            const isPurposeChanged = currentPurpose !== id_purpose.value;
+            const isThereSomethingInCart = getCart() !== null;
+
+            if (isPurposeAlreadySelected && isPurposeChanged && isThereSomethingInCart) {
+                id_purpose_descr.hidden = false;
+                id_purpose_descr.classList.replace("text-gray-500", "text-flamingo-600");
+                id_purpose_descr.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                id_period_descr.hidden = true;
+                id_period_descr.innerText = "";
+                id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
+            } else {
+                id_purpose_descr.hidden = true;
+                id_purpose_descr.classList.replace("text-flamingo-600", "text-gray-500");
+                id_purpose_descr.innerText = "";
+                id_filter_or_checkout_text.innerText = "적용하기";
+            };
+        });
+    });
+
+    // const cart = getCart();
+
+    // if (currentPurpose !== null && currentPurpose !== "") {
+    //     code("id_purpose_", urlParams.get("purposePriority")).click();
+
+    //     if (currentPurpose !== id_purpose.value && cart !== null) {
+    //         id_purpose_help.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+    //     } else {
+    //         id_purpose_help.innerText = "";
+    //     };
+    // };
+
+    id_purpose.addEventListener("change", () => {
+        const otherInputs = [...class_purposes].filter(i => i !== id_purpose);
+
+        otherInputs.forEach(i => {
+            const otherLabel = i.closest("label");
+            const otherSvg = otherLabel.querySelector("svg");
+
+            if (!i.checked) {
+                otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                otherSvg.classList.add("invisible");
+            }
+        });
+    });
 
     id_period.value = "";
     initCalendar();
@@ -1378,7 +1297,7 @@ function updateForm(action, datasetObj = null) {
     const id_modal_share = code(id_modal, "_share");
     const id_total_quantity = document.getElementById("id_total_quantity");
     const class_keywords = document.querySelectorAll(".class-keyword");
-    const cart = JSON.parse(sessionStorage.getItem("cart"));
+    const cart = getCart();
 
     // First action: all
     isModalOpen = true;
@@ -1419,7 +1338,7 @@ function updateForm(action, datasetObj = null) {
         inputs.forEach((input) => {
             displayError(false, input);
         });
-    
+
         displayButtonMsg(false, id_filter_or_checkout, "error");
         executeWhenCartIsUpdated();
 
@@ -1952,7 +1871,7 @@ function requestFindProject() {
 }
 
 function requestFindHour() {
-    const cart = JSON.parse(sessionStorage.getItem("cart"));
+    const cart = getCart();
     const daysFromNow = cart[0].period.split(",")[0];
     const duration = cart[0].period.split(",")[1];
     const startDate = formatDateInFewDays(now, daysFromNow);
@@ -2053,7 +1972,8 @@ function initRequest() {
 
                 if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                     (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                    if (id_filter_or_checkout_text.innerText.trim() === "적용하기" && isItOkayToSubmitForm()) {
+                    if (id_filter_or_checkout_text.innerText.trim().indexOf("적용하기") !== -1 && isItOkayToSubmitForm()) {
+                        if (id_filter_or_checkout_text.innerText.trim().indexOf("초기화") !== -1) sessionStorage.removeItem("cart");
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");

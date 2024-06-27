@@ -177,7 +177,7 @@
                                         {% for purpose in purpose_list %}
                                             <li x-state:on="Highlighted"
                                                 x-state:off="Not Highlighted"
-                                                class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
+                                                class="class-purpose relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900"
                                                 id="id_purpose_{{ purpose.priority }}"
                                                 role="option"
                                                 @click="choose({{ forloop.counter }}); executeWhenPurposeIsSelected(selected)"
