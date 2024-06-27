@@ -95,10 +95,13 @@ function preventDefaultHandler(event) {
     event.preventDefault();
 }
 
+/**
+ * @param {boolean} bool Freeze or Unfreeze active inputs and buttons
+ */
 function freezeForm(bool) {
-    /*
-     * bool: Freeze or Unfreeze active inputs and buttons
-     */
+    const id_query = document.getElementById("id_query");
+
+    if (id_query !== null) { inputs.push(id_query) };
 
     inputs.forEach(input => {
         if (input.classList.contains("alt-calendar")) {
@@ -174,7 +177,7 @@ function freezeForm(bool) {
 
             focusHoverClasses.forEach(cls => { link.classList.remove(cls) });
             link.addEventListener("click", preventDefaultHandler);
-            link.classList.add("cursor-not-allowed", "outline-none", "pointer-events-none");
+            link.classList.add("cursor-not-allowed", "pointer-events-none");
             link.setAttribute("tabindex", "-1");
             link.blur();
 
@@ -755,18 +758,6 @@ function displayError(bool, input, errorType = null) {
             console.log(select + "스타일 변화 주기");
         }
 
-        // textarea (CKEditor)
-        // else if (input.type === "textarea" && input.id === "id_content") {
-        //     setTimeout(() => {
-        //         textboxViewRoot.style.backgroundColor = "#FCDBCF";
-        //         textboxViewRoot.style.boxShadow = "none";
-        //         textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
-        //         textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
-        //         textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
-        //         textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
-        //     }, 1);
-        // }
-
         // else
         else {
             input.classList.remove("ring-gray-300");
@@ -855,19 +846,6 @@ function displayError(bool, input, errorType = null) {
 
             console.log(select + "스타일 초기화하기");
         }
-
-        // textarea (CKEditor)
-        // Don't need to do anything because CKEditor will initialize its style
-        // else if (input.type === "textarea" && input.id === "id_content") {
-        //     setTimeout(() => {
-        //         textboxViewRoot.style.backgroundColor = "#FFFFFF";
-        //         textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-        //         textboxViewRoot.addEventListener("mouseenter", () => { adjustTextboxStyle(false, "mouseenter") });
-        //         textboxViewRoot.addEventListener("mouseleave", () => { adjustTextboxStyle(false, "mouseleave") });
-        //         textboxViewRoot.removeEventListener("mouseenter", () => { adjustTextboxStyle(true, "mouseenter") });
-        //         textboxViewRoot.removeEventListener("mouseleave", () => { adjustTextboxStyle(true, "mouseleave") });
-        //     }, 1);
-        // }
 
         // else
         else {

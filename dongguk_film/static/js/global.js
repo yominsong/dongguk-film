@@ -5,6 +5,9 @@
 // detail
 const appName = location.pathname.split("/")[1];
 
+// class
+const class_details = document.querySelectorAll(".class-detail");
+
 // boolean
 let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
@@ -127,9 +130,7 @@ function initSearchBar() {
 initSearchBar();
 
 function adjustHrefTarget() {
-    if (appName !== "equipment" && !appName == "notice") return;
-
-    const class_details = document.querySelectorAll(".class-detail");
+    if (appName !== "equipment" && appName !== "notice") return;
 
     if (class_details !== null) {
         class_details.forEach((detail) => {

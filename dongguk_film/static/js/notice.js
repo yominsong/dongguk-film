@@ -1076,6 +1076,8 @@ function requestDeleteNotice() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
+        freezeForm(false);
+        
         if (id_modal_container !== null) {
             const class_firsts = document.querySelectorAll(".class-first");
 

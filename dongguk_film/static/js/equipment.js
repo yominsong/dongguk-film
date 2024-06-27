@@ -25,6 +25,7 @@ const id_clear_signature_canvas = code("id_clear_", id_signature_canvas);
 const id_signature_canvas_error = code(id_signature_canvas, "_error");
 const id_filter_or_checkout = document.getElementById("id_filter_or_checkout");
 const id_filter_or_checkout_text = code(id_filter_or_checkout, "_text");
+const id_filter_or_checkout_descr = code(id_filter_or_checkout, "_descr");
 const id_url = document.getElementById("id_url");
 const id_copy_url = code("id_copy_", id_url);
 const id_copy_url_ready = code(id_copy_url, "_ready");
@@ -45,6 +46,7 @@ let isSignatureCanvasReady = false;
 let isSignaturePlaceholderCleared = false;
 let isSignatureCanvasDisabled = false;
 let isSignatureDrawn = false;
+let isUnhidden = false;
 
 // miscellaneous
 const data_purpose = id_purpose.dataset;
@@ -1802,9 +1804,59 @@ async function requestCreateApplication() {
     request = {};
 }
 
+function initFeedback() {
+    if (class_details === null) return;
+
+    class_details.forEach(detail => {
+        // const bg = detail.querySelector(".class-bg");
+
+        // if (bg.classList.contains("bg-gray-200")) bg.classList.replace("bg-gray-200", "bg-gray-50");
+
+        const spin = detail.querySelector("svg");
+
+        spin.classList.add("hidden");
+    });
+
+    id_filter_or_checkout_descr.hidden = true;
+    isUnhidden = false;
+    freezeForm(false);
+
+    class_details.forEach((detail) => {
+        ["click", "keyup"].forEach(type => {
+            detail.addEventListener(type, event => {
+                if ((type === "click" || event.key === "Enter" || event.key === " ") && !isUnhidden) {
+                    // const bg = detail.querySelector(".class-bg");
+
+                    // if (bg !== null) bg.classList.replace("bg-gray-50", "bg-gray-200");
+
+                    const spin = detail.querySelector("svg");
+
+                    if (spin !== null) spin.classList.remove("hidden");
+                    isUnhidden = true;
+                    freezeForm(true);
+                };
+            });
+        });
+    });
+}
+
 function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
+        initFeedback();
+
+        const class_details = document.querySelectorAll(".class-detail");
+
+        class_details.forEach(detail => {
+            const spin = detail.querySelector("svg");
+
+            spin.classList.add("hidden");
+        });
+
+        id_filter_or_checkout_descr.hidden = true;
+        isUnhidden = false; // Variable declared in global.js.
+
+        freezeForm(false);
 
         if (id_modal === null) return;
 
