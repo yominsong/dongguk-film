@@ -1416,7 +1416,11 @@ function updateForm(action, datasetObj = null) {
             keyword.innerText = "장바구니";
         });
 
-        // initForm();
+        inputs.forEach((input) => {
+            displayError(false, input);
+        });
+    
+        displayButtonMsg(false, id_filter_or_checkout, "error");
         executeWhenCartIsUpdated();
 
         const cartList = id_modal_cart.querySelector("ul");
