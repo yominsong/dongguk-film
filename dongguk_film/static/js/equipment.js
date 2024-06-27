@@ -1805,7 +1805,7 @@ async function requestCreateApplication() {
 }
 
 function initFeedback() {
-    if (class_details === null) return;
+    if (class_details.length === 0) return;
 
     class_details.forEach(detail => {
         // const bg = detail.querySelector(".class-bg");
@@ -1844,19 +1844,6 @@ function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
         initFeedback();
-
-        const class_details = document.querySelectorAll(".class-detail");
-
-        class_details.forEach(detail => {
-            const spin = detail.querySelector("svg");
-
-            spin.classList.add("hidden");
-        });
-
-        id_filter_or_checkout_descr.hidden = true;
-        isUnhidden = false; // Variable declared in global.js.
-
-        freezeForm(false);
 
         if (id_modal === null) return;
 
