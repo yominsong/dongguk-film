@@ -380,7 +380,7 @@ function handleAjaxCallback(response) {
             const occupiedItems = resResult.occupied_item_list;
             const id_modal_cart = document.getElementById("id_modal_cart");
 
-            if (!id_cart_alert.hidden) {
+            if (id_cart_alert !== null && !id_cart_alert.hidden) {
                 const id_decrease_quantity = document.getElementById("id_decrease_quantity");
                 const id_requested_quantity = document.getElementById("id_requested_quantity");
                 const id_increase_quantity = document.getElementById("id_increase_quantity");

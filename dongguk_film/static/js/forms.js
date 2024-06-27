@@ -101,7 +101,7 @@ function preventDefaultHandler(event) {
 function freezeForm(bool) {
     const id_query = document.getElementById("id_query");
 
-    if (id_query !== null) { inputs.push(id_query) };
+    if (id_query) id_query.readOnly = bool;
 
     inputs.forEach(input => {
         if (input.classList.contains("alt-calendar")) {

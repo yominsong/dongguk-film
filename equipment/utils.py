@@ -926,7 +926,8 @@ def equipment(request):
             )
 
             period = cart[0]["period"]
-            duration = f"{split_period(period)[1]}일"
+            duration = split_period(period)[1]
+            duration = f"{duration}일" if duration > 0 else "당일"
             start_date, end_date = get_start_end_date(cart)
             start_datetime = f"{start_date}({get_weekday(str(start_date))}) {'{}:{}'.format(start_time[:2], start_time[2:])}"
             end_datetime = f"{end_date}({get_weekday(str(end_date))}) {'{}:{}'.format(end_time[:2], end_time[2:])}"
