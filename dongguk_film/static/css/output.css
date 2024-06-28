@@ -2007,6 +2007,33 @@ select {
   animation: spin 1s linear infinite;
 }
 
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8,0,1,1);
+  }
+
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0,0,0.2,1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
 .cursor-col-resize {
   cursor: col-resize;
 }
@@ -3781,6 +3808,21 @@ select {
 .group:hover .group-hover\:bg-gray-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:bg-flamingo-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 204 187 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
+.group:hover .group-hover\:bg-flamingo-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(252 219 207 / var(--tw-bg-opacity));
 }
 
 .group:hover .group-hover\:text-flamingo-500 {

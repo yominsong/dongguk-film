@@ -187,28 +187,22 @@
                                          height=""
                                          alt=""
                                          class="h-full w-full p-6 object-cover object-center group-hover:opacity-75">
+                                    <svg class="animate-spin ml-2 mt-2 h-5 w-5 text-flamingo-600 hidden"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         fill="none"
+                                         viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
                                 </div>
-                                <div class="flex justify-between">
-                                    <div>
-                                        <h3 class="mt-4 text-sm text-gray-500">{{ collection.brand }}</h3>
-                                        <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
-                                        <div class="inline-flex mt-2 gap-2">
-                                            <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.collection_id }}</span>
-                                            {% if collection.subcategory != None %}
-                                                <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="animate-spin h-5 w-5 text-gray-500"
-                                             xmlns="http://www.w3.org/2000/svg"
-                                             fill="none"
-                                             viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                    </div>
+                                <h3 class="mt-4 text-sm text-gray-500">{{ collection.brand }}</h3>
+                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
+                                <div class="inline-flex mt-2 gap-2">
+                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.collection_id }}</span>
+                                    {% if collection.subcategory != None %}
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory }}</span>
+                                    {% endif %}
                                 </div>
                             </a>
                         {% empty %}

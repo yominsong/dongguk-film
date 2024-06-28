@@ -567,7 +567,7 @@ function initCalendar() {
                     const isPeriodAlreadySelected = currentPeriod !== null;
                     const isPeriodChanged = currentPeriod !== id_period.value;
                     const isThereSomethingInCart = getCart() !== null;
-    
+
                     if (isPeriodAlreadySelected && isPeriodChanged && isThereSomethingInCart) {
                         id_period_cart_reset_msg.hidden = false;
                         id_period_cart_reset_msg.innerText = "대여 기간이 변경되면 장바구니가 초기화되니 유의해주세요!";
@@ -1925,12 +1925,9 @@ function initFeedback() {
     if (class_details.length === 0) return;
 
     class_details.forEach(detail => {
-        // const bg = detail.querySelector(".class-bg");
-
-        // if (bg.classList.contains("bg-gray-200")) bg.classList.replace("bg-gray-200", "bg-gray-50");
-
         const spin = detail.querySelector("svg");
 
+        setTimeout(() => { detail.classList.remove("df-focus-ring-offset-white-2") }, 0);
         spin.classList.add("hidden");
     });
 
@@ -1942,12 +1939,9 @@ function initFeedback() {
         ["click", "keyup"].forEach(type => {
             detail.addEventListener(type, event => {
                 if ((type === "click" || event.key === "Enter" || event.key === " ") && !isUnhidden) {
-                    // const bg = detail.querySelector(".class-bg");
-
-                    // if (bg !== null) bg.classList.replace("bg-gray-50", "bg-gray-200");
-
                     const spin = detail.querySelector("svg");
 
+                    detail.classList.add("df-focus-ring-offset-white-2");
                     if (spin !== null) spin.classList.remove("hidden");
                     isUnhidden = true;
                     freezeForm(true);
