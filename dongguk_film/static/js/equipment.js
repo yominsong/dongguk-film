@@ -85,7 +85,7 @@ function notifyRentalLimit() {
     if (!params.has("rentalLimited")) return;
 
     const collectionName = params.get("rentalLimited");
-    const purposeKeyword = id_purpose_badge.innerText.split("\n")[1]
+    const purposeKeyword = id_purpose_badge.innerText.trim().slice(7);
     const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
 
     displayNoti(true, "RTL", paramForNoti);
@@ -1609,7 +1609,7 @@ function initDetail() {
         id_cart_alert_for_stock.hidden = false;
 
         class_purposes.forEach(purpose => {
-            purpose.innerText = id_purpose_badge.innerText.split("\n")[1];
+            purpose.innerText = id_purpose_badge.innerText.trim().slice(7);
         });
     };
 
