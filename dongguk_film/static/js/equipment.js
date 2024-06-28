@@ -570,7 +570,7 @@ function initCalendar() {
     
                     if (isPeriodAlreadySelected && isPeriodChanged && isThereSomethingInCart) {
                         id_period_cart_reset_msg.hidden = false;
-                        id_period_cart_reset_msg.innerText = "대여 기간이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                        id_period_cart_reset_msg.innerText = "대여 기간이 변경되면 장바구니가 초기화되니 유의해주세요!";
                         id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
                     } else {
                         id_period_cart_reset_msg.hidden = true;
@@ -580,7 +580,7 @@ function initCalendar() {
                 };
             };
         };
-        
+
         setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
         updateCalendar();
     }
@@ -1258,7 +1258,7 @@ function initForm() {
 
             if (isPurposeAlreadySelected && isPurposeChanged && isThereSomethingInCart) {
                 id_purpose_cart_reset_msg.hidden = false;
-                id_purpose_cart_reset_msg.innerText = "대여 목적이 변경되면 장바구니가 초기화되므로 유의해주세요.";
+                id_purpose_cart_reset_msg.innerText = "대여 목적이 변경되면 장바구니가 초기화되니 유의해주세요!";
                 id_period_cart_reset_msg.hidden = true;
                 id_period_cart_reset_msg.innerText = "";
                 id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
