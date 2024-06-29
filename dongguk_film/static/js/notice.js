@@ -943,41 +943,6 @@ function share() {
 
 share();
 
-function backToList() {
-    const id_back_to_list = document.getElementById("id_back_to_list");
-    const class_details = document.querySelectorAll(".class-detail");
-
-    if (class_details !== null) {
-        class_details.forEach((detail) => {
-            if (location.search !== "") {
-                detail.href += `${location.search}`;
-            };
-        });
-    };
-
-    if (id_back_to_list !== null) {
-        if (id_back_to_list.previousElementSibling === null) {
-            id_back_to_list.classList.remove("mt-3");
-        };
-
-        ["click", "keyup"].forEach(type => {
-            id_back_to_list.addEventListener(type, event => {
-                if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    if (location.search !== "") {
-                        location.href = `${location.origin}${location.pathname}${location.search}`;
-                    } else {
-                        location.href = `${location.origin}${location.pathname}`;
-                    };
-
-                    freezeForm(true);
-                };
-            });
-        });
-    };
-}
-
-backToList();
-
 function requestOcrNotice() {
     request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
