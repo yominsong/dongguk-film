@@ -11,8 +11,8 @@ const id_scrollable_part_of_modal = code("id_scrollable_part_of_", id_modal);
 const id_category = document.getElementById("id_category");
 const id_purpose = document.getElementById("id_purpose");
 const id_initialize_purpose = code("id_initialize_", id_purpose);
-const id_purpose_badge = code(id_purpose, "_badge");
 const id_purpose_cart_reset_msg = code(id_purpose, "_cart_reset_msg");
+const id_purpose_badge = code(id_purpose, "_badge");
 const id_period = document.getElementById("id_period");
 const id_period_calendar = code(id_period, "_calendar");
 const id_period_help = code(id_period, "_help");
@@ -20,6 +20,13 @@ const id_period_cart_reset_msg = code(id_period, "_cart_reset_msg");
 const id_start_date_in_cart = document.getElementById("id_start_date_in_cart");
 const id_end_date_in_cart = document.getElementById("id_end_date_in_cart");
 const id_project = document.getElementById("id_project");
+const id_subject_code = document.getElementById("id_subject_code");
+const id_subject_name = document.getElementById("id_subject_name");
+const id_select_subject = document.getElementById("id_select_subject");
+const id_subject_list = document.getElementById("id_subject_list");
+const id_subject_error = document.getElementById("id_subject_error");
+const id_instructor = document.getElementById("id_instructor");
+const id_instructor_name = code(id_instructor, "_name");
 const id_start_time = document.getElementById("id_start_time");
 const id_end_time = document.getElementById("id_end_time");
 const id_signature_canvas = document.getElementById("id_signature_canvas");
@@ -144,6 +151,59 @@ function adjustDetailHeight() {
 }
 
 adjustDetailHeight();
+
+function displayErrorInSubject(bool, errorType = null) {
+    if (bool) {
+        if (errorType === "empty") {
+            id_subject_error.innerText = "교과목을 선택해주세요.";
+        };
+
+        id_subject_error.hidden = false;
+        id_select_subject.classList.add("bg-flamingo-50", "ring-transparent", "hover:df-ring-inset-gray");
+    } else {
+        id_subject_error.innerText = null;
+        id_subject_error.hidden = true;
+        id_select_subject.classList.remove("bg-flamingo-50", "ring-transparent", "hover:df-ring-inset-gray");
+    };
+}
+
+function controlErrorInSubject() {
+    if (id_subject_code.value === "") {
+        displayErrorInSubject(true, "empty");
+    } else {
+        return false;
+    };
+}
+
+function validateSubject() {
+    let isSubjectListOpen = false;
+
+    ["click", "keydown"].forEach(type => {
+        id_select_subject.addEventListener(type, event => {
+            if (type === "click" || event.key === "Enter" || event.key === " " || event.key === "ArrowUp" || event.key === "ArrowDown") {
+                displayErrorInSubject(false);
+            };
+        });
+    });
+
+    id_select_subject.addEventListener("focusout", () => {
+        isSubjectListOpen = id_subject_list.style.display === "";
+        if (!isSubjectListOpen) { controlErrorInSubject() };
+    });
+
+    id_subject_list.addEventListener("focusout", () => {
+        isSubjectListOpen = id_subject_list.style.display === "";
+        controlErrorInSubject();
+    });
+
+    id_select_subject.addEventListener("focusin", () => {
+        displayErrorInSubject(false);
+    });
+}
+
+function initSubjectValidation() {
+    validateSubject();
+}
 
 function closeNoti() {
     displayNoti(false, "MPP");
@@ -340,6 +400,28 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
+}
+
+function executeWhenSubjectIsSelected(selectedSubject = null) {
+    displayErrorInSubject(false);
+    displayError(false, id_instructor);
+
+    if (selectedSubject) {
+        id_instructor.value = null;
+        id_instructor_name.value = null;
+        id_subject_code.value = selectedSubject.code;
+        id_subject_name.value = selectedSubject.kor_name;
+
+        const foundInstructors = selectedSubject.instructor.split(", ");
+
+        initFoundInstructorList(foundInstructors);
+    };
+
+    id_instructor.classList.add("class-second");
+
+    const class_seconds = document.querySelectorAll(".class-second");
+
+    initValidation(class_seconds, id_filter_or_checkout);
 }
 
 function executeWhenCartIsUpdated() {
@@ -618,16 +700,34 @@ function initFoundProjectList(resResult = null) {
 
     id_found_project_list.innerHTML = "";
 
+    // If the purpose is for instructor
+    // if (resResult === null && cart !== null && cart[0].purpose.for_instructor === true) {
+    //     const placeholderElement = document.createElement("div");
+
+    //     placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+
+    //     placeholderElement.innerHTML = `
+    //         <div class="flex flex-1 justify-center">
+    //             <span id="id_found_project_list_help"
+    //                   class="text-sm text-center text-gray-500">교수 목적은 프로젝트를 선택하지 않아도 돼요.</span>
+    //         </div>
+    //     `;
+
+    //     id_found_project_list.appendChild(placeholderElement);
+
+    //     return;
+    // }
+
     // FAIL
     if (resResult === null) {
         const placeholderElement = document.createElement("div");
 
-        placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+        placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md bg-flamingo-50";
 
         placeholderElement.innerHTML = `
             <div class="flex flex-1 justify-center">
                 <span id="id_found_project_list_help"
-                      class="text-sm text-center text-gray-500">선택 가능한 ${cart !== null ? cart[0].purpose.keyword : null} 프로젝트가 없어요.</span>
+                      class="text-sm text-center text-gray-700">선택 가능한 ${cart !== null ? cart[0].purpose.keyword : null} 프로젝트가 없어요.</span>
             </div>
         `;
 
@@ -768,6 +868,118 @@ function initFoundProjectList(resResult = null) {
     initValidation(class_seconds, id_filter_or_checkout);
 }
 
+function initFoundInstructorList(foundInstructors) {
+    const id_found_instructor_list = document.getElementById("id_found_instructor_list");
+
+    id_found_instructor_list.innerHTML = "";
+
+    foundInstructors.forEach(instructor => {
+        const instructor_split = instructor.split("#");
+        const newlyFoundInstructorElement = document.createElement("label");
+        const data_instructor = newlyFoundInstructorElement.dataset;
+
+        data_instructor.id = instructor_split[0];
+        data_instructor.name = instructor_split[1];
+        newlyFoundInstructorElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
+
+        newlyFoundInstructorElement.innerHTML = `
+            <input id="id_instructor_${data_instructor.id}"
+                    name="id_instructor"
+                    type="radio"
+                    class="sr-only class-second class-radio class-instructor"
+                    aria-labelledby="id_instructor_${data_instructor.id}_label"
+                    aria-describedby="id_instructor_${data_instructor.id}_descr">
+            <div class="flex flex-1">
+                <span class="flex flex-col">
+                    <span id="id_instructor_${data_instructor.id}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_instructor.name)}</span>
+                    <p id="id_instructor_${data_instructor.id}_descr" class="mt-1 flex items-center text-sm text-gray-500">${data_instructor.id}</p>
+                </span>
+            </div>
+            <svg class="h-5 w-5 ml-1 text-flamingo"
+                viewBox="0 0 16 20"
+                fill="currentColor"
+                aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="pointer-events-none absolute -inset-px rounded-md"
+                aria-hidden="true"></span>
+        `;
+
+        id_found_instructor_list.appendChild(newlyFoundInstructorElement);
+    });
+
+    const class_instructors = document.querySelectorAll(".class-instructor");
+
+    class_instructors.forEach((instructor) => {
+        if (id_instructor.value === instructor.dataset.id) {
+            instructor.click();
+        };
+
+        const label = instructor.closest("label");
+        const svg = label.querySelector("svg");
+
+        instructor.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                instructor.click();
+            };
+        });
+
+        instructor.addEventListener("click", () => {
+            if (instructor.id.indexOf("instructor") !== -1) {
+                id_instructor.value = instructor.parentElement.dataset.id;
+                id_instructor_name.value = instructor.parentElement.dataset.name;
+            };
+        });
+
+        instructor.addEventListener("focus", () => {
+            label.classList.add("df-focus-ring-inset");
+            svg.classList.remove("invisible");
+        });
+
+        instructor.addEventListener("blur", () => {
+            if (!instructor.checked) {
+                svg.classList.add("invisible");
+            } else if (instructor.checked) {
+                label.classList.add("df-ring-inset-flamingo");
+            };
+
+            label.classList.remove("df-focus-ring-inset");
+        });
+
+        instructor.addEventListener("change", () => {
+            const otherInputs = [...class_instructors].filter(i => i !== instructor);
+
+            if (instructor.checked) {
+                label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
+                svg.classList.remove("invisible");
+            } else {
+                svg.classList.add("invisible");
+            };
+
+            otherInputs.forEach(i => {
+                const otherLabel = i.closest("label");
+                const otherSvg = otherLabel.querySelector("svg");
+
+                if (!i.checked) {
+                    otherLabel.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+                    otherSvg.classList.add("invisible");
+                };
+            });
+        });
+
+        if (!instructor.checked) {
+            label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
+            svg.classList.add("invisible");
+        } else {
+            label.classList.add("df-ring-inset-flamingo");
+        };
+    });
+
+    const class_seconds = document.querySelectorAll(".class-second");
+
+    initValidation(class_seconds, id_filter_or_checkout);
+}
+
 function initFoundHourList(resResult) {
     const start_hour_list = resResult.start_hour_list;
     const end_hour_list = resResult.end_hour_list;
@@ -788,12 +1000,12 @@ function initFoundHourList(resResult) {
             const dateInCart = hourList === start_hour_list ? id_start_date_in_cart : id_end_date_in_cart;
             const keyword = hourList === start_hour_list ? "대여" : "반납";
 
-            placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
+            placeholderElement.className = "relative flex max-[370px]:col-span-2 max-[480px]:col-span-3 min-[480px]:col-span-4 items-center h-[36px] p-4 shadow-sm rounded-md bg-flamingo-50";
 
             placeholderElement.innerHTML = `
                 <div class="flex flex-1 justify-center">
                     <span id="${timeList.id}_help"
-                        class="text-sm text-center text-gray-500">${dateInCart.innerText.split("(")[1][0]}요일에는 기자재를 ${keyword}할 수 없어요.</span>
+                        class="text-sm text-center text-gray-700">${dateInCart.innerText.split("(")[1][0]}요일에는 기자재를 ${keyword}할 수 없어요.</span>
                 </div>
             `;
 
@@ -1327,11 +1539,15 @@ function updateForm(action, datasetObj = null) {
 
     // Middle action: view_cart
     else if (action === "view_cart") {
+        const id_subject_placeholder = document.getElementById("id_subject_placeholder");
+        const firstSubject = id_subject_placeholder.nextElementSibling;
+
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
         id_total_quantity.hidden = false;
         id_modal_checkout.hidden = true;
         id_modal_share.hidden = true;
+        firstSubject.style.setProperty("border-top", "none", "important");
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "장바구니";
@@ -1862,6 +2078,16 @@ function requestAddToCart() {
     request = {};
 }
 
+function requestFindSubject() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "find_subject" };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestFindProject() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
@@ -1902,6 +2128,22 @@ async function requestCreateApplication() {
     formData.append("project", id_project.value);
     formData.append("startTime", id_start_time.value);
     formData.append("endTime", id_end_time.value);
+
+    const forInstructor = getCart()[0].purpose.for_instructor;
+
+    if (forInstructor) {
+        const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
+        const academicYearAndSemester = id_target_academic_year_and_semester.innerText.trim().split(" ");
+        const academicYear = academicYearAndSemester[0];
+        const academicSemester = academicYearAndSemester[1];
+    
+        formData.append("academicYear", academicYear);
+        formData.append("academicSemester", academicSemester);
+        formData.append("subjectCode", id_subject_code.value);
+        formData.append("subjectName", id_subject_name.value);
+        formData.append("instructor", id_instructor.value);
+        formData.append("instructorName", id_instructor_name.value);
+    };
 
     const signatureBlob = await convertSignatureToFile();
 
@@ -1956,6 +2198,7 @@ function initRequest() {
         initUrlParams();
         requestVerifyAuthentication();
         initFeedback();
+        initSubjectValidation();
 
         if (id_modal === null) return;
 
@@ -1963,50 +2206,83 @@ function initRequest() {
         initValidation(class_firsts, id_filter_or_checkout);
 
         ["click", "keyup"].forEach(type => {
-            id_filter_or_checkout.addEventListener(type, event => {
+            function userRequestIsMade(type, event) {
                 const targetTagName = event.target.tagName;
+                const isClicked = type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON");
+                const isPressed = type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON";
+
+                return isClicked || isPressed;
+            }
+
+            // Filter of checkout
+            id_filter_or_checkout.addEventListener(type, event => {
                 const id_filter_or_checkout_spin = code(id_filter_or_checkout, "_spin");
 
-                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                    if (id_filter_or_checkout_text.innerText.trim().indexOf("적용하기") !== -1 && isItOkayToSubmitForm()) {
-                        if (id_filter_or_checkout_text.innerText.trim().indexOf("초기화") !== -1) sessionStorage.removeItem("cart");
+                if (userRequestIsMade(type, event)) {
+                    const requestButtonText = id_filter_or_checkout_text.innerText.trim();
+                    const readyToFilter = requestButtonText.indexOf("적용하기") !== -1 && isItOkayToSubmitForm();
+                    const readyToCheckout = requestButtonText === "예약하기";
+
+                    if (readyToFilter) {
+                        const readyToResetCart = requestButtonText.indexOf("초기화") !== -1;
+
+                        if (readyToResetCart) sessionStorage.removeItem("cart");
                         requestFilterEquipment();
                         displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                         displayButtonMsg(false, id_filter_or_checkout, "error");
                         id_filter_or_checkout_spin.classList.remove("hidden");
-                    } else if (id_filter_or_checkout_text.innerText.trim() === "예약하기") {
+                    } else if (readyToCheckout) {
+                        const readyToStartCheckingOut = id_modal_checkout.hidden;
+                        const readyToEndCheckingOut = id_modal_checkout.hidden === false;
+                        const forInstructor = getCart()[0].purpose.for_instructor;
+
                         if (!isAuthenticated()) {
                             let params = {};
 
                             params.next = `${location.pathname}${location.search}`;
                             params.loginRequestMsg = "checkout";
                             location.href = `${location.origin}/accounts/login/?${new URLSearchParams(params).toString()}`;
-                        } else if (id_modal_checkout.hidden) {
+                        } else if (readyToStartCheckingOut) {
                             // Remove the previous error message of 'class_seconds' if it exists
-                            inputs.forEach((input) => {
-                                displayError(false, input);
-                            });
-
+                            inputs.forEach((input) => { displayError(false, input) });
+                            displayErrorInSubject(false);
                             displayErrorInSignatureCanvas(false);
-                            requestFindProject();
+
+                            // If the purpose is for instructor
+                            if (forInstructor) {
+                                id_project.classList.remove("class-second");
+                                id_project.parentElement.hidden = true;
+                                // initFoundProjectList();
+                            } else {
+                                id_subject_code.parentElement.hidden = true;
+                                id_instructor.parentElement.hidden = true;
+                                requestFindProject();
+                            };
+
                             requestFindHour();
                             // Vaildation for class_seconds is handled by initFoundProjectList() and initFoundHourList()
                             initSignatureCanvasValidation();
-                        } else if (id_modal_checkout.hidden === false) {
-                            if (isItOkayToSubmitForm() && isSignatureDrawn) {
+                        } else if (readyToEndCheckingOut) {
+                            const readyToSubmitForm = () => {
+                                if (forInstructor) {
+                                    return isItOkayToSubmitForm() && id_subject_code.value !== "" && isSignatureDrawn;
+                                } else {
+                                    return isItOkayToSubmitForm() && isSignatureDrawn;
+                                };
+                            };
+
+                            if (readyToSubmitForm()) {
                                 requestCreateApplication();
                                 displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                                 displayButtonMsg(false, id_filter_or_checkout, "error");
                                 id_filter_or_checkout_spin.classList.remove("hidden");
-                            } else if (!isSignatureDrawn) {
+                            } else {
+                                controlErrorInSubject();
                                 controlErrorInSignatureCanvas();
                             };
                         };
                     } else {
-                        inputs.forEach((input) => {
-                            controlError(input);
-                        });
+                        inputs.forEach((input) => { controlError(input) });
                     };
                 };
 
@@ -2019,15 +2295,13 @@ function initRequest() {
                 });
             });
 
+            // Add to cart
             if (id_detail == null) return;
 
             const id_add_to_cart = document.getElementById("id_add_to_cart");
 
             id_add_to_cart.addEventListener(type, event => {
-                const targetTagName = event.target.tagName;
-
-                if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                    (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                if (userRequestIsMade(type, event)) {
                     const id_add_to_cart_spin = code(id_add_to_cart, "_spin");
 
                     if (sessionStorage.cart === undefined) {

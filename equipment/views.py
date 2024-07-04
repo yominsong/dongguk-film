@@ -4,9 +4,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from urllib.parse import urlencode
-from .utils import get_equipment_data, split_period, filter_limit_list
+from .utils import get_equipment_data, get_subject, split_period, filter_limit_list
 from utility.img import get_hero_img
-from utility.utils import convert_datetime, notion, airtable
+from utility.utils import convert_datetime, mask_personal_information, airtable
 import random, json
 
 #
@@ -85,6 +85,20 @@ def set_template_tag(
     return category, purpose, period
 
 
+def get_subject_list():
+    base_date = timezone.now().date()
+    base_year = base_date.year
+    base_month = base_date.month
+    subject_list = get_subject(base_date)
+
+    for subject in subject_list:
+        subject["instructor"] = ", ".join(f"{mask_personal_information('instructor_id', instructor['id'])}#{instructor['name']}" for instructor in subject["instructor"])
+
+    target_academic_year_and_semester = f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
+
+    return subject_list, target_academic_year_and_semester
+
+
 #
 # Main functions
 #
@@ -157,6 +171,7 @@ def equipment(request):
         ]
 
     equipment_collection_count = len(equipment_collection_list)
+    subject_list, target_academic_year_and_semester = get_subject_list()
 
     # Query string and template tag
     query_string = f"categoryPriority={category_priority}&"
@@ -219,6 +234,8 @@ def equipment(request):
             "page_range": page_range,
             "category_list": category_list,
             "purpose_list": purpose_list,
+            "subject_list": subject_list,
+            "target_academic_year_and_semester": target_academic_year_and_semester,
             "category": category,
             "purpose": purpose,
             "period": period,
@@ -328,6 +345,7 @@ def equipment_detail(request, collection_id):
                     return redirect_with_query_string(base_url, query_string)
 
     image_list = get_hero_img("equipment")
+    subject_list, target_academic_year_and_semester = get_subject_list()
 
     # Purpose and limit
     stock_list = []
@@ -413,6 +431,8 @@ def equipment_detail(request, collection_id):
             "image_list": image_list,
             "category_list": category_list,
             "purpose_list": purpose_list,
+            "subject_list": subject_list,
+            "target_academic_year_and_semester": target_academic_year_and_semester,
             "limit_list": limit_list,
             "limit_list_json": limit_list_json,
             "category": category,

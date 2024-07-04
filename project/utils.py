@@ -136,7 +136,6 @@ def project(request):
     # id: find_instructor
     if id == "find_instructor":
         found_instructor_list, purpose_curricular = find_instructor(purpose, base_date)
-
         base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
         base_year = base_date.year
         base_month = base_date.month

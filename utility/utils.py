@@ -206,12 +206,16 @@ def get_subject(base_date: str):
             subject["openShyrNm"],
         )
 
-        instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
+        if subject["ltSprfNo"] is not None and subject["ltSprfNm"] is not None:
+            instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
 
-        if key not in subject_dict:
-            subject_dict[key] = [instructor]
+            if key not in subject_dict:
+                subject_dict[key] = {(instructor["id"], instructor["name"])}
+            else:
+                subject_dict[key].add((instructor["id"], instructor["name"]))
         else:
-            subject_dict[key].append(instructor)
+            if key not in subject_dict:
+                subject_dict[key] = set()
 
     for (
         kor_name,
@@ -219,8 +223,12 @@ def get_subject(base_date: str):
         code,
         target_university_year,
     ), instructors in subject_dict.items():
+        kor_name = kor_name.strip()
+        eng_name = eng_name.strip()
+        code = code.strip()
+        
         target_university_year = [
-            int(num) for num in re.sub(r"[^\d,]", "", target_university_year).split(",")
+            int(num) for num in re.sub(r"[^\d,]", "", target_university_year.strip()).split(",")
         ]
 
         result = {
@@ -228,16 +236,17 @@ def get_subject(base_date: str):
             "eng_name": eng_name,
             "code": code,
             "target_university_year": target_university_year,
-            "instructor": instructors,
+            "instructor": [{"id": id, "name": name} for id, name in instructors],
         }
 
         result_list.append(result)
-
+        
     return result_list
 
 
 def find_instructor(purpose: str, base_date: str):
     purpose_list = get_equipment_data("purpose")
+    purpose_curricular = False
 
     for purpose_item in purpose_list:
         if purpose_item["priority"] == purpose:
@@ -1085,7 +1094,6 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 "properties": {
                     "Category": {"select": {"name": category}},
                     "Title": {"title": [{"text": {"content": title}}]},
-                    "Project": {"relation": [{"id": project}]},
                     "Public application ID": {
                         "rich_text": [{"text": {"content": public_application_id}}]
                     },
@@ -1094,6 +1102,10 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     },
                 },
             }
+
+            if project:
+                payload["properties"]["Project"] = {"relation": [{"id": project}]}
+                
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 
         elif db_name == "project":

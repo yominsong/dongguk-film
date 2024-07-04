@@ -8,6 +8,7 @@ from utility.hangul import handle_hangul
 from utility.utils import (
     mask_personal_information,
     get_equipment_data,
+    get_subject,
     find_instructor,
     chat_gpt,
     airtable,
@@ -297,7 +298,9 @@ def is_invalid_signature(signature_bs64_encoded_data, student_name):
     return result
 
 
-def copy_equipment_use_request_form(project_name, student_id, public=False):
+def copy_equipment_use_request_form(
+    name_of_subject_or_project, student_id, public=False
+):
     student_id = (
         mask_personal_information("student_id", student_id) if public else student_id
     )
@@ -306,7 +309,9 @@ def copy_equipment_use_request_form(project_name, student_id, public=False):
         GOOGLE_DRIVE.files()
         .copy(
             fileId=GOOGLE_DOCS_TEMPLATE_ID["equipment_use_request_form"],
-            body={"name": f"{project_name} {student_id} 기자재 사용 신청서"},
+            body={
+                "name": f"{name_of_subject_or_project} {student_id} 기자재 사용 신청서"
+            },
         )
         .execute()
     )
@@ -669,6 +674,24 @@ def equipment(request):
             },
         }
 
+    # id: find_subject
+    elif id == "find_subject":
+        base_date = timezone.now().date()
+        found_subject_list = get_subject(base_date)
+
+        if len(found_subject_list) > 0:
+            status = "DONE"
+        else:
+            status = "FAIL"
+
+        response = {
+            "id": id,
+            "result": {
+                "status": status,
+                "found_subject_list": found_subject_list,
+            },
+        }
+
     # id: find_project
     elif id == "find_project":
         cart = json.loads(cart)
@@ -860,62 +883,84 @@ def equipment(request):
             status = "DONE"
             reason = None
             msg = "기자재 사용 신청서가 제출되었어요! 👍"
-            project_id = request.POST.get("project")
-            start_time = request.POST.get("startTime")
-            end_time = request.POST.get("endTime")
+            is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
-            project = notion("retrieve", "page", data={"page_id": project_id}).json()
-            project_properties = project["properties"]
+            if is_for_instructor:
+                project_id = "-"
+                project_name = "-"
+                academic_year = request.POST.get("academicYear", None)
+                academic_semester = request.POST.get("academicSemester", None)
+                subject_code = request.POST.get("subjectCode", None)
+                subject_name = request.POST.get("subjectName", None)
+                instructor_id = request.POST.get("instructor", None)
+                instructor_name = request.POST.get("instructorName", None)
+                director_student_id = director_name = director_phone_number = "-"
+                director_of_photography_student_id = director_of_photography_name = (
+                    director_of_photography_phone_number
+                ) = "-"
+                production_sound_mixer_student_id = production_sound_mixer_name = (
+                    production_sound_mixer_phone_number
+                ) = "-"
+                purpose_priority = cart[0]["purpose"]["priority"]
+            else:
+                project_id = request.POST.get("project", None)
+                project = notion(
+                    "retrieve", "page", data={"page_id": project_id}
+                ).json()
+                project_properties = project["properties"]
+                project_name = project_properties["Title"]["title"][0]["plain_text"]
+                base_date = timezone.datetime.fromisoformat(
+                    project["created_time"]
+                ).date()
+                base_year = base_date.year
+                base_month = base_date.month
+                academic_year = f"{base_year}학년도"
+                academic_semester = "1학기" if base_month < 7 else "2학기"
+                instructor_id = project_properties["Instructor"]["rich_text"][0][
+                    "plain_text"
+                ]
+                purpose_priority = project_properties["Purpose"]["rich_text"][0][
+                    "plain_text"
+                ]
+                found_instructor_list = find_instructor(purpose_priority, base_date)[0]
+                instuctor = next(
+                    (x for x in found_instructor_list if x["id"] == instructor_id), None
+                )
+                subject_code = instuctor["code"]
+                subject_name = instuctor["subject"]
+                instructor_name = instuctor["name"]
+                staff_list = ast.literal_eval(
+                    project_properties["Staff"]["rich_text"][0]["plain_text"]
+                )
 
-            project_name = project_properties["Title"]["title"][0]["plain_text"]
-            base_date = timezone.datetime.fromisoformat(project["created_time"]).date()
-            base_year = base_date.year
-            base_month = base_date.month
-            academic_year = f"{base_year}학년도"
-            academic_semester = "1학기" if base_month < 7 else "2학기"
-            instructor_id = project_properties["Instructor"]["rich_text"][0][
-                "plain_text"
-            ]
-            purpose_priority = project_properties["Purpose"]["rich_text"][0][
-                "plain_text"
-            ]
-            found_instructor_list = find_instructor(purpose_priority, base_date)[0]
-            instuctor = next(
-                (x for x in found_instructor_list if x["id"] == instructor_id), None
-            )
-            subject_code = instuctor["code"]
-            subject_name = instuctor["subject"]
-            instructor_name = instuctor["name"]
-            staff_list = ast.literal_eval(
-                project_properties["Staff"]["rich_text"][0]["plain_text"]
-            )
+                for staff in staff_list:
+                    position_priority = staff["position_priority"]
+                    student_id = staff["student_id"]
 
-            for staff in staff_list:
-                position_priority = staff["position_priority"]
-                student_id = staff["student_id"]
+                    if "A01" in position_priority:
+                        director_student_id = student_id
+                    if "C01" in position_priority:
+                        director_of_photography_student_id = student_id
+                    if "E02" in position_priority:
+                        production_sound_mixer_student_id = student_id
 
-                if "A01" in position_priority:
-                    director_student_id = student_id
-                if "C01" in position_priority:
-                    director_of_photography_student_id = student_id
-                if "E02" in position_priority:
-                    production_sound_mixer_student_id = student_id
-
-            director = User.objects.get(username=director_student_id)
-            director_name = director.metadata.name
-            director_phone_number = director.metadata.phone
-            director_of_photography = User.objects.get(
-                username=director_of_photography_student_id
-            )
-            director_of_photography_name = director_of_photography.metadata.name
-            director_of_photography_phone_number = (
-                director_of_photography.metadata.phone
-            )
-            production_sound_mixer = User.objects.get(
-                username=production_sound_mixer_student_id
-            )
-            production_sound_mixer_name = production_sound_mixer.metadata.name
-            production_sound_mixer_phone_number = production_sound_mixer.metadata.phone
+                director = User.objects.get(username=director_student_id)
+                director_name = director.metadata.name
+                director_phone_number = director.metadata.phone
+                director_of_photography = User.objects.get(
+                    username=director_of_photography_student_id
+                )
+                director_of_photography_name = director_of_photography.metadata.name
+                director_of_photography_phone_number = (
+                    director_of_photography.metadata.phone
+                )
+                production_sound_mixer = User.objects.get(
+                    username=production_sound_mixer_student_id
+                )
+                production_sound_mixer_name = production_sound_mixer.metadata.name
+                production_sound_mixer_phone_number = (
+                    production_sound_mixer.metadata.phone
+                )
 
             purpose_list = get_equipment_data("purpose")
 
@@ -929,6 +974,8 @@ def equipment(request):
             duration = split_period(period)[1]
             duration = f"{duration}일" if duration > 0 else "당일"
             start_date, end_date = get_start_end_date(cart)
+            start_time = request.POST.get("startTime")
+            end_time = request.POST.get("endTime")
             start_datetime = f"{start_date}({get_weekday(str(start_date))}) {'{}:{}'.format(start_time[:2], start_time[2:])}"
             end_datetime = f"{end_date}({get_weekday(str(end_date))}) {'{}:{}'.format(end_time[:2], end_time[2:])}"
             date_str = timezone.now().strftime("%Y-%m-%d")
@@ -989,7 +1036,12 @@ def equipment(request):
             }
 
             airtable("update", "records", data=data)
-            application_id = copy_equipment_use_request_form(project_name, student_id)
+            name_of_subject_or_project = (
+                subject_name if is_for_instructor else project_name
+            )
+            application_id = copy_equipment_use_request_form(
+                name_of_subject_or_project, student_id
+            )
             add_editor_permission(application_id)
             signature_id = upload_signature(signature, project_name, student_id)
             make_file_public(signature_id)
@@ -998,46 +1050,48 @@ def equipment(request):
             add_equipment_to_table(application_id, cart)
             replace_text(application_id, replacements)
 
+            if not is_for_instructor:
+                replacements["director_student_id"] = mask_personal_information(
+                    "student_id", director_student_id
+                )
+                replacements["director_name"] = mask_personal_information(
+                    "name", director_name
+                )
+                replacements["director_phone_number"] = mask_personal_information(
+                    "phone_number", director_phone_number
+                )
+                replacements["director_of_photography_student_id"] = (
+                    mask_personal_information(
+                        "student_id", director_of_photography_student_id
+                    )
+                )
+                replacements["director_of_photography_name"] = mask_personal_information(
+                    "name", director_of_photography_name
+                )
+                replacements["director_of_photography_phone_number"] = (
+                    mask_personal_information(
+                        "phone_number", director_of_photography_phone_number
+                    )
+                )
+                replacements["production_sound_mixer_student_id"] = (
+                    mask_personal_information(
+                        "student_id", production_sound_mixer_student_id
+                    )
+                )
+                replacements["production_sound_mixer_name"] = mask_personal_information(
+                    "name", production_sound_mixer_name
+                )
+                replacements["production_sound_mixer_phone_number"] = (
+                    mask_personal_information(
+                        "phone_number", production_sound_mixer_phone_number
+                    )
+                )
+
             replacements["instructor_id"] = mask_personal_information(
                 "instructor_id", instructor_id
             )
             replacements["instructor_name"] = mask_personal_information(
                 "name", instructor_name
-            )
-            replacements["director_student_id"] = mask_personal_information(
-                "student_id", director_student_id
-            )
-            replacements["director_name"] = mask_personal_information(
-                "name", director_name
-            )
-            replacements["director_phone_number"] = mask_personal_information(
-                "phone_number", director_phone_number
-            )
-            replacements["director_of_photography_student_id"] = (
-                mask_personal_information(
-                    "student_id", director_of_photography_student_id
-                )
-            )
-            replacements["director_of_photography_name"] = mask_personal_information(
-                "name", director_of_photography_name
-            )
-            replacements["director_of_photography_phone_number"] = (
-                mask_personal_information(
-                    "phone_number", director_of_photography_phone_number
-                )
-            )
-            replacements["production_sound_mixer_student_id"] = (
-                mask_personal_information(
-                    "student_id", production_sound_mixer_student_id
-                )
-            )
-            replacements["production_sound_mixer_name"] = mask_personal_information(
-                "name", production_sound_mixer_name
-            )
-            replacements["production_sound_mixer_phone_number"] = (
-                mask_personal_information(
-                    "phone_number", production_sound_mixer_phone_number
-                )
             )
             replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
             replacements["student_id"] = mask_personal_information(
@@ -1049,7 +1103,7 @@ def equipment(request):
             replacements["signature"] = "(서명 마스킹됨)"
 
             public_application_id = copy_equipment_use_request_form(
-                project_name, student_id, public=True
+                name_of_subject_or_project, student_id, public=True
             )
             add_editor_permission(public_application_id)
             add_equipment_to_table(public_application_id, cart)
@@ -1059,11 +1113,13 @@ def equipment(request):
             data = {
                 "db_name": "application",
                 "category": "기자재",
-                "title": f"{project_name} {student_id} 기자재 사용 신청서",
-                "project": project_id,
+                "title": f"{name_of_subject_or_project} {student_id} 기자재 사용 신청서",
                 "public_application_id": public_application_id,
                 "private_application_id": application_id,
             }
+
+            if not is_for_instructor:
+                data["project"] = project_id
 
             notion("create", "page", data=data)
 
@@ -1093,9 +1149,11 @@ def equipment(request):
                 },
             }
 
-            additional_application_data = airtable("get_all", "records", data=data, limit=1)[0]
+            additional_application_data = airtable(
+                "get_all", "records", data=data, limit=1
+            )[0]
             additional_application_data_list.append(additional_application_data)
-        
+
         for i in range(len(application_list)):
             application = application_list[i]
             additional_data = additional_application_data_list[i]

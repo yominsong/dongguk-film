@@ -1034,8 +1034,8 @@ function initRequest() {
         const class_firsts = document.querySelectorAll(".class-first");
 
         initValidation(class_firsts, id_create_or_update);
+        initPurposeValidation();
         initStaffBoxValidation();
-        validatePurpose();
 
         id_name.addEventListener("input", () => {
             if (isItOkayToFindUser()) {
