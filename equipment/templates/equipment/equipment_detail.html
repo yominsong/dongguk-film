@@ -130,7 +130,7 @@
                     </h3>
                     <h3 id="id_cart_alert_for_stock" hidden>
                         {% if not available_from == None %}
-                            <span class="class-purpose">해당</span> 목적으로 이 기자재를 대여할 수 있는 가장 이른 날짜는 {{ available_from }}이에요.
+                            <span id="id_selected_purpose">해당</span> 목적으로 이 기자재를 대여할 수 있는 가장 이른 날짜는 {{ available_from }}이에요.
                         {% else %}
                             현재 이 기자재의 예약 가능한 재고가 없어요.
                         {% endif %}

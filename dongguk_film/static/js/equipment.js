@@ -1819,14 +1819,11 @@ function initDetail() {
         id_cart_alert.hidden = false;
         id_cart_alert_for_filter.hidden = false;
     } else if (id_requested_quantity.value === "0" && id_requested_quantity.readOnly) {
-        const class_purposes = document.querySelectorAll(".class-purpose");
+        const id_selected_purpose = document.getElementById("id_selected_purpose");
 
         id_cart_alert.hidden = false;
         id_cart_alert_for_stock.hidden = false;
-
-        class_purposes.forEach(purpose => {
-            purpose.innerText = id_purpose_badge.innerText.trim().slice(7);
-        });
+        id_selected_purpose.innerText = id_purpose_badge.innerText.trim().slice(7);
     };
 
     if (id_requested_quantity.readOnly) return;

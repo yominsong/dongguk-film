@@ -464,12 +464,7 @@ def equipment(request):
     category_priority = request.POST.get("categoryPriority")
     purpose_priority = request.POST.get("purposePriority")
     period = request.POST.get("period")
-    requested_quantity = request.POST.get("requestedQuantity")
-    cart = request.POST.get("cart")
-    start_date = request.POST.get("startDate")
-    end_date = request.POST.get("endDate")
-    start_day = request.POST.get("startDay")
-    end_day = request.POST.get("endDay")
+    cart = json.loads(request.POST.get("cart", "[]"))
 
     # id: filter_equipment
     if id == "filter_equipment":
@@ -516,7 +511,7 @@ def equipment(request):
 
     # id: add_to_cart
     elif id == "add_to_cart":
-        cart = json.loads(cart)
+        requested_quantity = request.POST.get("requestedQuantity")
 
         collection = airtable(
             "get",
@@ -694,10 +689,9 @@ def equipment(request):
 
     # id: find_project
     elif id == "find_project":
-        cart = json.loads(cart)
         project_list = notion("query", "db", data={"db_name": "project"})
         found_project_list = []
-        cart_start_date, cart_end_date = get_start_end_date(cart)
+        cart_end_date = get_start_end_date(cart)[1]
 
         for project in project_list:
             if (
@@ -728,6 +722,11 @@ def equipment(request):
 
     # id: find_hour
     elif id == "find_hour":
+        start_date = request.POST.get("startDate")
+        end_date = request.POST.get("endDate")
+        start_day = request.POST.get("startDay")
+        end_day = request.POST.get("endDay")
+
         data = {
             "table_name": "equipment-hour",
             "params": {
@@ -779,7 +778,6 @@ def equipment(request):
     # id: create_application
     elif id == "create_application":
         application_id = None
-        cart = json.loads(cart)
         occupied_item_list = []
         alternative_item_list = []
         status = "FAIL"
