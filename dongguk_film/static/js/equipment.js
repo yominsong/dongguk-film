@@ -67,31 +67,31 @@ const currentPeriod = urlParams.get("period");
 // Sub functions
 //
 
-function initUrlParams() {
+function updateUrlParams() {
     const cart = getCart();
 
     if (cart === null || cart.length === 0) return;
 
-    const url = new URL(location.href);
-    const params = new URLSearchParams(url.search);
     const purposeInCart = cart[0].purpose.priority;
-    const periodInCart = cart[0].period
+    const periodInCart = cart[0].period;
 
-    if (params.has("purposePriority") && params.has("period")) return;
+    if (currentPurpose !== null && currentPeriod !== null) return;
+    if (currentPurpose === purposeInCart && currentPeriod === periodInCart) return;
 
-    params.set("purposePriority", purposeInCart);
-    params.set("period", periodInCart);
-    url.search = params.toString();
+    urlParams.set("purposePriority", purposeInCart);
+    urlParams.set("period", periodInCart);
+    
+    const url = new URL(location.href);
+
+    url.search = urlParams.toString();
     window.history.replaceState(null, null, url);
     window.location.reload();
 }
 
 function notifyRentalLimit() {
-    const params = new URLSearchParams(window.location.search);
+    if (!urlParams.has("rentalLimited")) return;
 
-    if (!params.has("rentalLimited")) return;
-
-    const collectionName = params.get("rentalLimited");
+    const collectionName = urlParams.get("rentalLimited");
     const purposeKeyword = id_purpose_badge.innerText.trim().slice(7);
     const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
 
@@ -269,10 +269,6 @@ function getKoreanCharacterCount(str) {
     };
 }
 
-function getCart() {
-    return JSON.parse(sessionStorage.getItem("cart"));
-}
-
 function displayErrorInSignatureCanvas(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
@@ -400,6 +396,24 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
+}
+
+function executeWhenPurposeHasChanged() {
+    const isPurposeAlreadySelected = currentPurpose !== null;
+    const isPurposeChanged = currentPurpose !== id_purpose.value;
+    const isThereSomethingInCart = getCart() !== null;
+
+    if (isPurposeAlreadySelected && isPurposeChanged && isThereSomethingInCart) {
+        id_purpose_cart_reset_msg.hidden = false;
+        id_purpose_cart_reset_msg.innerText = "대여 목적이 변경되면 장바구니가 초기화되니 유의해주세요.";
+        id_period_cart_reset_msg.hidden = true;
+        id_period_cart_reset_msg.innerText = "";
+        id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
+    } else {
+        id_purpose_cart_reset_msg.hidden = true;
+        id_purpose_cart_reset_msg.innerText = "";
+        id_filter_or_checkout_text.innerText = "적용하기";
+    };
 }
 
 function executeWhenSubjectIsSelected(selectedSubject = null) {
@@ -699,24 +713,6 @@ function initFoundProjectList(resResult = null) {
     const cart = getCart();
 
     id_found_project_list.innerHTML = "";
-
-    // If the purpose is for instructor
-    // if (resResult === null && cart !== null && cart[0].purpose.for_instructor === true) {
-    //     const placeholderElement = document.createElement("div");
-
-    //     placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50";
-
-    //     placeholderElement.innerHTML = `
-    //         <div class="flex flex-1 justify-center">
-    //             <span id="id_found_project_list_help"
-    //                   class="text-sm text-center text-gray-500">교수 목적은 프로젝트를 선택하지 않아도 돼요.</span>
-    //         </div>
-    //     `;
-
-    //     id_found_project_list.appendChild(placeholderElement);
-
-    //     return;
-    // }
 
     // FAIL
     if (resResult === null) {
@@ -1453,32 +1449,20 @@ function initForm() {
     };
 
     id_purpose.value = null;
-    id_initialize_purpose.click();
+    // id_initialize_purpose.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
     if (currentPurpose !== null && currentPurpose !== "") {
         code("id_purpose_", currentPurpose).click();
+    } else {
+        id_initialize_purpose.click();
     };
 
     const class_purposes = document.querySelectorAll(".class-purpose");
 
     class_purposes.forEach((purpose) => {
         purpose.addEventListener("click", () => {
-            const isPurposeAlreadySelected = currentPurpose !== null;
-            const isPurposeChanged = currentPurpose !== id_purpose.value;
-            const isThereSomethingInCart = getCart() !== null;
-
-            if (isPurposeAlreadySelected && isPurposeChanged && isThereSomethingInCart) {
-                id_purpose_cart_reset_msg.hidden = false;
-                id_purpose_cart_reset_msg.innerText = "대여 목적이 변경되면 장바구니가 초기화되니 유의해주세요.";
-                id_period_cart_reset_msg.hidden = true;
-                id_period_cart_reset_msg.innerText = "";
-                id_filter_or_checkout_text.innerText = "장바구니 초기화 후 적용하기";
-            } else {
-                id_purpose_cart_reset_msg.hidden = true;
-                id_purpose_cart_reset_msg.innerText = "";
-                id_filter_or_checkout_text.innerText = "적용하기";
-            };
+            executeWhenPurposeHasChanged();
         });
     });
 
@@ -1699,8 +1683,6 @@ function updateForm(action, datasetObj = null) {
         } else {
             id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.";
         };
-
-        // id_filter_or_checkout.classList.remove("class-checkout");
     }
 
     // Middle action: share
@@ -2192,7 +2174,7 @@ function initFeedback() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        initUrlParams();
+        updateUrlParams();
         requestVerifyAuthentication();
         initFeedback();
         initSubjectValidation();

@@ -23,6 +23,22 @@ function hideNavbarAndFooter() {
 
 hideNavbarAndFooter();
 
+function updateEquipmentAppLink() {
+    const cart = getCart();
+
+    if (cart === null || cart.length === 0) return;
+
+    const class_equipment_app_links = document.querySelectorAll(".class-equipment-app-link");
+    const purposeInCart = cart[0].purpose.priority;
+    const periodInCart = cart[0].period;
+
+    class_equipment_app_links.forEach((link) => {
+        link.href = `/equipment/?categoryPriority=A&purposePriority=${purposeInCart}&period=${periodInCart}`;
+    });
+}
+
+updateEquipmentAppLink();
+
 function redirectAfterLoginLogout() {
     const loginsLogouts = document.querySelectorAll(".login-button, .logout-button");
     let params = {};

@@ -113,7 +113,10 @@
                                     <div id="id_initialize_purpose"
                                          class="text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
                                          tabindex="0"
-                                         @click="choose(0); executeWhenPurposeIsSelected()"
+                                         role="button"
+                                         @keydown.enter.prevent="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
+                                         @keydown.space.prevent="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
+                                         @click="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
                                          hidden>
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              fill="none"

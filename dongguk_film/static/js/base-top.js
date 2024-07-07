@@ -15,6 +15,10 @@ function isAuthenticated() {
     return userPk !== null && userName !== null && userStudentId !== null
 }
 
+function getCart() {
+    return JSON.parse(sessionStorage.getItem("cart"));
+}
+
 /**
  * - `String/Number.getLastNumInKor()`: Return the last letter in Hangul
  * - `Number.toTwoDigits()`: Pad with zero to make a two digit number **(type: string)**
