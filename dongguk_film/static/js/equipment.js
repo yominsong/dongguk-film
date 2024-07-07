@@ -879,16 +879,17 @@ function initFoundInstructorList(foundInstructors) {
         newlyFoundInstructorElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
 
         newlyFoundInstructorElement.innerHTML = `
-            <input id="id_instructor_${data_instructor.id}"
+            <input id="id_instructor_${data_instructor.id.replace(/\*/g, "-")}"
                     name="id_instructor"
                     type="radio"
                     class="sr-only class-second class-radio class-instructor"
-                    aria-labelledby="id_instructor_${data_instructor.id}_label"
-                    aria-describedby="id_instructor_${data_instructor.id}_descr">
+                    aria-labelledby="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_label"
+                    aria-describedby="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_descr">
             <div class="flex flex-1">
                 <span class="flex flex-col">
-                    <span id="id_instructor_${data_instructor.id}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_instructor.name)}</span>
-                    <p id="id_instructor_${data_instructor.id}_descr" class="mt-1 flex items-center text-sm text-gray-500">${data_instructor.id}</p>
+                    <span id="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_instructor.name)}</span>
+                    <p id="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_descr" class="mt-1 flex items-center text-sm text-gray-500">${data_instructor.id}</p>
+                    <p id="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_error" class="flex items-center text-sm text-flamingo-600" hidden></p>
                 </span>
             </div>
             <svg class="h-5 w-5 ml-1 text-flamingo"
