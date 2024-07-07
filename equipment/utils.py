@@ -571,7 +571,7 @@ def equipment(request):
                 break
 
             if (
-                item["status"] == "Available"
+                item["status"] != "Unavailable"
                 and "🟢" in item["validation"]
                 and purpose_priority in str(item["purpose"])
             ):
