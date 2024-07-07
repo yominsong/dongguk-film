@@ -29,7 +29,7 @@ urlpatterns = [
     path("project/", include("project.urls")),
     path("dflink/", include("dflink.urls")),
     path("notice/", include("notice.urls")),
-    path("users/", include("users.urls")),
+    path("account/", include("users.urls")),
     path("utility/", include("utility.urls")),
     path(
         "robots.txt",

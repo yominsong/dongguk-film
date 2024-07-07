@@ -13,10 +13,10 @@ current_minute = current_time.strftime("%M")
 # users
 #
 
-requests.get("https://dongguk.film/users/utils/delete-expired-vcodes/")
+requests.get("https://dongguk.film/account/utils/delete-expired-vcodes/")
 
 if current_time.strftime("%H:%M") == "08:00":
-    requests.get("https://dongguk.film/users/utils/delete-inactive-users/")
+    requests.get("https://dongguk.film/account/utils/delete-inactive-users/")
 
 #
 # equipment

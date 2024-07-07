@@ -675,7 +675,7 @@ function handleAjaxCallback(response) {
 }
 
 function requestVerifyAuthentication() {
-    request.url = `${location.origin}/users/utils/verify-authentication/`;
+    request.url = `${location.origin}/account/utils/verify-authentication/`;
     request.type = "GET";
     request.data = { id: "verify_authentication" };
     request.async = true;
@@ -685,7 +685,7 @@ function requestVerifyAuthentication() {
 }
 
 function requestPinpointUser() {
-    request.url = `${location.origin}/users/utils/pinpoint-user/`;
+    request.url = `${location.origin}/account/utils/pinpoint-user/`;
     request.type = "POST";
     request.data = { id: "pinpoint_user", pk: userPk, name: userName, student_id: userStudentId };
     request.async = true;

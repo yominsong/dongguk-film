@@ -459,11 +459,11 @@ def insert_signature(document_id, signature_id):
 
 
 def equipment(request):
-    id = request.POST.get("id")
-    record_id = request.POST.get("recordId")
-    category_priority = request.POST.get("categoryPriority")
-    purpose_priority = request.POST.get("purposePriority")
-    period = request.POST.get("period")
+    id = request.POST.get("id", None)
+    record_id = request.POST.get("recordId", None)
+    category_priority = request.POST.get("categoryPriority", None)
+    purpose_priority = request.POST.get("purposePriority", None)
+    period = request.POST.get("period", None)
     cart = json.loads(request.POST.get("cart", "[]"))
 
     # id: filter_equipment
@@ -861,7 +861,7 @@ def equipment(request):
         signature = request.FILES.get("signature")
         signature_file_data = signature.read()
         signature_image = Image.open(BytesIO(signature_file_data))
-        r, g, b, a = signature_image.split()
+        a = signature_image.split()[3]  # Get the alpha channel
         white_signature_image = Image.new(
             "RGBA", signature_image.size, (255, 255, 255, 0)
         )
@@ -1049,41 +1049,17 @@ def equipment(request):
             replace_text(application_id, replacements)
 
             if not is_for_instructor:
-                replacements["director_student_id"] = mask_personal_information(
-                    "student_id", director_student_id
-                )
-                replacements["director_name"] = mask_personal_information(
-                    "name", director_name
-                )
-                replacements["director_phone_number"] = mask_personal_information(
-                    "phone_number", director_phone_number
-                )
-                replacements["director_of_photography_student_id"] = (
-                    mask_personal_information(
-                        "student_id", director_of_photography_student_id
-                    )
-                )
-                replacements["director_of_photography_name"] = mask_personal_information(
-                    "name", director_of_photography_name
-                )
-                replacements["director_of_photography_phone_number"] = (
-                    mask_personal_information(
-                        "phone_number", director_of_photography_phone_number
-                    )
-                )
-                replacements["production_sound_mixer_student_id"] = (
-                    mask_personal_information(
-                        "student_id", production_sound_mixer_student_id
-                    )
-                )
-                replacements["production_sound_mixer_name"] = mask_personal_information(
-                    "name", production_sound_mixer_name
-                )
-                replacements["production_sound_mixer_phone_number"] = (
-                    mask_personal_information(
-                        "phone_number", production_sound_mixer_phone_number
-                    )
-                )
+                fields_to_mask = {
+                    "director": ["student_id", "name", "phone_number"],
+                    "director_of_photography": ["student_id", "name", "phone_number"],
+                    "production_sound_mixer": ["student_id", "name", "phone_number"],
+                }
+
+                for role, fields in fields_to_mask.items():
+                    for field in fields:
+                        key = f"{role}_{field}"
+                        if key in replacements:
+                            replacements[key] = mask_personal_information(field, replacements[key])
 
             replacements["instructor_id"] = mask_personal_information(
                 "instructor_id", instructor_id
@@ -1091,13 +1067,13 @@ def equipment(request):
             replacements["instructor_name"] = mask_personal_information(
                 "name", instructor_name
             )
-            replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
             replacements["student_id"] = mask_personal_information(
                 "student_id", student_id
             )
             replacements["student_name"] = mask_personal_information(
                 "name", student_name
             )
+            replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
             replacements["signature"] = "(서명 마스킹됨)"
 
             public_application_id = copy_equipment_use_request_form(
