@@ -294,8 +294,8 @@
                                  @keydown.enter.prevent="open = false; focusButton()"
                                  @keyup.space.prevent="open = false; focusButton()"
                                  style="display: none">
-                                <a href="#"
-                                   class="block px-4 py-2 text-sm text-gray-700 under-construction"
+                                <a href="{% url 'users:account' %}"
+                                   class="block px-4 py-2 text-sm text-gray-700"
                                    x-state:on="Active"
                                    x-state:off="Not Active"
                                    :class="{ 'bg-gray-100': activeIndex === 0 }"
@@ -498,8 +498,9 @@
                                 <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
                             </div>
                             <div class="ml-auto">
-                                <button type="button"
-                                        class="flex-shrink-0 bg-white text-gray-500 rounded-full focus:df-focus-ring-offset-white under-construction">
+                                <button id="id_go_to_account"
+                                        type="button"
+                                        class="flex-shrink-0 bg-white text-gray-500 rounded-full focus:df-focus-ring-offset-white">
                                     <span class="sr-only">내 계정</span>
                                     <svg class="h-6 w-6"
                                          fill="none"

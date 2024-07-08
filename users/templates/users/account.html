@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% load tags %}
+{% block meta %}
+    <meta property="og:title" content="내 계정 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'users:account' %}">
+    <meta name="robots" content="noindex,nofollow">
+{% endblock meta %}
+{% block title %}
+    내 계정 - 디닷에프
+{% endblock title %}
+{% block body %}
+    <!-- Hero -->
+    <div class="relative sm:pt-6 lg:pt-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
+                <div class="absolute inset-0" aria-hidden="true">
+                    <div class="mix-blend-multiply w-full h-full">
+                        <!-- Swiper -->
+                        <div class="swiper mySwiper w-full h-full">
+                            <div class="swiper-wrapper">
+                                {% for image in image_list|shuffle %}
+                                    <div class="swiper-slide">
+                                        <img class="object-cover w-full h-full grayscale"
+                                             height=""
+                                             width=""
+                                             alt=""
+                                             src="{{ image }}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
+                </div>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">내 계정</h1>
+                    <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
+                        계정 정보, 서비스 이용 내역 관리
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

@@ -23,6 +23,18 @@ function hideNavbarAndFooter() {
 
 hideNavbarAndFooter();
 
+function goToAccount() {
+    if (!isAuthenticated()) return;
+
+    const id_go_to_account = document.getElementById("id_go_to_account");
+
+    id_go_to_account.addEventListener("click", () => {
+        location.href = `${location.origin}/account/`;
+    });
+}
+
+goToAccount();
+
 function updateEquipmentAppLink() {
     const cart = getCart();
 

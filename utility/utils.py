@@ -80,6 +80,7 @@ def update_hero_img(request):
     project_img = save_hero_img("film-production", "project")
     dflink_img = save_hero_img("keyboard", "dflink")
     notice_img = save_hero_img("office", "notice")
+    account_img = save_hero_img("digital", "account")
 
     img_list_for_msg = {
         "home": home_img,
@@ -87,6 +88,7 @@ def update_hero_img(request):
         "project": project_img,
         "dflink": dflink_img,
         "notice": notice_img,
+        "account": account_img,
     }
 
     send_msg(request, "UIG", "DEV", img_list_for_msg)

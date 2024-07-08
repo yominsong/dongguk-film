@@ -138,6 +138,7 @@ def send_msg(request, type: str, channel: str, extra=None):
         sub_content += f"\nㆍ[project] 총 {len(extra['project'])}개 이미지"
         sub_content += f"\nㆍ[dflink] 총 {len(extra['dflink'])}개 이미지"
         sub_content += f"\nㆍ[notice] 총 {len(extra['notice'])}개 이미지"
+        sub_content += f"\nㆍ[account] 총 {len(extra['account'])}개 이미지"
         
         main_content = {
             "important": False,
