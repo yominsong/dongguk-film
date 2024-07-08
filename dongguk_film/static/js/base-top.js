@@ -12,7 +12,7 @@ let userPinpointed = false; // User pinpointing results
 //
 
 function isAuthenticated() {
-    return userPk !== null && userName !== null && userStudentId !== null
+    return userPk !== null && userPk !== undefined && userName !== null && userName !== undefined && userStudentId !== null && userStudentId !== undefined;
 }
 
 function getCart() {

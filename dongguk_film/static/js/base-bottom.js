@@ -28,6 +28,8 @@ function goToAccount() {
 
     const id_go_to_account = document.getElementById("id_go_to_account");
 
+    if (id_go_to_account === null) return;
+
     id_go_to_account.addEventListener("click", () => {
         location.href = `${location.origin}/account/`;
     });

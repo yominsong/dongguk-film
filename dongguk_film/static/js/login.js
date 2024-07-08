@@ -47,6 +47,10 @@ function displayLoginRequestMsg() {
         } else if (loginRequestMsg === "createNotice") {
             id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
         };
+    } else if (!isAuthenticated()) {
+        if (urlParams.get("next").includes("account")) {
+            id_login_request_msg.innerText = "내 계정 서비스를 이용하려면";
+        };
     };
 }
 
