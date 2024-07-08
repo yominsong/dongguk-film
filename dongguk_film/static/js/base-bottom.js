@@ -24,8 +24,6 @@ function hideNavbarAndFooter() {
 hideNavbarAndFooter();
 
 function goToAccount() {
-    if (!isAuthenticated()) return;
-
     const id_go_to_account = document.getElementById("id_go_to_account");
 
     if (id_go_to_account === null) return;
