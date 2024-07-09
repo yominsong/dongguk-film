@@ -397,7 +397,7 @@ def chat_gpt(model: str, prompt: list):
     return openai_response
 
 
-def short_io(action: str, request=None, limit: int = None):
+def short_io(action: str, request=None, filter: dict = None, limit: int = None, mask: bool = False):
     """
     - action | `str`:
         - create
@@ -405,7 +405,9 @@ def short_io(action: str, request=None, limit: int = None):
         - update
         - delete
     - request | `HttpRequest`
+    - filter | `dict`
     - limit | `int`
+    - mask | `bool`
     """
 
     # action: create
@@ -439,21 +441,32 @@ def short_io(action: str, request=None, limit: int = None):
         dflinks = response["links"]
         dflink_list = []
 
-        try:
-            for i in range(dflink_count):
-                dflink = {
-                    "link_id": dflinks[i]["idString"],
-                    "target_url": dflinks[i]["originalURL"],
-                    "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
-                    "slug": dflinks[i]["path"],
-                    "title": dflinks[i]["title"],
-                    "category": dflinks[i]["tags"][0],
-                    "user": dflinks[i]["tags"][1],
-                    "expiration_date": dflinks[i]["tags"][2],
-                }
-                dflink_list.append(dflink)
-        except:
-            pass
+        # try:
+        for i in range(dflink_count):
+            user = dflinks[i]["tags"][1]
+
+            try:
+                if user != filter["user"]:
+                    continue
+            except:
+                pass
+            
+            user = mask_personal_information("student_id", user) if mask else user
+
+            dflink = {
+                "link_id": dflinks[i]["idString"],
+                "target_url": dflinks[i]["originalURL"],
+                "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
+                "slug": dflinks[i]["path"],
+                "title": dflinks[i]["title"],
+                "category": dflinks[i]["tags"][0],
+                "user": user,
+                "expiration_date": dflinks[i]["tags"][2],
+            }
+            
+            dflink_list.append(dflink)
+        # except:
+        #     pass
 
         result = dflink_list
 
@@ -764,7 +777,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
     return result
 
 
-def notion(action: str, target: str, data: dict = None, limit: int = None):
+def notion(action: str, target: str, data: dict = None, limit: int = None, mask: bool = False):
     """
     - action | `str`:
         - query
@@ -797,6 +810,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
         - file
         - user
     - limit | `int`
+    - mask | `bool`
     """
 
     if data != None:
@@ -912,106 +926,113 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                 purpose_list = json.load(f)["purpose"]
                 f.close()
 
-            try:
-                for item in items:
-                    properties = item["properties"]
+            # try:
+            for item in items:
+                properties = item["properties"]
 
-                    created_time = properties["Created time"]["created_time"]
-                    created_time = convert_datetime(created_time)
+                created_time = properties["Created time"]["created_time"]
+                created_time = convert_datetime(created_time)
 
-                    purpose = (
-                        properties.get("Purpose", {})
-                        .get("rich_text", [{}])[0]
-                        .get("plain_text", None)
+                purpose = (
+                    properties.get("Purpose", {})
+                    .get("rich_text", [{}])[0]
+                    .get("plain_text", None)
+                )
+
+                purpose_priority = [
+                    item for item in purpose_list if item["priority"] in purpose
+                ][0]["priority"]
+                purpose_keyword = [
+                    item for item in purpose_list if item["priority"] in purpose
+                ][0]["keyword"]
+
+                title = properties["Title"]["title"][0]["plain_text"]
+                production_end_date = properties["Production end date"]["date"][
+                    "start"
+                ]
+                instructor = properties.get("Instructor", {}).get("rich_text", [{}])
+
+                if instructor:
+                    instructor = instructor[0].get("plain_text", None)
+
+                    if instructor and mask:
+                        instructor = mask_personal_information("instructor_id", instructor)
+
+                    subject_code = properties.get("Subject code", {}).get(
+                        "rich_text", [{}]
                     )
 
-                    purpose_priority = [
-                        item for item in purpose_list if item["priority"] in purpose
-                    ][0]["priority"]
-                    purpose_keyword = [
-                        item for item in purpose_list if item["priority"] in purpose
-                    ][0]["keyword"]
-
-                    title = properties["Title"]["title"][0]["plain_text"]
-                    production_end_date = properties["Production end date"]["date"][
-                        "start"
-                    ]
-                    instructor = properties.get("Instructor", {}).get("rich_text", [{}])
-
-                    if instructor:
-                        instructor = instructor[0].get("plain_text", None)
-                        subject_code = properties.get("Subject code", {}).get(
-                            "rich_text", [{}]
-                        )
-                        subject_name = properties.get("Subject name", {}).get(
-                            "rich_text", [{}]
-                        )
-
-                    user = str(properties["User"]["number"])
-
-                    project = {
-                        "page_id": item["id"],
-                        "purpose": {
-                            "priority": purpose_priority,
-                            "keyword": purpose_keyword,
-                        },
-                        "title": title,
-                        "production_end_date": production_end_date,
-                        "instructor": instructor,
-                        "subject_code": subject_code,
-                        "subject_name": subject_name,
-                        "user": user,
-                        "created_date": created_time.strftime("%Y-%m-%d"),
-                    }
-
-                    staff = (
-                        properties.get("Staff", {})
-                        .get("rich_text", [{}])[0]
-                        .get("plain_text", None)
+                    subject_name = properties.get("Subject name", {}).get(
+                        "rich_text", [{}]
                     )
 
-                    staff_list = ast.literal_eval(staff) if staff else None
+                user = str(properties["User"]["number"])
+                user = mask_personal_information("student_id", user) if mask else user
 
-                    director_list = []
-                    director_name_list = []
-                    producer_list = []
-                    producer_name_list = []
-                    producer_student_id_list = []
+                project = {
+                    "page_id": item["id"],
+                    "purpose": {
+                        "priority": purpose_priority,
+                        "keyword": purpose_keyword,
+                    },
+                    "title": title,
+                    "production_end_date": production_end_date,
+                    "instructor": instructor,
+                    "subject_code": subject_code,
+                    "subject_name": subject_name,
+                    "user": user,
+                    "created_date": created_time.strftime("%Y-%m-%d"),
+                }
 
-                    for staff in staff_list:
-                        student_id = staff["student_id"]
-                        user = User.objects.get(username=student_id)
-                        staff["pk"] = str(user.pk)
-                        staff["name"] = user.metadata.name
-                        staff["student_id"] = (
-                            student_id[:2]
-                            + "*" * (len(student_id) - 5)
-                            + student_id[-3:]
-                        )
-                        staff["avatar_url"] = user.socialaccount_set.all()[
-                            0
-                        ].get_avatar_url()
+                staff = (
+                    properties.get("Staff", {})
+                    .get("rich_text", [{}])[0]
+                    .get("plain_text", None)
+                )
 
-                        for priority in staff["position_priority"]:
-                            if priority == "A01":  # A01: 연출
-                                director_list.append(staff)
-                                director_name_list.append(staff["name"])
+                staff_list = ast.literal_eval(staff) if staff else None
 
-                            if priority == "B01":  # B01: 제작
-                                producer_list.append(staff)
-                                producer_name_list.append(staff["name"])
-                                producer_student_id_list.append(staff["student_id"])
+                director_list = []
+                director_name_list = []
+                producer_list = []
+                producer_name_list = []
+                producer_student_id_list = []
 
-                    project["staff"] = staff_list
-                    project["director"] = director_list
-                    project["director_name"] = director_name_list
-                    project["producer"] = producer_list
-                    project["producer_name"] = producer_name_list
-                    project["producer_student_id"] = producer_student_id_list
+                for staff in staff_list:
+                    student_id = staff["student_id"]
+                    user = User.objects.get(username=student_id)
+                    staff["pk"] = str(user.pk)
+                    staff["name"] = user.metadata.name
+                    staff["student_id"] = (
+                        student_id[:2]
+                        + "*" * (len(student_id) - 5)
+                        + student_id[-3:]
+                    )
+                    staff["student_id"] = mask_personal_information("student_id", student_id)
+                    staff["avatar_url"] = user.socialaccount_set.all()[
+                        0
+                    ].get_avatar_url()
 
-                    item_list.append(project)
-            except:
-                pass
+                    for priority in staff["position_priority"]:
+                        if priority == "A01":  # A01: 연출
+                            director_list.append(staff)
+                            director_name_list.append(staff["name"])
+
+                        if priority == "B01":  # B01: 제작
+                            producer_list.append(staff)
+                            producer_name_list.append(staff["name"])
+                            producer_student_id_list.append(staff["student_id"])
+
+                project["staff"] = staff_list
+                project["director"] = director_list
+                project["director_name"] = director_name_list
+                project["producer"] = producer_list
+                project["producer_name"] = producer_name_list
+                project["producer_student_id"] = producer_student_id_list
+
+                item_list.append(project)
+            # except:
+            #     pass
 
         elif db_name == "dflink-allowlist":
             response = requests.post(
@@ -1049,6 +1070,7 @@ def notion(action: str, target: str, data: dict = None, limit: int = None):
                     category = properties["Category"]["select"]["name"]
                     keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
                     user = str(properties["User"]["number"])
+                    user = mask_personal_information("student_id", user) if mask else user
 
                     notice = {
                         "page_id": item["id"],

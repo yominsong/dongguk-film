@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from users.models import Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
 from utility.msg import send_msg
-from utility.utils import reg_test
+from utility.utils import reg_test, short_io, notion
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
@@ -231,15 +232,14 @@ def vcode(request):
         - email_vcode
         - phone_vcode
     """
+    id = request.POST["id"]
+    student_id = request.POST["student_id"]
+    name = request.POST["name"]
+    email = request.POST["email"]
+    phone = "".join(filter(str.isalnum, request.POST["phone"]))
 
     # id: create_vcode_for_SNP
-    if request.POST["id"] == "create_vcode_for_SNP":
-        id = request.POST["id"]
-        student_id = request.POST["student_id"]
-        name = request.POST["name"]
-        email = request.POST["email"]
-        phone = "".join(filter(str.isalnum, request.POST["phone"]))
-
+    if id == "create_vcode_for_SNP":
         data = {"student_id": student_id, "name": name, "request": request}
         status, msg = validation(data)
 
@@ -280,15 +280,9 @@ def vcode(request):
                 msg = "앗, 다시 한 번 시도해주세요!"
 
     # id: confirm_vcode_for_SNP
-    elif request.POST["id"] == "confirm_vcode_for_SNP":
-        id = request.POST["id"]
-        student_id = request.POST["student_id"]
-        name = request.POST["name"]
-        email = request.POST["email"]
-        phone = "".join(filter(str.isalnum, request.POST["phone"]))
+    elif id == "confirm_vcode_for_SNP":
         email_vcode = request.POST["email_vcode"]
         phone_vcode = request.POST["phone_vcode"]
-
         data = {"student_id": student_id, "name": name, "request": request}
         status, msg = validation(data)
 
@@ -312,5 +306,56 @@ def vcode(request):
                 msg = "인증번호가 잘못 입력된 것 같아요."
 
     response = {"id": id, "result": {"status": status, "msg": msg}}
+
+    return JsonResponse(response)
+
+
+def account(request):
+    id = request.GET.get("id")
+    print(f"id: {id}")
+
+    # id: get_paginated_data
+    if id == "get_paginated_data":
+        target = request.GET.get("target")
+        page_number = request.GET.get("page", 1)
+        items_per_page = 4
+
+        if target == "project":
+            filter = {
+                "property": "Staff",
+                "rich_text": {"contains": request.user.username},
+            }
+
+            item_list = notion(
+                "query", "db", data={"db_name": "project", "filter": filter}, mask=True
+            )
+        elif target == "dflink":
+            filter = {"user": request.user.username}
+            item_list = short_io("retrieve", filter=filter, mask=True)
+        elif target == "notice":
+            filter = {
+                "property": "User",
+                "number": {"equals": int(request.user.username)},
+            }
+
+            item_list = notion(
+                "query", "db", data={"db_name": "notice", "filter": filter}, mask=True
+            )
+
+        paginator = Paginator(item_list, items_per_page)
+        page = paginator.get_page(page_number)
+
+        response = {
+            "id": id,
+            "result": {
+                "target": target,
+                "item_list": list(page),
+                "has_next": page.has_next(),
+                "has_previous": page.has_previous(),
+                "page_number": page.number,
+                "total_items": paginator.count,
+                "total_pages": paginator.num_pages,
+            },
+        }
 
     return JsonResponse(response)

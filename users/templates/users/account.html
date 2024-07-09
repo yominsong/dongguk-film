@@ -44,9 +44,61 @@
     </div>
     <div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
+            <!-- Project -->
+            <div>
+                <div class="flex items-center justify-between">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'project:project' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 18.375V5.625zm1.5 0v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5A.375.375 0 003 5.625zm16.125-.375a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5A.375.375 0 0021 7.125v-1.5a.375.375 0 00-.375-.375h-1.5zM21 9.375A.375.375 0 0020.625 9h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zM4.875 18.75a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5zM3.375 15h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375zm0-3.75h1.5a.375.375 0 00.375-.375v-1.5A.375.375 0 004.875 9h-1.5A.375.375 0 003 9.375v1.5c0 .207.168.375.375.375zm4.125 0a.75.75 0 000 1.5h9a.75.75 0 000-1.5h-9z" clip-rule="evenodd" />
+                        </svg>
+                        <h3 id="id_project_list_title" class="text-lg font-medium leading-6">내 프로젝트</h3>
+                    </a>
+                    <div id="id_project_pagination"
+                         class="hidden items-center justify-end gap-6"
+                         hidden>
+                        <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <ul id="id_project_list"
+                    role="list"
+                    class="flex flex-col mt-5 lg:min-h-[452px] divide-y divide-gray-100 overflow-y-auto bg-white shadow rounded-md">
+                    <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        내가 속한 프로젝트를 찾고 있어요.
+                    </li>
+                </ul>
+            </div>
             <!-- DF link -->
             <div>
-                <div class="flex">
+                <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
                        target="_self">
@@ -59,81 +111,48 @@
                              aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
                         </svg>
-                        <h3 class="text-lg font-medium leading-6">내가 만든 동영링크</h3>
+                        <h3 id="id_dflink_list_title" class="text-lg font-medium leading-6">내 동영링크</h3>
                     </a>
+                    <div id="id_dflink_pagination"
+                         class="hidden items-center justify-end gap-6"
+                         hidden>
+                        <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <ul role="list"
-                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
-                    {% for dflink in user_created_dflink_list %}
-                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
-                            <div class="flex justify-between items-center gap-x-2">
-                                <!-- dflink.title -->
-                                <p class="text-sm font-semibold leading-6 text-gray-900">
-                                    <a href="https://dgufilm.link/{{ dflink.slug }}"
-                                       target="_blank"
-                                       class="rounded-md focus:df-focus-ring-offset-gray">
-                                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                        {{ dflink.title }}
-                                    </a>
-                                </p>
-                                <!-- dflink.category -->
-                                {% if dflink.category == "작품" %}
-                                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20">
-                                        {{ dflink.category }}
-                                    </p>
-                                {% elif dflink.category == "학과" %}
-                                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                                        {{ dflink.category }}
-                                    </p>
-                                {% endif %}
-                            </div>
-                            <div class="flex justify-between items-center gap-x-2">
-                                <!-- dflink.slug -->
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                                    <span class="class-url relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                          data-dflink-url="{{ dflink.dflink_url }}"
-                                          tabindex="0">https://dgufilm.link/{{ dflink.slug }}<span class="sr-only">&nbsp;URL&nbsp;복사하기</span></span>
-                                </p>
-                                <!-- dflink.expiration_date(>sm) -->
-                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                                    <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp만료
-                                </p>
-                            </div>
-                            {% if user.username == dflink.user %}
-                                <div class="flex justify-between items-center gap-x-2">
-                                    <!-- dflink.expiration_date(<=sm ) -->
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                                        <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp;만료
-                                    </p>
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                        <span data-pathname="/dflink/"
-                                              data-query="{{ dflink.slug }}"
-                                              class="class-search-dflink relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                              tabindex="0">동영링크 목록에서 찾기</span>
-                                    </p>
-                                </div>
-                            {% else %}
-                                <div class="flex justify-start">
-                                    <!-- dflink.expiration_date(<=sm ) -->
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                        <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp;만료
-                                    </p>
-                                </div>
-                            {% endif %}
-                            <input id="id_dflink_{{ dflink.id_string }}"
-                                   value="{{ dflink.id_string }},{{ dflink.original_url }},{{ dflink.slug }},{{ dflink.title }},{{ dflink.category }},{{ dflink.expiration_date }}"
-                                   hidden>
-                        </li>
-                    {% empty %}
-                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                            아직 동영링크를 만든 적이 없어요.
-                        </li>
-                    {% endfor %}
+                <ul id="id_dflink_list"
+                    role="list"
+                    class="flex flex-col mt-5 lg:min-h-[452px] divide-y divide-gray-100 overflow-y-auto bg-white shadow rounded-md">
+                    <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        내가 만든 동영링크를 찾고 있어요.
+                    </li>
                 </ul>
             </div>
             <!-- Notice -->
-            <div>
-                <div class="flex">
+            <div class="lg:mt-3">
+                <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'notice:notice' %}"
                        target="_self">
@@ -144,86 +163,43 @@
                              aria-hidden="true">
                             <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z" clip-rule="evenodd" />
                         </svg>
-                        <h3 class="text-lg font-medium leading-6 text-gray-600">내가 작성한 공지사항</h3>
+                        <h3 id="id_notice_list_title"
+                            class="text-lg font-medium leading-6 text-gray-600">내 공지사항</h3>
                     </a>
+                    <div id="id_notice_pagination"
+                         class="hidden items-center justify-end gap-6">
+                        <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                        <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <ul role="list"
-                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
-                    {% for notice in user_created_notice_list %}
-                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
-                            <div class="flex justify-between items-center gap-x-2">
-                                <div class="flex justify-start items-center gap-x-2">
-                                    <!-- notice.title -->
-                                    <p class="text-sm font-semibold leading-6 text-gray-900">
-                                        <a href="{% url 'notice:notice_detail' notice.notice_id %}"
-                                           class="rounded-md focus:df-focus-ring-offset-gray">
-                                            <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                            {{ notice.title }}
-                                        </a>
-                                    </p>
-                                    <!-- notice.file -->
-                                    {% if notice.file|stringformat:"s" != "[]" and notice.file != None %}
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             fill="none"
-                                             viewBox="0 0 24 24"
-                                             stroke-width="1.5"
-                                             stroke="currentColor"
-                                             class="w-4 h-4 text-gray-500"
-                                             aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                                        </svg>
-                                        <span class="sr-only">첨부파일 있음</span>
-                                    {% endif %}
-                                </div>
-                                <!-- notice.category -->
-                                {% if notice.category == "서비스" %}
-                                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                        {{ notice.category }}
-                                    </p>
-                                {% elif notice.category == "학과" %}
-                                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-yellow-700 bg-yellow-50 ring-yellow-600/20">
-                                        {{ notice.category }}
-                                    </p>
-                                {% endif %}
-                            </div>
-                            <div class="flex justify-between items-center gap-x-2">
-                                <!-- notice.keyword -->
-                                <p class="mt-1 flex text-sm leading-5 text-gray-500">{{ notice.keyword }}</p>
-                                <!-- notice.listed_date(>sm) -->
-                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                                    <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                                </p>
-                            </div>
-                            {% if user.username == notice.user %}
-                                <div class="flex justify-between items-center gap-x-2">
-                                    <!-- notice.listed_date(<=sm ) -->
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                                        <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                                    </p>
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                        <span data-pathname="/notice/"
-                                              data-query="{{ notice.notice_id }}"
-                                              class="class-search-notice relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                              tabindex="0">공지사항 목록에서 찾기</span>
-                                    </p>
-                                </div>
-                            {% else %}
-                                <div class="flex justify-start">
-                                    <!-- notice.listed_date(<=sm ) -->
-                                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
-                                        <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
-                                    </p>
-                                </div>
-                            {% endif %}
-                            <input id="id_notice_{{ notice.page_id }}"
-                                   value="{{ notice.page_id }}{{ notice.title }},{{ notice.category }},{{ notice.keywords }},{{ notice.listed_date }}"
-                                   hidden>
-                        </li>
-                    {% empty %}
-                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                            아직 공지사항을 작성한 적이 없어요.
-                        </li>
-                    {% endfor %}
+                <ul id="id_notice_list"
+                    role="list"
+                    class="flex flex-col mt-5 lg:min-h-[452px] divide-y divide-gray-100 overflow-y-auto bg-white shadow rounded-md">
+                    <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        내가 작성한 공지사항을 찾고 있어요.
+                    </li>
                 </ul>
             </div>
         </div>

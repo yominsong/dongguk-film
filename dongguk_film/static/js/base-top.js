@@ -675,6 +675,12 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+    }
+
+    // requestGetPaginatedData()
+    else if (resID === "get_paginated_data") {
+        updatePaginationControl(resResult);
+        updateList(resResult);
     };
 }
 

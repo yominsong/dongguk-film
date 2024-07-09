@@ -142,7 +142,7 @@
                     </a>
                 </div>
                 <ul role="list"
-                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    class="flex flex-col mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
                     {% for dflink in dflink_list %}
                         <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
                             <div class="flex justify-between items-center gap-x-2">
@@ -189,7 +189,7 @@
                                    hidden>
                         </li>
                     {% empty %}
-                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
                             등록된 동영링크가 없어요.
                         </li>
                     {% endfor %}
@@ -212,7 +212,7 @@
                     </a>
                 </div>
                 <ul role="list"
-                    class="mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    class="flex flex-col mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
                     {% for notice in notice_list %}
                         <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
                             <div class="flex justify-between items-center gap-x-2">
@@ -269,7 +269,7 @@
                                    hidden>
                         </li>
                     {% empty %}
-                        <li class="relative flex justify-start items-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
                             등록된 공지사항이 없어요.
                         </li>
                     {% endfor %}
