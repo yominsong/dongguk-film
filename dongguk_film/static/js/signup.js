@@ -43,7 +43,7 @@ displaySocialAccount();
 //
 
 function requestCreateVcodeForSNP() {
-    request.url = `${location.origin}/users/utils/vcode/`;
+    request.url = `${location.origin}/account/utils/vcode/`;
     request.type = "POST";
     request.data = { id: "create_vcode_for_SNP", agree: `${id_agree.checked}`, student_id: `${id_student_id.value}`, name: `${id_name.value}`, email: `${id_email.value}`, phone: `${id_phone.value}` };
     request.async = true;
@@ -55,7 +55,7 @@ function requestCreateVcodeForSNP() {
 }
 
 function requestConfirmVcodeForSNP() {
-    request.url = `${location.origin}/users/utils/vcode/`;
+    request.url = `${location.origin}/account/utils/vcode/`;
     request.type = "POST";
     request.data = { id: "confirm_vcode_for_SNP", agree: `${id_agree.checked}`, student_id: `${id_student_id.value}`, name: `${id_name.value}`, email: `${id_email.value}`, phone: `${id_phone.value}`, email_vcode: `${id_email_vcode.value}`, phone_vcode: `${id_phone_vcode.value}` };
     request.async = true;
