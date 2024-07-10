@@ -2215,6 +2215,7 @@ function initRequest() {
                         const readyToStartCheckingOut = id_modal_checkout.hidden;
                         const readyToEndCheckingOut = id_modal_checkout.hidden === false;
                         const forInstructor = getCart()[0].purpose.for_instructor;
+                        const id_subject_or_project = document.getElementById("id_subject_or_project");
 
                         if (!isAuthenticated()) {
                             let params = {};
@@ -2242,6 +2243,7 @@ function initRequest() {
                             requestFindHour();
                             // Vaildation for class_seconds is handled by initFoundProjectList() and initFoundHourList()
                             initSignatureCanvasValidation();
+                            id_subject_or_project.innerText = forInstructor ? "교과목" : "프로젝트";
                         } else if (readyToEndCheckingOut) {
                             const readyToSubmitForm = () => {
                                 if (forInstructor) {

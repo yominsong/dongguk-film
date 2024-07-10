@@ -320,7 +320,16 @@ def account(request):
         page_number = request.GET.get("page", 1)
         items_per_page = 4
 
-        if target == "project":
+        if target == "facility":
+            filter = {
+                "property": "User",
+                "number": {"equals": int(request.user.username)},
+            }
+
+            item_list = notion(
+                "query", "db", data={"db_name": "facility", "filter": filter}, mask=True
+            )
+        elif target == "project":
             filter = {
                 "property": "Staff",
                 "rich_text": {"contains": request.user.username},

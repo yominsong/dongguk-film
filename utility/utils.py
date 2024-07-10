@@ -10,6 +10,7 @@ from .img import save_hero_img
 from .msg import send_msg
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from dateutil import parser
 import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast, html
 
 #
@@ -101,24 +102,34 @@ def update_hero_img(request):
 #
 
 
-def convert_datetime(datetime_str: str):
+def convert_datetime(datetime_str: str) -> datetime.datetime:
     """
     - datetime_str | `str`: DateTime string
     """
 
     try:
-        datetime_utc = datetime.datetime.strptime(
-            datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ"
-        ).replace(tzinfo=pytz.utc)
+        dt = parser.isoparse(datetime_str)
+        
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=pytz.UTC)
+        
+        kor_tz = pytz.timezone("Asia/Seoul")
+
+        return dt.astimezone(kor_tz)
     except:
-        datetime_utc = datetime.datetime.strptime(datetime_str, "%Y-%m-%d").replace(
-            tzinfo=pytz.utc
-        )
+        dt = datetime.datetime.strptime(datetime_str, "%Y-%m-%d")
+        kor_tz = pytz.timezone("Asia/Seoul")
+        
+        return kor_tz.localize(dt)
+    
 
-    kor_tz = pytz.timezone("Asia/Seoul")
-    datetime_kor = datetime_utc.astimezone(kor_tz)
-
-    return datetime_kor
+def format_datetime(dt: datetime.datetime, format_str: str = "%Y-%m-%d %H:%M") -> str:
+    """
+    - dt | `datetime.datetime`: Datetime object to format
+    - format_str | `str`: Format string (default: "%Y-%m-%d %H:%M")
+    """
+    
+    return dt.strftime(format_str)
 
 
 def generate_random_string(int: int):
@@ -143,7 +154,9 @@ def mask_personal_information(type: str, string: str):
             masked_string = f"{string[0]}{'*' * (len(string) - 2)}{string[-1]}"
     elif type == "phone_number":
         split_string = string.split("-")
-        masked_string = f"{split_string[0]}-{split_string[1][:2]}**-**{split_string[2][2:]}"
+        masked_string = (
+            f"{split_string[0]}-{split_string[1][:2]}**-**{split_string[2][2:]}"
+        )
 
     return masked_string
 
@@ -228,9 +241,10 @@ def get_subject(base_date: str):
         kor_name = kor_name.strip()
         eng_name = eng_name.strip()
         code = code.strip()
-        
+
         target_university_year = [
-            int(num) for num in re.sub(r"[^\d,]", "", target_university_year.strip()).split(",")
+            int(num)
+            for num in re.sub(r"[^\d,]", "", target_university_year.strip()).split(",")
         ]
 
         result = {
@@ -242,7 +256,7 @@ def get_subject(base_date: str):
         }
 
         result_list.append(result)
-        
+
     return result_list
 
 
@@ -387,17 +401,23 @@ def chat_gpt(model: str, prompt: list):
         "temperature": 0,
     }
 
-    # try:
-    openai_response = requests.post(
-        url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
-    ).json()["choices"][0]["message"]["content"]
-    # except:
-    #     openai_response = ""
+    try:
+        openai_response = requests.post(
+            url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
+        ).json()["choices"][0]["message"]["content"]
+    except:
+        openai_response = ""
 
     return openai_response
 
 
-def short_io(action: str, request=None, filter: dict = None, limit: int = None, mask: bool = False):
+def short_io(
+    action: str,
+    request=None,
+    filter: dict = None,
+    limit: int = None,
+    mask: bool = False,
+):
     """
     - action | `str`:
         - create
@@ -441,32 +461,32 @@ def short_io(action: str, request=None, filter: dict = None, limit: int = None, 
         dflinks = response["links"]
         dflink_list = []
 
-        # try:
-        for i in range(dflink_count):
-            user = dflinks[i]["tags"][1]
+        try:
+            for i in range(dflink_count):
+                user = dflinks[i]["tags"][1]
 
-            try:
-                if user != filter["user"]:
-                    continue
-            except:
-                pass
-            
-            user = mask_personal_information("student_id", user) if mask else user
+                try:
+                    if user != filter["user"]:
+                        continue
+                except:
+                    pass
 
-            dflink = {
-                "link_id": dflinks[i]["idString"],
-                "target_url": dflinks[i]["originalURL"],
-                "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
-                "slug": dflinks[i]["path"],
-                "title": dflinks[i]["title"],
-                "category": dflinks[i]["tags"][0],
-                "user": user,
-                "expiration_date": dflinks[i]["tags"][2],
-            }
-            
-            dflink_list.append(dflink)
-        # except:
-        #     pass
+                user = mask_personal_information("student_id", user) if mask else user
+
+                dflink = {
+                    "link_id": dflinks[i]["idString"],
+                    "target_url": dflinks[i]["originalURL"],
+                    "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
+                    "slug": dflinks[i]["path"],
+                    "title": dflinks[i]["title"],
+                    "category": dflinks[i]["tags"][0],
+                    "user": user,
+                    "expiration_date": dflinks[i]["tags"][2],
+                }
+
+                dflink_list.append(dflink)
+        except:
+            pass
 
         result = dflink_list
 
@@ -701,9 +721,13 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 for record in records:
                     fields = record["fields"]
                     start_datetime = fields.get("Start datetime", None)
-                    start_datetime = convert_datetime(start_datetime) if start_datetime else None
+                    start_datetime = (
+                        convert_datetime(start_datetime) if start_datetime else None
+                    )
                     end_datetime = fields.get("End datetime", None)
-                    end_datetime = convert_datetime(end_datetime) if end_datetime else None
+                    end_datetime = (
+                        convert_datetime(end_datetime) if end_datetime else None
+                    )
 
                     item = {
                         "record_id": record["id"],
@@ -777,7 +801,9 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
     return result
 
 
-def notion(action: str, target: str, data: dict = None, limit: int = None, mask: bool = False):
+def notion(
+    action: str, target: str, data: dict = None, limit: int = None, mask: bool = False
+):
     """
     - action | `str`:
         - query
@@ -879,8 +905,8 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
                     item_list.append(operator)
             except:
                 pass
-        
-        elif db_name == "application":
+
+        elif db_name == "facility":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -891,21 +917,36 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
                 for item in items:
                     properties = item["properties"]
 
+                    approval_status = properties["Approval status"]["status"]["name"]
                     category = properties["Category"]["select"]["name"]
                     title = properties["Title"]["title"][0]["plain_text"]
                     project = properties["Project"]["relation"][0]["id"]
-                    public_application_id = properties["Public application ID"]["rich_text"][0]["plain_text"]
-                    private_application_id = properties["Private application ID"]["rich_text"][0]["plain_text"]
+                    public_application_id = properties["Public application ID"][
+                        "rich_text"
+                    ][0]["plain_text"]
+                    private_application_id = properties["Private application ID"][
+                        "rich_text"
+                    ][0]["plain_text"]
+                    user = properties["User"]["number"]
+                    start_datetime = properties["Start datetime"]["date"]["start"]
+                    start_datetime = format_datetime(convert_datetime(start_datetime))
+                    end_datetime = properties["End datetime"]["date"]["start"]
+                    end_datetime = format_datetime(convert_datetime(end_datetime))
 
-                    application = {
+                    facility = {
+                        "page_id": item["id"],
+                        "approval_status": approval_status,
                         "category": category,
                         "title": title,
                         "project": project,
                         "public_application_id": public_application_id,
                         "private_application_id": private_application_id,
+                        "user": user,
+                        "start_datetime": start_datetime,
+                        "end_datetime": end_datetime,
                     }
 
-                    item_list.append(application)
+                    item_list.append(facility)
             except:
                 pass
 
@@ -926,113 +967,113 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
                 purpose_list = json.load(f)["purpose"]
                 f.close()
 
-            # try:
-            for item in items:
-                properties = item["properties"]
+            try:
+                for item in items:
+                    properties = item["properties"]
 
-                created_time = properties["Created time"]["created_time"]
-                created_time = convert_datetime(created_time)
+                    created_time = properties["Created time"]["created_time"]
+                    created_time = convert_datetime(created_time)
 
-                purpose = (
-                    properties.get("Purpose", {})
-                    .get("rich_text", [{}])[0]
-                    .get("plain_text", None)
-                )
-
-                purpose_priority = [
-                    item for item in purpose_list if item["priority"] in purpose
-                ][0]["priority"]
-                purpose_keyword = [
-                    item for item in purpose_list if item["priority"] in purpose
-                ][0]["keyword"]
-
-                title = properties["Title"]["title"][0]["plain_text"]
-                production_end_date = properties["Production end date"]["date"][
-                    "start"
-                ]
-                instructor = properties.get("Instructor", {}).get("rich_text", [{}])
-
-                if instructor:
-                    instructor = instructor[0].get("plain_text", None)
-
-                    if instructor and mask:
-                        instructor = mask_personal_information("instructor_id", instructor)
-
-                    subject_code = properties.get("Subject code", {}).get(
-                        "rich_text", [{}]
+                    purpose = (
+                        properties.get("Purpose", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
                     )
 
-                    subject_name = properties.get("Subject name", {}).get(
-                        "rich_text", [{}]
+                    purpose_priority = [
+                        item for item in purpose_list if item["priority"] in purpose
+                    ][0]["priority"]
+                    purpose_keyword = [
+                        item for item in purpose_list if item["priority"] in purpose
+                    ][0]["keyword"]
+
+                    title = properties["Title"]["title"][0]["plain_text"]
+                    production_end_date = properties["Production end date"]["date"]["start"]
+                    instructor = properties.get("Instructor", {}).get("rich_text", [{}])
+
+                    if instructor:
+                        instructor = instructor[0].get("plain_text", None)
+
+                        if instructor and mask:
+                            instructor = mask_personal_information(
+                                "instructor_id", instructor
+                            )
+
+                        subject_code = properties.get("Subject code", {}).get(
+                            "rich_text", [{}]
+                        )
+
+                        subject_name = properties.get("Subject name", {}).get(
+                            "rich_text", [{}]
+                        )
+
+                    user = str(properties["User"]["number"])
+                    user = mask_personal_information("student_id", user) if mask else user
+
+                    project = {
+                        "page_id": item["id"],
+                        "purpose": {
+                            "priority": purpose_priority,
+                            "keyword": purpose_keyword,
+                        },
+                        "title": title,
+                        "production_end_date": production_end_date,
+                        "instructor": instructor,
+                        "subject_code": subject_code,
+                        "subject_name": subject_name,
+                        "user": user,
+                        "created_date": created_time.strftime("%Y-%m-%d"),
+                    }
+
+                    staff = (
+                        properties.get("Staff", {})
+                        .get("rich_text", [{}])[0]
+                        .get("plain_text", None)
                     )
 
-                user = str(properties["User"]["number"])
-                user = mask_personal_information("student_id", user) if mask else user
+                    staff_list = ast.literal_eval(staff) if staff else None
 
-                project = {
-                    "page_id": item["id"],
-                    "purpose": {
-                        "priority": purpose_priority,
-                        "keyword": purpose_keyword,
-                    },
-                    "title": title,
-                    "production_end_date": production_end_date,
-                    "instructor": instructor,
-                    "subject_code": subject_code,
-                    "subject_name": subject_name,
-                    "user": user,
-                    "created_date": created_time.strftime("%Y-%m-%d"),
-                }
+                    director_list = []
+                    director_name_list = []
+                    producer_list = []
+                    producer_name_list = []
+                    producer_student_id_list = []
 
-                staff = (
-                    properties.get("Staff", {})
-                    .get("rich_text", [{}])[0]
-                    .get("plain_text", None)
-                )
+                    for staff in staff_list:
+                        student_id = staff["student_id"]
+                        user = User.objects.get(username=student_id)
+                        staff["pk"] = str(user.pk)
+                        staff["name"] = user.metadata.name
+                        staff["student_id"] = (
+                            student_id[:2] + "*" * (len(student_id) - 5) + student_id[-3:]
+                        )
+                        staff["student_id"] = mask_personal_information(
+                            "student_id", student_id
+                        )
+                        staff["avatar_url"] = user.socialaccount_set.all()[
+                            0
+                        ].get_avatar_url()
 
-                staff_list = ast.literal_eval(staff) if staff else None
+                        for priority in staff["position_priority"]:
+                            if priority == "A01":  # A01: 연출
+                                director_list.append(staff)
+                                director_name_list.append(staff["name"])
 
-                director_list = []
-                director_name_list = []
-                producer_list = []
-                producer_name_list = []
-                producer_student_id_list = []
+                            if priority == "B01":  # B01: 제작
+                                producer_list.append(staff)
+                                producer_name_list.append(staff["name"])
+                                producer_student_id_list.append(staff["student_id"])
 
-                for staff in staff_list:
-                    student_id = staff["student_id"]
-                    user = User.objects.get(username=student_id)
-                    staff["pk"] = str(user.pk)
-                    staff["name"] = user.metadata.name
-                    staff["student_id"] = (
-                        student_id[:2]
-                        + "*" * (len(student_id) - 5)
-                        + student_id[-3:]
-                    )
-                    staff["student_id"] = mask_personal_information("student_id", student_id)
-                    staff["avatar_url"] = user.socialaccount_set.all()[
-                        0
-                    ].get_avatar_url()
+                    project["staff"] = staff_list
+                    project["director"] = director_list
+                    project["director_name"] = director_name_list
+                    project["producer"] = producer_list
+                    project["producer_name"] = producer_name_list
+                    project["producer_student_id"] = producer_student_id_list
 
-                    for priority in staff["position_priority"]:
-                        if priority == "A01":  # A01: 연출
-                            director_list.append(staff)
-                            director_name_list.append(staff["name"])
-
-                        if priority == "B01":  # B01: 제작
-                            producer_list.append(staff)
-                            producer_name_list.append(staff["name"])
-                            producer_student_id_list.append(staff["student_id"])
-
-                project["staff"] = staff_list
-                project["director"] = director_list
-                project["director_name"] = director_name_list
-                project["producer"] = producer_list
-                project["producer_name"] = producer_name_list
-                project["producer_student_id"] = producer_student_id_list
-
-                item_list.append(project)
-            # except:
-            #     pass
+                    item_list.append(project)
+            except:
+                pass
 
         elif db_name == "dflink-allowlist":
             response = requests.post(
@@ -1070,7 +1111,9 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
                     category = properties["Category"]["select"]["name"]
                     keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
                     user = str(properties["User"]["number"])
-                    user = mask_personal_information("student_id", user) if mask else user
+                    user = (
+                        mask_personal_information("student_id", user) if mask else user
+                    )
 
                     notice = {
                         "page_id": item["id"],
@@ -1108,10 +1151,12 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "application":
+        if db_name == "facility":
             project = data.get("project", None)
             public_application_id = data.get("public_application_id", None)
             private_application_id = data.get("private_application_id", None)
+            start_datetime = data.get("start_datetime", None)
+            end_datetime = data.get("end_datetime", None)
 
             payload = {
                 "parent": {"database_id": NOTION_DB_ID[db_name]},
@@ -1124,12 +1169,15 @@ def notion(action: str, target: str, data: dict = None, limit: int = None, mask:
                     "Private application ID": {
                         "rich_text": [{"text": {"content": private_application_id}}]
                     },
+                    "User": {"number": int(str(user))},
+                    "Start datetime": {"date": {"start": start_datetime}},
+                    "End datetime": {"date": {"start": end_datetime}},
                 },
             }
 
             if project:
                 payload["properties"]["Project"] = {"relation": [{"id": project}]}
-                
+
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 
         elif db_name == "project":

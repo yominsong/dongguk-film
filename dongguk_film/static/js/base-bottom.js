@@ -2,7 +2,7 @@
 // Global variables
 //
 
-const class_urls = document.querySelectorAll(".class-url");
+let class_urls = document.querySelectorAll(".class-url");
 
 let timer;
 let clickCount = 0;

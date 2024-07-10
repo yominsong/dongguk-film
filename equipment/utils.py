@@ -1033,7 +1033,7 @@ def equipment(request):
                 },
             }
 
-            airtable("update", "records", data=data)
+            # airtable("update", "records", data=data)
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else project_name
             )
@@ -1059,7 +1059,9 @@ def equipment(request):
                     for field in fields:
                         key = f"{role}_{field}"
                         if key in replacements:
-                            replacements[key] = mask_personal_information(field, replacements[key])
+                            replacements[key] = mask_personal_information(
+                                field, replacements[key]
+                            )
 
             replacements["instructor_id"] = mask_personal_information(
                 "instructor_id", instructor_id
@@ -1085,12 +1087,17 @@ def equipment(request):
             make_file_public(public_application_id)
 
             data = {
-                "db_name": "application",
+                "db_name": "facility",
                 "category": "기자재",
                 "title": f"{name_of_subject_or_project} {student_id} 기자재 사용 신청서",
                 "public_application_id": public_application_id,
                 "private_application_id": application_id,
+                "user": request.user,
+                "start_datetime": f"{start_date}T{'{}:{}'.format(start_time[:2], start_time[2:])}:00+09:00",
+                "end_datetime": f"{end_date}T{'{}:{}'.format(end_time[:2], end_time[2:])}:00+09:00",
             }
+
+            print(data)
 
             if not is_for_instructor:
                 data["project"] = project_id

@@ -44,6 +44,57 @@
     </div>
     <div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
+            <!-- Facility -->
+            <div>
+                <div class="flex items-center justify-between">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'equipment:equipment' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700">
+                            <path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z" />
+                        </svg>
+                        <h3 id="id_facility_list_title" class="text-lg font-medium leading-6">내 시설사용</h3>
+                    </a>
+                    <div id="id_facility_pagination"
+                         class="hidden items-center justify-end gap-6"
+                         hidden>
+                        <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                        <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
+                                type="button"
+                                disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke-width="1.5"
+                                 stroke="currentColor"
+                                 class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <ul id="id_facility_list"
+                    role="list"
+                    class="flex flex-col mt-5 lg:min-h-[452px] divide-y divide-gray-100 overflow-y-auto bg-white shadow rounded-md">
+                    <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                        내가 제출한 신청서를 찾고 있어요.
+                    </li>
+                </ul>
+            </div>
             <!-- Project -->
             <div>
                 <div class="flex items-center justify-between">
@@ -71,7 +122,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                             </svg>
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
@@ -83,7 +134,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
                         </button>
                     </div>
@@ -92,12 +143,12 @@
                     role="list"
                     class="flex flex-col mt-5 lg:min-h-[452px] divide-y divide-gray-100 overflow-y-auto bg-white shadow rounded-md">
                     <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                        내가 속한 프로젝트를 찾고 있어요.
+                        내가 참여한 프로젝트를 찾고 있어요.
                     </li>
                 </ul>
             </div>
             <!-- DF link -->
-            <div>
+            <div class="lg:mt-3">
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
@@ -125,7 +176,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                             </svg>
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
@@ -137,7 +188,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
                         </button>
                     </div>
@@ -177,7 +228,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                             </svg>
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
@@ -189,7 +240,7 @@
                                  stroke-width="1.5"
                                  stroke="currentColor"
                                  class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
                         </button>
                     </div>
@@ -204,5 +255,6 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/account.js' %}"></script>
 {% endblock body %}

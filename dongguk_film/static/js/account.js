@@ -4,6 +4,7 @@
 
 function savePageState() {
     const state = {
+        facility_page: sessionStorage.getItem("facility_page") || "1",
         project_page: sessionStorage.getItem("project_page") || "1",
         dflink_page: sessionStorage.getItem("dflink_page") || "1",
         notice_page: sessionStorage.getItem("notice_page") || "1"
@@ -14,12 +15,14 @@ function savePageState() {
 
 function loadPageState() {
     const state = history.state;
-    
+
     if (state) {
+        requestGetPaginatedData("facility", state.facility_page);
         requestGetPaginatedData("project", state.project_page);
         requestGetPaginatedData("dflink", state.dflink_page);
         requestGetPaginatedData("notice", state.notice_page);
     } else {
+        requestGetPaginatedData("facility", 1);
         requestGetPaginatedData("project", 1);
         requestGetPaginatedData("dflink", 1);
         requestGetPaginatedData("notice", 1);
@@ -30,7 +33,7 @@ function loadPageState() {
 // Main functions
 //
 
-function searchItemFromList() {
+function handleShortcut() {
     function handleUserRequest(event) {
         const userRequestIsMade = 
             event.type === "click" || 
@@ -53,9 +56,13 @@ function searchItemFromList() {
         });
     }
 
+    // const class_search_facility = document.querySelectorAll(".class-search-facility");
+    const class_search_project = document.querySelectorAll(".class-search-project");
     const class_search_dflink = document.querySelectorAll(".class-search-dflink");
     const class_search_notice = document.querySelectorAll(".class-search-notice");
 
+    // addEventListeners(class_search_facility);
+    addEventListeners(class_search_project);
     addEventListeners(class_search_dflink);
     addEventListeners(class_search_notice);
 }
@@ -66,13 +73,17 @@ function updateList(data) {
     if (data.total_items === 0) {
         let msg;
 
-        if (data.target === "dflink") {
+        if (data.target === "facility") {
+            msg = "시설사용을 신청한 적이";
+        } else if (data.target === "project") {
+            msg = "프로젝트에 참여한 적이";
+        } else if (data.target === "dflink") {
             msg = "동영링크를 만든 적이";
         } else if (data.target === "notice") {
             msg = "공지사항을 작성한 적이";
         };
 
-        list.firstChild.innerText = `아직 ${msg} 없어요.`;
+        list.firstElementChild.innerText = `아직 ${msg} 없어요.`;
         
         return;
     };
@@ -83,7 +94,9 @@ function updateList(data) {
 
     let targetInKorean;
 
-    if (data.target === "project") {
+    if (data.target === "facility") {
+        targetInKorean = "시설사용";
+    } else if (data.target === "project") {
         targetInKorean = "프로젝트";
     } else if (data.target === "dflink") {
         targetInKorean = "동영링크";
@@ -98,9 +111,69 @@ function updateList(data) {
 
         element.className = "relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6";
 
-        let categoryBadgeColor;
+        let badgeColor;
 
-        if (data.target === "project") {
+        if (data.target === "facility") {
+            if (item.approval_status === "Pending") {
+                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
+            } else if (item.approval_status === "Approved") {
+                badgeColor = "text-green-700 bg-green-50 ring-green-600/20"
+            } else if (item.approval_status === "Rejected") {
+                badgeColor = "text-red-700 bg-red-50 ring-red-600/10"
+            };
+
+            let approvalStatus;
+
+            if (item.approval_status === "Pending") {
+                approvalStatus = "대기";
+            } else if (item.approval_status === "Approved") {
+                approvalStatus = "승인";
+            } else if (item.approval_status === "Rejected") {
+                approvalStatus = "반려";
+            };
+
+            element.innerHTML = `
+                <div class="flex justify-between items-center gap-x-2">
+                    <!-- facility.title -->
+                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                        <a href="https://docs.google.com/document/d/${item.public_application_id}"
+                            target="_blank"
+                            class="rounded-md focus:df-focus-ring-offset-gray">
+                            <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                            ${item.title}
+                        </a>
+                    </p>
+                    <!-- facility.approval_status -->
+                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}">
+                        ${approvalStatus}
+                    </p>
+                </div>
+                <div class="flex justify-between items-center gap-x-2">
+                    <!-- facility.category -->
+                    <p class="mt-1 flex text-sm leading-5 text-gray-500">
+                        <span class="class-url relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray">
+                            ${item.category}
+                        </span>
+                    </p>
+                    <!-- facility.start_datetime, facility.end_datetime(>sm) -->
+                    <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                        <time datetime="${item.start_datetime}/${item.end_datetime}">${item.start_datetime} ~ ${item.end_datetime}</time>
+                    </p>
+                </div>
+                <div class="flex justify-between items-center gap-x-2">
+                    <!-- facility.start_datetime, facility.end_datetime(<=sm ) -->
+                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
+                        <time datetime="${item.start_datetime}/${item.end_datetime}">${item.start_datetime} ~ ${item.end_datetime}</time>
+                    </p>
+                    <!-- <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                        <span data-pathname=""
+                                data-query=""
+                                class="class-search-dflink relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                tabindex="0">시설사용 목록에서 찾기</span>
+                    </p> -->
+                </div>
+            `;
+        } else if (data.target === "project") {
             const directorName = item.director.length === 1 ? item.director[0].name : item.director.map(director => director.name).join(", ");
             const producerName = item.producer.length === 1 ? item.producer[0].name : item.producer.map(producer => producer.name).join(", ");
 
@@ -140,16 +213,16 @@ function updateList(data) {
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                         <span data-pathname="/project/"
                                 data-query="${item.title}"
-                                class="class-search-dflink relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                class="class-search-project relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                 tabindex="0">프로젝트 목록에서 찾기</span>
                     </p>
                 </div>
             `;
         } else if (data.target === "dflink") {
             if (item.category === "작품") {
-                categoryBadgeColor = "text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20"
+                badgeColor = "text-flamingo-800 bg-flamingo-50 ring-flamingo-600/20"
             } else if (item.category === "학과") {
-                categoryBadgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
+                badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
             };
 
             element.innerHTML = `
@@ -164,7 +237,7 @@ function updateList(data) {
                         </a>
                     </p>
                     <!-- dflink.category -->
-                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${categoryBadgeColor}">
+                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}">
                         ${item.category}
                     </p>
                 </div>
@@ -213,9 +286,9 @@ function updateList(data) {
             };
 
             if (item.category === "서비스") {
-                categoryBadgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
+                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
             } else if (item.category === "학과") {
-                categoryBadgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
+                badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
             };
 
             element.innerHTML = `
@@ -233,7 +306,7 @@ function updateList(data) {
                         ${fileIcon}
                     </div>
                     <!-- notice.category -->
-                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${categoryBadgeColor}">
+                    <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}">
                         ${item.category}
                     </p>
                 </div>
@@ -263,7 +336,12 @@ function updateList(data) {
         list.appendChild(element);
     });
 
-    searchItemFromList();
+    if (data.target === "dflink") {
+        class_urls = document.querySelectorAll(".class-url");
+        copyDflinkUrl();
+    };
+
+    handleShortcut();
 }
 
 function updatePaginationControl(data) {
