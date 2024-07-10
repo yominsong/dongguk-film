@@ -1,4 +1,32 @@
 //
+// Sub functions
+//
+
+function savePageState() {
+    const state = {
+        project_page: sessionStorage.getItem("project_page") || "1",
+        dflink_page: sessionStorage.getItem("dflink_page") || "1",
+        notice_page: sessionStorage.getItem("notice_page") || "1"
+    };
+
+    history.replaceState(state, "");
+}
+
+function loadPageState() {
+    const state = history.state;
+    
+    if (state) {
+        requestGetPaginatedData("project", state.project_page);
+        requestGetPaginatedData("dflink", state.dflink_page);
+        requestGetPaginatedData("notice", state.notice_page);
+    } else {
+        requestGetPaginatedData("project", 1);
+        requestGetPaginatedData("dflink", 1);
+        requestGetPaginatedData("notice", 1);
+    };
+}
+
+//
 // Main functions
 //
 
@@ -13,6 +41,7 @@ function searchItemFromList() {
             const pathname = this.getAttribute("data-pathname");
             const query = this.getAttribute("data-query");
 
+            savePageState();
             document.location.href = `${locationOrigin}${pathname}?q=${query}`;
         };
     }
@@ -262,6 +291,8 @@ function updatePaginationControl(data) {
         next.disabled = true;
         next.onclick = null;
     };
+
+    sessionStorage.setItem(`${data.target}_page`, data.page_number);
 }
 
 function requestVerifyAuthentication() {
@@ -285,11 +316,13 @@ function requestGetPaginatedData(target, page) {
 }
 
 function initRequest() {
-    window.addEventListener("pageshow", () => {
-        requestVerifyAuthentication();
-        requestGetPaginatedData("project", 1);
-        requestGetPaginatedData("dflink", 1);
-        requestGetPaginatedData("notice", 1);
+    window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+            loadPageState();
+        } else {
+            requestVerifyAuthentication();
+            loadPageState();
+        };
     });
 }
 
