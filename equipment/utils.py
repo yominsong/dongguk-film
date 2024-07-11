@@ -58,68 +58,71 @@ JSON_PATH = (
 
 
 def synchronize_equipment_data(request):
-    target_list = ["category", "purpose", "limit", "collection", "hour"]
-    result_list = []
+    data_list = []
 
-    for target in target_list:
-        if target == "category":
-            data = {
-                "table_name": "equipment-category",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
-        elif target == "purpose":
-            data = {
-                "table_name": "equipment-purpose",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
-        elif target == "limit":
-            data = {
-                "table_name": "equipment-limit",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
-        elif target == "collection":
-            data = {
-                "table_name": "equipment-collection",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
-        elif target == "hour":
-            data = {
-                "table_name": "equipment-hour",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
+    try:
+        target_list = ["category", "purpose", "limit", "collection", "hour"]
 
-        record_list = airtable("get_all", "records", data=data)
-        result_list.append({target: record_list})
+        for target in target_list:
+            if target == "category":
+                data = {
+                    "table_name": "equipment-category",
+                    "params": {
+                        "view": "Grid view",
+                    },
+                }
+            elif target == "purpose":
+                data = {
+                    "table_name": "equipment-purpose",
+                    "params": {
+                        "view": "Grid view",
+                    },
+                }
+            elif target == "limit":
+                data = {
+                    "table_name": "equipment-limit",
+                    "params": {
+                        "view": "Grid view",
+                    },
+                }
+            elif target == "collection":
+                data = {
+                    "table_name": "equipment-collection",
+                    "params": {
+                        "view": "Grid view",
+                    },
+                }
+            elif target == "hour":
+                data = {
+                    "table_name": "equipment-hour",
+                    "params": {
+                        "view": "Grid view",
+                    },
+                }
 
-        with open(JSON_PATH, "r+") as f:
-            data = json.load(f)
-            data[target] = record_list
-            f.seek(0)
-            f.write(json.dumps(data, indent=4))
-            f.truncate()
+            record_list = airtable("get_all", "records", data=data)
+            data_list.append({target: record_list})
 
-    send_msg(request, "SED", "DEV", result_list)
+            with open(JSON_PATH, "r+") as f:
+                data = json.load(f)
+                data[target] = record_list
+                f.seek(0)
+                f.write(json.dumps(data, indent=4))
+                f.truncate()
+        
+        status = "DONE"
+    except:
+        status = "FAIL"
+    
+    data = {
+        "status": status,
+        "data_list": data_list,
+    }
 
-    return HttpResponse(f"Synchronized Equipment data: {result_list}")
+    send_msg(request, "SYNC_EQUIPMENT_DATA", "DEV", data)
+    json_data = json.dumps(data, indent=4)
 
-
-def delete_expired_carts(request):
-    expired_carts = Cart.objects.filter(will_expire_on__lt=timezone.now())
-    count = expired_carts.count()
-    if count > 0:
-        expired_carts.delete()
-
-    return HttpResponse(f"Number of deleted carts: {count}")
+    return HttpResponse(json_data, content_type="application/json")
 
 
 #
@@ -1033,7 +1036,7 @@ def equipment(request):
                 },
             }
 
-            # airtable("update", "records", data=data)
+            airtable("update", "records", data=data)
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else project_name
             )

@@ -7,6 +7,6 @@ urlpatterns = [
     # views.py
     path("", views.dflink, name="dflink"),
     # utils.py
-    path("utils/delete-expired-dflinks/", utils.delete_expired_dflinks),
+    path("utils/delete-expired-dflink/", utils.delete_expired_dflink),
     path("utils/dflink/", utils.dflink),
 ]

@@ -29,41 +29,53 @@ JSON_PATH = (
 
 
 def update_project_policy(request):
-    target_list = ["position"]
-    result_list = []
+    data_list = []
 
-    for target in target_list:
-        if target == "position":
-            data = {
-                "table_name": "project-position",
-                "params": {
-                    "view": "Grid view",
-                    "fields": [
-                        "Function",
-                        "Function priority",
-                        "Name",
-                        "Priority",
-                        "Keyword",
-                        "In English",
-                        "Note",
-                        "Required",
-                    ],
-                },
-            }
+    try:
+        target_list = ["position"]
 
-        record_list = airtable("get_all", "records", data=data)
-        result_list.append({target: record_list})
+        for target in target_list:
+            if target == "position":
+                data = {
+                    "table_name": "project-position",
+                    "params": {
+                        "view": "Grid view",
+                        "fields": [
+                            "Function",
+                            "Function priority",
+                            "Name",
+                            "Priority",
+                            "Keyword",
+                            "In English",
+                            "Note",
+                            "Required",
+                        ],
+                    },
+                }
 
-        with open(JSON_PATH, "r+") as f:
-            data = json.load(f)
-            data[target] = record_list
-            f.seek(0)
-            f.write(json.dumps(data, indent=4))
-            f.truncate()
+            record_list = airtable("get_all", "records", data=data)
+            data_list.append({target: record_list})
 
-    send_msg(request, "UPP", "DEV", result_list)
+            with open(JSON_PATH, "r+") as f:
+                data = json.load(f)
+                data[target] = record_list
+                f.seek(0)
+                f.write(json.dumps(data, indent=4))
+                f.truncate()
+        
+        status = "DONE"
+    except:
+        status = "FAIL"
+    
+    data = {
+        "status": status,
+        "data_list": data_list
+    }
 
-    return HttpResponse(f"Updated project policy: {result_list}")
+    send_msg(request, "UPDATE_PROJECT_POLICY", "DEV", data)
+    json_data = json.dumps(data, indent=4)
+
+    return HttpResponse(json_data, content_type="application/json")
 
 
 #

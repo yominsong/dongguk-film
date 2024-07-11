@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
 from utility.utils import reg_test, set_headers, chat_gpt, short_io, notion
-import requests
+import requests, json
 
 #
 # Global variables
@@ -21,7 +21,7 @@ need_www = False
 #
 
 
-def delete_expired_dflinks(request):
+def delete_expired_dflink(request):
     dflink_list = short_io("retrieve")
     expired_dflink_list = []
 
@@ -29,16 +29,23 @@ def delete_expired_dflinks(request):
         expiration_date = timezone.datetime.strptime(
             dflink["expiration_date"], "%Y-%m-%d"
         ).date()
+
         link_id = dflink["link_id"]
+
         if expiration_date < timezone.now().date():
-            expired_dflink_list.append(dflink)
+            expired_dflink = {k: v for k, v in dflink.items() if k != "user"}
+            expired_dflink_list.append(expired_dflink)
             url = f"https://api.short.io/links/{link_id}"
             requests.delete(url, headers=set_headers("SHORT_IO"))
+    
+    data = {"expired_dflink_list": expired_dflink_list}
+    json_data = json.dumps(data, indent=4)
 
     if len(expired_dflink_list) > 0:
-        send_msg(request, "DLA", "MGT", extra=expired_dflink_list)
+        data["status"] = "DONE"
+        send_msg(request, "DELETE_EXPIRED_DFLINK", "MGT", data)
 
-    return HttpResponse(f"Number of deleted DFlinks: {len(expired_dflink_list)}")
+    return HttpResponse(json_data, content_type="application/json")
 
 
 #
@@ -406,7 +413,6 @@ def dflink(request):
     title = request.GET.get("title")
     category = request.GET.get("category")
     expiration_date = request.GET.get("expiration_date")
-
     status = None
 
     # id: create_dflink
@@ -435,6 +441,7 @@ def dflink(request):
                 need_www = False
 
             response = short_io("create", request)
+
             if response.status_code == 200:
                 status = "DONE"
                 reason = "유효성 및 유해성 검사 통과"
@@ -450,20 +457,19 @@ def dflink(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "target_url": target_url,
-                "dflink": f"https://dgufilm.link/{slug}",
-                "title": title,
-                "category": category,
-                "user": f"{request.user}",
-                "expiration_date": expiration_date,
-                "element": element if status == "FAIL" else None,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "target_url": target_url,
+            "dflink": f"https://dgufilm.link/{slug}",
+            "title": title,
+            "category": category,
+            "user": f"{request.user}",
+            "expiration_date": expiration_date,
+            "element": element if status == "FAIL" else None,
         }
-        send_msg(request, "DLC", "MGT", response)
+
+        send_msg(request, "CREATE_DFLINK", "MGT", response)
 
     # id: update_dflink
     elif id == "update_dflink":
@@ -491,6 +497,7 @@ def dflink(request):
                 need_www = False
 
             response = short_io("update", request)
+
             if response.status_code == 200:
                 status = "DONE"
                 reason = "유효성 및 유해성 검사 통과"
@@ -507,24 +514,24 @@ def dflink(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "target_url": target_url,
-                "dflink": f"https://dgufilm.link/{slug}",
-                "title": title,
-                "category": category,
-                "user": f"{request.user}",
-                "expiration_date": expiration_date,
-                "element": element if status == "FAIL" else None,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "target_url": target_url,
+            "dflink": f"https://dgufilm.link/{slug}",
+            "title": title,
+            "category": category,
+            "user": f"{request.user}",
+            "expiration_date": expiration_date,
+            "element": element if status == "FAIL" else None,
         }
-        send_msg(request, "DLU", "MGT", response)
+
+        send_msg(request, "UPDATE_DFLINK", "MGT", response)
 
     # id: delete_dflink
     elif id == "delete_dflink":
         response = short_io("delete", request)
+
         if response.status_code == 200:
             status = "DONE"
             msg = "동영링크가 삭제되었어요! 🗑️"
@@ -534,17 +541,16 @@ def dflink(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "msg": msg,
-                "target_url": target_url,
-                "dflink": f"https://dgufilm.link/{slug}",
-                "title": title,
-                "category": category,
-                "user": f"{request.user}",
-                "expiration_date": expiration_date,
-            },
+            "status": status,
+            "msg": msg,
+            "target_url": target_url,
+            "dflink": f"https://dgufilm.link/{slug}",
+            "title": title,
+            "category": category,
+            "user": f"{request.user}",
+            "expiration_date": expiration_date,
         }
-        send_msg(request, "DLD", "MGT", response)
+
+        send_msg(request, "DELETE_DFLINK", "MGT", response)
 
     return JsonResponse(response)

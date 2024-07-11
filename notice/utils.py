@@ -469,11 +469,9 @@ def notice(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "content": content,
-            },
+            "status": status,
+            "reason": reason,
+            "content": content,
         }
 
     # id: create_notice
@@ -510,6 +508,7 @@ def notice(request):
                 "file": file,
                 "user": request.user,
             }
+
             response = notion("create", "page", data=data)
 
             if response.status_code == 200:
@@ -534,24 +533,24 @@ def notice(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "notion_url": response.json()["url"] if status == "DONE" else None,
-                "title": title,
-                "category": category,
-                "keyword": data["keyword"] if status == "DONE" else None,
-                "user": f"{request.user}",
-                "element": element if status == "FAIL" else None,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": response.json()["url"] if status == "DONE" else None,
+            "title": title,
+            "category": category,
+            "keyword": data["keyword"] if status == "DONE" else None,
+            "user": f"{request.user}",
+            "element": element if status == "FAIL" else None,
         }
-        send_msg(request, "NTC", "MGT", response)
+
+        send_msg(request, "CREATE_NOTICE", "MGT", response)
 
     # id: read_notice
     elif id == "read_notice":
         data = {"page_id": page_id, "property_id": "B%5Dhc"}
         block_id_list, content = notion("retrieve", "block_children", data=data)
+
         try:
             file = ast.literal_eval(
                 notion("retrieve", "page_properties", data=data).json()["results"][0][
@@ -563,13 +562,11 @@ def notice(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": "DONE",
-                "page_id": page_id,
-                "block_id_list": block_id_list,
-                "content": content,
-                "file": file,
-            },
+            "status": "DONE",
+            "page_id": page_id,
+            "block_id_list": block_id_list,
+            "content": content,
+            "file": file,
         }
 
     # id: update_notice
@@ -607,12 +604,15 @@ def notice(request):
                 "img_key_list": img_key_list,
                 "file": file,
             }
+
             response = notion("update", "page_properties", data=data)
 
             if response.status_code == 200:
                 response_list = notion("delete", "block", data=data)
+
                 if all(response.status_code == 200 for response in response_list):
                     response = notion("append", "block_children", data=data)
+
                     if response.status_code == 200:
                         status = "DONE"
                         reason = "접근성 및 유해성 검사 통과"
@@ -635,23 +635,22 @@ def notice(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "notion_url": (
-                    f'https://www.notion.so/{response.json()["results"][0]["parent"]["page_id"].replace("-", "")}'
-                    if status == "DONE"
-                    else None
-                ),
-                "title": title,
-                "category": category,
-                "keyword": data["keyword"] if status == "DONE" else None,
-                "user": f"{request.user}",
-                "element": element if status == "FAIL" else None,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": (
+                f'https://www.notion.so/{response.json()["results"][0]["parent"]["page_id"].replace("-", "")}'
+                if status == "DONE"
+                else None
+            ),
+            "title": title,
+            "category": category,
+            "keyword": data["keyword"] if status == "DONE" else None,
+            "user": f"{request.user}",
+            "element": element if status == "FAIL" else None,
         }
-        send_msg(request, "NTU", "MGT", response)
+
+        send_msg(request, "UPDATE_NOTICE", "MGT", response)
 
     # id: delete_notice
     elif id == "delete_notice":
@@ -696,17 +695,16 @@ def notice(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "msg": msg,
-                "notion_url": response.json()["url"] if status == "DONE" else None,
-                "title": title,
-                "category": category,
-                "keyword": keyword,
-                "user": f"{request.user}",
-            },
+            "status": status,
+            "reason": reason if status == "FAIL" else None,
+            "msg": msg,
+            "notion_url": response.json()["url"] if status == "DONE" else None,
+            "title": title,
+            "category": category,
+            "keyword": keyword,
+            "user": f"{request.user}",
         }
-        send_msg(request, "NTD", "MGT", response)
+        
+        send_msg(request, "DELETE_NOTICE", "MGT", response)
 
     return JsonResponse(response)

@@ -507,75 +507,84 @@ function handleAjaxCallback(response) {
     }
 
     // requestCreateDflink()
-    else if (resID === "create_dflink") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "create_dflink") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = `${location.origin}${location.pathname}`;
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+
+            response.element != null ? displayError(true, code(response.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
         };
+        
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestUpdateDflink()
-    else if (resID === "update_dflink") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "update_dflink") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = location.href.replace("#id_main_content", "");
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
+            
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+
+            response.element != null ? displayError(true, code(response.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestDeleteDflink()
-    else if (resID === "delete_dflink") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_delete, "descr", resResult.msg);
+    else if (response.id === "delete_dflink") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_delete, "descr", response.msg);
             displayButtonMsg(false, id_delete, "error");
             location.href = location.href.replace("#id_main_content", "");
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             displayButtonMsg(false, id_delete, "descr");
-            displayButtonMsg(true, id_delete, "error", resResult.msg);
+            displayButtonMsg(true, id_delete, "error", response.msg);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestOcrNotice()
-    else if (resID === "ocr_notice") {
+    else if (response.id === "ocr_notice") {
         freezeFileForm(false);
         freezeForm(false);
         displayButtonMsg(false, id_create_or_update, "descr");
 
-        if (resResult.status === "DONE") {
-            watchdog.editor.setData(resResult.content);
+        if (response.status === "DONE") {
+            watchdog.editor.setData(response.content);
             watchdog.editor.disableReadOnlyMode("id_content");
             displayNoti(true, "EIS");
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             displayNoti(true, "EIF");
         };
 
@@ -585,61 +594,65 @@ function handleAjaxCallback(response) {
     }
 
     // requestCreateNotice()
-    else if (resID === "create_notice") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "create_notice") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = `${location.origin}${location.pathname}`;
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+
+            response.element != null ? displayError(true, code(response.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
-            if (resResult.reason.includes("대체 텍스트")) {
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
+
+            if (response.reason.includes("대체 텍스트")) {
                 displayNoti(true, "RAT");
-            } else if (resResult.reason.includes("텍스트 미포함")) {
+            } else if (response.reason.includes("텍스트 미포함")) {
                 displayNoti(true, "RDI");
             };
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestReadNotice()
-    else if (resID === "read_notice") {
-        if (resResult.status === "DONE") {
-            watchdog.editor.setData(resResult.content);
+    else if (response.id === "read_notice") {
+        if (response.status === "DONE") {
+            watchdog.editor.setData(response.content);
             watchdog.editor.disableReadOnlyMode("id_content");
-            id_block_id_list.value = resResult.block_id_list;
+            id_block_id_list.value = response.block_id_list;
             freezeFileForm(false);
-            selectedFiles = resResult.file;
+            selectedFiles = response.file;
             attachFile(event = null, sudo = true);
         };
     }
 
     // requestUpdateNotice()
-    else if (resID === "update_notice") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "update_notice") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = location.href;
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
             buttons.forEach((button) => {
                 button.disabled = false;
             });
-            resResult.element != null ? displayError(true, code(resResult.element), "inappropriate") : null;
+            response.element != null ? displayError(true, code(response.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
-            if (resResult.reason.includes("대체 텍스트")) {
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
+            if (response.reason.includes("대체 텍스트")) {
                 displayNoti(true, "RAT");
-            } else if (resResult.reason.includes("설명 텍스트")) {
+            } else if (response.reason.includes("설명 텍스트")) {
                 displayNoti(true, "RDI");
             };
         };
@@ -649,12 +662,13 @@ function handleAjaxCallback(response) {
     }
 
     // requestDeleteNotice()
-    else if (resID === "delete_notice") {
-        if (resResult.status === "DONE") {
+    else if (response.id === "delete_notice") {
+        if (response.status === "DONE") {
             let search = location.search;
 
-            displayButtonMsg(true, id_delete, "descr", resResult.msg);
+            displayButtonMsg(true, id_delete, "descr", response.msg);
             displayButtonMsg(false, id_delete, "error");
+
             if (search.includes("previousSearch")) {
                 let previousSearch = new URLSearchParams(search).get("previousSearch");
                 location.href = `${location.origin}/notice${previousSearch}`;
@@ -663,15 +677,18 @@ function handleAjaxCallback(response) {
             } else {
                 location.href = `${location.origin}${location.pathname}`;
             };
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             displayButtonMsg(false, id_delete, "descr");
-            displayButtonMsg(true, id_delete, "error", resResult.msg);
+            displayButtonMsg(true, id_delete, "error", response.msg);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });

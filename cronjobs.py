@@ -30,16 +30,16 @@ if current_time.strftime("%H:%M") == "22:30":
 #
 
 if current_time.strftime("%H:%M") == "00:00":
-    requests.get("https://dongguk.film/dflink/utils/delete-expired-dflinks/")
+    requests.get("https://dongguk.film/dflink/utils/delete-expired-dflink/")
 
 #
 # users(account)
 #
 
-requests.get("https://dongguk.film/account/utils/delete-expired-vcodes/")
+requests.get("https://dongguk.film/account/utils/delete-expired-vcode/")
 
 if current_time.strftime("%H:%M") == "08:00":
-    requests.get("https://dongguk.film/account/utils/delete-inactive-users/")
+    requests.get("https://dongguk.film/account/utils/delete-inactive-user/")
 
 #
 # utility

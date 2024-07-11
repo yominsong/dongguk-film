@@ -21,7 +21,6 @@ DISCORD_DEV_WEBHOOK_URL = getattr(
 def format_msg(content: dict):
     target = content["target"]
     important = content["important"]
-
     palette = discord.Color
     color = palette.red() if important else palette.dark_gray()
 
@@ -47,16 +46,20 @@ def format_msg(content: dict):
                 value=content["sec-ch-ua-platform"],
                 inline=True,
             )
+
             embed.add_field(
                 name="Content-Type", value=content["content_type"], inline=True
             )
+
             embed.add_field(
                 name="User-Agent", value=content["user_agent"], inline=False
             )
+
             embed.add_field(name="Method", value=content["method"], inline=True)
             embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         except:
             pass
+
         embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
     embed.set_footer(text=content["footer"])
 
@@ -88,330 +91,379 @@ def get_webhook(channel: str):
 #
 
 
-def send_msg(request, type: str, channel: str, extra=None):
+def send_msg(request, msg_type: str, channel: str, data: dict = None):
     """
     - request | `HttpRequest`
-    - type | `str`:
-        - UDC: Update DMD Cookie
-        - UIG: Update images
-        - SED: Synchronize Equipment Data
-        - UPP: Update Project Policy
-        - DSA: Duplicate signup attempt
-        - AIV: Attempting to skip identity verification
-        - UXR: Unexpected request
-        - SUP: Signup complete
-        - DVA: Delete expired Vcodes Automatically
-        - DUA: Delete inactive Users Automatically
-        - DLC: DF Link Create
-        - DLU: DF Link Update
-        - DLD: DF Link Delete
-        - DLA: DF Link Delete Automatically
-        - NTC: Notice Create
-        - NTU: Notice Update
-        - NTD: Notice Delete
+    - msg_type | `str`:
+        - UPDATE_DMD_COOKIE
+        - UPDATE_HERO_IMAGE
+        - SYNC_EQUIPMENT_DATA
+        - UPDATE_PROJECT_POLICY
+        - ATTEMPT_DUPLICATE_SIGNUP
+        - ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION
+        - UNEXPECTED_REQUEST_OCCURRED
+        - SIGNUP_COMPLETED
+        - EXPIRED_VCODE_AUTO_DELETED
+        - INACTIVE_USER_AUTO_DELETED
+        - CREATE_DFLINK
+        - UPDATE_DFLINK
+        - DELETE_DFLINK
+        - DELETE_EXPIRED_DFLINK
+        - CREATE_NOTICE
+        - UPDATE_NOTICE
+        - DELETE_NOTICE
     - channel | `str`:
         - DEV: Development
         - MGT: Management
-    - extra | `Any` | optional
+    - data | `Any` | optional
     """
+
+    success_emoji = "✅"
+    failure_emoji = "❌"
+    warning_emoji = "⚠️"
+
+    if data is not None:
+        status = data["status"]
+        status_emoji = success_emoji if status == "DONE" else failure_emoji
+        status_in_kor = "완료" if status == "DONE" else "실패"
 
     webhook = get_webhook(channel)
     default_picture_url = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
-    # type: "UDC"
-    if type == "UDC":
-        main_content = {
+    # msg_type: "UPDATE_DMD_COOKIE"
+    if msg_type == "UPDATE_DMD_COOKIE":
+        cookie = data.get("cookie", "")
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "DMD 쿠키 업데이트됨",
+            "title": f"{status_emoji} DMD 쿠키 업데이트 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
-            "description": extra,
+            "description": cookie,
         }
 
-    # type: "UIG"
-    elif type == "UIG":
-        sub_content = ""
-        sub_content += f"\nㆍ[home] 총 {len(extra['home'])}개 이미지"
-        sub_content += f"\nㆍ[equipment] 총 {len(extra['equipment'])}개 이미지"
-        sub_content += f"\nㆍ[project] 총 {len(extra['project'])}개 이미지"
-        sub_content += f"\nㆍ[dflink] 총 {len(extra['dflink'])}개 이미지"
-        sub_content += f"\nㆍ[notice] 총 {len(extra['notice'])}개 이미지"
-        sub_content += f"\nㆍ[account] 총 {len(extra['account'])}개 이미지"
-        
-        main_content = {
+    # msg_type: "UPDATE_HERO_IMAGE"
+    elif msg_type == "UPDATE_HERO_IMAGE":
+        img_list = data.get("img_list", {})
+        app_name_list = ["home", "equipment", "project", "dflink", "notice", "account"]
+        data_info = "ㆍ" + "\nㆍ".join(
+            f"[{app_name}] {len(img_list.get(app_name, []))}개 이미지"
+            for app_name in app_name_list
+        )
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "Hero 배경 이미지 업데이트됨",
+            "title": f"{status_emoji} Hero 이미지 업데이트 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
-            "description": sub_content,
+            "description": data_info,
         }
 
-    # type: "SED"
-    elif type == "SED":
-        sub_content = ""
-        for i, item in enumerate(extra[0]["category"]):
+    # msg_type: "SYNC_EQUIPMENT_DATA"
+    elif msg_type == "SYNC_EQUIPMENT_DATA":
+        data_list = data.get("data_list", [])
+        data_info = ""
+
+        for i, item in enumerate(data_list[0]["category"]):
             new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
             new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        for i, item in enumerate(extra[1]["purpose"]):
+            data_info += new_line
+
+        for i, item in enumerate(data_list[1]["purpose"]):
             new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
-            sub_content += new_line
-        sub_content += f"\nㆍ[한도] 총 {len(extra[2]['limit'])}개"
-        sub_content += f"\nㆍ[시간] 총 {len(extra[4]['hour'])}개"
-        main_content = {
+            data_info += new_line
+
+        data_info += f"\nㆍ[한도] {len(data_list[2]['limit'])}개"
+        data_info += f"\nㆍ[시간] {len(data_list[4]['hour'])}개"
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "기자재 데이터 동기화됨",
+            "title": f"{status_emoji} 기자재 데이터 동기화 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
-            "description": sub_content,
+            "description": data_info,
         }
-    
-    # type: "UPP"
-    elif type == "UPP":
-        sub_content = ""
-        for i, item in enumerate(extra[0]["position"]):
+
+    # msg_type: "UPDATE_PROJECT_POLICY"
+    elif msg_type == "UPDATE_PROJECT_POLICY":
+        data_list = data.get("data_list", [])
+        data_info = ""
+
+        for i, item in enumerate(data_list[0]["position"]):
             new_line = f"\nㆍ[담당] {item['function']} | {item['keyword']}{'(' + item['note'] + ')' if item['note'] is not None else ''} {item['in_english']}"
             new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        main_content = {
+            data_info += new_line
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "프로젝트 정책 업데이트됨",
+            "title": f"{status_emoji} 프로젝트 정책 업데이트 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
-            "description": sub_content,
+            "description": data_info,
         }
 
-    # type: "DSA"
-    elif type == "DSA":
-        main_content = {
+    # msg_type: "ATTEMPT_DUPLICATE_SIGNUP"
+    elif msg_type == "ATTEMPT_DUPLICATE_SIGNUP":
+        content = {
             "important": True,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "중복 회원가입 시도가 감지됨",
+            "title": f"{warning_emoji} 중복 회원가입 시도 발생",
             "url": "",
             "thumbnail_url": "",
-            "description": "사용자가 이미 회원가입을 완료한 다른 사용자의 학번 및 성명을 입력했을 수 있습니다.",
+            "description": "사용자가 이미 회원가입을 완료한 다른 사용자의 학번 및 성명을 입력한 것 같습니다.",
         }
 
-    # type: "AIV"
-    elif type == "AIV":
-        main_content = {
+    # msg_type: "ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION"
+    elif msg_type == "ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION":
+        content = {
             "important": True,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "본인인증 생략 시도가 감지됨",
+            "title": f"{warning_emoji} 본인인증 생략 시도 발생",
             "url": "",
             "thumbnail_url": "",
-            "description": "사용자가 비정상적인 방법으로 회원가입을 시도하는 것일 수 있습니다.",
+            "description": "사용자가 비정상적인 방법으로 회원가입을 시도하는 것 같습니다.",
         }
 
-    # type: "UXR"
-    elif type == "UXR":
-        main_content = {
+    # msg_type: "UNEXPECTED_REQUEST_OCCURRED"
+    elif msg_type == "UNEXPECTED_REQUEST_OCCURRED":
+        content = {
             "important": True,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "예상치 못한 요청이 발생함",
+            "title": f"{warning_emoji} 예기치 않은 요청 발생",
             "url": "",
             "thumbnail_url": "",
-            "description": "사용자가 비정상적인 방법으로 서비스를 이용하는 것일 수 있습니다.",
+            "description": "사용자가 예기치 않은 방법으로 서비스를 이용하는 것 같습니다.",
         }
 
-    # type: "SUP"
-    elif type == "SUP":
-        main_content = {
+    # msg_type: "SIGNUP_COMPLETED"
+    elif msg_type == "SIGNUP_COMPLETED":
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": "새로운 사용자 계정이 생성됨",
+            "title": f"{success_emoji} 사용자 계정 생성 완료",
             "url": "",
             "thumbnail_url": "",
-            "description": f"현 기준 사용자는 총 {User.objects.count() + 1}명입니다.",
+            "description": f"현 기준 사용자는 {User.objects.count() + 1}명입니다.",
         }
 
-    # type: "DVA"
-    elif type == "DVA":
-        sub_content = ""
-        for i in range(len(extra)):
-            new_line = f"\nㆍ[E] {extra[i].email_vcode}, [P] {extra[i].phone_vcode}"
+    # msg_type: "EXPIRED_VCODE_AUTO_DELETED"
+    elif msg_type == "EXPIRED_VCODE_AUTO_DELETED":
+        expired_vcode_list = data.get("expired_vcode_list", [])
+        expired_vcode_count = len(expired_vcode_list)
+        data_info = ""
+
+        for i in range(expired_vcode_count):
+            new_line = f"\nㆍ[E] {expired_vcode_list[i]['email_vcode']}, [P] {expired_vcode_list[i]['phone_vcode']}"
             new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        main_content = {
+            data_info += new_line
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": f"{len(extra)}개의 만료된 인증번호가 삭제됨",
+            "title": f"{success_emoji} 만료된 인증번호 {expired_vcode_count}개 삭제 완료",
             "url": "",
             "thumbnail_url": "",
-            "description": sub_content,
+            "description": data_info,
         }
 
-    # type: "DUA"
-    elif type == "DUA":
-        main_content = {
+    # msg_type: "INACTIVE_USER_AUTO_DELETED"
+    elif msg_type == "INACTIVE_USER_AUTO_DELETED":
+        inactive_user_count = int(data.get("inactive_user_count", 0))
+
+        content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": f"{extra}개의 비활성 사용자 계정이 삭제됨",
+            "title": f"{success_emoji} 비활성 사용자 계정 {inactive_user_count}개 삭제 완료",
             "url": "",
             "thumbnail_url": "",
-            "description": f"현 기준 사용자는 총 {User.objects.count() - extra}명입니다.",
+            "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
         }
 
-    # type: "DLC"
-    elif type == "DLC":
-        status = extra["result"]["status"]
-        reason = extra["result"]["reason"]
-        target_url = extra["result"]["target_url"]
-        dflink = extra["result"]["dflink"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        expiration_date = extra["result"]["expiration_date"]
-        main_content = {
+    # msg_type: "CREATE_DFLINK"
+    elif msg_type == "CREATE_DFLINK":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        target_url = data.get("target_url", "Unknown")
+        dflink = data.get("dflink", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        expiration_date = data.get("expiration_date", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "동영링크 생성 요청이 처리됨",
+            "title": f"{status_emoji} 동영링크 생성 {status_in_kor}",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
-    # type: "DLU"
-    elif type == "DLU":
-        status = extra["result"]["status"]
-        reason = extra["result"]["reason"]
-        target_url = extra["result"]["target_url"]
-        dflink = extra["result"]["dflink"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        expiration_date = extra["result"]["expiration_date"]
-        main_content = {
+    # msg_type: "UPDATE_DFLINK"
+    elif msg_type == "UPDATE_DFLINK":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        target_url = data.get("target_url", "Unknown")
+        dflink = data.get("dflink", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        expiration_date = data.get("expiration_date", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "동영링크 수정 요청이 처리됨",
+            "title": f"{status_emoji} 동영링크 수정 {status_in_kor}",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
-    # type: "DLD"
-    elif type == "DLD":
-        status = extra["result"]["status"]
-        target_url = extra["result"]["target_url"]
-        dflink = extra["result"]["dflink"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        expiration_date = extra["result"]["expiration_date"]
-        main_content = {
+    # msg_type: "DELETE_DFLINK"
+    elif msg_type == "DELETE_DFLINK":
+        status = data.get("status", "Unknown")
+        target_url = data.get("target_url", "Unknown")
+        dflink = data.get("dflink", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        expiration_date = data.get("expiration_date", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "동영링크 삭제 요청이 처리됨",
+            "title": f"{status_emoji} 동영링크 삭제 {status_in_kor}",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
+            "description": f"ㆍ대상 URL: {target_url}\nㆍ동영링크 URL: {dflink}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ만료일: {expiration_date}",
         }
 
-    # type: "DLA"
-    elif type == "DLA":
-        sub_content = ""
-        for i in range(len(extra)):
-            new_line = f"\nㆍ[{extra[i]['category']}] https://dgufilm.link/{extra[i]['slug']} {extra[i]['title']}"
+    # msg_type: "DELETE_EXPIRED_DFLINK"
+    elif msg_type == "DELETE_EXPIRED_DFLINK":
+        expired_dflink_list = data.get("expired_dflink_list", [])
+        data_info = ""
+
+        for i in range(len(expired_dflink_list)):
+            new_line = f"\nㆍ[{expired_dflink_list[i]['category']}] https://dgufilm.link/{expired_dflink_list[i]['slug']} {expired_dflink_list[i]['title']}"
             new_line.replace("\n", "") if i == 0 else None
-            sub_content += new_line
-        main_content = {
+            data_info += new_line
+
+        content = {
             "important": False,
-            "picture_url": default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": f"{len(extra)}개의 만료된 동영링크가 삭제됨",
+            "title": f"{status_emoji} 만료된 동영링크 {len(expired_dflink_list)}개 삭제 {status_in_kor}",
             "url": "https://dongguk.film/dflink",
             "thumbnail_url": "",
-            "description": sub_content,
+            "description": data_info,
         }
 
-    # type: "NTC"
-    elif type == "NTC":
-        status = extra["result"]["status"]
-        reason = extra["result"]["reason"]
-        notion_url = extra["result"]["notion_url"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        keyword = extra["result"]["keyword"]
-        main_content = {
+    # msg_type: "CREATE_NOTICE"
+    elif msg_type == "CREATE_NOTICE":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        keyword = data.get("keyword", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "공지사항 등록 요청이 처리됨",
+            "title": f"{status_emoji} 공지사항 등록 {status_in_kor}",
             "url": "https://dongguk.film/notice",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
 
-    # type: "NTU"
-    elif type == "NTU":
-        status = extra["result"]["status"]
-        reason = extra["result"]["reason"]
-        notion_url = extra["result"]["notion_url"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        keyword = extra["result"]["keyword"]
-        main_content = {
+    # msg_type: "UPDATE_NOTICE"
+    elif msg_type == "UPDATE_NOTICE":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        keyword = data.get("keyword", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "공지사항 수정 요청이 처리됨",
+            "title": f"{status_emoji} 공지사항 수정 {status_in_kor}",
             "url": "https://dongguk.film/notice",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍ사유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
 
-    # type: "NTD"
-    elif type == "NTD":
-        status = extra["result"]["status"]
-        notion_url = extra["result"]["notion_url"]
-        title = extra["result"]["title"]
-        category = extra["result"]["category"]
-        keyword = extra["result"]["keyword"]
-        main_content = {
+    # msg_type: "DELETE_NOTICE"
+    elif msg_type == "DELETE_NOTICE":
+        status = data.get("status", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        category = data.get("category", "Unknown")
+        keyword = data.get("keyword", "Unknown")
+
+        content = {
             "important": True if status == "FAIL" else False,
-            "picture_url": request.user.socialaccount_set.all()[0].get_avatar_url()
-            if request.user.is_authenticated
-            else default_picture_url,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
             "author_url": "",
-            "title": "공지사항 삭제 요청이 처리됨",
+            "title": f"{status_emoji} 공지사항 삭제 {status_in_kor}",
             "url": "https://dongguk.film/notice",
             "thumbnail_url": "",
-            "description": f"ㆍ상태: {status}\nㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+            "description": f"ㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
 
     # channel: "DEV"
     if channel == "DEV":
         try:
-            content = {
+            msg = {
                 "target": "DEV",
-                "name": request.user
-                if request.user.is_authenticated
-                else "D-dot-f Bot",
+                "name": (
+                    request.user if request.user.is_authenticated else "D-dot-f Bot"
+                ),
                 "content_type": request.content_type,
                 "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
                 "user_agent": request.headers["user-agent"],
@@ -419,28 +471,28 @@ def send_msg(request, type: str, channel: str, extra=None):
                 "method": request.method,
                 "full_path": request.get_full_path(),
                 "user_auth": request.user.is_authenticated,
-                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
+                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
             }
         except:
-            content = {
+            msg = {
                 "target": "DEV",
-                "name": request.user
-                if request.user.is_authenticated
-                else "D-dot-f Bot",
+                "name": (
+                    request.user if request.user.is_authenticated else "D-dot-f Bot"
+                ),
                 "method": request.method,
                 "full_path": request.get_full_path(),
-                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
+                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
             }
 
     # channel: "MGT"
     elif channel == "MGT":
-        content = {
+        msg = {
             "target": "MGT",
             "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
-            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 전송됨",
+            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
         }
 
-    content.update(main_content)
-    embed = format_msg(content)
+    msg.update(content)
+    embed = format_msg(msg)
 
     return webhook.send(embed=embed)

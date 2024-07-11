@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from users.models import Vcode
 from utility.mail import send_mail
@@ -22,16 +23,21 @@ headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 #
 
 
-def delete_inactive_users(request):
-    inactive_users = User.objects.filter(
+def delete_inactive_user(request):
+    inactive_user_queryset = User.objects.filter(
         last_login__lt=timezone.now() - timezone.timedelta(days=30)
     )
-    count = inactive_users.count()
-    if count > 0:
-        for i in range(count):
-            student_id = inactive_users[i].username
-            email = inactive_users[i].email
-            data = {
+
+    inactive_user_count = inactive_user_queryset.count()
+    data = {"inactive_user_count": inactive_user_count}
+    json_data = json.dumps(data, indent=4)
+
+    if inactive_user_count > 0:
+        for i in range(inactive_user_count):
+            student_id = inactive_user_queryset[i].username
+            email = inactive_user_queryset[i].email
+
+            mail_data = {
                 "type": "ADL",
                 "email": email,
                 "content": {
@@ -39,19 +45,31 @@ def delete_inactive_users(request):
                     "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
                 },
             }
-            send_mail(data)
-        send_msg(request, "DUA", "MGT", extra=count)
-        inactive_users.delete()
-    return HttpResponse(f"Number of deleted users: {count}")
+
+            send_mail(mail_data)
+
+        data["status"] = "DONE"
+        send_msg(request, "INACTIVE_USER_AUTO_DELETED", "MGT", data)
+        inactive_user_queryset.delete()
+
+    return HttpResponse(json_data, content_type="application/json")
 
 
-def delete_expired_vcodes(request):
-    expired_vcodes = Vcode.objects.filter(will_expire_on__lt=timezone.now())
-    count = expired_vcodes.count()
-    if count > 0:
-        send_msg(request, "DVA", "MGT", extra=expired_vcodes)
-        expired_vcodes.delete()
-    return HttpResponse(f"Number of deleted verification codes: {count}")
+def delete_expired_vcode(request):
+    expired_vcode_queryset = Vcode.objects.filter(will_expire_on__lt=timezone.now())
+    expired_vcode_count = expired_vcode_queryset.count()
+    expired_vcode_list = list(expired_vcode_queryset.values(
+        "id", "email_vcode", "phone_vcode", "confirmed", "will_expire_on"
+    ))
+    data = {"expired_vcode_list": expired_vcode_list}
+    json_data = json.dumps(data, indent=4, cls=DjangoJSONEncoder)
+
+    if expired_vcode_count > 0:
+        data["status"] = "DONE"
+        send_msg(request, "EXPIRED_VCODE_AUTO_DELETED", "MGT", data)
+        expired_vcode_queryset.delete()
+
+    return HttpResponse(json_data, content_type="application/json")
 
 
 #

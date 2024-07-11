@@ -74,16 +74,16 @@ function updateList(data) {
         let msg;
 
         if (data.target === "facility") {
-            msg = "시설사용을 신청한 적이";
+            msg = "내가 사용한 시설이";
         } else if (data.target === "project") {
-            msg = "프로젝트에 참여한 적이";
+            msg = "내가 참여한 프로젝트가";
         } else if (data.target === "dflink") {
-            msg = "동영링크를 만든 적이";
+            msg = "내가 만든 동영링크가";
         } else if (data.target === "notice") {
-            msg = "공지사항을 작성한 적이";
+            msg = "내가 작성한 공지사항이";
         };
 
-        list.firstElementChild.innerText = `아직 ${msg} 없어요.`;
+        list.firstElementChild.innerText = `${msg} 없어요.`;
         
         return;
     };

@@ -57,6 +57,8 @@ AWS_S3 = boto3.client(
 
 
 def update_dmd_cookie(request):
+    cookie = ""
+
     with Session() as session:
         session.mount("https://", HTTPAdapter(max_retries=3))
         response = session.get("https://util.dgufilm.link/get-dmd-cookie")
@@ -70,31 +72,52 @@ def update_dmd_cookie(request):
             f.write(json.dumps(data, indent=4))
             f.truncate()
 
-    send_msg(request, "UDC", "DEV", cookie)
+    status = "DONE" if "WMONID" in cookie else "FAIL"
 
-    return HttpResponse(f"dmd-cookie: {cookie}")
+    data = {
+        "status": status,
+        "cookie": cookie,
+    }
+
+    send_msg(request, "UPDATE_DMD_COOKIE", "DEV", data)
+    json_data = json.dumps(data, indent=4)
+
+    return HttpResponse(json_data, content_type="application/json")
 
 
 def update_hero_img(request):
-    home_img = save_hero_img("video-camera", "home")
-    equipment_img = save_hero_img("cinema-lens", "equipment")
-    project_img = save_hero_img("film-production", "project")
-    dflink_img = save_hero_img("keyboard", "dflink")
-    notice_img = save_hero_img("office", "notice")
-    account_img = save_hero_img("digital", "account")
+    img_list = {}
 
-    img_list_for_msg = {
-        "home": home_img,
-        "equipment": equipment_img,
-        "project": project_img,
-        "dflink": dflink_img,
-        "notice": notice_img,
-        "account": account_img,
+    try:
+        home_img = save_hero_img("video-camera", "home")
+        equipment_img = save_hero_img("cinema-lens", "equipment")
+        project_img = save_hero_img("film-production", "project")
+        dflink_img = save_hero_img("keyboard", "dflink")
+        notice_img = save_hero_img("office", "notice")
+        account_img = save_hero_img("digital", "account")
+
+        img_list = {
+            "home": home_img,
+            "equipment": equipment_img,
+            "project": project_img,
+            "dflink": dflink_img,
+            "notice": notice_img,
+            "account": account_img,
+        }
+
+        status = "DONE"
+    except:
+        status = "FAIL"
+
+    data = {
+        "status": status,
+        "img_list": img_list,
     }
 
-    send_msg(request, "UIG", "DEV", img_list_for_msg)
+    send_msg(request, "UPDATE_HERO_IMAGE", "DEV", data)
+    json_data = json.dumps(data, indent=4)
 
-    return HttpResponse(f"Updated images URL: {img_list_for_msg}")
+    return HttpResponse(json_data, content_type="application/json")
 
 
 #
@@ -109,26 +132,26 @@ def convert_datetime(datetime_str: str) -> datetime.datetime:
 
     try:
         dt = parser.isoparse(datetime_str)
-        
+
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=pytz.UTC)
-        
+
         kor_tz = pytz.timezone("Asia/Seoul")
 
         return dt.astimezone(kor_tz)
     except:
         dt = datetime.datetime.strptime(datetime_str, "%Y-%m-%d")
         kor_tz = pytz.timezone("Asia/Seoul")
-        
+
         return kor_tz.localize(dt)
-    
+
 
 def format_datetime(dt: datetime.datetime, format_str: str = "%Y-%m-%d %H:%M") -> str:
     """
     - dt | `datetime.datetime`: Datetime object to format
     - format_str | `str`: Format string (default: "%Y-%m-%d %H:%M")
     """
-    
+
     return dt.strftime(format_str)
 
 
@@ -524,7 +547,6 @@ def short_io(
 
         url = f"https://api.short.io/links/{link_id}"
         response = requests.delete(url, headers=set_headers("SHORT_IO"))
-
         result = response
 
     return result
@@ -893,7 +915,6 @@ def notion(
             try:
                 for item in items:
                     properties = item["properties"]
-
                     student_id = properties["Title"]["title"][0]["plain_text"]
                     permission = properties["Permission"]["select"]["name"]
 
@@ -916,7 +937,6 @@ def notion(
             try:
                 for item in items:
                     properties = item["properties"]
-
                     approval_status = properties["Approval status"]["status"]["name"]
                     category = properties["Category"]["select"]["name"]
                     title = properties["Title"]["title"][0]["plain_text"]
@@ -970,7 +990,6 @@ def notion(
             try:
                 for item in items:
                     properties = item["properties"]
-
                     created_time = properties["Created time"]["created_time"]
                     created_time = convert_datetime(created_time)
 
@@ -983,12 +1002,15 @@ def notion(
                     purpose_priority = [
                         item for item in purpose_list if item["priority"] in purpose
                     ][0]["priority"]
+
                     purpose_keyword = [
                         item for item in purpose_list if item["priority"] in purpose
                     ][0]["keyword"]
 
                     title = properties["Title"]["title"][0]["plain_text"]
-                    production_end_date = properties["Production end date"]["date"]["start"]
+                    production_end_date = properties["Production end date"]["date"][
+                        "start"
+                    ]
                     instructor = properties.get("Instructor", {}).get("rich_text", [{}])
 
                     if instructor:
@@ -1008,7 +1030,9 @@ def notion(
                         )
 
                     user = str(properties["User"]["number"])
-                    user = mask_personal_information("student_id", user) if mask else user
+                    user = (
+                        mask_personal_information("student_id", user) if mask else user
+                    )
 
                     project = {
                         "page_id": item["id"],
@@ -1045,7 +1069,9 @@ def notion(
                         staff["pk"] = str(user.pk)
                         staff["name"] = user.metadata.name
                         staff["student_id"] = (
-                            student_id[:2] + "*" * (len(student_id) - 5) + student_id[-3:]
+                            student_id[:2]
+                            + "*" * (len(student_id) - 5)
+                            + student_id[-3:]
                         )
                         staff["student_id"] = mask_personal_information(
                             "student_id", student_id
@@ -1085,9 +1111,7 @@ def notion(
             try:
                 for item in items:
                     properties = item["properties"]
-
                     url = properties["URL"]["url"]
-
                     item_list.append(url)
             except:
                 pass
@@ -1102,15 +1126,14 @@ def notion(
             try:
                 for item in items:
                     properties = item["properties"]
-
                     listed_time = properties["Listed time"]["created_time"]
                     listed_time = convert_datetime(listed_time)
-
                     notice_id = properties["ID"]["formula"]["string"]
                     title = properties["Title"]["title"][0]["plain_text"]
                     category = properties["Category"]["select"]["name"]
                     keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
                     user = str(properties["User"]["number"])
+
                     user = (
                         mask_personal_information("student_id", user) if mask else user
                     )
@@ -1139,8 +1162,8 @@ def notion(
                     notice["img_key_list"] = (
                         ast.literal_eval(img_key_list) if img_key_list else None
                     )
-                    notice["file"] = ast.literal_eval(file) if file else None
 
+                    notice["file"] = ast.literal_eval(file) if file else None
                     item_list.append(notice)
             except:
                 pass
@@ -1247,6 +1270,7 @@ def notion(
                 },
                 "children": paragraph_list,
             }
+            
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 
         result = response
