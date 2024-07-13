@@ -430,8 +430,8 @@ function handleAjaxCallback(response) {
     }
 
     // requestFindInstructor()
-    else if (resID === "find_instructor") {
-        initFoundInstructorList(resResult);
+    else if (response.id === "find_instructor") {
+        initFoundInstructorList(response);
         // if (resResult.status === "DONE") {
         //     initFoundInstructorList(resResult);
         // } else if (resResult.status === "FAIL") {
@@ -440,67 +440,76 @@ function handleAjaxCallback(response) {
     }
 
     // requestFindUser()
-    else if (resID === "find_user") {
-        if (resResult.status === "DONE") {
-            initFoundUserList(resResult);
-        } else if (resResult.status === "FAIL") {
+    else if (response.id === "find_user") {
+        if (response.status === "DONE") {
+            initFoundUserList(response);
+        } else if (response.status === "FAIL") {
             initFoundUserList();
         };
     }
 
     // requestCreateProject()
-    else if (resID === "create_project") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "create_project") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = `${location.origin}${location.pathname}`;
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestUpdateProject()
-    else if (resID === "update_project") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create_or_update, "descr", resResult.msg);
+    else if (response.id === "update_project") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create_or_update, "descr", response.msg);
             displayButtonMsg(false, id_create_or_update, "error");
             location.href = location.href.replace("#id_main_content", "").replace("#", "");
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             displayButtonMsg(false, id_create_or_update, "descr");
-            displayButtonMsg(true, id_create_or_update, "error", resResult.msg);
+            displayButtonMsg(true, id_create_or_update, "error", response.msg);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
     }
 
     // requestDeleteProject()
-    else if (resID === "delete_project") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_delete, "descr", resResult.msg);
+    else if (response.id === "delete_project") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_delete, "descr", response.msg);
             displayButtonMsg(false, id_delete, "error");
             location.href = location.href.replace("#id_main_content", "").replace("#", "");
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeFileForm(false);
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             displayButtonMsg(false, id_delete, "descr");
-            displayButtonMsg(true, id_delete, "error", resResult.msg);
+            displayButtonMsg(true, id_delete, "error", response.msg);
         };
+        
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });

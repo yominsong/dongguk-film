@@ -166,12 +166,10 @@ def project(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "target_academic_year_and_semester": target_academic_year_and_semester,
-                "found_instructor_list": found_instructor_list,
-            },
+            "status": status,
+            "reason": reason,
+            "target_academic_year_and_semester": target_academic_year_and_semester,
+            "found_instructor_list": found_instructor_list,
         }
 
     # id: find_user
@@ -180,18 +178,23 @@ def project(request):
             found_user_query_set = Metadata.objects.filter(name__icontains=name).values(
                 "user", "name", "student_id"
             )
+
             found_user_list = list(found_user_query_set)
 
         if found_user_list:
             for found_user in found_user_list:
                 student_id = found_user["student_id"]
+
                 found_user["student_id"] = (
                     student_id[:2] + "*" * (len(student_id) - 5) + student_id[-3:]
                 )
+
                 user = User.objects.get(id=found_user["user"])
+
                 found_user["avatar_url"] = user.socialaccount_set.all()[
                     0
                 ].get_avatar_url()
+
                 found_user["pk"] = found_user.pop("user")
 
             status = "DONE"
@@ -200,10 +203,8 @@ def project(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "found_user_list": found_user_list,
-            },
+            "status": status,
+            "found_user_list": found_user_list,
         }
 
     # id: create_project
@@ -221,10 +222,12 @@ def project(request):
             "staff": staff,
             "user": request.user,
         }
+
         response = notion("create", "page", data=data)
 
         if response.status_code == 200:
             status = "DONE"
+            reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 등록되었어요! 👍"
         elif response.status_code == 400:
             status = "FAIL"
@@ -241,16 +244,17 @@ def project(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "msg": msg,
-                "notion_url": response.json()["url"] if status == "DONE" else None,
-                "title": title,
-                "purpose": purpose,
-                "user": f"{request.user}",
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": response.json()["url"] if status == "DONE" else None,
+            "title": title,
+            "purpose": purpose,
+            "subject_name": subject_name,
+            "user": f"{request.user}",
         }
+
+        send_msg(request, "CREATE_PROJECT", "MGT", response)
 
     # id: update_project
     elif id == "update_project":
@@ -268,10 +272,12 @@ def project(request):
             "staff": staff,
             "user": request.user,
         }
+
         response = notion("update", "page_properties", data=data)
 
         if response.status_code == 200:
             status = "DONE"
+            reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 수정되었어요! 👍"
         elif response.status_code == 400:
             status = "FAIL"
@@ -284,16 +290,17 @@ def project(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "msg": msg,
-                "notion_url": response.json()["url"] if status == "DONE" else None,
-                "title": title,
-                "purpose": purpose,
-                "user": f"{request.user}",
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": response.json()["url"] if status == "DONE" else None,
+            "title": title,
+            "purpose": purpose,
+            "subject_name": subject_name,
+            "user": f"{request.user}",
         }
+
+        send_msg(request, "UPDATE_PROJECT", "MGT", response)
 
     # id: delete_project
     elif id == "delete_project":
@@ -303,6 +310,7 @@ def project(request):
 
         if response.status_code == 200:
             status = "DONE"
+            reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 삭제되었어요! 🗑️"
         elif response.status_code != 200:
             status = "FAIL"
@@ -311,15 +319,16 @@ def project(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason if status == "FAIL" else None,
-                "msg": msg,
-                "notion_url": response.json()["url"] if status == "DONE" else None,
-                "title": title,
-                "purpose": purpose,
-                "user": f"{request.user}",
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": response.json()["url"] if status == "DONE" else None,
+            "title": title,
+            "purpose": purpose,
+            "subject_name": subject_name,
+            "user": f"{request.user}",
         }
+
+        send_msg(request, "DELETE_PROJECT", "MGT", response)
 
     return JsonResponse(response)

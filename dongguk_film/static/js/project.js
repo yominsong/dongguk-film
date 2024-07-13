@@ -276,7 +276,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     };
 
     id_instructor.classList.add("class-first");
-    
+
     const class_firsts = document.querySelectorAll(".class-first");
 
     initValidation(class_firsts, id_create_or_update);
@@ -481,9 +481,9 @@ function addStaff(userData, blink = false) {
     id_name.parentElement.classList.remove("rounded-b-md");
 }
 
-function initFoundInstructorList(resResult) {
-    const status = resResult.status;
-    const targetAcademicYearAndSemester = resResult.target_academic_year_and_semester;
+function initFoundInstructorList(response) {
+    const status = response.status;
+    const targetAcademicYearAndSemester = response.target_academic_year_and_semester;
     const id_found_instructor_list = document.getElementById("id_found_instructor_list");
 
     id_found_instructor_list.innerHTML = "";
@@ -495,7 +495,7 @@ function initFoundInstructorList(resResult) {
         if (status === null) {
             placeholder = "유형을 선택하면 선택 가능한 교원이 표시돼요.";
         } else {
-            const reason = resResult.reason;
+            const reason = response.reason;
 
             if (reason === "NOT_CURRICULAR_PROJECT") {
                 placeholder = "개인 프로젝트는 교원을 선택하지 않아도 돼요.";
@@ -535,7 +535,7 @@ function initFoundInstructorList(resResult) {
 
     id_target_academic_year_and_semester.innerText = targetAcademicYearAndSemester;
 
-    resResult.found_instructor_list.forEach(newlyFoundInstructor => {
+    response.found_instructor_list.forEach(newlyFoundInstructor => {
         const newlyFoundInstructorElement = document.createElement("label");
         const data_instructor = newlyFoundInstructorElement.dataset;
 
@@ -578,10 +578,6 @@ function initFoundInstructorList(resResult) {
     const class_instructors = document.querySelectorAll(".class-instuctor");
 
     class_instructors.forEach((instructor) => {
-        if (id_instructor.value === instructor.value) {
-            instructor.click();
-        };
-
         const label = instructor.closest("label");
         const svg = label.querySelector("svg");
 
@@ -635,6 +631,10 @@ function initFoundInstructorList(resResult) {
             });
         });
 
+        if (id_instructor.value === instructor.value) {
+            instructor.click();
+        };
+
         if (!instructor.checked) {
             label.classList.replace("df-ring-inset-flamingo", "df-ring-inset-gray");
             svg.classList.add("invisible");
@@ -648,9 +648,9 @@ function initFoundInstructorList(resResult) {
     initValidation(class_firsts, id_create_or_update);
 }
 
-function initFoundUserList(resResult = null) {
+function initFoundUserList(response = null) {
     // FAIL
-    if (resResult === null) {
+    if (response === null) {
         isUserFound = false;
 
         return;
@@ -659,7 +659,7 @@ function initFoundUserList(resResult = null) {
     // DONE
     isUserFound = true;
 
-    resResult.found_user_list.forEach(newlyFoundUser => {
+    response.found_user_list.forEach(newlyFoundUser => {
         const alreadyFoundUsers = id_found_user_list.querySelectorAll("li");
 
         alreadyFoundUsers.forEach(alreadyFoundUser => {
@@ -1014,10 +1014,10 @@ function requestUpdateProject() {
 
 function requestDeleteProject() {
     const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
-    
+
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: `${id_page_id.value}`, title: `${id_original_title.value}`, purpose: `${id_original_purpose.value}`, instructor: `${id_original_instructor.value}`, production_end_date: `${id_production_end_date.value}`, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", page_id: id_page_id.value, title: id_original_title.value, purpose: id_original_purpose.value, instructor: id_original_instructor.value, subject_name: id_subject_name.value, production_end_date: id_production_end_date.value, staff: `${JSON.stringify(staffList)}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);

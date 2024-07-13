@@ -105,6 +105,9 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - SIGNUP_COMPLETED
         - EXPIRED_VCODE_AUTO_DELETED
         - INACTIVE_USER_AUTO_DELETED
+        - CREATE_PROJECT
+        - UPDATE_PROJECT
+        - DELETE_PROJECT
         - CREATE_DFLINK
         - UPDATE_DFLINK
         - DELETE_DFLINK
@@ -291,6 +294,75 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "url": "",
             "thumbnail_url": "",
             "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
+        }
+
+    # msg_type: "CREATE_PROJECT"
+    elif msg_type == "CREATE_PROJECT":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        purpose = data.get("purpose", "Unknown")
+        subject_name = data.get("subject_name", "Unknown")
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 프로젝트 등록 {status_in_kor}",
+            "url": "https://dongguk.film/project",
+            "thumbnail_url": "",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
+        }
+
+    # msg_type: "UPDATE_PROJECT"
+    elif msg_type == "UPDATE_PROJECT":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        purpose = data.get("purpose", "Unknown")
+        subject_name = data.get("subject_name", "Unknown")
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 프로젝트 수정 {status_in_kor}",
+            "url": "https://dongguk.film/project",
+            "thumbnail_url": "",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
+        }
+
+    # msg_type: "DELETE_PROJECT"
+    elif msg_type == "DELETE_PROJECT":
+        status = data.get("status", "Unknown")
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        title = data.get("title", "Unknown")
+        purpose = data.get("purpose", "Unknown")
+        subject_name = data.get("subject_name", "Unknown")
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 프로젝트 삭제 {status_in_kor}",
+            "url": "https://dongguk.film/project",
+            "thumbnail_url": "",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
         }
 
     # msg_type: "CREATE_DFLINK"

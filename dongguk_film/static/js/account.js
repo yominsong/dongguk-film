@@ -83,7 +83,7 @@ function updateList(data) {
             msg = "내가 작성한 공지사항이";
         };
 
-        list.firstElementChild.innerText = `${msg} 없어요.`;
+        list.firstElementChild.innerText = `아직 ${msg} 없어요.`;
         
         return;
     };
