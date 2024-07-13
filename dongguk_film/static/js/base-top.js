@@ -342,17 +342,17 @@ function handleAjaxCallback(response) {
     }
 
     // requestFilterEquipment()
-    else if (resID === "filter_equipment") {
-        if (resResult.status === "DONE") {
-            location.href = `${location.origin}${resResult.next_url}`;
+    else if (response.id === "filter_equipment") {
+        if (response.status === "DONE") {
+            location.href = `${location.origin}${response.next_url}`;
         };
     }
 
     // requestAddToCart()
-    else if (resID === "add_to_cart") {
+    else if (response.id === "add_to_cart") {
         freezeForm(false);
         // id_quantity.readOnly = false;
-        initCart(resResult);
+        initCart(response);
 
         spins.forEach((spin) => {
             spin.classList.add("hidden");
@@ -360,30 +360,36 @@ function handleAjaxCallback(response) {
     }
 
     // requestFindProject()
-    else if (resID === "find_project") {
-        if (resResult.status === "DONE") {
-            initFoundProjectList(resResult);
-        } else if (resResult.status === "FAIL") {
+    else if (response.id === "find_project") {
+        if (response.status === "DONE") {
+            initFoundProjectList(response);
+        } else if (response.status === "FAIL") {
             initFoundProjectList();
         };
     }
 
     // requestFindHour()
-    else if (resID === "find_hour") {
-        initFoundHourList(resResult);
+    else if (response.id === "find_hour") {
+        initFoundHourList(response);
     }
 
     // requestCreateApplication()
-    else if (resID === "create_application") {
-        if (resResult.status === "DONE") {
-        } else if (resResult.status === "FAIL") {
+    else if (response.id === "create_application") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_filter_or_checkout, "descr", response.msg);
+            displayButtonMsg(false, id_filter_or_checkout, "error");
+            sessionStorage.removeItem("cart");
+
+            let newUrl = new URL(location.href);
+
+            newUrl.searchParams.set("application", "submitted");
+            location.href = newUrl.toString();
+        } else if (response.status === "FAIL") {
             freezeSignatureCanvas(false);
             freezeForm(false);
 
             const id_cart_alert = document.getElementById("id_cart_alert");
-            const occupiedItems = resResult.occupied_item_list;
-            const id_modal_cart = document.getElementById("id_modal_cart");
-
+            
             if (id_cart_alert !== null && !id_cart_alert.hidden) {
                 const id_decrease_quantity = document.getElementById("id_decrease_quantity");
                 const id_requested_quantity = document.getElementById("id_requested_quantity");
@@ -396,8 +402,11 @@ function handleAjaxCallback(response) {
                 id_add_to_cart.disabled = true;
             };
 
-            if (resResult.reason === "OCCUPIED_ITEM") {
+            if (response.reason === "OCCUPIED_ITEM") {
+                const occupiedItems = response.occupied_item_list;
+
                 occupiedItems.forEach((item) => {
+                    const id_modal_cart = document.getElementById("id_modal_cart");
                     const targetItem = id_modal_cart.querySelector(`#id_${item.collection_id}`);
                     const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
 
@@ -407,12 +416,12 @@ function handleAjaxCallback(response) {
                         targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
                     };
                 });
-            } else if (resResult.reason === "INVALID_SIGNATURE") {
+            } else if (response.reason === "INVALID_SIGNATURE") {
                 displayErrorInSignatureCanvas(true, "invalid");
             };
 
             displayButtonMsg(false, id_filter_or_checkout, "descr");
-            displayButtonMsg(true, id_filter_or_checkout, "error", resResult.msg);
+            displayButtonMsg(true, id_filter_or_checkout, "error", response.msg);
         };
 
         spins.forEach((spin) => {
@@ -421,10 +430,10 @@ function handleAjaxCallback(response) {
     }
 
     // requestFindApplication()
-    else if (resID === "find_application") {
-        if (resResult.status === "DONE") {
-            initFoundApplicationList(resResult);
-        } else if (resResult.status === "FAIL") {
+    else if (response.id === "find_application") {
+        if (response.status === "DONE") {
+            initFoundApplicationList(response);
+        } else if (response.status === "FAIL") {
             initFoundApplicationList();
         };
     }
@@ -592,9 +601,9 @@ function handleAjaxCallback(response) {
         if (response.status === "DONE") {
             watchdog.editor.setData(response.content);
             watchdog.editor.disableReadOnlyMode("id_content");
-            displayNoti(true, "EIS");
+            displayNoti(true, "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED");
         } else if (response.status === "FAIL") {
-            displayNoti(true, "EIF");
+            displayNoti(true, "EXTRACTING_TEXT_FROM_IMAGE_FAILED");
         };
 
         spins.forEach((spin) => {
@@ -621,9 +630,9 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
 
             if (response.reason.includes("대체 텍스트")) {
-                displayNoti(true, "RAT");
+                displayNoti(true, "REQUIRE_IMAGE_ALT_TEXT");
             } else if (response.reason.includes("텍스트 미포함")) {
-                displayNoti(true, "RDI");
+                displayNoti(true, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
             };
         };
 
@@ -660,9 +669,9 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update, "descr");
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
             if (response.reason.includes("대체 텍스트")) {
-                displayNoti(true, "RAT");
+                displayNoti(true, "REQUIRE_IMAGE_ALT_TEXT");
             } else if (response.reason.includes("설명 텍스트")) {
-                displayNoti(true, "RDI");
+                displayNoti(true, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
             };
         };
         spins.forEach((spin) => {

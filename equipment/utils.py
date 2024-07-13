@@ -109,11 +109,11 @@ def synchronize_equipment_data(request):
                 f.seek(0)
                 f.write(json.dumps(data, indent=4))
                 f.truncate()
-        
+
         status = "DONE"
     except:
         status = "FAIL"
-    
+
     data = {
         "status": status,
         "data_list": data_list,
@@ -506,10 +506,8 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": "DONE",
-                "next_url": next_url,
-            },
+            "status": "DONE",
+            "next_url": next_url,
         }
 
     # id: add_to_cart
@@ -664,12 +662,10 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "cart": cart,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "cart": cart,
         }
 
     # id: find_subject
@@ -684,10 +680,8 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "found_subject_list": found_subject_list,
-            },
+            "status": status,
+            "found_subject_list": found_subject_list,
         }
 
     # id: find_project
@@ -717,10 +711,8 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "found_project_list": found_project_list,
-            },
+            "status": status,
+            "found_project_list": found_project_list,
         }
 
     # id: find_hour
@@ -771,16 +763,15 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "start_hour_list": start_hour_list,
-                "end_hour_list": end_hour_list,
-            },
+            "status": status,
+            "start_hour_list": start_hour_list,
+            "end_hour_list": end_hour_list,
         }
 
     # id: create_application
     elif id == "create_application":
-        application_id = None
+        public_application_id = None
+        private_application_id = None
         occupied_item_list = []
         alternative_item_list = []
         status = "FAIL"
@@ -794,7 +785,14 @@ def equipment(request):
             "table_name": "equipment-item",
             "params": {
                 "view": "Grid view",
-                "fields": ["Collection ID", "ID"],
+                "fields": [
+                    "Collection ID",
+                    "ID",
+                    "Name",
+                    "Start datetime",
+                    "End datetime",
+                    "Status",
+                ],
                 "formula": formula,
             },
         }
@@ -882,7 +880,7 @@ def equipment(request):
 
         elif len(occupied_item_list) == 0:
             status = "DONE"
-            reason = None
+            reason = "NOTHING_UNUSUAL"
             msg = "기자재 사용 신청서가 제출되었어요! 👍"
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
@@ -1040,16 +1038,16 @@ def equipment(request):
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else project_name
             )
-            application_id = copy_equipment_use_request_form(
+            private_application_id = copy_equipment_use_request_form(
                 name_of_subject_or_project, student_id
             )
-            add_editor_permission(application_id)
+            add_editor_permission(private_application_id)
             signature_id = upload_signature(signature, project_name, student_id)
             make_file_public(signature_id)
-            insert_signature(application_id, signature_id)
+            insert_signature(private_application_id, signature_id)
             GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
-            add_equipment_to_table(application_id, cart)
-            replace_text(application_id, replacements)
+            add_equipment_to_table(private_application_id, cart)
+            replace_text(private_application_id, replacements)
 
             if not is_for_instructor:
                 fields_to_mask = {
@@ -1094,29 +1092,29 @@ def equipment(request):
                 "category": "기자재",
                 "title": f"{name_of_subject_or_project} {student_id} 기자재 사용 신청서",
                 "public_application_id": public_application_id,
-                "private_application_id": application_id,
+                "private_application_id": private_application_id,
                 "user": request.user,
                 "start_datetime": f"{start_date}T{'{}:{}'.format(start_time[:2], start_time[2:])}:00+09:00",
                 "end_datetime": f"{end_date}T{'{}:{}'.format(end_time[:2], end_time[2:])}:00+09:00",
             }
 
-            print(data)
-
             if not is_for_instructor:
                 data["project"] = project_id
 
-            notion("create", "page", data=data)
+            notion_response = notion("create", "page", data=data)
 
         response = {
             "id": id,
-            "result": {
-                "status": status,
-                "reason": reason,
-                "msg": msg,
-                "application_id": application_id,
-                "occupied_item_list": occupied_item_list,
-            },
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "notion_url": notion_response.json()["url"] if status == "DONE" else None,
+            "public_application_id": public_application_id,
+            "private_application_id": private_application_id,
+            "occupied_item_list": occupied_item_list,
         }
+
+        send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
 
     # id: find_application
     elif id == "find_application":
@@ -1146,10 +1144,8 @@ def equipment(request):
 
         response = {
             "id": id,
-            "result": {
-                "status": "DONE",
-                "found_application_list": application_list,
-            },
+            "status": "DONE",
+            "found_application_list": application_list,
         }
 
     return JsonResponse(response)

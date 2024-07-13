@@ -32,7 +32,7 @@ let doubleCheckTimer;
 //
 
 function notifyLinkNotFound() {
-    if (window.location.search.indexOf("nonexistent-link") !== -1) { displayNoti(true, "INL") };
+    if (window.location.search.indexOf("nonexistent-link") !== -1) { displayNoti(true, "DFLINK_DOES_NOT_EXIST") };
 }
 
 notifyLinkNotFound();

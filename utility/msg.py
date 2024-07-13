@@ -105,6 +105,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - SIGNUP_COMPLETED
         - EXPIRED_VCODE_AUTO_DELETED
         - INACTIVE_USER_AUTO_DELETED
+        - CREATE_EQUIPMENT_APPLICATION
         - CREATE_PROJECT
         - UPDATE_PROJECT
         - DELETE_PROJECT
@@ -296,9 +297,45 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
         }
 
+    # msg_type: "CREATE_EQUIPMENT_APPLICATION"
+    elif msg_type == "CREATE_EQUIPMENT_APPLICATION":
+        reason = data.get("reason", "Unknown")
+        notion_url = data.get("notion_url", "Unknown")
+        public_application_id = data.get("public_application_id", "Unknown")
+        private_application_id = data.get("private_application_id", "Unknown")
+        public_application_url = None
+        private_application_url = None
+
+        if public_application_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_application_id not in [None, "", "Unknown"]:
+            public_application_url = (
+                f"https://docs.google.com/document/d/{public_application_id}"
+            )
+            private_application_url = (
+                f"https://docs.google.com/document/d/{private_application_id}"
+            )
+
+        occupied_item_list = data.get("occupied_item_list", [])
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 기자재 사용 신청 {status_in_kor}",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ공개 신청서 URL: {public_application_url}\nㆍ비공개 신청서 URL: {private_application_url}\nㆍ대여 불가 기자재: {occupied_item_list}",
+        }
+
     # msg_type: "CREATE_PROJECT"
     elif msg_type == "CREATE_PROJECT":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
@@ -321,7 +358,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "UPDATE_PROJECT"
     elif msg_type == "UPDATE_PROJECT":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
@@ -344,7 +380,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "DELETE_PROJECT"
     elif msg_type == "DELETE_PROJECT":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
@@ -367,7 +402,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "CREATE_DFLINK"
     elif msg_type == "CREATE_DFLINK":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         target_url = data.get("target_url", "Unknown")
         dflink = data.get("dflink", "Unknown")
@@ -391,7 +425,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "UPDATE_DFLINK"
     elif msg_type == "UPDATE_DFLINK":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         target_url = data.get("target_url", "Unknown")
         dflink = data.get("dflink", "Unknown")
@@ -415,7 +448,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "DELETE_DFLINK"
     elif msg_type == "DELETE_DFLINK":
-        status = data.get("status", "Unknown")
         target_url = data.get("target_url", "Unknown")
         dflink = data.get("dflink", "Unknown")
         title = data.get("title", "Unknown")
@@ -462,7 +494,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "CREATE_NOTICE"
     elif msg_type == "CREATE_NOTICE":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
@@ -485,7 +516,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "UPDATE_NOTICE"
     elif msg_type == "UPDATE_NOTICE":
-        status = data.get("status", "Unknown")
         reason = data.get("reason", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
@@ -508,7 +538,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "DELETE_NOTICE"
     elif msg_type == "DELETE_NOTICE":
-        status = data.get("status", "Unknown")
         notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
         category = data.get("category", "Unknown")

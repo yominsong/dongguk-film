@@ -67,6 +67,12 @@ const currentPeriod = urlParams.get("period");
 // Sub functions
 //
 
+function notifyApplicationSubmitted() {
+    if (window.location.search.includes("application=submitted")) { displayNoti(true, "APPLICATION_SUBMITTED") };
+}
+
+notifyApplicationSubmitted();
+
 function updateUrlParams() {
     const cart = getCart();
 
@@ -95,7 +101,7 @@ function notifyRentalLimit() {
     const purposeKeyword = id_purpose_badge.innerText.trim().slice(7);
     const paramForNoti = { collectionName: collectionName, purposeKeyword: purposeKeyword };
 
-    displayNoti(true, "RTL", paramForNoti);
+    displayNoti(true, "RENTAL_RESTRICTED", paramForNoti);
 }
 
 notifyRentalLimit();
@@ -206,11 +212,11 @@ function initSubjectValidation() {
 }
 
 function closeNoti() {
-    displayNoti(false, "MPP");
-    displayNoti(false, "MDP");
-    displayNoti(false, "EGL");
-    displayNoti(false, "EQL");
-    displayNoti(false, "PTA");
+    displayNoti(false, "RENTAL_PURPOSE_CHANGED");
+    displayNoti(false, "RENTAL_PERIOD_CHANGED");
+    displayNoti(false, "RENTAL_GROUP_LIMIT_EXCEEDED");
+    displayNoti(false, "RENTAL_QUANTITY_LIMIT_EXCEEDED");
+    displayNoti(false, "EQUIPMENT_PARTIALLY_ADDED");
 }
 
 function escapeHtml(unsafe) {
@@ -708,14 +714,14 @@ function initCalendar() {
     };
 }
 
-function initFoundProjectList(resResult = null) {
+function initFoundProjectList(response = null) {
     const id_found_project_list = document.getElementById("id_found_project_list");
     const cart = getCart();
 
     id_found_project_list.innerHTML = "";
 
     // FAIL
-    if (resResult === null) {
+    if (response === null) {
         const placeholderElement = document.createElement("div");
 
         placeholderElement.className = "relative flex items-center h-[72px] p-4 shadow-sm rounded-md bg-flamingo-50";
@@ -735,7 +741,7 @@ function initFoundProjectList(resResult = null) {
     // DONE
     const cartPurposePriority = cart[0].purpose.priority;
 
-    resResult.found_project_list.forEach(newlyFoundProject => {
+    response.found_project_list.forEach(newlyFoundProject => {
         const productionEndDate = new Date(newlyFoundProject.production_end_date);
         const today = new Date();
 
@@ -977,9 +983,9 @@ function initFoundInstructorList(foundInstructors) {
     initValidation(class_seconds, id_filter_or_checkout);
 }
 
-function initFoundHourList(resResult) {
-    const start_hour_list = resResult.start_hour_list;
-    const end_hour_list = resResult.end_hour_list;
+function initFoundHourList(response) {
+    const start_hour_list = response.start_hour_list;
+    const end_hour_list = response.end_hour_list;
     const id_start_time_list = document.getElementById("id_start_time_list");
     const id_end_time_list = document.getElementById("id_end_time_list");
     const id_start_time = document.getElementById("id_start_time");
@@ -1806,7 +1812,7 @@ function initDetail() {
 
         id_cart_alert.hidden = false;
         id_cart_alert_for_stock.hidden = false;
-        id_selected_purpose.innerText = id_purpose_badge.innerText.trim().slice(7);
+        if (id_selected_purpose !== null) { id_selected_purpose.innerText = id_purpose_badge.innerText.trim().slice(7) };
     };
 
     if (id_requested_quantity.readOnly) return;
@@ -1884,34 +1890,34 @@ function initDetail() {
 
 initDetail();
 
-function initCart(resResult) {
+function initCart(response) {
     // Run to initialize id_requested_quantity, id_decrease_quantity, id_increase_quantity
     if (id_detail !== null) {
         id_requested_quantity.readOnly = false;
         initDetail();
     };
 
-    if (resResult.reason !== undefined && resResult.reason !== null) {
-        if (resResult.reason.indexOf("MISMATCHED_PURPOSE") !== -1) {
-            displayNoti(true, "MPP", resResult.msg);
-        } else if (resResult.reason.indexOf("MISMATCHED_PERIOD") !== -1) {
-            displayNoti(true, "MPD", resResult.msg);
-        } else if (resResult.reason.indexOf("EXCEED_GROUP_LIMIT") !== -1) {
-            displayNoti(true, "EGL", resResult.msg);
-        } else if (resResult.reason.indexOf("LIMIT") !== -1) {
-            displayNoti(true, "EQL", resResult.msg);
-        } else if (resResult.reason.indexOf("OUT_OF_STOCK") !== -1) {
-            displayNoti(true, "OOS", resResult.msg);
-        } else if (resResult.reason.indexOf("PARTIALLY_ADDED") !== -1) {
-            displayNoti(true, "PTA", resResult.msg);
+    if (response.reason !== undefined && response.reason !== null) {
+        if (response.reason.indexOf("MISMATCHED_PURPOSE") !== -1) {
+            displayNoti(true, "RENTAL_PURPOSE_CHANGED", response.msg);
+        } else if (response.reason.indexOf("MISMATCHED_PERIOD") !== -1) {
+            displayNoti(true, "RENTAL_PERIOD_CHANGED", response.msg);
+        } else if (response.reason.indexOf("EXCEED_GROUP_LIMIT") !== -1) {
+            displayNoti(true, "RENTAL_GROUP_LIMIT_EXCEEDED", response.msg);
+        } else if (response.reason.indexOf("LIMIT") !== -1) {
+            displayNoti(true, "RENTAL_QUANTITY_LIMIT_EXCEEDED", response.msg);
+        } else if (response.reason.indexOf("OUT_OF_STOCK") !== -1) {
+            displayNoti(true, "OUT_OF_STOCK", response.msg);
+        } else if (response.reason.indexOf("PARTIALLY_ADDED") !== -1) {
+            displayNoti(true, "EQUIPMENT_PARTIALLY_ADDED", response.msg);
         };
     };
 
     // FAIL
-    if (resResult.status === "FAIL") return;
+    if (response.status === "FAIL") return;
 
     // DONE
-    const cart = resResult.cart;
+    const cart = response.cart;
     const cartUpdatedAt = new Date();
 
     sessionStorage.setItem("cart", JSON.stringify(cart));

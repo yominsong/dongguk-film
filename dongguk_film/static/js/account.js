@@ -149,27 +149,25 @@ function updateList(data) {
                     </p>
                 </div>
                 <div class="flex justify-between items-center gap-x-2">
-                    <!-- facility.category -->
+                    <!-- facility.start_datetime -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                        <span class="class-url relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray">
-                            ${item.category}
-                        </span>
+                        <time datetime="${item.start_datetime}">${item.start_datetime} 시작</time>
                     </p>
-                    <!-- facility.start_datetime, facility.end_datetime(>sm) -->
+                    <!-- facility.end_datetime(>sm) -->
                     <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                        <time datetime="${item.start_datetime}/${item.end_datetime}">${item.start_datetime} ~ ${item.end_datetime}</time>
+                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
                     </p>
                 </div>
                 <div class="flex justify-between items-center gap-x-2">
-                    <!-- facility.start_datetime, facility.end_datetime(<=sm ) -->
+                    <!-- facility.end_datetime(<=sm) -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                        <time datetime="${item.start_datetime}/${item.end_datetime}">${item.start_datetime} ~ ${item.end_datetime}</time>
+                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
                     </p>
                     <!-- <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                         <span data-pathname=""
                                 data-query=""
-                                class="class-search-dflink relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                tabindex="0">시설사용 목록에서 찾기</span>
+                                class="relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                tabindex="0">취소하기</span>
                     </p> -->
                 </div>
             `;
