@@ -47,8 +47,6 @@ def format_msg(content: dict):
     embed.set_thumbnail(url=content["thumbnail_url"])
 
     if target == "DEV":
-        embed.add_field(name="Environment", value=content["environment"], inline=True)
-
         embed.add_field(
             name="Sec-Ch-Ua-Platform",
             value=content["sec-ch-ua-platform"],
@@ -57,10 +55,10 @@ def format_msg(content: dict):
 
         embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
         embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
-        embed.add_field(name="Referer", value=content["referer"], inline=False)
+        embed.add_field(name="Referer", value=content["referer"], inline=True)
         embed.add_field(name="Method", value=content["method"], inline=True)
         embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
-        embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
+        embed.add_field(name="Full-Path", value=content["full_path"], inline=False)
 
     embed.set_footer(text=content["footer"])
 
@@ -565,7 +563,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     if channel == "DEV":
         msg = {
             "target": "DEV",
-            "environment": settings.ENVIRONMENT,
             "name": get_safe_value(
                 lambda: request.user if request.user.is_authenticated else "D-dot-f Bot"
             ),
@@ -585,7 +582,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     elif channel == "MGT":
         msg = {
             "target": "MGT",
-            "environment": settings.ENVIRONMENT,
             "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
             "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
         }
