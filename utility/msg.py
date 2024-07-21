@@ -18,6 +18,13 @@ DISCORD_DEV_WEBHOOK_URL = getattr(
 #
 
 
+def get_safe_value(func, default="Unknown"):
+    try:
+        return func()
+    except Exception:
+        return default
+
+
 def format_msg(content: dict):
     target = content["target"]
     important = content["important"]
@@ -557,33 +564,23 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": f"ㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
 
+    if not settings.IS_PRODUCTION:
+        content["title"] += f" (TEST)"
+
     # channel: "DEV"
     if channel == "DEV":
-        try:
-            msg = {
-                "target": "DEV",
-                "name": (
-                    request.user if request.user.is_authenticated else "D-dot-f Bot"
-                ),
-                "content_type": request.content_type,
-                "sec-ch-ua-platform": request.headers["sec-ch-ua-platform"],
-                "user_agent": request.headers["user-agent"],
-                # "referer": request.headers["referer"],
-                "method": request.method,
-                "full_path": request.get_full_path(),
-                "user_auth": request.user.is_authenticated,
-                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
-            }
-        except:
-            msg = {
-                "target": "DEV",
-                "name": (
-                    request.user if request.user.is_authenticated else "D-dot-f Bot"
-                ),
-                "method": request.method,
-                "full_path": request.get_full_path(),
-                "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
-            }
+        msg = {
+            "target": "DEV",
+            "name": get_safe_value(lambda: request.user if request.user.is_authenticated else "D-dot-f Bot"),
+            "content_type": get_safe_value(lambda: request.content_type),
+            "sec-ch-ua-platform": get_safe_value(lambda: request.headers["sec-ch-ua-platform"]),
+            "user_agent": get_safe_value(lambda: request.headers["user-agent"]),
+            "referer": get_safe_value(lambda: request.headers["referer"]),
+            "method": get_safe_value(lambda: request.method),
+            "full_path": get_safe_value(lambda: request.get_full_path()),
+            "user_auth": get_safe_value(lambda: request.user.is_authenticated),
+            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
+        }
 
     # channel: "MGT"
     elif channel == "MGT":

@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os, json
 
+ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", "development")
+
+IS_PRODUCTION = ENVIRONMENT == "production"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -97,9 +100,9 @@ AWS_ACCESS_KEY = get_secret("AWS_ACCESS_KEY")
 AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = False if IS_PRODUCTION else True
 
-ALLOWED_HOSTS = ["dongguk.film"]
+ALLOWED_HOSTS = ["dongguk.film"] if IS_PRODUCTION else ["*"]
 
 
 # Application definition
