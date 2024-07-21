@@ -47,27 +47,21 @@ def format_msg(content: dict):
     embed.set_thumbnail(url=content["thumbnail_url"])
 
     if target == "DEV":
-        try:
-            embed.add_field(
-                name="Sec-Ch-Ua-Platform",
-                value=content["sec-ch-ua-platform"],
-                inline=True,
-            )
+        embed.add_field(name="Environment", value=content["environment"], inline=True)
 
-            embed.add_field(
-                name="Content-Type", value=content["content_type"], inline=True
-            )
+        embed.add_field(
+            name="Sec-Ch-Ua-Platform",
+            value=content["sec-ch-ua-platform"],
+            inline=True,
+        )
 
-            embed.add_field(
-                name="User-Agent", value=content["user_agent"], inline=False
-            )
-
-            embed.add_field(name="Method", value=content["method"], inline=True)
-            embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
-        except:
-            pass
-
+        embed.add_field(name="Content-Type", value=content["content_type"], inline=True)
+        embed.add_field(name="User-Agent", value=content["user_agent"], inline=False)
+        embed.add_field(name="Referer", value=content["referer"], inline=False)
+        embed.add_field(name="Method", value=content["method"], inline=True)
+        embed.add_field(name="User-Auth", value=content["user_auth"], inline=True)
         embed.add_field(name="Full-Path", value=content["full_path"], inline=True)
+
     embed.set_footer(text=content["footer"])
 
     return embed
@@ -571,9 +565,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     if channel == "DEV":
         msg = {
             "target": "DEV",
-            "name": get_safe_value(lambda: request.user if request.user.is_authenticated else "D-dot-f Bot"),
+            "environment": settings.ENVIRONMENT,
+            "name": get_safe_value(
+                lambda: request.user if request.user.is_authenticated else "D-dot-f Bot"
+            ),
             "content_type": get_safe_value(lambda: request.content_type),
-            "sec-ch-ua-platform": get_safe_value(lambda: request.headers["sec-ch-ua-platform"]),
+            "sec-ch-ua-platform": get_safe_value(
+                lambda: request.headers["sec-ch-ua-platform"]
+            ),
             "user_agent": get_safe_value(lambda: request.headers["user-agent"]),
             "referer": get_safe_value(lambda: request.headers["referer"]),
             "method": get_safe_value(lambda: request.method),
@@ -586,6 +585,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     elif channel == "MGT":
         msg = {
             "target": "MGT",
+            "environment": settings.ENVIRONMENT,
             "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
             "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
         }
