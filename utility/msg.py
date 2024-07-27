@@ -557,7 +557,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         }
 
     if not settings.IS_PRODUCTION:
-        content["title"] += f" (TEST)"
+        content["title"] += f" (LOCAL)"
 
     # channel: "DEV"
     if channel == "DEV":
