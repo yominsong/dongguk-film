@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from equipment.utils import get_equipment_data
 from .utils import get_project_policy
 from utility.img import get_hero_img
-from utility.utils import notion, append_item
+from utility.utils import airtable, notion, append_item
 import random
 
 #
@@ -21,15 +21,22 @@ def project(request):
         if purpose["for_instructor"] == True:
             purpose_list.remove(purpose)
 
-    # Notion
-    project_list = notion("query", "db", data={"db_name": "project"})
+    # Airtable
+    formula = f"FIND('🟢', Validation)"
+
+    data = {
+        "table_name": "project-team",
+        "params": {"view": "Grid view", "formula": formula},
+    }
+
+    project_list = airtable("get_all", "records", data)
     project_count = len(project_list)
 
     # Search box
     query = request.GET.get("q")
     search_result_count = None
     search_placeholder = (
-        random.choice(project_list[: min(project_count, 7)])["title"]
+        random.choice(project_list[: min(project_count, 7)])["film_title"]
         if project_count > 0
         else "<영화 제목>"
     )
@@ -50,7 +57,9 @@ def project(request):
                     "producer_student_id",
                 ]:
                     if isinstance(v, dict) and k == "purpose":
-                        full_searchable_text += v.get("keyword", "").lower().replace(" ", "")
+                        full_searchable_text += (
+                            v.get("keyword", "").lower().replace(" ", "")
+                        )
                     elif isinstance(v, str):
                         full_searchable_text += v.lower().replace(" ", "")
 

@@ -57,7 +57,7 @@
                     <div class="flex flex-1 flex-col justify-between">
                         {% if user.is_authenticated %}
                             <div class="space-y-5">
-                                <input id="id_page_id" value="" hidden>
+                                <input id="id_record_id" value="" hidden>
                                 <div>
                                     <label for="id_title"
                                            class="flex-1 text-sm font-medium leading-6 text-gray-900">작품 제목</label>
@@ -72,17 +72,17 @@
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_title_error" hidden></p>
                                 </div>
                                 <input id="id_original_title" value="" hidden>
-                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '유형을 선택하세요.', 'in_a_nutshell': '' },
+                                <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'record_id': '', 'priority': '', 'keyword': '유형을 선택하세요.', 'in_a_nutshell': '' },
                                     {% for purpose in purpose_list %}
-                                        { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'in_a_nutshell':'{{ purpose.in_a_nutshell }}' }
+                                        { 'record_id': '{{ purpose.record_id }}', 'priority': '{{ purpose.priority }}', 'keyword': '{{ purpose.keyword }}', 'in_a_nutshell': '{{ purpose.in_a_nutshell }}' }
                                         {% if not forloop.last %},&nbsp;{% endif %}
                                     {% endfor %}
                                     ] })" x-init="init()">
                                     <div class="flex justify-start items-center">
                                         <label id="id_purpose_label"
-                                            for="id_purpose"
-                                            class="block text-sm font-medium leading-6 text-gray-900"
-                                            @click="$refs.button.focus()">유형</label>
+                                               for="id_purpose"
+                                               class="block text-sm font-medium leading-6 text-gray-900"
+                                               @click="$refs.button.focus()">유형</label>
                                     </div>
                                     <div class="relative mt-2">
                                         <button id="id_select_purpose"
@@ -99,9 +99,9 @@
                                             <span x-text="selected.keyword" class="block truncate"></span>
                                             <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                 <svg class="h-5 w-5 text-gray-400"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                    aria-hidden="true">
+                                                     viewBox="0 0 20 20"
+                                                     fill="currentColor"
+                                                     aria-hidden="true">
                                                     <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd">
                                                     </path>
                                                 </svg>
@@ -144,23 +144,23 @@
                                                     @mouseleave="onMouseLeave($event)"
                                                     :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter }}, 'text-gray-900': !(activeIndex === {{ forloop.counter }}) }">
                                                     <span x-state:on="Selected"
-                                                        x-state:off="Not Selected"
-                                                        class="font-semibold block mr-4 truncate"
-                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ purpose.keyword }}</span>
+                                                          x-state:off="Not Selected"
+                                                          class="font-semibold block mr-4 truncate"
+                                                          :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ purpose.keyword }}</span>
                                                     <span x-state:on="Highlighted"
-                                                        x-state:off="Not Highlighted"
-                                                        class="font-normal block mt-1 mr-2 text-gray-500"
-                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">기자재 {{ purpose.in_a_nutshell }}</span>
+                                                          x-state:off="Not Highlighted"
+                                                          class="font-normal block mt-1 mr-2 text-gray-500"
+                                                          :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">기자재 {{ purpose.in_a_nutshell }}</span>
                                                     <span x-state:on="Highlighted"
-                                                        x-state:off="Not Highlighted"
-                                                        class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
-                                                        :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
-                                                        x-show="selectedIndex === {{ forloop.counter }}"
-                                                        style="display: none">
+                                                          x-state:off="Not Highlighted"
+                                                          class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
+                                                          :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
+                                                          x-show="selectedIndex === {{ forloop.counter }}"
+                                                          style="display: none">
                                                         <svg class="h-5 w-5"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                            aria-hidden="true">
+                                                             viewBox="0 0 20 20"
+                                                             fill="currentColor"
+                                                             aria-hidden="true">
                                                             <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
                                                             </path>
                                                         </svg>
@@ -169,21 +169,20 @@
                                             {% endfor %}
                                         </ul>
                                     </div>
-                                    <input id="id_purpose"
-                                        type="text"
-                                        value=""
-                                        required
-                                        hidden>
+                                    <input id="id_purpose_record_id" type="text" value="" required hidden>
+                                    <input id="id_purpose" type="text" value="" required hidden>
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_purpose_error" hidden></p>
                                 </div>
                                 <input id="id_original_purpose" value="" hidden>
                                 <fieldset>
                                     <div class="flex items-center justify-between">
                                         <legend class="text-sm font-medium leading-6 text-gray-900">교원</legend>
-                                        <div id="id_target_academic_year_and_semester" class="flex justify-end items-center text-sm leading-6 text-gray-700"></div>
+                                        <div id="id_target_academic_year_and_semester"
+                                             class="flex justify-end items-center text-sm leading-6 text-gray-700">
+                                        </div>
                                     </div>
                                     <div id="id_found_instructor_list" class="mt-2 grid gap-4">
-                                         <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                        <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
                                             <div class="flex flex-1 justify-center">
                                                 <span id="id_found_instructor_list_help"
                                                       class="text-sm text-center text-gray-500">유형을 선택하면 선택 가능한 교원이 표시돼요.</span>
@@ -197,16 +196,8 @@
                                            value=""
                                            required
                                            hidden>
-                                    <input id="id_subject_code"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden>
-                                    <input id="id_subject_name"
-                                           type="text"
-                                           value=""
-                                           required
-                                           hidden>
+                                    <input id="id_subject_code" type="text" value="" required hidden>
+                                    <input id="id_subject_name" type="text" value="" required hidden>
                                     <p class="mt-2 text-sm text-gray-500" id="id_instructor_descr" hidden></p>
                                     <p class="mt-2 text-sm text-flamingo-600"
                                        id="id_instructor_error"
@@ -312,28 +303,28 @@
                                                             @mousemove="onMouseMove($event, {{ forloop.counter }})"
                                                             @mouseleave="onMouseLeave($event)"
                                                             :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter }}, 'text-gray-900': !(activeIndex === {{ forloop.counter }}) }">
-                                                            <div>
-                                                                {{ position.function|slice:1 }}
-                                                            </div>
+                                                            <div>{{ position.function|slice:1 }}</div>
                                                             <div>
                                                                 <span x-state:on="Selected"
-                                                                    x-state:off="Not Selected"
-                                                                    class="font-semibold block mr-4 truncate"
-                                                                    :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ position.keyword }}{% if position.note %}({{ position.note }}){% endif %}</span>
+                                                                      x-state:off="Not Selected"
+                                                                      class="font-semibold block mr-4 truncate"
+                                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ position.keyword }}
+                                                                    {% if position.note %}({{ position.note }}){% endif %}
+                                                                </span>
                                                                 <span x-state:on="Highlighted"
-                                                                    x-state:off="Not Highlighted"
-                                                                    class="font-normal block mt-1 mr-2 text-gray-500"
-                                                                    :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ position.in_english }}</span>
+                                                                      x-state:off="Not Highlighted"
+                                                                      class="font-normal block mt-1 mr-2 text-gray-500"
+                                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ position.in_english }}</span>
                                                                 <span x-state:on="Highlighted"
-                                                                    x-state:off="Not Highlighted"
-                                                                    class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
-                                                                    :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
-                                                                    x-show="selectedIndex === {{ forloop.counter }}"
-                                                                    style="display: none">
+                                                                      x-state:off="Not Highlighted"
+                                                                      class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
+                                                                      :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
+                                                                      x-show="selectedIndex === {{ forloop.counter }}"
+                                                                      style="display: none">
                                                                     <svg class="h-5 w-5"
-                                                                        viewBox="0 0 20 20"
-                                                                        fill="currentColor"
-                                                                        aria-hidden="true">
+                                                                         viewBox="0 0 20 20"
+                                                                         fill="currentColor"
+                                                                         aria-hidden="true">
                                                                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
                                                                         </path>
                                                                     </svg>
@@ -343,11 +334,7 @@
                                                     {% endfor %}
                                                 </ul>
                                             </div>
-                                            <input id="id_position"
-                                                   type="text"
-                                                   value=""
-                                                   required
-                                                   hidden>
+                                            <input id="id_position" type="text" value="" required hidden>
                                         </div>
                                         <div class="relative rounded-b-md df-ring-inset-gray hover:bg-gray-50">
                                             <label for="id_name" class="sr-only">이름</label>
@@ -431,7 +418,9 @@
                                                 </svg>
                                             </div>
                                             <div class="ml-3">
-                                                <h3 class="text-sm font-medium text-flamingo-800"><span class="class-keyword">등록하기</span> 전 꼭 읽어주세요.</h3>
+                                                <h3 class="text-sm font-medium text-flamingo-800">
+                                                    <span class="class-keyword">등록하기</span> 전 꼭 읽어주세요.
+                                                </h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
                                                         <li>프로젝트 등록 및 수정 권한은 제작 담당(Producer)에게 있어요.</li>

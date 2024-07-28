@@ -402,10 +402,10 @@ function handleAjaxCallback(response) {
                 id_add_to_cart.disabled = true;
             };
 
-            if (response.reason === "OCCUPIED_ITEM") {
-                const occupiedItems = response.occupied_item_list;
+            if (response.reason === "UNAVAILABLE_ITEM") {
+                const unavailableItems = response.unavailable_item_list;
 
-                occupiedItems.forEach((item) => {
+                unavailableItems.forEach((item) => {
                     const id_modal_cart = document.getElementById("id_modal_cart");
                     const targetItem = id_modal_cart.querySelector(`#id_${item.collection_id}`);
                     const targetItemInfo = targetItem.querySelector(".class-collection-id-and-quantity");
@@ -427,15 +427,6 @@ function handleAjaxCallback(response) {
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
-    }
-
-    // requestFindApplication()
-    else if (response.id === "find_application") {
-        if (response.status === "DONE") {
-            initFoundApplicationList(response);
-        } else if (response.status === "FAIL") {
-            initFoundApplicationList();
-        };
     }
 
     // requestFindInstructor()

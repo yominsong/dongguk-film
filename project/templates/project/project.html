@@ -112,14 +112,14 @@
             {% for project in page_value %}
                 <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
                     <div class="flex justify-between items-center gap-x-2">
-                        <!-- project.title -->
+                        <!-- project.name -->
                         <p class="text-sm font-semibold leading-6 text-gray-900">
                             <!-- Keep the cursor at default until the detail page is ready -->
                             <!-- <a href="#" class="class-detail rounded-md cursor-pointer focus:df-focus-ring-offset-gray">
                                 <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                                {{ project.title }}
+                                {{ project.name }}
                             </a> -->
-                            <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">{{ project.title }}</span>
+                            <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">{{ project.name }}</span>
                         </p>
                         <!-- project.purpose -->
                         <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
@@ -155,15 +155,16 @@
                             <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                         </p>
                     </div>
-                    {% if user.metadata.name in project.producer_name and user.username|mask_student_id in project.producer_student_id %}
+                    {% if user.metadata.name in project.producer_name and user.username in project.producer_student_id %}
                         <div class="flex justify-between items-center gap-x-2">
                             <!-- project.created_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                             </p>
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                                <span data-page-id="{{ project.page_id }}"
-                                      data-title="{{ project.title }}"
+                                <span data-record-id="{{ project.record_id }}"
+                                      data-title="{{ project.film_title }}"
+                                      data-purpose-record-id="{{ project.purpose.record_id }}"
                                       data-purpose="{{ project.purpose.priority }}"
                                       data-production-end-date="{{ project.production_end_date }}"
                                       data-staff="{{ project.staff }}"

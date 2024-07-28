@@ -760,30 +760,30 @@ function initFoundProjectList(response = null) {
         const newlyFoundProjectElement = document.createElement("label");
         const data_project = newlyFoundProjectElement.dataset;
 
-        data_project.pageId = newlyFoundProject.page_id;
-        data_project.title = newlyFoundProject.title;
+        data_project.recordId = newlyFoundProject.record_id;
+        data_project.name = newlyFoundProject.name;
         data_project.directorName = newlyFoundProject.director_name;
         data_project.producerName = newlyFoundProject.producer_name;
         newlyFoundProjectElement.className = "relative flex items-center cursor-pointer h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
 
         newlyFoundProjectElement.innerHTML = `
-            <input id="id_project_${data_project.pageId}"
+            <input id="id_project_${data_project.recordId}"
                     name="id_project"
                     type="radio"
-                    value="${data_project.pageId}"
+                    value="${data_project.recordId}"
                     class="sr-only class-second class-radio class-project"
-                    aria-labelledby="id_project_${data_project.pageId}_label"
-                    aria-describedby="id_project_${data_project.pageId}_descr">
+                    aria-labelledby="id_project_${data_project.recordId}_label"
+                    aria-describedby="id_project_${data_project.recordId}_descr">
             <div class="flex flex-1">
                 <span class="flex flex-col">
-                    <span id="id_project_${data_project.pageId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.title)}</span>
-                    <span id="id_project_${data_project.pageId}_descr" class="mt-1 flex items-center text-sm text-gray-500">
+                    <span id="id_project_${data_project.recordId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.name)}</span>
+                    <span id="id_project_${data_project.recordId}_descr" class="mt-1 flex items-center text-sm text-gray-500">
                         연출&nbsp;
                         <span class="font-semibold">${data_project.directorName}</span>
                         &nbsp;·&nbsp;제작&nbsp;
                         <span class="font-semibold">${data_project.producerName}</span>
                     </span>
-                    <p id="id_project_${data_project.pageId}_error" class="mt-2 text-flamingo-600" hidden=""></p>
+                    <p id="id_project_${data_project.recordId}_error" class="mt-2 text-flamingo-600" hidden=""></p>
                 </span>
             </div>
             <svg class="h-5 w-5 ml-1 text-flamingo"

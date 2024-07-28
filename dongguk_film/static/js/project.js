@@ -4,10 +4,11 @@
 
 // modal
 const id_modal = document.getElementById("id_modal");
-const id_page_id = document.getElementById("id_page_id");
+const id_record_id = document.getElementById("id_record_id");
 const id_title = document.getElementById("id_title");
 const id_original_title = code("id_original_", id_title);
 const id_purpose = document.getElementById("id_purpose");
+const id_purpose_record_id = code(id_purpose, "_record_id");
 const id_select_purpose = code("id_select_", id_purpose);
 const id_purpose_list = code(id_purpose, "_list");
 const id_purpose_error = code(id_purpose, "_error");
@@ -271,6 +272,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
         id_subject_code.value = null;
         id_subject_name.value = null;
         id_found_instructor_list_help.innerText = "선택 가능한 교원을 찾고 있어요.";
+        id_purpose_record_id.value = selectedPurpose.record_id;
         id_purpose.value = selectedPurpose.priority;
         requestFindInstructor();
     };
@@ -783,6 +785,7 @@ function initForm() {
 
     id_title.value = null;
     id_title.placeholder = id_title_placeholder;
+    id_purpose_record_id.value = null;
     id_purpose.value = null;
     id_purpose_placeholder.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
@@ -854,9 +857,10 @@ function updateForm(action, datasetObj = null) {
 
         baseDate = data.createdDate;
         id_found_instructor_list_help.innerText = "선택 가능한 교원을 찾고 있어요.";
-        id_page_id.value = data.pageId;
+        id_record_id.value = data.recordId;
         id_title.value = data.title;
         id_original_title.value = data.title;
+        id_purpose_record_id.value = data.purposeRecordId;
         id_purpose.value = data.purpose;
         code(id_purpose, `_${data.purpose}`).click();
         id_original_purpose.value = data.purpose;
@@ -950,6 +954,7 @@ function requestCreateProject() {
 
     formData.append("id", "create_project");
     formData.append("title", id_title.value);
+    formData.append("purpose_record_id", id_purpose_record_id.value);
     formData.append("purpose", id_purpose.value);
     formData.append("instructor", id_instructor.value);
     formData.append("subject_code", id_subject_code.value);
@@ -982,8 +987,9 @@ function requestUpdateProject() {
     let formData = new FormData();
 
     formData.append("id", "update_project");
-    formData.append("page_id", id_page_id.value);
+    formData.append("record_id", id_record_id.value);
     formData.append("title", id_title.value);
+    formData.append("purpose_record_id", id_purpose_record_id.value);
     formData.append("purpose", id_purpose.value);
     formData.append("instructor", id_instructor.value);
     formData.append("subject_code", id_subject_code.value);
@@ -1013,11 +1019,9 @@ function requestUpdateProject() {
 }
 
 function requestDeleteProject() {
-    const staffList = JSON.parse(id_original_staff_list.value.replace(/'/g, '"'));
-
     request.url = `${location.origin}/project/utils/project/`;
     request.type = "POST";
-    request.data = { id: "delete_project", page_id: id_page_id.value, title: id_original_title.value, purpose: id_original_purpose.value, instructor: id_original_instructor.value, subject_name: id_subject_name.value, production_end_date: id_production_end_date.value, staff: `${JSON.stringify(staffList)}` };
+    request.data = { id: "delete_project", record_id: id_record_id.value, title: id_original_title.value, purpose: id_original_purpose.value, instructor: id_original_instructor.value, subject_name: id_subject_name.value, production_end_date: id_production_end_date.value };
     request.async = true;
     request.headers = null;
     freezeForm(true);

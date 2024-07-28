@@ -53,7 +53,7 @@ def update_project_policy(request):
                     },
                 }
 
-            record_list = airtable("get_all", "records", data=data)
+            record_list = airtable("get_all", "records", data)
             data_list.append({target: record_list})
 
             with open(JSON_PATH, "r+") as f:
@@ -62,15 +62,12 @@ def update_project_policy(request):
                 f.seek(0)
                 f.write(json.dumps(data, indent=4))
                 f.truncate()
-        
+
         status = "DONE"
     except:
         status = "FAIL"
-    
-    data = {
-        "status": status,
-        "data_list": data_list
-    }
+
+    data = {"status": status, "data_list": data_list}
 
     send_msg(request, "UPDATE_PROJECT_POLICY", "DEV", data)
     json_data = json.dumps(data, indent=4)
@@ -133,8 +130,9 @@ def get_staff(request):
 @login_required
 def project(request):
     id = request.POST.get("id")
-    page_id = request.POST.get("page_id")
+    record_id = request.POST.get("record_id")
     title = request.POST.get("title")
+    purpose_record_id = request.POST.get("purpose_record_id")
     purpose = request.POST.get("purpose")
     instructor = request.POST.get("instructor")
     subject_code = request.POST.get("subject_code")
@@ -151,7 +149,9 @@ def project(request):
         base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
         base_year = base_date.year
         base_month = base_date.month
-        target_academic_year_and_semester = f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
+        target_academic_year_and_semester = (
+            f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
+        )
 
         if len(found_instructor_list) > 0:
             status = "DONE"
@@ -211,35 +211,35 @@ def project(request):
     elif id == "create_project":
         staff = get_staff(request)
 
-        data = {
-            "db_name": "project",
-            "title": title,
-            "purpose": purpose,
-            "instructor": instructor,
-            "subject_code": subject_code,
-            "subject_name": subject_name,
-            "production_end_date": production_end_date,
-            "staff": staff,
-            "user": request.user,
+        fields = {
+            "Film title": title,
+            "Equipment purpose": [purpose_record_id],
+            "Production end date": production_end_date,
+            "Staff": str(staff),
+            "Instructor": instructor,
+            "Subject code": subject_code,
+            "Subject name": subject_name,
+            "User": request.user.username,
         }
 
-        response = notion("create", "page", data=data)
+        data = {
+            "table_name": "project-team",
+            "params": {
+                "view": "Grid view",
+                "fields": fields,
+            },
+        }
 
-        if response.status_code == 200:
+        response = airtable("create", "record", data)
+        is_created = response.get("id", False)
+
+        if is_created:
             status = "DONE"
             reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 등록되었어요! 👍"
-        elif response.status_code == 400:
-            status = "FAIL"
-            reason = response.json()
-            msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
-        elif response.status_code == 429:
-            status = "FAIL"
-            reason = "Notion API rate limit 초과"
-            msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
         else:
             status = "FAIL"
-            reason = response.json()
+            reason = response
             msg = "앗, 알 수 없는 오류가 발생했어요!"
 
         response = {
@@ -247,7 +247,6 @@ def project(request):
             "status": status,
             "reason": reason,
             "msg": msg,
-            "notion_url": response.json()["url"] if status == "DONE" else None,
             "title": title,
             "purpose": purpose,
             "subject_name": subject_name,
@@ -260,32 +259,38 @@ def project(request):
     elif id == "update_project":
         staff = get_staff(request)
 
-        data = {
-            "db_name": "project",
-            "page_id": page_id,
-            "title": title,
-            "purpose": purpose,
-            "instructor": instructor,
-            "subject_code": subject_code,
-            "subject_name": subject_name,
-            "production_end_date": production_end_date,
-            "staff": staff,
-            "user": request.user,
+        record = {
+            "id": record_id,
+            "fields": {
+                "Film title": title,
+                "Equipment purpose": [purpose_record_id],
+                "Production end date": production_end_date,
+                "Staff": str(staff),
+                "Instructor": instructor,
+                "Subject code": subject_code,
+                "Subject name": subject_name,
+                "User": request.user.username,
+            },
         }
 
-        response = notion("update", "page_properties", data=data)
+        data = {
+            "table_name": "project-team",
+            "params": {
+                "view": "Grid view",
+                "record_to_update": record,
+            },
+        }
 
-        if response.status_code == 200:
+        response = airtable("update", "record", data)
+        is_updated = response.get("id", False)
+
+        if is_updated:
             status = "DONE"
             reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 수정되었어요! 👍"
-        elif response.status_code == 400:
-            status = "FAIL"
-            reason = response.json()
-            msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
         else:
             status = "FAIL"
-            reason = response.json()
+            reason = response
             msg = "앗, 알 수 없는 오류가 발생했어요!"
 
         response = {
@@ -293,7 +298,6 @@ def project(request):
             "status": status,
             "reason": reason,
             "msg": msg,
-            "notion_url": response.json()["url"] if status == "DONE" else None,
             "title": title,
             "purpose": purpose,
             "subject_name": subject_name,
@@ -304,25 +308,31 @@ def project(request):
 
     # id: delete_project
     elif id == "delete_project":
-        staff = json.loads(request.POST.get("staff"))
-        data = {"page_id": page_id}
-        response = notion("delete", "page", data=data)
+        data = {
+            "table_name": "project-team",
+            "params": {
+                "view": "Grid view",
+                "record_id": record_id,
+            },
+        }
 
-        if response.status_code == 200:
+        response = airtable("delete", "record", data)
+        is_deleted = response.get("id", False)
+
+        if is_deleted:
             status = "DONE"
             reason = "NOTHING_UNUSUAL"
             msg = "프로젝트가 삭제되었어요! 🗑️"
-        elif response.status_code != 200:
+        else:
             status = "FAIL"
-            reason = response.json()
-            msg = "앗, 삭제할 수 없는 프로젝트예요!"
+            reason = response
+            msg = "앗, 알 수 없는 오류가 발생했어요!"
 
         response = {
             "id": id,
             "status": status,
             "reason": reason,
             "msg": msg,
-            "notion_url": response.json()["url"] if status == "DONE" else None,
             "title": title,
             "purpose": purpose,
             "subject_name": subject_name,

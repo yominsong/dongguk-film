@@ -1770,10 +1770,6 @@ select {
   height: 36px;
 }
 
-.h-\[452px\] {
-  height: 452px;
-}
-
 .h-\[72px\] {
   height: 72px;
 }
@@ -1788,10 +1784,6 @@ select {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[395\.5px\] {
-  height: 395.5px;
 }
 
 .max-h-56 {
@@ -2574,6 +2566,16 @@ select {
   background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
 
+.bg-green-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 253 244 / var(--tw-bg-opacity));
+}
+
+.bg-red-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 242 242 / var(--tw-bg-opacity));
+}
+
 .bg-slate-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(248 250 252 / var(--tw-bg-opacity));
@@ -2596,16 +2598,6 @@ select {
 .bg-yellow-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
-}
-
-.bg-green-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(240 253 244 / var(--tw-bg-opacity));
-}
-
-.bg-red-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(254 242 242 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-75 {
@@ -3033,6 +3025,11 @@ select {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
+.text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity));
+}
+
 .text-red-600 {
   --tw-text-opacity: 1;
   color: rgb(220 38 38 / var(--tw-text-opacity));
@@ -3056,11 +3053,6 @@ select {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
-}
-
-.text-green-700 {
-  --tw-text-opacity: 1;
-  color: rgb(21 128 61 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -3203,6 +3195,14 @@ select {
   --tw-ring-color: rgb(17 24 39 / 0.05);
 }
 
+.ring-green-600\/20 {
+  --tw-ring-color: rgb(22 163 74 / 0.2);
+}
+
+.ring-red-600\/10 {
+  --tw-ring-color: rgb(220 38 38 / 0.1);
+}
+
 .ring-slate-600\/20 {
   --tw-ring-color: rgb(71 85 105 / 0.2);
 }
@@ -3213,18 +3213,6 @@ select {
 
 .ring-yellow-600\/20 {
   --tw-ring-color: rgb(202 138 4 / 0.2);
-}
-
-.ring-gray-500\/10 {
-  --tw-ring-color: rgb(107 114 128 / 0.1);
-}
-
-.ring-green-600\/20 {
-  --tw-ring-color: rgb(22 163 74 / 0.2);
-}
-
-.ring-red-600\/10 {
-  --tw-ring-color: rgb(220 38 38 / 0.1);
 }
 
 .ring-opacity-5 {

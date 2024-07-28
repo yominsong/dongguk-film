@@ -552,12 +552,16 @@ def short_io(
     return result
 
 
-def airtable(action: str, target: str, data: dict = None, limit: int = None):
+def airtable(
+    action: str, target: str, data: dict = None, limit: int = None, mask: bool = False
+):
     """
     - action | `str`:
+        - create
         - get
         - get_all
         - update
+        - delete
     - target | `str`:
         - record
         - records
@@ -565,16 +569,25 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
         - table_name
         - params | `dict`
     - limit | `int`
+    - mask | `bool`
     """
 
     if data != None:
         table_name = data.get("table_name", None)
         params = data.get("params", None)
 
+    # action: create / target: record
+    if action == "create" and target == "record":
+        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).create(
+            fields=params.get("fields", None)
+        )
+
+        result = record
+
     # action: get / target: record
-    if action == "get" and target == "record":
+    elif action == "get" and target == "record":
         record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
-            params.get("record_id", None),
+            record_id=params.get("record_id", None),
         )
 
         fields = record["fields"]
@@ -636,6 +649,68 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                 "validation": fields["Validation"],
             }
 
+        elif table_name == "project-team":
+            record = {
+                "record_id": record["id"],
+                "project_id": fields["ID"],
+                "name": fields["Name"],
+                "film_title": fields["Film title"],
+                "purpose": {
+                    "priority": fields.get("Equipment purpose priority", [None])[0],
+                    "keyword": fields.get("Equipment purpose keyword", [None])[0],
+                },
+                "production_end_date": fields["Production end date"],
+                "instructor": fields.get("Instructor", None),
+                "subject_code": fields.get("Subject code", None),
+                "subject_name": fields.get("Subject name", None),
+                "user": fields["User"],
+                "created_time": fields["Created time"],
+            }
+
+            staff = fields.get("Staff", None)
+            staff_list = ast.literal_eval(staff) if staff else None
+            director_list = []
+            director_name_list = []
+            producer_list = []
+            producer_name_list = []
+            producer_student_id_list = []
+
+            for staff in staff_list:
+                student_id = staff["student_id"]
+                user = User.objects.get(username=student_id)
+                staff["pk"] = str(user.pk)
+
+                staff["name"] = (
+                    mask_personal_information("name", user.metadata.name)
+                    if mask
+                    else user.metadata.name
+                )
+
+                staff["student_id"] = (
+                    mask_personal_information("student_id", student_id)
+                    if mask
+                    else student_id
+                )
+
+                staff["avatar_url"] = user.socialaccount_set.all()[0].get_avatar_url()
+
+                for priority in staff["position_priority"]:
+                    if priority == "A01":  # A01: 연출
+                        director_list.append(staff)
+                        director_name_list.append(staff["name"])
+
+                    if priority == "B01":  # B01: 제작
+                        producer_list.append(staff)
+                        producer_name_list.append(staff["name"])
+                        producer_student_id_list.append(staff["student_id"])
+
+            record["staff"] = staff_list
+            record["director"] = director_list
+            record["director_name"] = director_name_list
+            record["producer"] = producer_list
+            record["producer_name"] = producer_name_list
+            record["producer_student_id"] = producer_student_id_list
+
         result = record
 
     # action: get_all / target: records
@@ -647,9 +722,68 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             sort=["Order"],
             max_records=limit,
         )
+
         record_list = []
 
-        if table_name == "equipment-category":
+        if table_name == "facility-request":
+            try:
+                for record in records:
+                    fields = record["fields"]
+                    start_time = format_datetime(convert_datetime(fields["Start time"]))
+                    end_time = format_datetime(convert_datetime(fields["End time"]))
+                    user = fields["User"]
+
+                    user = (
+                        mask_personal_information("student_id", user)
+                        if user and mask
+                        else user
+                    )
+
+                    request = {
+                        "name": fields.get("Name", None),
+                        "category": fields.get("Category in Korean", None),
+                        "purpose": {
+                            "priority": fields.get(
+                                "Project team purpose priority", None
+                            ),
+                            "keyword": fields.get("Project team purpose keyword", None),
+                        },
+                        "duration": fields.get("Duration", None),
+                        "start_time": start_time,
+                        "end_time": end_time,
+                        "user": user,
+                        "public_url": fields.get("Public URL", None),
+                        "status": fields.get("Status", None),
+                    }
+
+                    record_list.append(request)
+            except:
+                pass
+
+        elif table_name == "equipment-hour":
+            try:
+                for record in records:
+                    fields = record["fields"]
+                    project_and_date = fields.get("Project and date", None)
+
+                    if project_and_date:
+                        project_and_date = json.loads(
+                            project_and_date.replace("'", '"')
+                        )
+
+                    hour = {
+                        "name": fields.get("Name", None),
+                        "day_of_the_week": fields.get("Day of the week", None),
+                        "time": fields.get("Time", None),
+                        "max_capacity": fields.get("Max capacity", None),
+                        "project_and_date": project_and_date,
+                    }
+
+                    record_list.append(hour)
+            except:
+                pass
+
+        elif table_name == "equipment-category":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -670,6 +804,7 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
                     fields = record["fields"]
 
                     purpose = {
+                        "record_id": record["id"],
                         "name": fields.get("Name", None),
                         "priority": fields.get("Priority", None),
                         "keyword": fields.get("Keyword", None),
@@ -765,26 +900,102 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
             except:
                 pass
 
-        elif table_name == "equipment-hour":
+        elif table_name == "project-team":
             try:
                 for record in records:
                     fields = record["fields"]
-                    project_and_date = fields.get("Project and date", None)
+                    instructor = fields.get("Instructor", None)
 
-                    if project_and_date:
-                        project_and_date = json.loads(
-                            project_and_date.replace("'", '"')
-                        )
+                    instructor = (
+                        mask_personal_information("instructor_id", instructor)
+                        if instructor and mask
+                        else instructor
+                    )
 
-                    hour = {
+                    user = fields.get("User", None)
+
+                    user = (
+                        mask_personal_information("student_id", user)
+                        if user and mask
+                        else user
+                    )
+
+                    created_time = fields.get("Created time", None)
+                    created_time = (
+                        convert_datetime(created_time) if created_time else None
+                    )
+
+                    created_date = (
+                        created_time.strftime("%Y-%m-%d") if created_time else None
+                    )
+
+                    project = {
+                        "record_id": record["id"],
+                        "project_id": fields.get("ID", None),
                         "name": fields.get("Name", None),
-                        "day_of_the_week": fields.get("Day of the week", None),
-                        "time": fields.get("Time", None),
-                        "max_capacity": fields.get("Max capacity", None),
-                        "project_and_date": project_and_date,
+                        "film_title": fields.get("Film title", None),
+                        "purpose": {
+                            "priority": fields.get(
+                                "Equipment purpose priority", [None]
+                            )[0],
+                            "keyword": fields.get("Equipment purpose keyword", [None])[
+                                0
+                            ],
+                        },
+                        "production_end_date": fields.get("Production end date", None),
+                        "instructor": instructor,
+                        "subject_code": fields.get("Subject code", None),
+                        "subject_name": fields.get("Subject name", None),
+                        "user": user,
+                        "created_date": created_date,
                     }
 
-                    record_list.append(hour)
+                    staff = fields.get("Staff", None)
+                    staff_list = ast.literal_eval(staff) if staff else None
+                    director_list = []
+                    director_name_list = []
+                    producer_list = []
+                    producer_name_list = []
+                    producer_student_id_list = []
+
+                    for staff in staff_list:
+                        student_id = staff["student_id"]
+                        user = User.objects.get(username=student_id)
+                        staff["pk"] = str(user.pk)
+
+                        staff["name"] = (
+                            mask_personal_information("name", user.metadata.name)
+                            if mask
+                            else user.metadata.name
+                        )
+
+                        staff["student_id"] = (
+                            mask_personal_information("student_id", student_id)
+                            if mask
+                            else student_id
+                        )
+
+                        staff["avatar_url"] = user.socialaccount_set.all()[
+                            0
+                        ].get_avatar_url()
+
+                        for priority in staff["position_priority"]:
+                            if priority == "A01":  # A01: 연출
+                                director_list.append(staff)
+                                director_name_list.append(staff["name"])
+
+                            if priority == "B01":  # B01: 제작
+                                producer_list.append(staff)
+                                producer_name_list.append(staff["name"])
+                                producer_student_id_list.append(staff["student_id"])
+
+                    project["staff"] = staff_list
+                    project["director"] = director_list
+                    project["director_name"] = director_name_list
+                    project["producer"] = producer_list
+                    project["producer_name"] = producer_name_list
+                    project["producer_student_id"] = producer_student_id_list
+                    record_list.append(project)
             except:
                 pass
 
@@ -810,15 +1021,37 @@ def airtable(action: str, target: str, data: dict = None, limit: int = None):
 
         result = record_list
 
-    # action: update / target: records
-    elif action == "update" and target == "records":
-        records_to_update = AIRTABLE.table(
-            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
-        ).batch_update(
-            params.get("records_to_update", None),
+    # action: update / target: record
+    elif action == "update" and target == "record":
+        record_to_update = params.get("record_to_update", None)
+        record_id = record_to_update["id"]
+        fields = record_to_update["fields"]
+
+        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).update(
+            record_id, fields
         )
 
-        result = records_to_update
+        result = record
+
+    # action: update / target: records
+    elif action == "update" and target == "records":
+        records_to_update = params.get("records_to_update", None)
+
+        records = AIRTABLE.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).batch_update(records_to_update)
+
+        result = records
+
+    # action: delete / target: record
+    elif action == "delete" and target == "record":
+        record_id = params.get("record_id", None)
+
+        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).delete(
+            record_id
+        )
+
+        result = record
 
     return result
 
@@ -927,180 +1160,6 @@ def notion(
             except:
                 pass
 
-        elif db_name == "facility":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-                    approval_status = properties["Approval status"]["status"]["name"]
-                    category = properties["Category"]["select"]["name"]
-                    title = properties["Title"]["title"][0]["plain_text"]
-                    project = properties["Project"]["relation"][0]["id"]
-                    public_application_id = properties["Public application ID"][
-                        "rich_text"
-                    ][0]["plain_text"]
-                    private_application_id = properties["Private application ID"][
-                        "rich_text"
-                    ][0]["plain_text"]
-                    user = properties["User"]["number"]
-                    start_datetime = properties["Start datetime"]["date"]["start"]
-                    start_datetime = format_datetime(convert_datetime(start_datetime))
-                    end_datetime = properties["End datetime"]["date"]["start"]
-                    end_datetime = format_datetime(convert_datetime(end_datetime))
-
-                    facility = {
-                        "page_id": item["id"],
-                        "approval_status": approval_status,
-                        "category": category,
-                        "title": title,
-                        "project": project,
-                        "public_application_id": public_application_id,
-                        "private_application_id": private_application_id,
-                        "user": user,
-                        "start_datetime": start_datetime,
-                        "end_datetime": end_datetime,
-                    }
-
-                    item_list.append(facility)
-            except:
-                pass
-
-        elif db_name == "project":
-            response = requests.post(
-                url, json=payload, headers=set_headers("NOTION")
-            ).json()
-            items = response["results"]
-            item_list = []
-
-            JSON_PATH = (
-                "dongguk_film/static/json/equipment.json"
-                if settings.DEBUG
-                else "dongguk_film/staticfiles/json/equipment.json"
-            )
-
-            with open(JSON_PATH, "r") as f:
-                purpose_list = json.load(f)["purpose"]
-                f.close()
-
-            try:
-                for item in items:
-                    properties = item["properties"]
-                    created_time = properties["Created time"]["created_time"]
-                    created_time = convert_datetime(created_time)
-
-                    purpose = (
-                        properties.get("Purpose", {})
-                        .get("rich_text", [{}])[0]
-                        .get("plain_text", None)
-                    )
-
-                    purpose_priority = [
-                        item for item in purpose_list if item["priority"] in purpose
-                    ][0]["priority"]
-
-                    purpose_keyword = [
-                        item for item in purpose_list if item["priority"] in purpose
-                    ][0]["keyword"]
-
-                    title = properties["Title"]["title"][0]["plain_text"]
-                    production_end_date = properties["Production end date"]["date"][
-                        "start"
-                    ]
-                    instructor = properties.get("Instructor", {}).get("rich_text", [{}])
-
-                    if instructor:
-                        instructor = instructor[0].get("plain_text", None)
-
-                        if instructor and mask:
-                            instructor = mask_personal_information(
-                                "instructor_id", instructor
-                            )
-
-                        subject_code = properties.get("Subject code", {}).get(
-                            "rich_text", [{}]
-                        )
-
-                        subject_name = properties.get("Subject name", {}).get(
-                            "rich_text", [{}]
-                        )
-
-                    user = str(properties["User"]["number"])
-                    user = (
-                        mask_personal_information("student_id", user) if mask else user
-                    )
-
-                    project = {
-                        "page_id": item["id"],
-                        "purpose": {
-                            "priority": purpose_priority,
-                            "keyword": purpose_keyword,
-                        },
-                        "title": title,
-                        "production_end_date": production_end_date,
-                        "instructor": instructor,
-                        "subject_code": subject_code,
-                        "subject_name": subject_name,
-                        "user": user,
-                        "created_date": created_time.strftime("%Y-%m-%d"),
-                    }
-
-                    staff = (
-                        properties.get("Staff", {})
-                        .get("rich_text", [{}])[0]
-                        .get("plain_text", None)
-                    )
-
-                    staff_list = ast.literal_eval(staff) if staff else None
-
-                    director_list = []
-                    director_name_list = []
-                    producer_list = []
-                    producer_name_list = []
-                    producer_student_id_list = []
-
-                    for staff in staff_list:
-                        student_id = staff["student_id"]
-                        user = User.objects.get(username=student_id)
-                        staff["pk"] = str(user.pk)
-                        staff["name"] = user.metadata.name
-                        staff["student_id"] = (
-                            student_id[:2]
-                            + "*" * (len(student_id) - 5)
-                            + student_id[-3:]
-                        )
-                        staff["student_id"] = mask_personal_information(
-                            "student_id", student_id
-                        )
-                        staff["avatar_url"] = user.socialaccount_set.all()[
-                            0
-                        ].get_avatar_url()
-
-                        for priority in staff["position_priority"]:
-                            if priority == "A01":  # A01: 연출
-                                director_list.append(staff)
-                                director_name_list.append(staff["name"])
-
-                            if priority == "B01":  # B01: 제작
-                                producer_list.append(staff)
-                                producer_name_list.append(staff["name"])
-                                producer_student_id_list.append(staff["student_id"])
-
-                    project["staff"] = staff_list
-                    project["director"] = director_list
-                    project["director_name"] = director_name_list
-                    project["producer"] = producer_list
-                    project["producer_name"] = producer_name_list
-                    project["producer_student_id"] = producer_student_id_list
-
-                    item_list.append(project)
-            except:
-                pass
-
         elif db_name == "dflink-allowlist":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
@@ -1174,64 +1233,7 @@ def notion(
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "facility":
-            project = data.get("project", None)
-            public_application_id = data.get("public_application_id", None)
-            private_application_id = data.get("private_application_id", None)
-            start_datetime = data.get("start_datetime", None)
-            end_datetime = data.get("end_datetime", None)
-
-            payload = {
-                "parent": {"database_id": NOTION_DB_ID[db_name]},
-                "properties": {
-                    "Category": {"select": {"name": category}},
-                    "Title": {"title": [{"text": {"content": title}}]},
-                    "Public application ID": {
-                        "rich_text": [{"text": {"content": public_application_id}}]
-                    },
-                    "Private application ID": {
-                        "rich_text": [{"text": {"content": private_application_id}}]
-                    },
-                    "User": {"number": int(str(user))},
-                    "Start datetime": {"date": {"start": start_datetime}},
-                    "End datetime": {"date": {"start": end_datetime}},
-                },
-            }
-
-            if project:
-                payload["properties"]["Project"] = {"relation": [{"id": project}]}
-
-            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
-
-        elif db_name == "project":
-            payload = {
-                "parent": {"database_id": NOTION_DB_ID[db_name]},
-                "properties": {
-                    "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
-                    "Title": {"title": [{"text": {"content": title}}]},
-                    "Production end date": {
-                        "date": {
-                            "start": production_end_date,
-                            "end": None,
-                            "time_zone": None,
-                        }
-                    },
-                    "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
-                    "Instructor": {
-                        "rich_text": [{"text": {"content": str(instructor)}}]
-                    },
-                    "Subject code": {
-                        "rich_text": [{"text": {"content": str(subject_code)}}]
-                    },
-                    "Subject name": {
-                        "rich_text": [{"text": {"content": str(subject_name)}}]
-                    },
-                    "User": {"number": int(str(user))},
-                },
-            }
-            response = requests.post(url, json=payload, headers=set_headers("NOTION"))
-
-        elif db_name == "notice":
+        if db_name == "notice":
             content_chunks = [
                 content[i : i + 2000] for i in range(0, len(content), 2000)
             ]
@@ -1270,7 +1272,7 @@ def notion(
                 },
                 "children": paragraph_list,
             }
-            
+
             response = requests.post(url, json=payload, headers=set_headers("NOTION"))
 
         result = response

@@ -83,7 +83,7 @@ function updateList(data) {
             msg = "내가 작성한 공지사항이";
         };
 
-        list.firstElementChild.innerText = `아직 ${msg} 없어요.`;
+        list.firstElementChild.innerText = `${msg} 없어요.`;
         
         return;
     };
@@ -114,54 +114,54 @@ function updateList(data) {
         let badgeColor;
 
         if (data.target === "facility") {
-            if (item.approval_status === "Pending") {
+            if (item.status === "Pending") {
                 badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
-            } else if (item.approval_status === "Approved") {
+            } else if (item.status === "Approved") {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20"
-            } else if (item.approval_status === "Rejected") {
+            } else if (item.status === "Rejected") {
                 badgeColor = "text-red-700 bg-red-50 ring-red-600/10"
             };
 
-            let approvalStatus;
+            let status;
 
-            if (item.approval_status === "Pending") {
-                approvalStatus = "대기";
-            } else if (item.approval_status === "Approved") {
-                approvalStatus = "승인";
-            } else if (item.approval_status === "Rejected") {
-                approvalStatus = "반려";
+            if (item.status === "Pending") {
+                status = "대기";
+            } else if (item.status === "Approved") {
+                status = "승인";
+            } else if (item.status === "Rejected") {
+                status = "반려";
             };
 
             element.innerHTML = `
                 <div class="flex justify-between items-center gap-x-2">
-                    <!-- facility.title -->
+                    <!-- facility.name -->
                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                        <a href="https://docs.google.com/document/d/${item.public_application_id}"
+                        <a href="${item.public_url}"
                             target="_blank"
                             class="rounded-md focus:df-focus-ring-offset-gray">
                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                            ${item.title}
+                            ${item.name}
                         </a>
                     </p>
-                    <!-- facility.approval_status -->
+                    <!-- facility.status -->
                     <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}">
-                        ${approvalStatus}
+                        ${status}
                     </p>
                 </div>
                 <div class="flex justify-between items-center gap-x-2">
                     <!-- facility.start_datetime -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                        <time datetime="${item.start_datetime}">${item.start_datetime} 시작</time>
+                        <time datetime="${item.start_time}">${item.start_time} 시작</time>
                     </p>
                     <!-- facility.end_datetime(>sm) -->
                     <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
+                        <time datetime="${item.end_time}">${item.end_time} 종료</time>
                     </p>
                 </div>
                 <div class="flex justify-between items-center gap-x-2">
                     <!-- facility.end_datetime(<=sm) -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
+                        <time datetime="${item.end_time}">${item.end_time} 종료</time>
                     </p>
                     <!-- <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                         <span data-pathname=""
@@ -177,9 +177,9 @@ function updateList(data) {
 
             element.innerHTML = `
                 <div class="flex justify-between items-center gap-x-2">
-                    <!-- project.title -->
+                    <!-- project.name -->
                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                        <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">${item.title}</span>
+                        <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">${item.name}</span>
                     </p>
                     <!-- project.purpose -->
                     <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
@@ -210,7 +210,7 @@ function updateList(data) {
                     </p>
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                         <span data-pathname="/project/"
-                                data-query="${item.title}"
+                                data-query="${item.project_id}"
                                 class="class-search-project relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                 tabindex="0">프로젝트 목록에서 찾기</span>
                     </p>

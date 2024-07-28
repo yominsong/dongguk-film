@@ -8,7 +8,7 @@ from users.models import Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
 from utility.msg import send_msg
-from utility.utils import reg_test, short_io, notion
+from utility.utils import reg_test, airtable, short_io, notion
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
@@ -330,7 +330,6 @@ def vcode(request):
 
 def account(request):
     id = request.GET.get("id")
-    print(f"id: {id}")
 
     # id: get_paginated_data
     if id == "get_paginated_data":
@@ -339,23 +338,42 @@ def account(request):
         items_per_page = 4
 
         if target == "facility":
-            filter = {
-                "property": "User",
-                "number": {"equals": int(request.user.username)},
+            # filter = {
+            #     "property": "User",
+            #     "number": {"equals": int(request.user.username)},
+            # }
+
+            # item_list = notion(
+            #     "query", "db", data={"db_name": "facility", "filter": filter}, mask=True
+            # )
+
+            data = {
+                "table_name": "facility-request",
+                "params": {
+                    "view": "Grid view",
+                    "formula": f"IF(AND(Category = 'Equipment'), User = '{request.user.username}')",
+                },
             }
 
-            item_list = notion(
-                "query", "db", data={"db_name": "facility", "filter": filter}, mask=True
-            )
+            item_list = airtable("get_all", "records", data)
         elif target == "project":
-            filter = {
-                "property": "Staff",
-                "rich_text": {"contains": request.user.username},
+            # filter = {
+            #     "property": "Staff",
+            #     "rich_text": {"contains": request.user.username},
+            # }
+
+            # item_list = notion(
+            #     "query", "db", data={"db_name": "project", "filter": filter}, mask=True
+            # )
+            data = {
+                "table_name": "project-team",
+                "params": {
+                    "view": "Grid view",
+                    "formula": f"FIND('{request.user.username}', Staff)",
+                },
             }
 
-            item_list = notion(
-                "query", "db", data={"db_name": "project", "filter": filter}, mask=True
-            )
+            item_list = airtable("get_all", "records", data)
         elif target == "dflink":
             filter = {"user": request.user.username}
             item_list = short_io("retrieve", filter=filter, mask=True)

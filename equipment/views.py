@@ -260,7 +260,7 @@ def equipment_detail(request, collection_id):
         },
     }
 
-    record_id = airtable("get_all", "records", data=data)[0]["record_id"]
+    record_id = airtable("get_all", "records", data)[0]["record_id"]
 
     data = {
         "table_name": "equipment-collection",
@@ -269,7 +269,7 @@ def equipment_detail(request, collection_id):
         },
     }
 
-    collection = airtable("get", "record", data=data)
+    collection = airtable("get", "record", data)
     equipment_collection_list = get_equipment_data("collection")
 
     for ec in equipment_collection_list:

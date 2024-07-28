@@ -299,7 +299,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     # msg_type: "CREATE_EQUIPMENT_APPLICATION"
     elif msg_type == "CREATE_EQUIPMENT_APPLICATION":
         reason = data.get("reason", "Unknown")
-        notion_url = data.get("notion_url", "Unknown")
         public_application_id = data.get("public_application_id", "Unknown")
         private_application_id = data.get("private_application_id", "Unknown")
         public_application_url = None
@@ -330,13 +329,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{status_emoji} 기자재 사용 신청 {status_in_kor}",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
-            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ공개 신청서 URL: {public_application_url}\nㆍ비공개 신청서 URL: {private_application_url}\nㆍ대여 불가 기자재: {occupied_item_list}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_application_url}\nㆍ비공개 신청서 URL: {private_application_url}\nㆍ대여 불가 기자재: {occupied_item_list}",
         }
 
     # msg_type: "CREATE_PROJECT"
     elif msg_type == "CREATE_PROJECT":
         reason = data.get("reason", "Unknown")
-        notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
         purpose = data.get("purpose", "Unknown")
         subject_name = data.get("subject_name", "Unknown")
@@ -352,13 +350,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{status_emoji} 프로젝트 등록 {status_in_kor}",
             "url": "https://dongguk.film/project",
             "thumbnail_url": "",
-            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
         }
 
     # msg_type: "UPDATE_PROJECT"
     elif msg_type == "UPDATE_PROJECT":
         reason = data.get("reason", "Unknown")
-        notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
         purpose = data.get("purpose", "Unknown")
         subject_name = data.get("subject_name", "Unknown")
@@ -374,13 +371,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{status_emoji} 프로젝트 수정 {status_in_kor}",
             "url": "https://dongguk.film/project",
             "thumbnail_url": "",
-            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
         }
 
     # msg_type: "DELETE_PROJECT"
     elif msg_type == "DELETE_PROJECT":
         reason = data.get("reason", "Unknown")
-        notion_url = data.get("notion_url", "Unknown")
         title = data.get("title", "Unknown")
         purpose = data.get("purpose", "Unknown")
         subject_name = data.get("subject_name", "Unknown")
@@ -396,7 +392,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{status_emoji} 프로젝트 삭제 {status_in_kor}",
             "url": "https://dongguk.film/project",
             "thumbnail_url": "",
-            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍNotion URL: {notion_url}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
+            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ작품 제목: {title}\nㆍ유형: {purpose}\nㆍ교과목: {subject_name}",
         }
 
     # msg_type: "CREATE_DFLINK"
