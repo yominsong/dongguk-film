@@ -117,6 +117,7 @@ class SocialSignupForm(SignupForm):
                 "type": "text",
                 "class": f"{text_input_class} {second_class} {only_number_class} {text_input_focus_state_class} {text_input_read_only_state_class} {text_input_disabled_state_class}",
                 "placeholder": "000000",
+                "autocomplete": "one-time-code",
                 "required": "",
                 "disabled": "",
             }
