@@ -894,29 +894,7 @@ def airtable(
                             set(fields.get("Item purpose", None).split(", "))
                         ),
                     }
-
-                    item_record_id_list = fields["Item"]
-                    item_list = []
-
-                    with ThreadPoolExecutor(max_workers=30) as executor:
-                        future_to_item = {
-                            executor.submit(
-                                airtable,
-                                "get",
-                                "record",
-                                data={
-                                    "table_name": "equipment-item",
-                                    "params": {"record_id": record_id},
-                                },
-                            ): record_id
-                            for record_id in item_record_id_list
-                        }
-
-                        for future in as_completed(future_to_item):
-                            item = future.result()
-                            item_list.append(item)
-
-                    collection["item"] = item_list
+                    
                     record_list.append(collection)
             except:
                 pass

@@ -261,7 +261,17 @@ def equipment_detail(request, collection_id):
             "formula": f"{{ID}} = '{collection_id}'",
         },
     }
-    collection = airtable("get_all", "records", data)[0]
+
+    record_id = airtable("get_all", "records", data)[0]["record_id"]
+
+    data = {
+        "table_name": "equipment-collection",
+        "params": {
+            "record_id": record_id,
+        },
+    }
+
+    collection = airtable("get", "record", data)
     
     # Add thumbnail to collection
     equipment_collection_list = get_equipment_data("collection")
