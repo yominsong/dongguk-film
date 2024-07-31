@@ -561,6 +561,7 @@ def airtable(
         - get
         - get_all
         - update
+        - batch_update
         - delete
     - target | `str`:
         - record
@@ -592,7 +593,25 @@ def airtable(
 
         fields = record["fields"]
 
-        if table_name == "equipment-collection":
+        if table_name == "equipment-hour":
+            project_and_date = fields.get("Project and date", [])
+
+            if project_and_date:
+                project_and_date = json.loads(
+                    project_and_date.replace("'", '"')
+                )
+
+            record = {
+                "record_id": record["id"],
+                "name": fields["Name"],
+                "day_of_the_week": fields["Day of the week"],
+                "day_of_the_week_in_korean": fields["Day of the week in Korean"],
+                "time": fields["Time"],
+                "max_capacity": fields["Max capacity"],
+                "project_and_date": project_and_date,
+            }
+
+        elif table_name == "equipment-collection":
             record = {
                 "record_id": record["id"],
                 "collection_id": fields["ID"],
@@ -641,10 +660,12 @@ def airtable(
                 "item_id": fields["ID"],
                 "serial_number": fields["Serial number"],
                 "purpose": fields["Purpose name"],
-                "project_id": fields.get("Project ID", None),
-                "project_name": fields.get("Project name", None),
-                "start_datetime": fields.get("Start datetime", None),
-                "end_datetime": fields.get("End datetime", None),
+                "start_datetime": fields.get(
+                    "Facility request start datetime", []
+                ),
+                "end_datetime": fields.get(
+                    "Facility request end datetime", []
+                ),
                 "status": fields["Status"],
                 "validation": fields["Validation"],
             }
@@ -729,8 +750,8 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    start_time = format_datetime(convert_datetime(fields["Start time"]))
-                    end_time = format_datetime(convert_datetime(fields["End time"]))
+                    start_datetime = format_datetime(convert_datetime(fields["Start datetime"]))
+                    end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
                     user = fields["User"]
 
                     user = (
@@ -749,8 +770,8 @@ def airtable(
                             "keyword": fields.get("Project team purpose keyword", None),
                         },
                         "duration": fields.get("Duration", None),
-                        "start_time": start_time,
-                        "end_time": end_time,
+                        "start_datetime": start_datetime,
+                        "end_datetime": end_datetime,
                         "user": user,
                         "public_url": fields.get("Public URL", None),
                         "status": fields.get("Status", None),
@@ -764,7 +785,7 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    project_and_date = fields.get("Project and date", None)
+                    project_and_date = fields.get("Project and date", [])
 
                     if project_and_date:
                         project_and_date = json.loads(
@@ -772,8 +793,10 @@ def airtable(
                         )
 
                     hour = {
+                        "record_id": record["id"],
                         "name": fields.get("Name", None),
                         "day_of_the_week": fields.get("Day of the week", None),
+                        "day_of_the_week_in_korean": fields.get("Day of the week in Korean", None),
                         "time": fields.get("Time", None),
                         "max_capacity": fields.get("Max capacity", None),
                         "project_and_date": project_and_date,
@@ -861,7 +884,10 @@ def airtable(
                             "priority": fields.get("Category priority", [None])[0],
                             "keyword": fields.get("Category keyword", [None])[0],
                         },
-                        "subcategory": fields.get("Subcategory keyword", [None])[0],
+                        "subcategory": {
+                            "keyword": fields.get("Subcategory keyword", [None])[0],
+                            "order": fields.get("Subcategory order", [None])[0],
+                        },
                         "brand": fields.get("Brand name", [None])[0],
                         "model": fields.get("Model", None),
                         "item_purpose": sorted(
@@ -869,6 +895,28 @@ def airtable(
                         ),
                     }
 
+                    item_record_id_list = fields["Item"]
+                    item_list = []
+
+                    with ThreadPoolExecutor(max_workers=30) as executor:
+                        future_to_item = {
+                            executor.submit(
+                                airtable,
+                                "get",
+                                "record",
+                                data={
+                                    "table_name": "equipment-item",
+                                    "params": {"record_id": record_id},
+                                },
+                            ): record_id
+                            for record_id in item_record_id_list
+                        }
+
+                        for future in as_completed(future_to_item):
+                            item = future.result()
+                            item_list.append(item)
+
+                    collection["item"] = item_list
                     record_list.append(collection)
             except:
                 pass
@@ -877,23 +925,13 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    start_datetime = fields.get("Start datetime", None)
-                    start_datetime = (
-                        convert_datetime(start_datetime) if start_datetime else None
-                    )
-                    end_datetime = fields.get("End datetime", None)
-                    end_datetime = (
-                        convert_datetime(end_datetime) if end_datetime else None
-                    )
-
+                    
                     item = {
                         "record_id": record["id"],
-                        "item_id": fields.get("ID", None),
-                        "collection_id": fields.get("Collection ID", [None])[0],
-                        "name": fields.get("Name", None),
-                        "start_datetime": start_datetime,
-                        "end_datetime": end_datetime,
-                        "status": fields.get("Status", None),
+                        "item_id": fields["ID"],
+                        "collection_id": fields["Collection ID"][0],
+                        "name": fields["Name"],
+                        "status": fields["Status"],
                     }
 
                     record_list.append(item)
@@ -929,7 +967,7 @@ def airtable(
                         created_time.strftime("%Y-%m-%d") if created_time else None
                     )
 
-                    project = {
+                    team = {
                         "record_id": record["id"],
                         "project_id": fields.get("ID", None),
                         "name": fields.get("Name", None),
@@ -947,6 +985,7 @@ def airtable(
                         "subject_code": fields.get("Subject code", None),
                         "subject_name": fields.get("Subject name", None),
                         "user": user,
+                        "facility_request": fields.get("Facility request", None),
                         "created_date": created_date,
                     }
 
@@ -989,13 +1028,13 @@ def airtable(
                                 producer_name_list.append(staff["name"])
                                 producer_student_id_list.append(staff["student_id"])
 
-                    project["staff"] = staff_list
-                    project["director"] = director_list
-                    project["director_name"] = director_name_list
-                    project["producer"] = producer_list
-                    project["producer_name"] = producer_name_list
-                    project["producer_student_id"] = producer_student_id_list
-                    record_list.append(project)
+                    team["staff"] = staff_list
+                    team["director"] = director_list
+                    team["director_name"] = director_name_list
+                    team["producer"] = producer_list
+                    team["producer_name"] = producer_name_list
+                    team["producer_student_id"] = producer_student_id_list
+                    record_list.append(team)
             except:
                 pass
 
@@ -1023,9 +1062,8 @@ def airtable(
 
     # action: update / target: record
     elif action == "update" and target == "record":
-        record_to_update = params.get("record_to_update", None)
-        record_id = record_to_update["id"]
-        fields = record_to_update["fields"]
+        record_id = params.get("record_id", None)
+        fields = params.get("fields", None)
 
         record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).update(
             record_id, fields
@@ -1033,13 +1071,13 @@ def airtable(
 
         result = record
 
-    # action: update / target: records
-    elif action == "update" and target == "records":
-        records_to_update = params.get("records_to_update", None)
+    # action: batch_update / target: records
+    elif action == "batch_update" and target == "records":
+        record_list = params.get("record_list", None)
 
         records = AIRTABLE.table(
             AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
-        ).batch_update(records_to_update)
+        ).batch_update(record_list)
 
         result = records
 

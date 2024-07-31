@@ -29,6 +29,8 @@ const id_instructor = document.getElementById("id_instructor");
 const id_instructor_name = code(id_instructor, "_name");
 const id_start_time = document.getElementById("id_start_time");
 const id_end_time = document.getElementById("id_end_time");
+const id_start_time_record_id = code(id_start_time, "_record_id");
+const id_end_time_record_id = code(id_end_time, "_record_id");
 const id_signature_canvas = document.getElementById("id_signature_canvas");
 const id_clear_signature_canvas = code("id_clear_", id_signature_canvas);
 const id_signature_canvas_error = code(id_signature_canvas, "_error");
@@ -1027,6 +1029,7 @@ function initFoundHourList(response) {
             const available = newlyFoundHour.available;
             const time = newlyFoundHour.time;
             const timeWithoutColon = time.replace(":", "");
+            const record_id = newlyFoundHour.record_id;
 
             if (available === true) {
                 newlyFoundHourElement.className = "relative flex items-center cursor-pointer h-[36px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50";
@@ -1035,6 +1038,7 @@ function initFoundHourList(response) {
                             name="${targetId.id}"
                             type="radio"
                             value="${timeWithoutColon}"
+                            data-record-id="${record_id}"
                             class="sr-only class-second class-radio ${targetClass}"
                             aria-labelledby="${targetId.id}_${timeWithoutColon}_label"
                             ${currentTime === timeWithoutColon ? 'checked' : ''}>
@@ -1116,6 +1120,7 @@ function initFoundHourList(response) {
 
     [class_start_times, class_end_times].forEach((class_times, index) => {
         const targetId = index === 0 ? id_start_time : id_end_time;
+        const targetRecordId = index === 0 ? id_start_time_record_id : id_end_time_record_id;
 
         class_times.forEach((time) => {
             if (targetId.value === time.value) time.click();
@@ -1126,7 +1131,11 @@ function initFoundHourList(response) {
             label.classList.add("cursor-pointer", "hover:bg-gray-50");
 
             time.addEventListener("click", () => {
-                if (time.id.indexOf("time") !== -1) targetId.value = time.value;
+                if (time.id.indexOf("time") !== -1) {
+                    targetId.value = time.value;
+                    targetRecordId.value = time.dataset.recordId;
+                };
+
                 if (index === 0 && isSameDay) updateEndTimes();
             });
 
@@ -1152,7 +1161,7 @@ function initFoundHourList(response) {
                     label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
                     svg.classList.remove("invisible");
                     targetId.value = time.value;
-
+                    targetRecordId.value = time.dataset.recordId;
                     if (index === 0 && isSameDay) updateEndTimes();
                 } else {
                     svg.classList.add("invisible");
@@ -1688,7 +1697,7 @@ function updateForm(action, datasetObj = null) {
         if (userName.length >= 5) {
             id_signature_canvas_help.innerText = `${userName}님의 성명 첫 다섯 글자 '${userName.slice(0, 5)}'${matchJosa(userName[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
         } else {
-            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.";
+            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 인식될 경우 예약이 불가할 수 있어요.";
         };
     }
 
@@ -2114,6 +2123,8 @@ async function requestCreateApplication() {
     formData.append("project", id_project.value);
     formData.append("startTime", id_start_time.value);
     formData.append("endTime", id_end_time.value);
+    formData.append("startTimeRecordId", id_start_time_record_id.value);
+    formData.append("endTimeRecordId", id_end_time_record_id.value);
 
     const forInstructor = getCart()[0].purpose.for_instructor;
 

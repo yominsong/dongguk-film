@@ -372,8 +372,6 @@
                                         <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
                                     </fieldset>
-
-                                    <!-- UNDER CONSTRUCTION (S) -->
                                     <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'code': '', 'kor_name': '교과목을 선택하세요.', 'instructor': '' },
                                         {% for subject in subject_list %}
                                             { 'code': '{{ subject.code }}', 'kor_name':'{{ subject.kor_name }}', 'instructor':'{{ subject.instructor }}' }
@@ -513,8 +511,6 @@
                                            id="id_instructor_error"
                                            hidden></p>
                                     </fieldset>
-                                    <!-- UNDER CONSTRUCTION (E) -->
-
                                     <fieldset>
                                         <legend class="text-sm font-medium leading-6 text-gray-900">희망 대여시각</legend>
                                         <div id="id_start_time_list"
@@ -529,6 +525,11 @@
                                         <label for="id_start_time" hidden>희망 대여시각</label>
                                         <input id="id_start_time"
                                                class="class-second alt-radio"
+                                               type="text"
+                                               value=""
+                                               required
+                                               hidden>
+                                        <input id="id_start_time_record_id"
                                                type="text"
                                                value=""
                                                required
@@ -551,6 +552,11 @@
                                         <label for="id_end_time" hidden>희망 반납시각</label>
                                         <input id="id_end_time"
                                                class="class-second alt-radio"
+                                               type="text"
+                                               value=""
+                                               required
+                                               hidden>
+                                        <input id="id_end_time_record_id"
                                                type="text"
                                                value=""
                                                required
@@ -605,7 +611,7 @@
                                                     aria-labelledby="id_signature_canvas_label"
                                                     tabindex="0"></canvas>
                                         </div>
-                                        <p class="mt-2 text-sm text-gray-500" id="id_signature_canvas_help">서명은 정자체만 허용되며 흘림체로 판별될 경우 예약이 불가할 수 있어요.</p>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_signature_canvas_help">서명은 정자체만 허용되며 흘림체로 인식될 경우 예약이 불가할 수 있어요.</p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_signature_canvas_error" hidden></p>
                                     </div>
                                     <div class="flex rounded-md shadow bg-flamingo-50 p-4">
@@ -620,9 +626,10 @@
                                             </h3>
                                             <div class="mt-2 text-sm text-flamingo-700">
                                                 <ul role="list" class="list-disc space-y-1 pl-5">
-                                                    <li>예약 확정 여부가 결정되면 {{ user.metadata.name }}님의 연락처로 안내 문자 메시지와 이메일이 발송돼요.</li>
+                                                    <li>프로젝트의 기자재 예약 권한은 연출, 촬영, 동시녹음 담당에게 있으며, 취소 권한은 신청자 본인에게 있어요.</li>
+                                                    <li>예약이 확정되면 {{ user.metadata.name }}님에게 문자 메시지와 이메일을 보내드릴게요.</li>
                                                     <li>안정적인 서비스 제공을 위해 운영진은 본 <span id="id_subject_or_project">프로젝트</span>의 기자재 예약 및 취소 내역을 조회할 수 있어요.</li>
-                                                    <li>하단의 '<span class="class-keyword">예약하기</span>' 버튼 클릭 시 서명체 판별, 신청서 작성 및 제출이 진행돼요.</li>
+                                                    <li>하단의 '<span class="class-keyword">예약하기</span>' 버튼 클릭 시 기자재 사용 신청서 작성 및 제출이 진행돼요.</li>
                                                 </ul>
                                             </div>
                                         </div>

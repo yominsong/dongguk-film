@@ -120,6 +120,10 @@ function updateList(data) {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20"
             } else if (item.status === "Rejected") {
                 badgeColor = "text-red-700 bg-red-50 ring-red-600/10"
+            } else if (item.status === "In Progress") {
+                badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
+            } else if (item.status === "Completed") {
+                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
             };
 
             let status;
@@ -130,6 +134,10 @@ function updateList(data) {
                 status = "승인";
             } else if (item.status === "Rejected") {
                 status = "반려";
+            } else if (item.status === "In Progress") {
+                status = "진행";
+            } else if (item.status === "Completed") {
+                status = "완료";
             };
 
             element.innerHTML = `
@@ -151,17 +159,17 @@ function updateList(data) {
                 <div class="flex justify-between items-center gap-x-2">
                     <!-- facility.start_datetime -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500">
-                        <time datetime="${item.start_time}">${item.start_time} 시작</time>
+                        <time datetime="${item.start_datetime}">${item.start_datetime} 시작</time>
                     </p>
                     <!-- facility.end_datetime(>sm) -->
                     <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
-                        <time datetime="${item.end_time}">${item.end_time} 종료</time>
+                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
                     </p>
                 </div>
                 <div class="flex justify-between items-center gap-x-2">
                     <!-- facility.end_datetime(<=sm) -->
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
-                        <time datetime="${item.end_time}">${item.end_time} 종료</time>
+                        <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
                     </p>
                     <!-- <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                         <span data-pathname=""

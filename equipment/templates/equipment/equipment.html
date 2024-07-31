@@ -200,8 +200,8 @@
                                 <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
                                 <div class="inline-flex mt-2 gap-2">
                                     <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.collection_id }}</span>
-                                    {% if collection.subcategory != None %}
-                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory }}</span>
+                                    {% if collection.subcategory.keyword != None %}
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory.keyword }}</span>
                                     {% endif %}
                                 </div>
                             </a>

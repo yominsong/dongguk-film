@@ -97,6 +97,13 @@ def synchronize_equipment_data(request):
                     "table_name": "equipment-hour",
                     "params": {
                         "view": "Grid view",
+                        "fields": [
+                            "Name",
+                            "Day of the week",
+                            "Day of the week in Korean",
+                            "Time",
+                            "Max capacity",
+                        ],
                     },
                 }
 
@@ -437,7 +444,7 @@ def insert_signature(document_id, signature_id):
     requests = [
         {
             "insertInlineImage": {
-                "location": {"index": 1310},
+                "location": {"index": 1254},
                 "uri": image_url,
                 "objectSize": {
                     "height": {
@@ -454,6 +461,55 @@ def insert_signature(document_id, signature_id):
         .batchUpdate(documentId=document_id, body={"requests": requests})
         .execute()
     )
+
+
+def update_equipment_hour(data: dict):
+    start_hour = {
+        "date": data["start_date"],
+        "time_record_id": data["start_time_record_id"],
+    }
+
+    end_hour = {
+        "date": data["end_date"],
+        "time_record_id": data["end_time_record_id"],
+    }
+
+    project_id = data["project_id"]
+
+    for hour in [start_hour, end_hour]:
+        date = hour["date"]
+        time_record_id = hour["time_record_id"]
+
+        data = {
+            "table_name": "equipment-hour",
+            "params": {
+                "record_id": time_record_id,
+            },
+        }
+
+        hour = airtable("get", "record", data)
+        project_and_date_list = hour["project_and_date"]
+        max_capacity = hour["max_capacity"]
+
+        if len(project_and_date_list) < max_capacity:
+            new_project_and_date = {
+                "project": project_id,
+                "date": str(date),
+            }
+
+            project_and_date_list.append(new_project_and_date)
+
+            data = {
+                "table_name": "equipment-hour",
+                "params": {
+                    "record_id": time_record_id,
+                    "fields": {
+                        "Project and date": str(project_and_date_list),
+                    },
+                },
+            }
+
+            airtable("update", "record", data)
 
 
 #
@@ -692,7 +748,7 @@ def equipment(request):
                 "view": "Grid view",
             },
         }
-        
+
         project_list = airtable("get_all", "records", data)
         found_project_list = []
         cart_end_date = get_start_end_date(cart)[1]
@@ -702,6 +758,7 @@ def equipment(request):
                 project["purpose"]["priority"] == cart[0]["purpose"]["priority"]
                 and convert_datetime(project["production_end_date"]).date()
                 >= cart_end_date
+                and project["facility_request"] is None
             ):
                 for staff in project["staff"]:
                     if int(staff["pk"]) == request.user.pk and (
@@ -739,29 +796,33 @@ def equipment(request):
         hour_list = airtable("get_all", "records", data)
         start_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(start_day)]
         end_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(end_day)]
-        project_and_date_list = []
         start_hour_list = []
         end_hour_list = []
 
         for hour in hour_list:
-            hour["available"] = True
+            start_hour = hour.copy()
+            end_hour = hour.copy()
+            start_hour["available"] = True
+            end_hour["available"] = True
 
-            if hour["project_and_date"] is not None:
+            if len(hour["project_and_date"]) > 0:
+                date_count = {}
+
                 for project_and_date in hour["project_and_date"]:
-                    if (
-                        project_and_date["date"] == start_date
-                        or project_and_date["date"] == end_date
-                    ):
-                        project_and_date_list.append(project_and_date)
+                    date = project_and_date["date"]
+                    date_count[date] = date_count.get(date, 0) + 1
 
-                if len(project_and_date_list) >= hour["max_capacity"]:
-                    hour["available"] = False
+                if date_count.get(start_date, 0) >= hour["max_capacity"]:
+                    start_hour["available"] = False
+                
+                if date_count.get(end_date, 0) >= hour["max_capacity"]:
+                    end_hour["available"] = False
 
             if hour["day_of_the_week"] == start_day:
-                start_hour_list.append(hour)
+                start_hour_list.append(start_hour)
 
             if hour["day_of_the_week"] == end_day:
-                end_hour_list.append(hour)
+                end_hour_list.append(end_hour)
 
         if len(start_hour_list) > 0 and len(end_hour_list) > 0:
             status = "DONE"
@@ -769,7 +830,7 @@ def equipment(request):
             status = "FAIL"
 
         response = {
-            "id": id,
+            "id": "find_hour",
             "status": status,
             "start_hour_list": start_hour_list,
             "end_hour_list": end_hour_list,
@@ -786,18 +847,14 @@ def equipment(request):
         msg = "앗, 대여할 수 없는 기자재가 있어요!"
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
+        fields = ["Collection ID", "ID", "Name", "Status"]
         formula = f"AND(OR({item_id_string}), Status != 'Available')"
 
         data = {
             "table_name": "equipment-item",
             "params": {
                 "view": "Grid view",
-                "fields": [
-                    "Collection ID",
-                    "ID",
-                    "Name",
-                    "Status",
-                ],
+                "fields": fields,
                 "formula": formula,
             },
         }
@@ -813,13 +870,14 @@ def equipment(request):
             ]
 
             collection_id_string = ", ".join(collection_id_list)
+            fields = ["Collection ID"]
             formula = f"AND(OR({collection_id_string}), FIND('{purpose_keyword}', Purpose), Status = 'Available')"
 
             data = {
                 "table_name": "equipment-item",
                 "params": {
                     "view": "Grid view",
-                    "fields": ["Collection ID"],
+                    "fields": fields,
                     "formula": formula,
                 },
             }
@@ -847,7 +905,10 @@ def equipment(request):
                     for unavailable_item in unavailable_item_list
                 )
 
-                if unavailable and cart_collection_id in alternative_items_by_collection:
+                if (
+                    unavailable
+                    and cart_collection_id in alternative_items_by_collection
+                ):
                     alternative_item = alternative_items_by_collection[
                         cart_collection_id
                     ][0]
@@ -868,7 +929,7 @@ def equipment(request):
         signature_file_data = signature.read()
         signature_image = Image.open(BytesIO(signature_file_data))
         a = signature_image.split()[3]  # Get the alpha channel
-        
+
         white_signature_image = Image.new(
             "RGBA", signature_image.size, (255, 255, 255, 0)
         )
@@ -894,7 +955,7 @@ def equipment(request):
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
             if is_for_instructor:
-                project_id = film_title = "-"
+                project_record_id = project_id = film_title = "-"
                 academic_year = request.POST.get("academicYear", None)
                 academic_semester = request.POST.get("academicSemester", None)
                 subject_code = request.POST.get("subjectCode", None)
@@ -913,17 +974,18 @@ def equipment(request):
 
                 purpose_priority = cart[0]["purpose"]["priority"]
             else:
-                project_id = request.POST.get("project", None)
+                project_record_id = request.POST.get("project", None)
 
                 data = {
                     "table_name": "project-team",
                     "params": {
                         "view": "Grid view",
-                        "record_id": project_id,
+                        "record_id": project_record_id,
                     },
                 }
 
                 project = airtable("get", "record", data)
+                project_id = project["project_id"]
                 film_title = project["film_title"]
 
                 base_date = timezone.datetime.fromisoformat(
@@ -937,7 +999,7 @@ def equipment(request):
                 instructor_id = project["instructor"]
                 purpose_priority = project["purpose"]["priority"]
                 found_instructor_list = find_instructor(purpose_priority, base_date)[0]
-                
+
                 instuctor = next(
                     (x for x in found_instructor_list if x["id"] == instructor_id), None
                 )
@@ -967,7 +1029,7 @@ def equipment(request):
                 )
 
                 director_of_photography_name = director_of_photography.metadata.name
-                
+
                 director_of_photography_phone_number = (
                     director_of_photography.metadata.phone
                 )
@@ -977,7 +1039,7 @@ def equipment(request):
                 )
 
                 production_sound_mixer_name = production_sound_mixer.metadata.name
-                
+
                 production_sound_mixer_phone_number = (
                     production_sound_mixer.metadata.phone
                 )
@@ -996,6 +1058,8 @@ def equipment(request):
             start_date, end_date = get_start_end_date(cart)
             start_time = request.POST.get("startTime")
             end_time = request.POST.get("endTime")
+            start_time_record_id = request.POST.get("startTimeRecordId")
+            end_time_record_id = request.POST.get("endTimeRecordId")
             start_datetime = f"{start_date}({get_weekday(str(start_date))}) {'{}:{}'.format(start_time[:2], start_time[2:])}"
             end_datetime = f"{end_date}({get_weekday(str(end_date))}) {'{}:{}'.format(end_time[:2], end_time[2:])}"
             date_str = timezone.now().strftime("%Y-%m-%d")
@@ -1090,11 +1154,21 @@ def equipment(request):
             replace_text(public_application_id, replacements)
             make_file_public(public_application_id)
 
+            data = {
+                "start_date": start_date,
+                "start_time_record_id": start_time_record_id,
+                "end_date": end_date,
+                "end_time_record_id": end_time_record_id,
+                "project_id": project_id,
+            }
+
+            update_equipment_hour(data)
+
             fields = {
                 "Category": "Equipment",
-                "Project team": [project_id],
-                "Start time": start_datetime,
-                "End time": end_datetime,
+                "Project team": [project_record_id],
+                "Start datetime": start_datetime,
+                "End datetime": end_datetime,
                 "Equipment item": [item["record_id"] for item in cart],
                 "User": request.user.username,
                 "Public ID": public_application_id,

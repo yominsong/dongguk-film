@@ -121,20 +121,35 @@
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                     </svg>
                 </div>
-                <div class="ml-3 text-sm font-medium text-flamingo-800">
-                    <h3 id="id_cart_alert_for_filter" hidden>
+                <div class="ml-3">
+                    <h3 id="id_cart_alert_for_filter"
+                        class="text-sm font-medium text-flamingo-800"
+                        hidden>
                         재고 유무를 확인하거나 장바구니를 이용하려면
                         <span id="id_open_modal_and_focus_on_purpose"
                               class="underline cursor-pointer rounded-md hover:text-black focus:outline-none focus:df-focus-ring-offset-flamingo"
                               tabindex="0">검색 필터에 대여 목적과 기간을 적용</span>하세요.
                     </h3>
-                    <h3 id="id_cart_alert_for_stock" hidden>
-                        {% if not available_from == None %}
-                            <span id="id_selected_purpose">해당</span> 목적으로 이 기자재를 대여할 수 있는 가장 이른 날짜는 {{ available_from }}이에요.
-                        {% else %}
-                            현재 이 기자재의 예약 가능한 재고가 없어요.
-                        {% endif %}
-                    </h3>
+                    {% if not unavailable_period_list|length == 0 %}
+                        <h3 id="id_cart_alert_for_stock"
+                            class="text-sm font-medium text-flamingo-800"
+                            hidden>
+                            다음 기간에는 <span id="id_selected_purpose">해당</span> 목적으로 이 기자재를 대여할 수 없어요.
+                        </h3>
+                        <div class="mt-2 text-sm text-flamingo-700">
+                            <ul role="list" class="list-disc space-y-1 pl-5">
+                                {% for period in unavailable_period_list %}
+                                    <li>
+                                        <time datetime="{{ period.start_date|date:'Y-m-d' }}">{{ period.start_date|date:'Y-m-d' }}({{ period.start_weekday }})</time> ~ <time datetime="{{ period.end_date|date:'Y-m-d' }}">{{ period.end_date|date:'Y-m-d' }}({{ period.end_weekday }})</time>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <h3 id="id_cart_alert_for_stock"
+                            class="text-sm font-medium text-flamingo-800"
+                            hidden>현재 이 기자재의 예약 가능한 재고가 없어요.</h3>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -454,8 +469,10 @@
                                 <div class="rounded-md bg-gray-50 p-4">
                                     <div class="text-sm text-gray-700">
                                         <ul role="list" class="list-disc space-y-1 pl-5">
-                                            <li>기자재의 실제 구성품 및 세부 상태는 <span class="inline sm:hidden">상단</span><span class="hidden sm:inline">좌측</span> 참고용 이미지와 다를 수 있어요.</li>
-                                            <li>예약 확정 시 대여 목적 및 기간을 변경할 수 없어요.</li>
+                                            <li>
+                                                기자재의 실제 구성품 및 세부 상태는 <span class="inline sm:hidden">상단</span><span class="hidden sm:inline">좌측</span> 이미지와 다를 수 있어요.
+                                            </li>
+                                            <li>예약 확정 시 대여 목적 및 기간, 기자재 등 세부 사항을 변경할 수 없어요.</li>
                                         </ul>
                                     </div>
                                 </div>

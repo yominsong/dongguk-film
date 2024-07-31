@@ -259,25 +259,21 @@ def project(request):
     elif id == "update_project":
         staff = get_staff(request)
 
-        record = {
-            "id": record_id,
-            "fields": {
-                "Film title": title,
-                "Equipment purpose": [purpose_record_id],
-                "Production end date": production_end_date,
-                "Staff": str(staff),
-                "Instructor": instructor,
-                "Subject code": subject_code,
-                "Subject name": subject_name,
-                "User": request.user.username,
-            },
-        }
-
         data = {
             "table_name": "project-team",
             "params": {
                 "view": "Grid view",
-                "record_to_update": record,
+                "record_id": record_id,
+                "fields": {
+                    "Film title": title,
+                    "Equipment purpose": [purpose_record_id],
+                    "Production end date": production_end_date,
+                    "Staff": str(staff),
+                    "Instructor": instructor,
+                    "Subject code": subject_code,
+                    "Subject name": subject_name,
+                    "User": request.user.username,
+                },
             },
         }
 
