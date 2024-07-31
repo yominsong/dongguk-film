@@ -90,6 +90,15 @@ def synchronize_equipment_data(request):
                     "table_name": "equipment-collection",
                     "params": {
                         "view": "Grid view",
+                        "fields": [
+                            "ID",
+                            "Name",
+                            "Brand",
+                            "Category",
+                            "Subcategory",
+                            "Item purpose",
+                            "Thumbnail",
+                        ],
                     },
                 }
             elif target == "hour":
