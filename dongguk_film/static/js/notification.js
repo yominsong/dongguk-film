@@ -33,10 +33,9 @@ function editXDate(notiType, bool) {
  * - `RBG`: Recommend Web Browser for Google Login
  * - DFLINK_DOES_NOT_EXIST
  * - `NPN`: No Permission to create Notice
- * - `RYS`: Request YouTube Share Link
- * - REQUIRE_IMAGE_ALT_TEXT
- * - REQUIRE_IMAGE_DESCRIPTION_TEXT
- * - `SDI`: Suggest Description of Image
+ * - YOUTUBE_SHARE_LINK_REQUESTED
+ * - IMAGE_ALT_TEXT_REQUIRED
+ * - IMAGE_DESCRIPTION_TEXT_REQUIRED
  * - EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED
  * - EXTRACTING_TEXT_FROM_IMAGE_FAILED
  * - `LDF`: Limit Duplicate Files
@@ -224,35 +223,35 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = exclamationIcon;
             notiTitle = "대여 목적이 변경된 것 같아요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'MPP'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RENTAL_PURPOSE_CHANGED'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "RENTAL_PERIOD_CHANGED") {
             notiIcon = exclamationIcon;
             notiTitle = "대여 기간이 변경된 것 같아요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'MPD'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RENTAL_PERIOD_CHANGED'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "RENTAL_GROUP_LIMIT_EXCEEDED") {
             notiIcon = exclamationIcon;
             notiTitle = "대여 수량 한도를 초과했어요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'EGL'); executeWhenGroupLimitIsExceeded()" onkeydown="if (event.key === 'Enter') { this.click() }">한도 확인하기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RENTAL_GROUP_LIMIT_EXCEEDED'); executeWhenGroupLimitIsExceeded()" onkeydown="if (event.key === 'Enter') { this.click() }">한도 확인하기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "RENTAL_QUANTITY_LIMIT_EXCEEDED") {
             notiIcon = exclamationIcon;
             notiTitle = "대여 수량 한도를 초과했어요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'EQL'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RENTAL_QUANTITY_LIMIT_EXCEEDED'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "OUT_OF_STOCK") {
             notiIcon = exclamationIcon;
             notiTitle = "재고 수량을 모두 담았어요.";
             notiContent = param;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'OOS'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'OUT_OF_STOCK'); updateForm('view_cart')" onkeydown="if (event.key === 'Enter') { this.click() }">장바구니 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         else if (notiType === "EQUIPMENT_PARTIALLY_ADDED") {
@@ -289,31 +288,24 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = "공지사항은 운영진만 작성할 수 있어요.";
         }
 
-        else if (notiType === "RYS") {
+        else if (notiType === "YOUTUBE_SHARE_LINK_REQUESTED") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
             notiContent = "'youtu.be'로 시작하는 공유 링크를 붙여넣으면 자동으로 동영상이 삽입돼요.";
         }
         
-        else if (notiType === "REQUIRE_IMAGE_ALT_TEXT") {
+        else if (notiType === "IMAGE_ALT_TEXT_REQUIRED") {
             notiIcon = imageIcon;
             notiTitle = "이미지 대체 텍스트를 입력해주세요.";
             notiContent = `이미지 선택 후 대체 텍스트 변경 버튼(${visualImpairmentIcon})을 눌러 입력할 수 있어요.`;
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('https://terms.naver.com/entry.naver?cid=42346&docId=3436471&categoryId=42346', '_blank')">대체 텍스트 알아보기<span aria-hidden="true"> →</span></span></div>`;
         }
         
-        else if (notiType === "REQUIRE_IMAGE_DESCRIPTION_TEXT") {
+        else if (notiType === "IMAGE_DESCRIPTION_TEXT_REQUIRED") {
             notiIcon = imageIcon;
             notiTitle = "내용에 텍스트를 포함해주세요.";
             notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'RDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
-        }
-        
-        else if (notiType === "SDI") {
-            notiIcon = imageIcon;
-            notiTitle = "이미지는 텍스트와 함께 사용해주세요.";
-            notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'SDI'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'IMAGE_DESCRIPTION_TEXT_REQUIRED'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         }
         
         else if (notiType === "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED") {

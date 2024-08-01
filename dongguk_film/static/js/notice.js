@@ -162,9 +162,9 @@ function initCkEditor() {
                         };
 
                         if (!hasOnlyImages(data)) {
-                            displayNoti(false, "SDI");
+                            displayNoti(false, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
                         } else if (hasOnlyImages(data)) {
-                            displayNoti(true, "SDI");
+                            displayNoti(true, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
                         };
 
                         id_content.value = ckEditor.getData();
