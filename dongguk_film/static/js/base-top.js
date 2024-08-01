@@ -205,12 +205,7 @@ function makeAjaxCall(request) {
             const decoder = new TextDecoder();
 
             function readStream() {
-                reader.read().then(({ done, value }) => {
-                    if (done) {
-                        console.log("Stream complete");
-                        return;
-                    };
-
+                reader.read().then(({ value }) => {
                     const chunk = decoder.decode(value, { stream: true });
                     const messages = chunk.split("\n").filter(msg => msg.trim() !== "");
                     
@@ -225,6 +220,8 @@ function makeAjaxCall(request) {
                     });
 
                     readStream();
+                }).catch(error => {
+                    console.error("Stream reading error:", error);
                 });
             }
 
