@@ -9,10 +9,6 @@ from fake_useragent import UserAgent
 from users.models import Metadata
 import json, re
 
-DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
-DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
-headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
-
 #
 # Global variables
 #

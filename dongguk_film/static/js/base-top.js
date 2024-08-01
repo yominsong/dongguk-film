@@ -205,7 +205,8 @@ function makeAjaxCall(request) {
             const decoder = new TextDecoder();
 
             function readStream() {
-                reader.read().then(({ value }) => {
+                reader.read().then(({ done, value }) => {
+                    if (done) return;
                     const chunk = decoder.decode(value, { stream: true });
                     const messages = chunk.split("\n").filter(msg => msg.trim() !== "");
                     

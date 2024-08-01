@@ -559,10 +559,6 @@ def create_application(request):
         status, reason, msg = "PROCESSING", "INITIALIZING", "잠시만 기다려주세요."
         yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
-        # status = "FAIL"
-        # reason = "UNAVAILABLE_ITEM"
-        # msg = "앗, 대여할 수 없는 기자재가 있어요!"
-
         # Check for unavailable items
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
@@ -924,7 +920,11 @@ def create_application(request):
         yield json.dumps(response) + "\n"
         send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
 
-    return StreamingHttpResponse(stream_response(), content_type="application/json")
+    response = StreamingHttpResponse(stream_response(), content_type="application/json")
+    response["X-Accel-Buffering"] = "no"
+    response["Cache-Control"] = "no-cache"
+
+    return response
 
 
 def equipment(request):
