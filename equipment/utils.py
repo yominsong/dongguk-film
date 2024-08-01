@@ -450,6 +450,26 @@ def upload_signature(signature, project_name, student_id):
     return uploaded_signature["id"]
 
 
+def process_signature(signature):
+    signature_file_data = signature.read()
+    signature_image = Image.open(BytesIO(signature_file_data))
+    a = signature_image.split()[3]  # Get the alpha channel
+
+    white_signature_image = Image.new(
+        "RGBA", signature_image.size, (255, 255, 255, 0)
+    )
+
+    white_signature_image.paste(signature_image, (0, 0), mask=a)
+    buffered = BytesIO()
+    white_signature_image.save(buffered, format="PNG")
+
+    signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode(
+        "utf-8"
+    )
+
+    return signature_bs64_encoded_data
+
+
 def insert_signature(document_id, signature_id):
     image_url = f"https://drive.google.com/uc?export=view&id={signature_id}"
 
@@ -938,22 +958,7 @@ def equipment(request):
                     ]
 
         signature = request.FILES.get("signature")
-        signature_file_data = signature.read()
-        signature_image = Image.open(BytesIO(signature_file_data))
-        a = signature_image.split()[3]  # Get the alpha channel
-
-        white_signature_image = Image.new(
-            "RGBA", signature_image.size, (255, 255, 255, 0)
-        )
-
-        white_signature_image.paste(signature_image, (0, 0), mask=a)
-        buffered = BytesIO()
-        white_signature_image.save(buffered, format="PNG")
-
-        signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode(
-            "utf-8"
-        )
-
+        signature_bs64_encoded_data = process_signature(signature)
         student_name = request.user.metadata.name
 
         if is_invalid_signature(signature_bs64_encoded_data, student_name):
@@ -967,10 +972,11 @@ def equipment(request):
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
             if is_for_instructor:
-                project_record_id = project_id = film_title = "-"
+                project_record_id = None
+                film_title = "-"
+                project_id = subject_code = request.POST.get("subjectCode", None)
                 academic_year = request.POST.get("academicYear", None)
                 academic_semester = request.POST.get("academicSemester", None)
-                subject_code = request.POST.get("subjectCode", None)
                 subject_name = request.POST.get("subjectName", None)
                 instructor_id = request.POST.get("instructor", None)
                 instructor_name = request.POST.get("instructorName", None)
@@ -1178,13 +1184,15 @@ def equipment(request):
 
             fields = {
                 "Category": "Equipment",
-                "Project team": [project_record_id],
+                "Project team": [project_record_id] if not is_for_instructor else None,
+                "Subject name": subject_name,
                 "Start datetime": start_datetime,
                 "End datetime": end_datetime,
                 "Equipment item": [item["record_id"] for item in cart],
                 "User": request.user.username,
                 "Public ID": public_application_id,
                 "Private ID": private_application_id,
+                "For instructor": True if is_for_instructor else False,
             }
 
             data = {
