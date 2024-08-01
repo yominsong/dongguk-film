@@ -192,30 +192,73 @@ function makeAjaxCall(request) {
 
     const csrftoken = getCookie("csrftoken");
 
-    const ajaxSettings = {
-        url: request.url,
-        type: request.type,
-        data: request.data,
-        async: request.async,
-        headers: request.headers,
-        beforeSend: (xhr, settings) => {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            };
+    if (request.data instanceof FormData && request.data.get("id") === "create_application") {
+        fetch(request.url, {
+            method: request.type,
+            body: request.data,
+            headers: {
+                "X-CSRFToken": csrftoken,
+            }
+        })
+        .then(response => {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            function readStream() {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        console.log("Stream complete");
+                        return;
+                    };
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const messages = chunk.split("\n").filter(msg => msg.trim() !== "");
+                    
+                    messages.forEach(msg => {
+                        try {
+                            const data = JSON.parse(msg);
+                            console.log(data);
+                            handleAjaxCallback(data);
+                        } catch (e) {
+                            console.error("Error parsing JSON: ", e);
+                        };
+                    });
+
+                    readStream();
+                });
+            }
+
+            readStream();
+        })
+        .catch(error => {
+            console.error("Fetch error: ", error);
+        });
+    } else {
+        const ajaxSettings = {
+            url: request.url,
+            type: request.type,
+            data: request.data,
+            async: request.async,
+            headers: request.headers,
+            beforeSend: (xhr, settings) => {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                };
+            }
         }
-    }
-
-    if (request.data instanceof FormData) {
-        ajaxSettings.processData = false;
-        ajaxSettings.contentType = false;
+    
+        if (request.data instanceof FormData) {
+            ajaxSettings.processData = false;
+            ajaxSettings.contentType = false;
+        };
+    
+        $.ajax(ajaxSettings).done((response) => {
+            console.log(response);
+            handleAjaxCallback(response);
+        }).fail((errorThrown, status) => {
+            console.log(`${errorThrown.status} ${errorThrown.statusText}\n${status}`);
+        });
     };
-
-    $.ajax(ajaxSettings).done((response) => {
-        console.log(response);
-        handleAjaxCallback(response);
-    }).fail((errorThrown, status) => {
-        console.log(`${errorThrown.status} ${errorThrown.statusText}\n${status}`);
-    });
 }
 
 function handleAjaxCallback(response) {
@@ -375,7 +418,9 @@ function handleAjaxCallback(response) {
 
     // requestCreateApplication()
     else if (response.id === "create_application") {
-        if (response.status === "DONE") {
+        if (response.status === "PROCESSING") {
+            displayButtonMsg(true, id_filter_or_checkout, "descr", response.msg);
+        } else if (response.status === "DONE") {
             displayButtonMsg(true, id_filter_or_checkout, "descr", response.msg);
             displayButtonMsg(false, id_filter_or_checkout, "error");
             sessionStorage.removeItem("cart");
@@ -424,9 +469,11 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_filter_or_checkout, "error", response.msg);
         };
 
-        spins.forEach((spin) => {
-            spin.classList.add("hidden");
-        });
+        if (response.status !== "PROCESSING") {
+            spins.forEach((spin) => {
+                spin.classList.add("hidden");
+            });
+        };
     }
 
     // requestFindInstructor()

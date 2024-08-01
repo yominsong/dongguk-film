@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from urllib.parse import urlencode
@@ -549,6 +549,384 @@ def update_equipment_hour(data: dict):
 #
 
 
+def create_application(request):
+    id = request.POST.get("id", None)
+    cart = json.loads(request.POST.get("cart", "[]"))
+
+    def stream_response():
+        public_id = private_id = None
+        unavailable_item_list = alternative_item_list = []
+        status, reason, msg = "PROCESSING", "INITIALIZING", "잠시만 기다려주세요."
+        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+
+        # status = "FAIL"
+        # reason = "UNAVAILABLE_ITEM"
+        # msg = "앗, 대여할 수 없는 기자재가 있어요!"
+
+        # Check for unavailable items
+        item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
+        item_id_string = ", ".join(item_id_list)
+        fields = ["Collection ID", "ID", "Name", "Status"]
+        formula = f"AND(OR({item_id_string}), Status != 'Available')"
+
+        data = {
+            "table_name": "equipment-item",
+            "params": {
+                "view": "Grid view",
+                "fields": fields,
+                "formula": formula,
+            },
+        }
+
+        unavailable_item_list = airtable("get_all", "records", data)
+
+        # Find alternative items
+        if (len(unavailable_item_list)) > 0:
+            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대여 불가 기자재가 있어 대체 기자재를 찾고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            purpose_keyword = cart[0]["purpose"]["keyword"]
+
+            collection_id_list = [
+                f"{{Collection ID}} = '{item['collection_id']}'"
+                for item in unavailable_item_list
+            ]
+
+            collection_id_string = ", ".join(collection_id_list)
+            fields = ["Collection ID"]
+            formula = f"AND(OR({collection_id_string}), FIND('{purpose_keyword}', Purpose), Status = 'Available')"
+
+            data = {
+                "table_name": "equipment-item",
+                "params": {
+                    "view": "Grid view",
+                    "fields": fields,
+                    "formula": formula,
+                },
+            }
+
+            alternative_item_list = airtable("get_all", "records", data)
+
+        # Replace unavailable items with alternatives
+        if len(alternative_item_list) > 0:
+            status, reason, msg = "PROCESSING", "REPLACING_UNAVAILABLE_ITEM", "대여 불가 기자재를 대체 기자재로 교체하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            alternative_items_by_collection = {}
+
+            for item in alternative_item_list:
+                collection_id = item["collection_id"]
+
+                if collection_id not in alternative_items_by_collection:
+                    alternative_items_by_collection[collection_id] = []
+
+                alternative_items_by_collection[collection_id].append(item)
+
+            for i, cart_item in enumerate(cart):
+                cart_item_id = cart_item["item_id"]
+                cart_collection_id = cart_item["collection_id"]
+
+                unavailable = any(
+                    unavailable_item["collection_id"] == cart_collection_id
+                    and unavailable_item["item_id"] == cart_item_id
+                    for unavailable_item in unavailable_item_list
+                )
+
+                if (
+                    unavailable
+                    and cart_collection_id in alternative_items_by_collection
+                ):
+                    alternative_item = alternative_items_by_collection[
+                        cart_collection_id
+                    ][0]
+
+                    cart[i]["item_id"] = alternative_item["item_id"]
+                    cart[i]["record_id"] = alternative_item["record_id"]
+
+                    unavailable_item_list = [
+                        unavailable_item
+                        for unavailable_item in unavailable_item_list
+                        if not (
+                            unavailable_item["collection_id"] == cart_collection_id
+                            and unavailable_item["item_id"] == cart_item_id
+                        )
+                    ]
+
+        # Process signature
+        status, reason, msg = "PROCESSING", "PROCESSING_SIGNATURE", "서명을 처리하고 있어요."
+        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+        signature = request.FILES.get("signature")
+        signature_bs64_encoded_data = process_signature(signature)
+        student_name = request.user.metadata.name
+
+        if is_invalid_signature(signature_bs64_encoded_data, student_name):
+            status, reason, msg = "FAIL", "INVALID_SIGNATURE", "앗, 서명이 잘못된 것 같아요!"
+
+        elif len(unavailable_item_list) == 0:
+            # Prepare application data
+            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 사용 신청서 작성을 준비하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            is_for_instructor = cart[0]["purpose"]["for_instructor"]
+
+            if is_for_instructor:
+                project_record_id = None
+                film_title = "-"
+                project_id = subject_code = request.POST.get("subjectCode", None)
+                academic_year = request.POST.get("academicYear", None)
+                academic_semester = request.POST.get("academicSemester", None)
+                subject_name = request.POST.get("subjectName", None)
+                instructor_id = request.POST.get("instructor", None)
+                instructor_name = request.POST.get("instructorName", None)
+                director_student_id = director_name = director_phone_number = "-"
+
+                director_of_photography_student_id = director_of_photography_name = (
+                    director_of_photography_phone_number
+                ) = "-"
+
+                production_sound_mixer_student_id = production_sound_mixer_name = (
+                    production_sound_mixer_phone_number
+                ) = "-"
+
+                purpose_priority = cart[0]["purpose"]["priority"]
+            else:
+                project_record_id = request.POST.get("project", None)
+
+                data = {
+                    "table_name": "project-team",
+                    "params": {
+                        "view": "Grid view",
+                        "record_id": project_record_id,
+                    },
+                }
+
+                project = airtable("get", "record", data)
+                project_id = project["project_id"]
+                film_title = project["film_title"]
+
+                base_date = timezone.datetime.fromisoformat(
+                    project["created_time"]
+                ).date()
+
+                base_year = base_date.year
+                base_month = base_date.month
+                academic_year = f"{base_year}학년도"
+                academic_semester = "1학기" if base_month < 7 else "2학기"
+                instructor_id = project["instructor"]
+                purpose_priority = project["purpose"]["priority"]
+                found_instructor_list = find_instructor(purpose_priority, base_date)[0]
+
+                instuctor = next(
+                    (x for x in found_instructor_list if x["id"] == instructor_id), None
+                )
+
+                subject_code = instuctor["code"]
+                subject_name = instuctor["subject"]
+                instructor_name = instuctor["name"]
+                staff_list = project["staff"]
+
+                for staff in staff_list:
+                    position_priority = staff["position_priority"]
+                    student_id = staff["student_id"]
+
+                    if "A01" in position_priority:
+                        director_student_id = student_id
+                    if "C01" in position_priority:
+                        director_of_photography_student_id = student_id
+                    if "E02" in position_priority:
+                        production_sound_mixer_student_id = student_id
+
+                director = User.objects.get(username=director_student_id)
+                director_name = director.metadata.name
+                director_phone_number = director.metadata.phone
+
+                director_of_photography = User.objects.get(
+                    username=director_of_photography_student_id
+                )
+
+                director_of_photography_name = director_of_photography.metadata.name
+
+                director_of_photography_phone_number = (
+                    director_of_photography.metadata.phone
+                )
+
+                production_sound_mixer = User.objects.get(
+                    username=production_sound_mixer_student_id
+                )
+
+                production_sound_mixer_name = production_sound_mixer.metadata.name
+
+                production_sound_mixer_phone_number = (
+                    production_sound_mixer.metadata.phone
+                )
+
+            purpose_list = get_equipment_data("purpose")
+
+            purpose_keyword = next(
+                purpose["keyword"]
+                for purpose in purpose_list
+                if purpose["priority"] == purpose_priority
+            )
+
+            period = cart[0]["period"]
+            duration = split_period(period)[1]
+            duration = f"{duration}일" if duration > 0 else "당일"
+            start_date, end_date = get_start_end_date(cart)
+            start_time = request.POST.get("startTime")
+            end_time = request.POST.get("endTime")
+            start_time_record_id = request.POST.get("startTimeRecordId")
+            end_time_record_id = request.POST.get("endTimeRecordId")
+            start_datetime = f"{start_date}({get_weekday(str(start_date))}) {'{}:{}'.format(start_time[:2], start_time[2:])}"
+            end_datetime = f"{end_date}({get_weekday(str(end_date))}) {'{}:{}'.format(end_time[:2], end_time[2:])}"
+            date_str = timezone.now().strftime("%Y-%m-%d")
+            time_str = timezone.now().strftime("%H:%M:%S")
+            datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
+            student_id = request.user.username
+            student_name = request.user.metadata.name
+            status, reason, msg = "PROCESSING", "CREATING_APPLICATION", "기자재 사용 신청서를 작성하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+
+            replacements = {
+                "film_title": film_title,
+                "academic_year": academic_year,
+                "academic_semester": academic_semester,
+                "subject_code": subject_code,
+                "subject_name": subject_name,
+                "instructor_id": instructor_id,
+                "instructor_name": instructor_name,
+                "director_student_id": director_student_id,
+                "director_name": director_name,
+                "director_phone_number": director_phone_number,
+                "director_of_photography_student_id": director_of_photography_student_id,
+                "director_of_photography_name": director_of_photography_name,
+                "director_of_photography_phone_number": director_of_photography_phone_number,
+                "production_sound_mixer_student_id": production_sound_mixer_student_id,
+                "production_sound_mixer_name": production_sound_mixer_name,
+                "production_sound_mixer_phone_number": production_sound_mixer_phone_number,
+                "purpose": purpose_keyword,
+                "duration": duration,
+                "start_datetime": start_datetime,
+                "end_datetime": end_datetime,
+                "datetime": datetime,
+                "student_id": student_id,
+                "student_name": student_name,
+                "signature": "",
+            }
+
+            name_of_subject_or_project = (
+                subject_name if is_for_instructor else film_title
+            )
+
+            private_id = copy_equipment_use_request_form(
+                name_of_subject_or_project, student_id
+            )
+
+            add_editor_permission(private_id)
+            signature_id = upload_signature(signature, film_title, student_id)
+            make_file_public(signature_id)
+            insert_signature(private_id, signature_id)
+            GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
+            add_equipment_to_table(private_id, cart)
+            replace_text(private_id, replacements)
+            status, reason, msg = "PROCESSING", "COMPLETING_APPLICATION", "기자재 사용 신청서 작성을 완료하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+
+            if not is_for_instructor:
+                fields_to_mask = {
+                    "director": ["student_id", "name", "phone_number"],
+                    "director_of_photography": ["student_id", "name", "phone_number"],
+                    "production_sound_mixer": ["student_id", "name", "phone_number"],
+                }
+
+                for role, fields in fields_to_mask.items():
+                    for field in fields:
+                        key = f"{role}_{field}"
+                        if key in replacements:
+                            replacements[key] = mask_personal_information(
+                                field, replacements[key]
+                            )
+
+            replacements["instructor_id"] = mask_personal_information(
+                "instructor_id", instructor_id
+            )
+
+            replacements["instructor_name"] = mask_personal_information(
+                "name", instructor_name
+            )
+
+            replacements["student_id"] = mask_personal_information(
+                "student_id", student_id
+            )
+
+            replacements["student_name"] = mask_personal_information(
+                "name", student_name
+            )
+
+            replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
+            replacements["signature"] = "(서명 마스킹됨)"
+
+            public_id = copy_equipment_use_request_form(
+                name_of_subject_or_project, student_id, public=True
+            )
+
+            add_editor_permission(public_id)
+            add_equipment_to_table(public_id, cart)
+            replace_text(public_id, replacements)
+            make_file_public(public_id)
+            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 사용 신청 내역을 기록하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+
+            # Update equipment hour
+            data = {
+                "start_date": start_date,
+                "start_time_record_id": start_time_record_id,
+                "end_date": end_date,
+                "end_time_record_id": end_time_record_id,
+                "project_id": project_id,
+            }
+
+            update_equipment_hour(data)
+
+            # Create facility request
+            fields = {
+                "Category": "Equipment",
+                "Project team": [project_record_id] if not is_for_instructor else None,
+                "Subject name": subject_name,
+                "Start datetime": start_datetime,
+                "End datetime": end_datetime,
+                "Equipment item": [item["record_id"] for item in cart],
+                "User": request.user.username,
+                "Public ID": public_id,
+                "Private ID": private_id,
+                "For instructor": True if is_for_instructor else False,
+            }
+
+            data = {
+                "table_name": "facility-request",
+                "params": {
+                    "view": "Grid view",
+                    "fields": fields,
+                },
+            }
+
+            airtable("create", "record", data)
+            status, reason, msg = "DONE", "NOTHING_UNUSUAL", "기자재 사용 신청이 완료되었어요! 👍"
+        else:
+            status, reason, msg = "FAIL", "UNAVAILABLE_ITEM", "앗, 대여할 수 없는 기자재가 있어요!"
+
+        response = {
+            "id": id,
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "public_id": public_id,
+            "private_id": private_id,
+            "unavailable_item_list": unavailable_item_list,
+        }
+
+        yield json.dumps(response) + "\n"
+        send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
+
+    return StreamingHttpResponse(stream_response(), content_type="application/json")
+
+
 def equipment(request):
     id = request.POST.get("id", None)
     record_id = request.POST.get("recordId", None)
@@ -870,351 +1248,6 @@ def equipment(request):
 
     # id: create_application
     elif id == "create_application":
-        public_application_id = None
-        private_application_id = None
-        unavailable_item_list = []
-        alternative_item_list = []
-        status = "FAIL"
-        reason = "UNAVAILABLE_ITEM"
-        msg = "앗, 대여할 수 없는 기자재가 있어요!"
-        item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
-        item_id_string = ", ".join(item_id_list)
-        fields = ["Collection ID", "ID", "Name", "Status"]
-        formula = f"AND(OR({item_id_string}), Status != 'Available')"
-
-        data = {
-            "table_name": "equipment-item",
-            "params": {
-                "view": "Grid view",
-                "fields": fields,
-                "formula": formula,
-            },
-        }
-
-        unavailable_item_list = airtable("get_all", "records", data)
-
-        if (len(unavailable_item_list)) > 0:
-            purpose_keyword = cart[0]["purpose"]["keyword"]
-
-            collection_id_list = [
-                f"{{Collection ID}} = '{item['collection_id']}'"
-                for item in unavailable_item_list
-            ]
-
-            collection_id_string = ", ".join(collection_id_list)
-            fields = ["Collection ID"]
-            formula = f"AND(OR({collection_id_string}), FIND('{purpose_keyword}', Purpose), Status = 'Available')"
-
-            data = {
-                "table_name": "equipment-item",
-                "params": {
-                    "view": "Grid view",
-                    "fields": fields,
-                    "formula": formula,
-                },
-            }
-
-            alternative_item_list = airtable("get_all", "records", data)
-
-        if len(alternative_item_list) > 0:
-            alternative_items_by_collection = {}
-
-            for item in alternative_item_list:
-                collection_id = item["collection_id"]
-
-                if collection_id not in alternative_items_by_collection:
-                    alternative_items_by_collection[collection_id] = []
-
-                alternative_items_by_collection[collection_id].append(item)
-
-            for i, cart_item in enumerate(cart):
-                cart_item_id = cart_item["item_id"]
-                cart_collection_id = cart_item["collection_id"]
-
-                unavailable = any(
-                    unavailable_item["collection_id"] == cart_collection_id
-                    and unavailable_item["item_id"] == cart_item_id
-                    for unavailable_item in unavailable_item_list
-                )
-
-                if (
-                    unavailable
-                    and cart_collection_id in alternative_items_by_collection
-                ):
-                    alternative_item = alternative_items_by_collection[
-                        cart_collection_id
-                    ][0]
-
-                    cart[i]["item_id"] = alternative_item["item_id"]
-                    cart[i]["record_id"] = alternative_item["record_id"]
-
-                    unavailable_item_list = [
-                        unavailable_item
-                        for unavailable_item in unavailable_item_list
-                        if not (
-                            unavailable_item["collection_id"] == cart_collection_id
-                            and unavailable_item["item_id"] == cart_item_id
-                        )
-                    ]
-
-        signature = request.FILES.get("signature")
-        signature_bs64_encoded_data = process_signature(signature)
-        student_name = request.user.metadata.name
-
-        if is_invalid_signature(signature_bs64_encoded_data, student_name):
-            reason = "INVALID_SIGNATURE"
-            msg = "앗, 서명이 잘못된 것 같아요!"
-
-        elif len(unavailable_item_list) == 0:
-            status = "DONE"
-            reason = "NOTHING_UNUSUAL"
-            msg = "기자재 사용 신청서가 제출되었어요! 👍"
-            is_for_instructor = cart[0]["purpose"]["for_instructor"]
-
-            if is_for_instructor:
-                project_record_id = None
-                film_title = "-"
-                project_id = subject_code = request.POST.get("subjectCode", None)
-                academic_year = request.POST.get("academicYear", None)
-                academic_semester = request.POST.get("academicSemester", None)
-                subject_name = request.POST.get("subjectName", None)
-                instructor_id = request.POST.get("instructor", None)
-                instructor_name = request.POST.get("instructorName", None)
-                director_student_id = director_name = director_phone_number = "-"
-
-                director_of_photography_student_id = director_of_photography_name = (
-                    director_of_photography_phone_number
-                ) = "-"
-
-                production_sound_mixer_student_id = production_sound_mixer_name = (
-                    production_sound_mixer_phone_number
-                ) = "-"
-
-                purpose_priority = cart[0]["purpose"]["priority"]
-            else:
-                project_record_id = request.POST.get("project", None)
-
-                data = {
-                    "table_name": "project-team",
-                    "params": {
-                        "view": "Grid view",
-                        "record_id": project_record_id,
-                    },
-                }
-
-                project = airtable("get", "record", data)
-                project_id = project["project_id"]
-                film_title = project["film_title"]
-
-                base_date = timezone.datetime.fromisoformat(
-                    project["created_time"]
-                ).date()
-
-                base_year = base_date.year
-                base_month = base_date.month
-                academic_year = f"{base_year}학년도"
-                academic_semester = "1학기" if base_month < 7 else "2학기"
-                instructor_id = project["instructor"]
-                purpose_priority = project["purpose"]["priority"]
-                found_instructor_list = find_instructor(purpose_priority, base_date)[0]
-
-                instuctor = next(
-                    (x for x in found_instructor_list if x["id"] == instructor_id), None
-                )
-
-                subject_code = instuctor["code"]
-                subject_name = instuctor["subject"]
-                instructor_name = instuctor["name"]
-                staff_list = project["staff"]
-
-                for staff in staff_list:
-                    position_priority = staff["position_priority"]
-                    student_id = staff["student_id"]
-
-                    if "A01" in position_priority:
-                        director_student_id = student_id
-                    if "C01" in position_priority:
-                        director_of_photography_student_id = student_id
-                    if "E02" in position_priority:
-                        production_sound_mixer_student_id = student_id
-
-                director = User.objects.get(username=director_student_id)
-                director_name = director.metadata.name
-                director_phone_number = director.metadata.phone
-
-                director_of_photography = User.objects.get(
-                    username=director_of_photography_student_id
-                )
-
-                director_of_photography_name = director_of_photography.metadata.name
-
-                director_of_photography_phone_number = (
-                    director_of_photography.metadata.phone
-                )
-
-                production_sound_mixer = User.objects.get(
-                    username=production_sound_mixer_student_id
-                )
-
-                production_sound_mixer_name = production_sound_mixer.metadata.name
-
-                production_sound_mixer_phone_number = (
-                    production_sound_mixer.metadata.phone
-                )
-
-            purpose_list = get_equipment_data("purpose")
-
-            purpose_keyword = next(
-                purpose["keyword"]
-                for purpose in purpose_list
-                if purpose["priority"] == purpose_priority
-            )
-
-            period = cart[0]["period"]
-            duration = split_period(period)[1]
-            duration = f"{duration}일" if duration > 0 else "당일"
-            start_date, end_date = get_start_end_date(cart)
-            start_time = request.POST.get("startTime")
-            end_time = request.POST.get("endTime")
-            start_time_record_id = request.POST.get("startTimeRecordId")
-            end_time_record_id = request.POST.get("endTimeRecordId")
-            start_datetime = f"{start_date}({get_weekday(str(start_date))}) {'{}:{}'.format(start_time[:2], start_time[2:])}"
-            end_datetime = f"{end_date}({get_weekday(str(end_date))}) {'{}:{}'.format(end_time[:2], end_time[2:])}"
-            date_str = timezone.now().strftime("%Y-%m-%d")
-            time_str = timezone.now().strftime("%H:%M:%S")
-            datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
-            student_id = request.user.username
-            student_name = request.user.metadata.name
-
-            replacements = {
-                "film_title": film_title,
-                "academic_year": academic_year,
-                "academic_semester": academic_semester,
-                "subject_code": subject_code,
-                "subject_name": subject_name,
-                "instructor_id": instructor_id,
-                "instructor_name": instructor_name,
-                "director_student_id": director_student_id,
-                "director_name": director_name,
-                "director_phone_number": director_phone_number,
-                "director_of_photography_student_id": director_of_photography_student_id,
-                "director_of_photography_name": director_of_photography_name,
-                "director_of_photography_phone_number": director_of_photography_phone_number,
-                "production_sound_mixer_student_id": production_sound_mixer_student_id,
-                "production_sound_mixer_name": production_sound_mixer_name,
-                "production_sound_mixer_phone_number": production_sound_mixer_phone_number,
-                "purpose": purpose_keyword,
-                "duration": duration,
-                "start_datetime": start_datetime,
-                "end_datetime": end_datetime,
-                "datetime": datetime,
-                "student_id": student_id,
-                "student_name": student_name,
-                "signature": "",
-            }
-
-            name_of_subject_or_project = (
-                subject_name if is_for_instructor else film_title
-            )
-
-            private_application_id = copy_equipment_use_request_form(
-                name_of_subject_or_project, student_id
-            )
-
-            add_editor_permission(private_application_id)
-            signature_id = upload_signature(signature, film_title, student_id)
-            make_file_public(signature_id)
-            insert_signature(private_application_id, signature_id)
-            GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
-            add_equipment_to_table(private_application_id, cart)
-            replace_text(private_application_id, replacements)
-
-            if not is_for_instructor:
-                fields_to_mask = {
-                    "director": ["student_id", "name", "phone_number"],
-                    "director_of_photography": ["student_id", "name", "phone_number"],
-                    "production_sound_mixer": ["student_id", "name", "phone_number"],
-                }
-
-                for role, fields in fields_to_mask.items():
-                    for field in fields:
-                        key = f"{role}_{field}"
-                        if key in replacements:
-                            replacements[key] = mask_personal_information(
-                                field, replacements[key]
-                            )
-
-            replacements["instructor_id"] = mask_personal_information(
-                "instructor_id", instructor_id
-            )
-
-            replacements["instructor_name"] = mask_personal_information(
-                "name", instructor_name
-            )
-
-            replacements["student_id"] = mask_personal_information(
-                "student_id", student_id
-            )
-
-            replacements["student_name"] = mask_personal_information(
-                "name", student_name
-            )
-
-            replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
-            replacements["signature"] = "(서명 마스킹됨)"
-
-            public_application_id = copy_equipment_use_request_form(
-                name_of_subject_or_project, student_id, public=True
-            )
-
-            add_editor_permission(public_application_id)
-            add_equipment_to_table(public_application_id, cart)
-            replace_text(public_application_id, replacements)
-            make_file_public(public_application_id)
-
-            data = {
-                "start_date": start_date,
-                "start_time_record_id": start_time_record_id,
-                "end_date": end_date,
-                "end_time_record_id": end_time_record_id,
-                "project_id": project_id,
-            }
-
-            update_equipment_hour(data)
-
-            fields = {
-                "Category": "Equipment",
-                "Project team": [project_record_id] if not is_for_instructor else None,
-                "Subject name": subject_name,
-                "Start datetime": start_datetime,
-                "End datetime": end_datetime,
-                "Equipment item": [item["record_id"] for item in cart],
-                "User": request.user.username,
-                "Public ID": public_application_id,
-                "Private ID": private_application_id,
-                "For instructor": True if is_for_instructor else False,
-            }
-
-            data = {
-                "table_name": "facility-request",
-                "params": {
-                    "view": "Grid view",
-                    "fields": fields,
-                },
-            }
-
-            airtable("create", "record", data)
-
-        response = {
-            "id": id,
-            "status": status,
-            "reason": reason,
-            "msg": msg,
-            "public_application_id": public_application_id,
-            "private_application_id": private_application_id,
-            "unavailable_item_list": unavailable_item_list,
-        }
-
-        send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
+        return create_application(request)
 
     return JsonResponse(response)
