@@ -38,7 +38,7 @@ def delete_inactive_user(request):
             email = inactive_user_queryset[i].email
 
             mail_data = {
-                "type": "ADL",
+                "type": "INACTIVE_USER_AUTO_DELETED",
                 "email": email,
                 "content": {
                     "student_id": student_id,
@@ -279,8 +279,10 @@ def vcode(request):
                 "type": "IDENTITY_VERIFICATION_REQUIRED",
                 "email": email,
                 "phone": phone,
-                "email_content": email_vcode,
-                "phone_content": phone_vcode,
+                "content": {
+                    "email_vcode": email_vcode,
+                    "phone_vcode": phone_vcode,
+                },
             }
             mail_response = send_mail(data)
             sms_response = json.loads(send_sms(data))

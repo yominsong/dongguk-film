@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.mail import send_mail as django_send_mail
 from django.template.loader import render_to_string
+from .utils import mask_personal_information
 from .hangul import handle_hangul
 
 EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", "EMAIL_HOST_USER")
@@ -14,50 +15,71 @@ def send_mail(data):
     """
     - type | `str`:
         - IDENTITY_VERIFICATION_REQUIRED
-        - ADL: Automatically delete account
-        - MDL: Manually delete account
+        - INACTIVE_USER_AUTO_DELETED
+        - FACILITY_REQUEST_COMPLETED
     """
 
     type = data["type"]
+    email = data["email"]
+    content = data["content"]
 
     # type: "IDENTITY_VERIFICATION_REQUIRED"
     if type == "IDENTITY_VERIFICATION_REQUIRED":
-        email = data["email"]
-        content = data["email_content"]
-
+        email_vcode = content["email_vcode"]
         subject = "[디닷에프] 이메일 주소를 인증해주세요!"
-        message = f'회원가입 페이지에서 {handle_hangul(content, "을를", True)} 입력해주세요.'
-        from_email = EMAIL_HOST_USER
-        recipient_list = [email]
+        message = f'회원가입 페이지에서 {handle_hangul(email_vcode, "을를", True)} 입력해주세요.'
         html_message = render_to_string(
             "mail_base.html",
             {
                 "title": "이메일 주소를 인증해주세요!",
-                "body": "회원가입 페이지에서 아래 인증번호를 입력해주세요.",
-                "highlighted": content,
+                "body": "회원가입 페이지에서 다음 인증번호를 입력해주세요.",
+                "highlighted": email_vcode,
             },
         )
 
-    # type: "ADL"
-    elif type == "ADL":
-        email = data["email"]
-        student_id = data["content"]["student_id"]
-
+    # type: "INACTIVE_USER_AUTO_DELETED"
+    elif type == "INACTIVE_USER_AUTO_DELETED":
+        student_id = mask_personal_information("student_id", content["student_id"])
         subject = "[디닷에프] 계정이 안전하게 삭제되었어요!"
-        message = f'30일 간 로그인 이력이 없어 자동으로 삭제되었어요.'
-        from_email = EMAIL_HOST_USER
-        recipient_list = [email]
+        message = "30일간 로그인 기록이 없어 자동으로 삭제되었어요."
         html_message = render_to_string(
             "mail_base.html",
             {
                 "title": "계정이 안전하게 삭제되었어요!",
-                "body": "아래 학번의 계정이 30일 간 로그인 이력 부재로 자동으로 삭제되었어요.",
+                "body": "다음 학번의 계정이 30일간 로그인 기록 부재로 자동 삭제되었어요.",
                 "highlighted": student_id,
-                "conclusion": "디닷에프를 이용하시려면 다시 회원가입 해주세요.\n고맙습니다. 🙇",
+                "conclusion": "디닷에프를 다시 이용하려면 아래 버튼을 눌러 재가입해주세요. 감사합니다. 🙇",
+                "button": {
+                    "text": "디닷에프 재가입하기",
+                    "url": f"https://dongguk.film/accounts/login/",
+                },
             },
         )
 
-    # type: "MDL"
+    # type: "FACILITY_REQUEST_COMPLETED"
+    elif type == "FACILITY_REQUEST_COMPLETED":
+        is_for_instructor = content.get("is_for_instructor", False)
+        type = "교과목" if is_for_instructor else "프로젝트"
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요!"
+        message = f"내 계정 페이지에서 예약 상태를 확인하거나 취소할 수 있어요."
+        html_message = render_to_string(
+            "mail_base.html",
+            {
+                "title": f"{facility_category} 예약 신청이 완료되었어요!",
+                "body": f"다음 {type}의 {facility_category} 예약 신청이 완료되었어요.",
+                "highlighted": name_of_subject_or_project,
+                "conclusion": "내 계정 페이지에서 예약 상태를 확인하거나 취소할 수 있어요.",
+                "button": {
+                    "text": "내 계정 바로 가기",
+                    "url": f"https://dongguk.film/account",
+                },
+            },
+        )
+
+    from_email = EMAIL_HOST_USER
+    recipient_list = [email]
 
     response = django_send_mail(
         subject=subject,

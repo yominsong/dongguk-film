@@ -14,6 +14,7 @@ from utility.utils import (
     convert_datetime,
 )
 from utility.msg import send_msg
+from utility.mail import send_mail
 from utility.sms import send_sms
 from fake_useragent import UserAgent
 from google.oauth2 import service_account
@@ -454,17 +455,13 @@ def process_signature(signature):
     signature_image = Image.open(BytesIO(signature_file_data))
     a = signature_image.split()[3]  # Get the alpha channel
 
-    white_signature_image = Image.new(
-        "RGBA", signature_image.size, (255, 255, 255, 0)
-    )
+    white_signature_image = Image.new("RGBA", signature_image.size, (255, 255, 255, 0))
 
     white_signature_image.paste(signature_image, (0, 0), mask=a)
     buffered = BytesIO()
     white_signature_image.save(buffered, format="PNG")
 
-    signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode(
-        "utf-8"
-    )
+    signature_bs64_encoded_data = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
     return signature_bs64_encoded_data
 
@@ -557,8 +554,14 @@ def create_application(request):
         unavailable_item_list = alternative_item_list = []
 
         # Check for unavailable items
-        status, reason, msg = "PROCESSING", "CHECKING_FOR_UNAVAILABLE_ITEM", "사용 불가 기자재가 있는지 확인하고 있어요."
-        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+        status, reason, msg = (
+            "PROCESSING",
+            "CHECKING_FOR_UNAVAILABLE_ITEM",
+            "사용 불가 기자재가 있는지 확인하고 있어요.",
+        )
+        yield json.dumps(
+            {"id": id, "status": status, "reason": reason, "msg": msg}
+        ) + "\n"
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         fields = ["Collection ID", "ID", "Name", "Status"]
@@ -577,8 +580,14 @@ def create_application(request):
 
         # Find alternative items
         if (len(unavailable_item_list)) > 0:
-            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대체 기자재를 찾고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "FINDING_ALTERNATIVE_ITEM",
+                "대체 기자재를 찾고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
             purpose_keyword = cart[0]["purpose"]["keyword"]
 
             collection_id_list = [
@@ -603,8 +612,14 @@ def create_application(request):
 
         # Replace unavailable items with alternatives
         if len(alternative_item_list) > 0:
-            status, reason, msg = "PROCESSING", "REPLACING_UNAVAILABLE_ITEM", "사용 불가 기자재를 대체 기자재로 교체하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "REPLACING_UNAVAILABLE_ITEM",
+                "사용 불가 기자재를 대체 기자재로 교체하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
             alternative_items_by_collection = {}
 
             for item in alternative_item_list:
@@ -646,19 +661,35 @@ def create_application(request):
                     ]
 
         # Process signature
-        status, reason, msg = "PROCESSING", "PROCESSING_SIGNATURE", "서명을 처리하고 있어요."
-        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+        status, reason, msg = (
+            "PROCESSING",
+            "PROCESSING_SIGNATURE",
+            "서명을 처리하고 있어요.",
+        )
+        yield json.dumps(
+            {"id": id, "status": status, "reason": reason, "msg": msg}
+        ) + "\n"
         signature = request.FILES.get("signature")
         signature_bs64_encoded_data = process_signature(signature)
         student_name = request.user.metadata.name
 
         if is_invalid_signature(signature_bs64_encoded_data, student_name):
-            status, reason, msg = "FAIL", "INVALID_SIGNATURE", "앗, 서명이 잘못된 것 같아요!"
+            status, reason, msg = (
+                "FAIL",
+                "INVALID_SIGNATURE",
+                "앗, 서명이 잘못된 것 같아요!",
+            )
 
         elif len(unavailable_item_list) == 0:
             # Prepare application data
-            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION_DATA", "기자재 예약 신청 정보를 처리하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "PREPARING_APPLICATION_DATA",
+                "기자재 예약 신청 정보를 처리하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
             if is_for_instructor:
@@ -775,8 +806,14 @@ def create_application(request):
             datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
             student_id = request.user.username
             student_name = request.user.metadata.name
-            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 예약 신청서를 준비하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "PREPARING_APPLICATION",
+                "기자재 예약 신청서를 준비하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
 
             replacements = {
                 "film_title": film_title,
@@ -816,14 +853,26 @@ def create_application(request):
             add_editor_permission(private_id)
             signature_id = upload_signature(signature, film_title, student_id)
             make_file_public(signature_id)
-            status, reason, msg = "PROCESSING", "WRITING_APPLICATION", "기자재 예약 신청서를 작성하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "WRITING_APPLICATION",
+                "기자재 예약 신청서를 작성하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
             insert_signature(private_id, signature_id)
             GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
             add_equipment_to_table(private_id, cart)
             replace_text(private_id, replacements)
-            status, reason, msg = "PROCESSING", "FINDING_PERSONAL_INFORMATION", "마스킹할 개인정보를 찾고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "FINDING_PERSONAL_INFORMATION",
+                "마스킹할 개인정보를 찾고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
 
             if not is_for_instructor:
                 fields_to_mask = {
@@ -864,13 +913,25 @@ def create_application(request):
             )
 
             add_editor_permission(public_id)
-            status, reason, msg = "PROCESSING", "MASKING_PERSONAL_INFORMATION", "개인정보를 마스킹하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "MASKING_PERSONAL_INFORMATION",
+                "개인정보를 마스킹하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
             add_equipment_to_table(public_id, cart)
             replace_text(public_id, replacements)
             make_file_public(public_id)
-            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 예약 신청 정보를 저장하고 있어요."
-            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
+            status, reason, msg = (
+                "PROCESSING",
+                "CREATING_RECORD",
+                "기자재 예약 신청 정보를 저장하고 있어요.",
+            )
+            yield json.dumps(
+                {"id": id, "status": status, "reason": reason, "msg": msg}
+            ) + "\n"
 
             # Update equipment hour
             data = {
@@ -906,9 +967,17 @@ def create_application(request):
             }
 
             airtable("create", "record", data)
-            status, reason, msg = "DONE", "NOTHING_UNUSUAL", "기자재 예약 신청이 완료되었어요! 👍"
+            status, reason, msg = (
+                "DONE",
+                "NOTHING_UNUSUAL",
+                "기자재 예약 신청이 완료되었어요! 👍",
+            )
         else:
-            status, reason, msg = "FAIL", "UNAVAILABLE_ITEM", "앗, 대여할 수 없는 기자재가 있어요!"
+            status, reason, msg = (
+                "FAIL",
+                "UNAVAILABLE_ITEM",
+                "앗, 대여할 수 없는 기자재가 있어요!",
+            )
 
         response = {
             "id": id,
@@ -925,10 +994,17 @@ def create_application(request):
 
         data = {
             "type": "FACILITY_REQUEST_COMPLETED",
+            "email": request.user.email,
             "phone": request.user.metadata.phone,
-            "phone_content": f"{name_of_subject_or_project} 기자재",
+            "content": {
+                "is_for_instructor": is_for_instructor,
+                "name_of_subject_or_project": f"{name_of_subject_or_project}",
+                "facility_category": "기자재",
+                "public_id": public_id,
+            },
         }
 
+        send_mail(data)
         send_sms(data)
 
     response = StreamingHttpResponse(stream_response(), content_type="application/json")
@@ -1235,7 +1311,7 @@ def equipment(request):
 
                 if date_count.get(start_date, 0) >= hour["max_capacity"]:
                     start_hour["available"] = False
-                
+
                 if date_count.get(end_date, 0) >= hour["max_capacity"]:
                     end_hour["available"] = False
 

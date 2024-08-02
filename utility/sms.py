@@ -43,29 +43,32 @@ def init_service():
 #
 
 
-def send_sms(data):
+def send_sms(data: dict):
     """
     - type | `str`:
         - IDENTITY_VERIFICATION_REQUIRED
         - FACILITY_REQUEST_COMPLETED
+    - content | `dict`
     """
 
     type = data["type"]
-    key_content = data.get("phone_content", None)
+    content = data.get("content", {})
 
     # type: "IDENTITY_VERIFICATION_REQUIRED"
     if type == "IDENTITY_VERIFICATION_REQUIRED":
-        content = (
-            f'[디닷에프] 휴대전화 번호 인증번호는 {handle_hangul(key_content, "이에요예요", True)}!'
-        )
-    
+        phone_vcode = content["phone_vcode"]
+        content = f'[디닷에프] 휴대전화 번호 인증번호는 [{phone_vcode}]{handle_hangul(phone_vcode, "이에요예요", False)}!'
+
     # type: "FACILITY_REQUEST_COMPLETED"
     elif type == "FACILITY_REQUEST_COMPLETED":
-        content = f'[디닷에프] {key_content} 예약 신청이 완료되었어요. https://dongguk.film/account'
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요! https://dongguk.film/account"
 
     service = init_service()
     from_no = MGT_PHONE
     to_no = "".join(filter(str.isalnum, data["phone"]))
+
     msg_data = {
         "type": "SMS",
         "countryCode": "82",
@@ -74,6 +77,7 @@ def send_sms(data):
         "content": content,
         "messages": [{"to": to_no}],
     }
+
     response = requests.post(
         service["sms_url"],
         data=json.dumps(msg_data),

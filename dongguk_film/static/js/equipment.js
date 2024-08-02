@@ -1669,7 +1669,7 @@ function updateForm(action, datasetObj = null) {
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
-            keyword.innerText = "신청하기";
+            keyword.innerText = "예약 신청하기";
         });
 
         const id_purpose_in_cart = code(id_purpose, "_in_cart");
