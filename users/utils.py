@@ -276,13 +276,11 @@ def vcode(request):
                 will_expire_on=will_expire_on,
             )
             data = {
-                "type": "SNP",
+                "type": "IDENTITY_VERIFICATION_REQUIRED",
                 "email": email,
                 "phone": phone,
-                "content": {
-                    "email_vcode": email_vcode,
-                    "phone_vcode": phone_vcode,
-                },
+                "email_content": email_vcode,
+                "phone_content": phone_vcode,
             }
             mail_response = send_mail(data)
             sms_response = json.loads(send_sms(data))

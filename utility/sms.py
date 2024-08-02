@@ -45,24 +45,27 @@ def init_service():
 
 def send_sms(data):
     """
-    type: "SNP"
-
-    SNP: Sign up
+    - type | `str`:
+        - IDENTITY_VERIFICATION_REQUIRED
+        - FACILITY_REQUEST_COMPLETED
     """
 
-    # type: "SNP"
     type = data["type"]
+    key_content = data.get("phone_content", None)
 
-    if type == "SNP":
-        phone_vcode = data["content"]["phone_vcode"]
-        raw_content = (
-            f'[디닷에프] 휴대전화 번호 인증번호는 {handle_hangul(phone_vcode, "이에요예요", True)}!'
+    # type: "IDENTITY_VERIFICATION_REQUIRED"
+    if type == "IDENTITY_VERIFICATION_REQUIRED":
+        content = (
+            f'[디닷에프] 휴대전화 번호 인증번호는 {handle_hangul(key_content, "이에요예요", True)}!'
         )
+    
+    # type: "FACILITY_REQUEST_COMPLETED"
+    elif type == "FACILITY_REQUEST_COMPLETED":
+        content = f'[디닷에프] 시설 사용 신청이 완료되었어요. https://dongguk.film/account'
 
     service = init_service()
     from_no = MGT_PHONE
     to_no = "".join(filter(str.isalnum, data["phone"]))
-    content = raw_content
     msg_data = {
         "type": "SMS",
         "countryCode": "82",

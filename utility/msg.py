@@ -299,24 +299,28 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     # msg_type: "CREATE_EQUIPMENT_APPLICATION"
     elif msg_type == "CREATE_EQUIPMENT_APPLICATION":
         reason = data.get("reason", "Unknown")
-        public_application_id = data.get("public_application_id", "Unknown")
-        private_application_id = data.get("private_application_id", "Unknown")
-        public_application_url = None
-        private_application_url = None
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
 
-        if public_application_id not in [
+        if public_id not in [
             None,
             "",
             "Unknown",
-        ] and private_application_id not in [None, "", "Unknown"]:
-            public_application_url = (
-                f"https://docs.google.com/document/d/{public_application_id}"
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
             )
-            private_application_url = (
-                f"https://docs.google.com/document/d/{private_application_id}"
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
             )
 
         occupied_item_list = data.get("occupied_item_list", [])
+        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        if len(occupied_item_list) > 0:
+            description += f"\nㆍ대여 불가 기자재: {occupied_item_list}"
 
         content = {
             "important": True if status == "FAIL" else False,
@@ -329,7 +333,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{status_emoji} 기자재 사용 신청 {status_in_kor}",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
-            "description": f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_application_url}\nㆍ비공개 신청서 URL: {private_application_url}\nㆍ대여 불가 기자재: {occupied_item_list}",
+            "description": description,
         }
 
     # msg_type: "CREATE_PROJECT"

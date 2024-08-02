@@ -3,7 +3,6 @@ from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from urllib.parse import urlencode
-from .models import Cart
 from utility.hangul import handle_hangul
 from utility.utils import (
     mask_personal_information,
@@ -12,18 +11,18 @@ from utility.utils import (
     find_instructor,
     chat_gpt,
     airtable,
-    notion,
     convert_datetime,
 )
 from utility.msg import send_msg
+from utility.sms import send_sms
 from fake_useragent import UserAgent
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from collections import Counter
-from PIL import Image, ImageOps
+from PIL import Image
 from io import BytesIO
-import json, ast, base64
+import json, base64
 
 #
 # Global variables
@@ -578,7 +577,7 @@ def create_application(request):
 
         # Find alternative items
         if (len(unavailable_item_list)) > 0:
-            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대여 불가 기자재가 있어 대체 기자재를 찾고 있어요."
+            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대여 불가 기자재의 대체 기자재를 찾고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             purpose_keyword = cart[0]["purpose"]["keyword"]
 
@@ -919,6 +918,13 @@ def create_application(request):
 
         yield json.dumps(response) + "\n"
         send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
+
+        data = {
+            "type": "FACILITY_REQUEST_COMPLETED",
+            "phone": request.user.metadata.phone,
+        }
+
+        send_sms(data)
 
     response = StreamingHttpResponse(stream_response(), content_type="application/json")
     response["X-Accel-Buffering"] = "no"
