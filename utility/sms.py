@@ -61,7 +61,7 @@ def send_sms(data):
     
     # type: "FACILITY_REQUEST_COMPLETED"
     elif type == "FACILITY_REQUEST_COMPLETED":
-        content = f'[디닷에프] 시설 사용 신청이 완료되었어요. https://dongguk.film/account'
+        content = f'[디닷에프] {key_content} 사용 신청이 완료되었어요. https://dongguk.film/account'
 
     service = init_service()
     from_no = MGT_PHONE

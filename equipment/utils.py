@@ -922,6 +922,7 @@ def create_application(request):
         data = {
             "type": "FACILITY_REQUEST_COMPLETED",
             "phone": request.user.metadata.phone,
+            "phone_content": f"{name_of_subject_or_project} 기자재",
         }
 
         send_sms(data)
