@@ -320,7 +320,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         if len(occupied_item_list) > 0:
-            description += f"\nㆍ대여 불가 기자재: {occupied_item_list}"
+            description += f"\nㆍ사용 불가 기자재: {occupied_item_list}"
 
         content = {
             "important": True if status == "FAIL" else False,

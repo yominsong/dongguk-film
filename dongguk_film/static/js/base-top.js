@@ -455,8 +455,8 @@ function handleAjaxCallback(response) {
 
                     // targetItem.classList.add("bg-flamingo-50");
 
-                    if (!targetItemInfo.innerHTML.includes("대여 불가")) {
-                        targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">대여 불가</span>`;
+                    if (!targetItemInfo.innerHTML.includes("사용 불가")) {
+                        targetItemInfo.innerHTML += ` · <span class="font-semibold text-red-600">사용 불가</span>`;
                     };
                 });
             } else if (response.reason === "INVALID_SIGNATURE") {

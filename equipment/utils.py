@@ -555,10 +555,10 @@ def create_application(request):
     def stream_response():
         public_id = private_id = None
         unavailable_item_list = alternative_item_list = []
-        status, reason, msg = "PROCESSING", "INITIALIZING", "잠시만 기다려주세요."
-        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
         # Check for unavailable items
+        status, reason, msg = "PROCESSING", "CHECKING_FOR_UNAVAILABLE_ITEM", "사용 불가 기자재가 있는지 확인하고 있어요."
+        yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         fields = ["Collection ID", "ID", "Name", "Status"]
@@ -577,7 +577,7 @@ def create_application(request):
 
         # Find alternative items
         if (len(unavailable_item_list)) > 0:
-            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대여 불가 기자재의 대체 기자재를 찾고 있어요."
+            status, reason, msg = "PROCESSING", "FINDING_ALTERNATIVE_ITEM", "대체 기자재를 찾고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             purpose_keyword = cart[0]["purpose"]["keyword"]
 
@@ -603,7 +603,7 @@ def create_application(request):
 
         # Replace unavailable items with alternatives
         if len(alternative_item_list) > 0:
-            status, reason, msg = "PROCESSING", "REPLACING_UNAVAILABLE_ITEM", "대여 불가 기자재를 대체 기자재로 교체하고 있어요."
+            status, reason, msg = "PROCESSING", "REPLACING_UNAVAILABLE_ITEM", "사용 불가 기자재를 대체 기자재로 교체하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             alternative_items_by_collection = {}
 
@@ -657,7 +657,7 @@ def create_application(request):
 
         elif len(unavailable_item_list) == 0:
             # Prepare application data
-            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 예약 신청서 작성을 준비하고 있어요."
+            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION_DATA", "기자재 예약 신청 정보를 처리하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
@@ -775,7 +775,7 @@ def create_application(request):
             datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
             student_id = request.user.username
             student_name = request.user.metadata.name
-            status, reason, msg = "PROCESSING", "CREATING_APPLICATION", "기자재 예약 신청서를 작성하고 있어요."
+            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 예약 신청서를 준비하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             replacements = {
@@ -816,11 +816,13 @@ def create_application(request):
             add_editor_permission(private_id)
             signature_id = upload_signature(signature, film_title, student_id)
             make_file_public(signature_id)
+            status, reason, msg = "PROCESSING", "WRITING_APPLICATION", "기자재 예약 신청서를 작성하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             insert_signature(private_id, signature_id)
             GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
             add_equipment_to_table(private_id, cart)
             replace_text(private_id, replacements)
-            status, reason, msg = "PROCESSING", "COMPLETING_APPLICATION", "기자재 예약 신청서 작성을 완료하고 있어요."
+            status, reason, msg = "PROCESSING", "FINDING_PERSONAL_INFORMATION", "마스킹할 개인정보를 찾고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             if not is_for_instructor:
@@ -862,10 +864,12 @@ def create_application(request):
             )
 
             add_editor_permission(public_id)
+            status, reason, msg = "PROCESSING", "MASKING_PERSONAL_INFORMATION", "개인정보를 마스킹하고 있어요."
+            yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             add_equipment_to_table(public_id, cart)
             replace_text(public_id, replacements)
             make_file_public(public_id)
-            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 예약 신청 내역을 기록하고 있어요."
+            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 예약 신청 정보를 저장하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             # Update equipment hour
