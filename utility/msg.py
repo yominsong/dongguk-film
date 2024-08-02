@@ -330,7 +330,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{status_emoji} 기자재 사용 신청 {status_in_kor}",
+            "title": f"{status_emoji} 기자재 예약 신청 {status_in_kor}",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,

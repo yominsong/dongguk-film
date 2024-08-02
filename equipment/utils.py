@@ -331,7 +331,7 @@ def copy_equipment_use_request_form(
         .copy(
             fileId=GOOGLE_DOCS_TEMPLATE_ID["equipment_use_request_form"],
             body={
-                "name": f"{name_of_subject_or_project} {student_id} 기자재 사용 신청서"
+                "name": f"{name_of_subject_or_project} {student_id} 기자재 예약 신청서"
             },
         )
         .execute()
@@ -657,7 +657,7 @@ def create_application(request):
 
         elif len(unavailable_item_list) == 0:
             # Prepare application data
-            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 사용 신청서 작성을 준비하고 있어요."
+            status, reason, msg = "PROCESSING", "PREPARING_APPLICATION", "기자재 예약 신청서 작성을 준비하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
@@ -775,7 +775,7 @@ def create_application(request):
             datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
             student_id = request.user.username
             student_name = request.user.metadata.name
-            status, reason, msg = "PROCESSING", "CREATING_APPLICATION", "기자재 사용 신청서를 작성하고 있어요."
+            status, reason, msg = "PROCESSING", "CREATING_APPLICATION", "기자재 예약 신청서를 작성하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             replacements = {
@@ -820,7 +820,7 @@ def create_application(request):
             GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
             add_equipment_to_table(private_id, cart)
             replace_text(private_id, replacements)
-            status, reason, msg = "PROCESSING", "COMPLETING_APPLICATION", "기자재 사용 신청서 작성을 완료하고 있어요."
+            status, reason, msg = "PROCESSING", "COMPLETING_APPLICATION", "기자재 예약 신청서 작성을 완료하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             if not is_for_instructor:
@@ -865,7 +865,7 @@ def create_application(request):
             add_equipment_to_table(public_id, cart)
             replace_text(public_id, replacements)
             make_file_public(public_id)
-            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 사용 신청 내역을 기록하고 있어요."
+            status, reason, msg = "PROCESSING", "CREATING_RECORD", "기자재 예약 신청 내역을 기록하고 있어요."
             yield json.dumps({"id": id, "status": status, "reason": reason, "msg": msg}) + "\n"
 
             # Update equipment hour
@@ -902,7 +902,7 @@ def create_application(request):
             }
 
             airtable("create", "record", data)
-            status, reason, msg = "DONE", "NOTHING_UNUSUAL", "기자재 사용 신청이 완료되었어요! 👍"
+            status, reason, msg = "DONE", "NOTHING_UNUSUAL", "기자재 예약 신청이 완료되었어요! 👍"
         else:
             status, reason, msg = "FAIL", "UNAVAILABLE_ITEM", "앗, 대여할 수 없는 기자재가 있어요!"
 

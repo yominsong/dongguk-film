@@ -280,7 +280,7 @@ function getKoreanCharacterCount(str) {
 function displayErrorInSignatureCanvas(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
-            id_signature_canvas_error.innerText = "기자재 사용 신청을 위해 서약해주세요.";
+            id_signature_canvas_error.innerText = "기자재 예약 신청을 위해 서약해주세요.";
         } else if (errorType === "invalid") {
             id_signature_canvas_error.innerText = `${userName}님의 성명 ${getKoreanCharacterCount(userName)} 글자를 정자체로 써주세요.`;
         };
@@ -1634,7 +1634,7 @@ function updateForm(action, datasetObj = null) {
             });
 
             id_modal_cart.classList.remove("-mb-5");
-            id_filter_or_checkout_text.innerText = "예약하기";
+            id_filter_or_checkout_text.innerText = "신청하기";
             id_filter_or_checkout.classList.replace("hidden", "inline-flex");
             id_filter_or_checkout.classList.add("class-checkout");
         };
@@ -1660,7 +1660,7 @@ function updateForm(action, datasetObj = null) {
     // Middle action: checkout
     else if (action === "checkout") {
         if (!isAuthenticated()) return;
-        if (id_filter_or_checkout_text.innerText !== "예약하기") return;
+        if (id_filter_or_checkout_text.innerText !== "신청하기") return;
 
         id_modal_filter.hidden = true;
         id_modal_cart.hidden = false;
@@ -1669,7 +1669,7 @@ function updateForm(action, datasetObj = null) {
         id_modal_share.hidden = true;
 
         class_keywords.forEach(keyword => {
-            keyword.innerText = "예약하기";
+            keyword.innerText = "신청하기";
         });
 
         const id_purpose_in_cart = code(id_purpose, "_in_cart");
@@ -2218,7 +2218,7 @@ function initRequest() {
                 if (userRequestIsMade(type, event)) {
                     const requestButtonText = id_filter_or_checkout_text.innerText.trim();
                     const readyToFilter = requestButtonText.indexOf("적용하기") !== -1 && isItOkayToSubmitForm();
-                    const readyToCheckout = requestButtonText === "예약하기";
+                    const readyToCheckout = requestButtonText === "신청하기";
 
                     if (readyToFilter) {
                         const readyToResetCart = requestButtonText.indexOf("초기화") !== -1;
