@@ -74,7 +74,7 @@ function updateList(data) {
         let msg;
 
         if (data.target === "facility") {
-            msg = "내가 사용한 시설이";
+            msg = "내가 예약한 시설이";
         } else if (data.target === "project") {
             msg = "내가 참여한 프로젝트가";
         } else if (data.target === "dflink") {
@@ -95,7 +95,7 @@ function updateList(data) {
     let targetInKorean;
 
     if (data.target === "facility") {
-        targetInKorean = "시설사용";
+        targetInKorean = "시설예약";
     } else if (data.target === "project") {
         targetInKorean = "프로젝트";
     } else if (data.target === "dflink") {
