@@ -154,18 +154,18 @@ def equipment(request):
 
     if not purpose_priority:
         equipment_collection_list = [
-            equipment
-            for equipment in equipment_collection_list
-            if equipment["category"]["priority"] == category_priority
+            collection
+            for collection in equipment_collection_list
+            if collection["category"]["priority"] == category_priority
         ]
     else:
         equipment_collection_list = [
-            equipment
-            for equipment in equipment_collection_list
+            collection
+            for collection in equipment_collection_list
             if (
-                equipment["category"]["priority"] == category_priority
+                collection["category"]["priority"] == category_priority
                 and any(
-                    purpose_priority in purpose for purpose in equipment["item_purpose"]
+                    purpose_priority in purpose for purpose in collection["item_purpose"]
                 )
             )
         ]
@@ -198,13 +198,23 @@ def equipment(request):
     if query:
         query = query.lower().replace(" ", "")
         query_result_list = []
-        for equipment in equipment_collection_list:
-            for k, v in equipment.items():
-                if isinstance(v, str):
-                    v = v.lower().replace(" ", "")
-                    if equipment not in query_result_list:
+        
+        for collection in equipment_collection_list:
+            if collection not in query_result_list:
+                for k, v in collection.items():
+                    if isinstance(v, str):
+                        v = v.lower().replace(" ", "")
+
                         if query in v:
-                            query_result_list.append(equipment)
+                            query_result_list.append(collection)
+                            break
+                    elif k == "subcategory" and isinstance(v, dict):
+                        if "keyword" in v and isinstance(v["keyword"], str):
+                            keyword = v["keyword"].lower().replace(" ", "")
+
+                            if query in keyword:
+                                query_result_list.append(collection)
+                                break
 
         equipment_collection_list = query_result_list
         search_result_count = len(query_result_list)

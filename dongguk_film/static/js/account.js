@@ -120,6 +120,8 @@ function updateList(data) {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20"
             } else if (item.status === "Rejected") {
                 badgeColor = "text-red-700 bg-red-50 ring-red-600/10"
+            } else if (item.status === "Canceled") {
+                badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10"
             } else if (item.status === "In Progress") {
                 badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
             } else if (item.status === "Completed") {
@@ -134,6 +136,8 @@ function updateList(data) {
                 status = "승인";
             } else if (item.status === "Rejected") {
                 status = "반려";
+            } else if (item.status === "Canceled") {
+                status = "취소";
             } else if (item.status === "In Progress") {
                 status = "진행";
             } else if (item.status === "Completed") {

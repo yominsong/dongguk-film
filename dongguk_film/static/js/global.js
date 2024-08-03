@@ -118,7 +118,14 @@ function initSearchBar() {
         ["click", "keyup"].forEach(type => {
             id_init_query.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    location.href = `${location.origin}${location.pathname}`;
+                    urlParams.delete("q");
+
+                    if (urlParams.size > 0) {
+                        location.href = `${location.origin}${location.pathname}?${urlParams.toString()}`;
+                    } else {
+                        location.href = `${location.origin}${location.pathname}`;
+                    };
+
                     id_query.readOnly = true;
                     id_submit_query.disabled = true;
                 };

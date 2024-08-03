@@ -2599,6 +2599,11 @@ select {
   background-color: rgb(254 252 232 / var(--tw-bg-opacity));
 }
 
+.bg-pink-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 242 248 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-75 {
   --tw-bg-opacity: 0.75;
 }
@@ -3054,6 +3059,11 @@ select {
   color: rgb(161 98 7 / var(--tw-text-opacity));
 }
 
+.text-pink-700 {
+  --tw-text-opacity: 1;
+  color: rgb(190 24 93 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -3212,6 +3222,14 @@ select {
 
 .ring-yellow-600\/20 {
   --tw-ring-color: rgb(202 138 4 / 0.2);
+}
+
+.ring-pink-600\/20 {
+  --tw-ring-color: rgb(219 39 119 / 0.2);
+}
+
+.ring-pink-700\/10 {
+  --tw-ring-color: rgb(190 24 93 / 0.1);
 }
 
 .ring-opacity-5 {
