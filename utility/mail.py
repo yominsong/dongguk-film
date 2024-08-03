@@ -63,16 +63,16 @@ def send_mail(data):
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
         subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요!"
-        message = f"내 계정 페이지에서 예약 상태를 확인하거나 취소할 수 있어요."
+        message = f"내 계정 페이지에서 신청 내역을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",
             {
                 "title": f"{facility_category} 예약 신청이 완료되었어요!",
                 "body": f"다음 {type}의 {facility_category} 예약 신청이 완료되었어요.",
                 "highlighted": name_of_subject_or_project,
-                "conclusion": "내 계정 페이지에서 예약 상태를 확인하거나 취소할 수 있어요.",
+                "conclusion": "아래 버튼을 눌러 신청 내역을 확인해보세요.",
                 "button": {
-                    "text": "내 계정 바로 가기",
+                    "text": "신청 내역 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },
