@@ -545,7 +545,7 @@ def update_equipment_hour(data: dict):
 #
 
 
-def create_application(request):
+def create_request(request):
     id = request.POST.get("id", None)
     cart = json.loads(request.POST.get("cart", "[]"))
 
@@ -681,10 +681,10 @@ def create_application(request):
             )
 
         elif len(unavailable_item_list) == 0:
-            # Prepare application data
+            # Prepare request data
             status, reason, msg = (
                 "PROCESSING",
-                "PREPARING_APPLICATION_DATA",
+                "PREPARING_REQUEST_DATA",
                 "기자재 예약 신청 정보를 처리하고 있어요.",
             )
             yield json.dumps(
@@ -808,7 +808,7 @@ def create_application(request):
             student_name = request.user.metadata.name
             status, reason, msg = (
                 "PROCESSING",
-                "PREPARING_APPLICATION",
+                "PREPARING_REQUEST_DOCUMENT",
                 "기자재 예약 신청서를 준비하고 있어요.",
             )
             yield json.dumps(
@@ -855,7 +855,7 @@ def create_application(request):
             make_file_public(signature_id)
             status, reason, msg = (
                 "PROCESSING",
-                "WRITING_APPLICATION",
+                "WRITING_REQUEST_DOCUMENT",
                 "기자재 예약 신청서를 작성하고 있어요.",
             )
             yield json.dumps(
@@ -990,7 +990,7 @@ def create_application(request):
         }
 
         yield json.dumps(response) + "\n"
-        send_msg(request, "CREATE_EQUIPMENT_APPLICATION", "MGT", response)
+        send_msg(request, "CREATE_EQUIPMENT_REQUEST", "MGT", response)
 
         data = {
             "type": "FACILITY_REQUEST_COMPLETED",
@@ -1333,8 +1333,8 @@ def equipment(request):
             "end_hour_list": end_hour_list,
         }
 
-    # id: create_application
-    elif id == "create_application":
-        return create_application(request)
+    # id: create_request
+    elif id == "create_request":
+        return create_request(request)
 
     return JsonResponse(response)

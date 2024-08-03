@@ -192,7 +192,7 @@ function makeAjaxCall(request) {
 
     const csrftoken = getCookie("csrftoken");
 
-    if (request.data instanceof FormData && request.data.get("id") === "create_application") {
+    if (request.data instanceof FormData && request.data.get("id") === "create_request") {
         fetch(request.url, {
             method: request.type,
             body: request.data,
@@ -414,8 +414,8 @@ function handleAjaxCallback(response) {
         initFoundHourList(response);
     }
 
-    // requestCreateApplication()
-    else if (response.id === "create_application") {
+    // requestCreateRequest()
+    else if (response.id === "create_request") {
         if (response.status === "PROCESSING") {
             displayButtonMsg(true, id_filter_or_checkout, "descr", response.msg);
         } else if (response.status === "DONE") {
@@ -425,7 +425,7 @@ function handleAjaxCallback(response) {
 
             let newUrl = new URL(location.href);
 
-            newUrl.searchParams.set("application", "submitted");
+            newUrl.searchParams.set("request", "created");
             location.href = newUrl.toString();
         } else if (response.status === "FAIL") {
             freezeSignatureCanvas(false);

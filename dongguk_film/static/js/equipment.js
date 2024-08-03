@@ -69,11 +69,11 @@ const currentPeriod = urlParams.get("period");
 // Sub functions
 //
 
-function notifyApplicationSubmitted() {
-    if (window.location.search.includes("application=submitted")) { displayNoti(true, "APPLICATION_SUBMITTED") };
+function notifyRequestCreated() {
+    if (window.location.search.includes("request=created")) { displayNoti(true, "REQUEST_CREATED") };
 }
 
-notifyApplicationSubmitted();
+notifyRequestCreated();
 
 function updateUrlParams() {
     const cart = getCart();
@@ -2115,10 +2115,10 @@ function requestFindHour() {
     request = {};
 }
 
-async function requestCreateApplication() {
+async function requestCreateRequest() {
     let formData = new FormData();
 
-    formData.append("id", "create_application");
+    formData.append("id", "create_request");
     formData.append("cart", sessionStorage.getItem("cart"));
     formData.append("project", id_project.value);
     formData.append("startTime", id_start_time.value);
@@ -2271,7 +2271,7 @@ function initRequest() {
                             };
 
                             if (readyToSubmitForm()) {
-                                requestCreateApplication();
+                                requestCreateRequest();
                                 displayButtonMsg(true, id_filter_or_checkout, "descr", "잠시만 기다려주세요.");
                                 displayButtonMsg(false, id_filter_or_checkout, "error");
                                 id_filter_or_checkout_spin.classList.remove("hidden");

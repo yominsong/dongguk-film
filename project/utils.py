@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from utility.utils import find_instructor, airtable, notion
 from utility.msg import send_msg
-from fake_useragent import UserAgent
 from users.models import Metadata
 import json, re
 

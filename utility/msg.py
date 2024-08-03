@@ -98,13 +98,13 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - UPDATE_HERO_IMAGE
         - SYNC_EQUIPMENT_DATA
         - UPDATE_PROJECT_POLICY
-        - ATTEMPT_DUPLICATE_SIGNUP
-        - ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION
+        - DUPLICATE_SIGNUP_ATTEMPTED
+        - IDENTIFY_VERIFICATION_BYPASS_ATTEMPTED
         - UNEXPECTED_REQUEST_OCCURRED
         - SIGNUP_COMPLETED
         - EXPIRED_VCODE_AUTO_DELETED
         - INACTIVE_USER_AUTO_DELETED
-        - CREATE_EQUIPMENT_APPLICATION
+        - CREATE_EQUIPMENT_REQUEST
         - CREATE_PROJECT
         - UPDATE_PROJECT
         - DELETE_PROJECT
@@ -213,8 +213,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": data_info,
         }
 
-    # msg_type: "ATTEMPT_DUPLICATE_SIGNUP"
-    elif msg_type == "ATTEMPT_DUPLICATE_SIGNUP":
+    # msg_type: "DUPLICATE_SIGNUP_ATTEMPTED"
+    elif msg_type == "DUPLICATE_SIGNUP_ATTEMPTED":
         content = {
             "important": True,
             "picture_url": default_picture_url,
@@ -225,8 +225,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": "사용자가 이미 회원가입을 완료한 다른 사용자의 학번 및 성명을 입력한 것 같습니다.",
         }
 
-    # msg_type: "ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION"
-    elif msg_type == "ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION":
+    # msg_type: "IDENTIFY_VERIFICATION_BYPASS_ATTEMPTED"
+    elif msg_type == "IDENTIFY_VERIFICATION_BYPASS_ATTEMPTED":
         content = {
             "important": True,
             "picture_url": default_picture_url,
@@ -296,8 +296,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
         }
 
-    # msg_type: "CREATE_EQUIPMENT_APPLICATION"
-    elif msg_type == "CREATE_EQUIPMENT_APPLICATION":
+    # msg_type: "CREATE_EQUIPMENT_REQUEST"
+    elif msg_type == "CREATE_EQUIPMENT_REQUEST":
         reason = data.get("reason", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")

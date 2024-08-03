@@ -144,10 +144,10 @@ class SocialSignupForm(SignupForm):
             )
 
             if user_registered_with_this_student_id.count() > 0:
-                send_msg(request, "ATTEMPT_DUPLICATE_SIGNUP", "DEV")
+                send_msg(request, "DUPLICATE_SIGNUP_ATTEMPTED", "DEV")
                 return None
             elif confirmed_vcode.count() == 0:
-                send_msg(request, "ATTEMPT_TO_SKIP_IDENTIFY_VERIFICATION", "DEV")
+                send_msg(request, "IDENTIFY_VERIFICATION_BYPASS_ATTEMPTED", "DEV")
                 return None
             else:
                 confirmed_vcode.delete()

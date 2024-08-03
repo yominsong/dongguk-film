@@ -260,7 +260,7 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = param;
         }
 
-        else if (notiType === "APPLICATION_SUBMITTED") {
+        else if (notiType === "REQUEST_CREATED") {
             notiIcon = checkIcon;
             notiTitle = "기자재 예약 신청이 완료되었어요.";
             notiContent = "예약이 확정되면 문자 메시지와 이메일로 안내해드릴게요.";
