@@ -338,38 +338,25 @@ def account(request):
         items_per_page = 4
 
         if target == "facility":
-            # filter = {
-            #     "property": "User",
-            #     "number": {"equals": int(request.user.username)},
-            # }
-
-            # item_list = notion(
-            #     "query", "db", data={"db_name": "facility", "filter": filter}, mask=True
-            # )
-
+            formula = f"AND(User = '{request.user.username}', FIND('🟢', Validation))"
+            
             data = {
                 "table_name": "facility-request",
                 "params": {
                     "view": "Grid view",
-                    "formula": f"IF(AND(Category = 'Equipment'), User = '{request.user.username}')",
+                    "formula": formula,
                 },
             }
 
             item_list = airtable("get_all", "records", data)
         elif target == "project":
-            # filter = {
-            #     "property": "Staff",
-            #     "rich_text": {"contains": request.user.username},
-            # }
+            formula = f"FIND('{request.user.username}', Staff)"
 
-            # item_list = notion(
-            #     "query", "db", data={"db_name": "project", "filter": filter}, mask=True
-            # )
             data = {
                 "table_name": "project-team",
                 "params": {
                     "view": "Grid view",
-                    "formula": f"FIND('{request.user.username}', Staff)",
+                    "formula": formula,
                 },
             }
 

@@ -255,6 +255,11 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    {% if user.is_authenticated %}
+        {% include "users/account_modal.html" %}
+    {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/account.js' %}"></script>
+    <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

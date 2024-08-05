@@ -26,6 +26,10 @@ function isItOkayToCloseModal() {
         const id_filter_or_checkout_descr = code(id_filter_or_checkout, "_descr");
 
         bool = id_filter_or_checkout_descr.hidden;
+    } else if (appName == "account") {
+        const id_cancel_or_delete_descr = code(id_cancel_or_delete, "_descr");
+
+        bool = id_cancel_or_delete_descr.hidden;
     } else {
         const id_create_or_update_descr = code(id_create_or_update, "_descr");
         const id_delete_descr = code(id_delete, "_descr");

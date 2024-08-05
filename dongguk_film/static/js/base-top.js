@@ -474,14 +474,31 @@ function handleAjaxCallback(response) {
         };
     }
 
+    else if (response.id === "cancel_request") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_cancel_or_delete, "descr", response.msg);
+            displayButtonMsg(false, id_cancel_or_delete, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        } else if (response.status === "FAIL") {
+            freezeFileForm(false);
+            freezeForm(false);
+
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_cancel_or_delete, "descr");
+            displayButtonMsg(true, id_cancel_or_delete, "error", response.msg);
+        };
+        
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
     // requestFindInstructor()
     else if (response.id === "find_instructor") {
         initFoundInstructorList(response);
-        // if (resResult.status === "DONE") {
-        //     initFoundInstructorList(resResult);
-        // } else if (resResult.status === "FAIL") {
-        //     initFoundInstructorList();
-        // };
     }
 
     // requestFindUser()

@@ -1,4 +1,19 @@
 //
+// Global variables
+//
+
+// modal
+const id_modal = document.getElementById("id_modal");
+const id_record_id = document.getElementById("id_record_id");
+const id_cancel_or_delete = document.getElementById("id_cancel_or_delete");
+
+// boolean
+let isItDoubleChecked = false;
+
+// miscellaneous
+let doubleCheckTimer;
+
+//
 // Sub functions
 //
 
@@ -33,12 +48,117 @@ function loadPageState() {
 // Main functions
 //
 
+function updateForm(action, datasetObj = null) {
+    const class_headings = document.querySelectorAll(".class-heading");
+    const class_keywords = document.querySelectorAll(".class-keyword");
+
+    // action: all
+    isModalOpen = true;
+    id_modal.hidden = false;
+    id_modal.setAttribute("x-data", "{ open: true }");
+    handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
+    sessionStorage.setItem("scrollPosition", window.scrollY);
+
+    // action: "read"
+    if (action === "read_request") {
+        class_headings.forEach(heading => {
+            heading.innerText = "시설예약 상세 보기";
+        });
+
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "취소하기";
+        });
+
+        const data = datasetObj.dataset;
+        const id_status = document.getElementById("id_status");
+        const id_category = document.getElementById("id_category");
+        const id_project_id = document.getElementById("id_project_id");
+        const id_name_from_request = document.getElementById("id_name_from_request");
+        const id_public_url_from_request = document.getElementById("id_public_url_from_request");
+        const id_status_descr = code(id_status, "_descr");
+        const id_status_from_request = document.getElementById("id_status_from_request");
+        const id_created_time_from_request = document.getElementById("id_created_time_from_request");
+        const id_purpose_from_request = document.getElementById("id_purpose_from_request");
+        const id_duration_from_request = document.getElementById("id_duration_from_request");
+        const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
+        const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
+        let status, statusDescr;
+        let duration = data.duration;
+
+        if (data.status === "Pending") {
+            status = "대기 중";
+            statusDescr = "운영진이 예약 정보를 확인하고 있어요.";
+
+            const class_request_details = document.querySelectorAll(".class-request-detail");
+
+            class_request_details.forEach(detail => {
+                detail.hidden = false;
+            });
+        } else if (data.status === "Approved") {
+            status = "승인됨";
+            statusDescr = "이제 이 시설을 사용할 수 있어요.";
+        } else if (data.status === "In Progress") {
+            status = "사용 중";
+            statusDescr = "현재 이 시설을 사용하고 있어요.";
+        } else if (data.status === "Completed") {
+            status = "완료됨";
+            statusDescr = "시설 사용이 종료되었어요.";
+        } else if (data.status === "Canceled") {
+            status = "취소됨";
+            statusDescr = "예약이 취소되었어요.";
+        } else if (data.status === "Rejected") {
+            status = "반려됨";
+            statusDescr = "예약이 반려되었어요.";
+        };
+
+        if (Number(duration) > 0) {
+            duration = `${duration}일`;
+        } else if (Number(duration) === 0) {
+            duration = "당일";
+        };
+
+        id_status.value = data.status;
+        id_record_id.value = data.recordId;
+        id_category.value = data.category;
+        id_project_id.value = data.projectId;
+        id_name_from_request.innerText = data.name;
+        id_public_url_from_request.href = data.publicUrl;
+        id_status_descr.innerText = statusDescr;
+        id_status_from_request.innerText = status;
+        id_created_time_from_request.innerText = data.createdTime;
+        id_purpose_from_request.innerText = data.purposeKeyword;
+        id_duration_from_request.innerText = duration;
+        id_start_datetime_from_request.innerText = data.startDatetime;
+        id_end_datetime_from_request.innerText = data.endDatetime;
+
+        [id_status_from_request, id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request].forEach(element => {
+            element.className = "flex font-semibold text-right";
+        });
+
+        displayButtonMsg(false, id_cancel_or_delete, "error");
+    };
+}
+
+function initModal() {
+    const class_read_requests = document.querySelectorAll(".class-read-request");
+
+    class_read_requests.forEach(read => {
+        ["click", "keyup"].forEach(type => {
+            read.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("read_request", read);
+                };
+            });
+        });
+    });
+}
+
 function handleShortcut() {
     function handleUserRequest(event) {
-        const userRequestIsMade = 
-            event.type === "click" || 
+        const userRequestIsMade =
+            event.type === "click" ||
             (event.type === "keyup" && (event.key === "Enter" || event.key === " "));
-        
+
         if (userRequestIsMade) {
             const locationOrigin = location.origin;
             const pathname = this.getAttribute("data-pathname");
@@ -84,7 +204,7 @@ function updateList(data) {
         };
 
         list.firstElementChild.innerText = `${msg} 없어요.`;
-        
+
         return;
     };
 
@@ -114,34 +234,26 @@ function updateList(data) {
         let badgeColor;
 
         if (data.target === "facility") {
-            if (item.status === "Pending") {
-                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
-            } else if (item.status === "Approved") {
-                badgeColor = "text-green-700 bg-green-50 ring-green-600/20"
-            } else if (item.status === "Rejected") {
-                badgeColor = "text-red-700 bg-red-50 ring-red-600/10"
-            } else if (item.status === "Canceled") {
-                badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10"
-            } else if (item.status === "In Progress") {
-                badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20"
-            } else if (item.status === "Completed") {
-                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20"
-            };
-
             let status;
 
             if (item.status === "Pending") {
-                status = "대기";
+                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+                status = "대기 중";
             } else if (item.status === "Approved") {
-                status = "승인";
-            } else if (item.status === "Rejected") {
-                status = "반려";
-            } else if (item.status === "Canceled") {
-                status = "취소";
+                badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
+                status = "승인됨";
             } else if (item.status === "In Progress") {
-                status = "진행";
+                badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
+                status = "사용 중";
             } else if (item.status === "Completed") {
-                status = "완료";
+                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+                status = "완료됨";
+            } else if (item.status === "Canceled") {
+                badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
+                status = "취소됨";
+            } else if (item.status === "Rejected") {
+                badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
+                status = "반려됨";
             };
 
             element.innerHTML = `
@@ -175,12 +287,22 @@ function updateList(data) {
                     <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                         <time datetime="${item.end_datetime}">${item.end_datetime} 종료</time>
                     </p>
-                    <!-- <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
-                        <span data-pathname=""
-                                data-query=""
-                                class="relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
-                                tabindex="0">취소하기</span>
-                    </p> -->
+                    <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                        <span data-record-id="${item.record_id}"
+                                data-name="${item.name}"
+                                data-category="${item.category}"
+                                data-project-id="${item.project_id}"
+                                data-purpose-keyword="${item.purpose.keyword}"
+                                data-duration="${item.duration}"
+                                data-start-datetime="${item.start_datetime}"
+                                data-end-datetime="${item.end_datetime}"
+                                data-public-url="${item.public_url}"
+                                data-for-instructor="${item.for_instructor}"
+                                data-status="${item.status}"
+                                data-created-time="${item.created_time}"
+                                class="class-read-request relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                tabindex="0">상세 보기</span>
+                    </p>
                 </div>
             `;
         } else if (data.target === "project") {
@@ -351,6 +473,7 @@ function updateList(data) {
         copyDflinkUrl();
     };
 
+    initModal();
     handleShortcut();
 }
 
@@ -403,6 +526,17 @@ function requestGetPaginatedData(target, page) {
     request = {};
 }
 
+function requestCancelRequest() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "cancel_request", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
 function initRequest() {
     window.addEventListener("pageshow", (event) => {
         if (event.persisted) {
@@ -410,6 +544,37 @@ function initRequest() {
         } else {
             requestVerifyAuthentication();
             loadPageState();
+        };
+
+        if (id_modal !== null) {
+            ["click", "keyup"].forEach(type => {
+                id_cancel_or_delete.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        if (!isItDoubleChecked) {
+                            const id_double_check_text = document.getElementById("id_double_check_text");
+
+                            id_double_check_text.innerHTML = "정말&nbsp;";
+                            isItDoubleChecked = true;
+
+                            doubleCheckTimer = setTimeout(() => {
+                                id_double_check_text.innerHTML = null;
+                                isItDoubleChecked = false;
+                            }, 5000);
+                        } else if (isItDoubleChecked) {
+                            const id_cancel_or_delete_spin = code(id_cancel_or_delete, "_spin");
+
+                            clearTimeout(doubleCheckTimer);
+                            requestCancelRequest();
+                            displayButtonMsg(true, id_cancel_or_delete, "descr", "잠시만 기다려주세요.");
+                            id_cancel_or_delete_spin.classList.remove("hidden");
+                            isItDoubleChecked = false;
+                        };
+                    };
+                });
+            });
         };
     });
 }

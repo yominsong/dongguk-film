@@ -491,6 +491,12 @@ def insert_signature(document_id, signature_id):
     )
 
 
+def count_date(datetime_list):
+    dates = [dt_str for dt_str in datetime_list]
+
+    return dict(Counter(dates))
+
+
 def update_equipment_hour(data: dict):
     start_hour = {
         "date": data["start_date"],
@@ -502,7 +508,7 @@ def update_equipment_hour(data: dict):
         "time_record_id": data["end_time_record_id"],
     }
 
-    project_id = data["project_id"]
+    equipment_request_id = data["equipment_request_id"]
 
     for hour in [start_hour, end_hour]:
         date = hour["date"]
@@ -515,25 +521,34 @@ def update_equipment_hour(data: dict):
             },
         }
 
-        hour = airtable("get", "record", data)
-        project_and_date_list = hour["project_and_date"]
-        max_capacity = hour["max_capacity"]
+        equipment_hour = airtable("get", "record", data)
+        max_capacity = equipment_hour["max_capacity"]
 
-        if len(project_and_date_list) < max_capacity:
-            new_project_and_date = {
-                "project": project_id,
-                "date": str(date),
-            }
+        if hour == start_hour:
+            facility_request_list = equipment_hour["start_facility_request"]
+            facility_request_date_list = equipment_hour["start_facility_request_date"]
+        else:
+            facility_request_list = equipment_hour["end_facility_request"]
+            facility_request_date_list = equipment_hour["end_facility_request_date"]
+        
+        facility_request_date_count_dict = count_date(facility_request_date_list)
 
-            project_and_date_list.append(new_project_and_date)
+        if date not in facility_request_date_list or facility_request_date_count_dict[date] < max_capacity:
+            facility_request_list.append(equipment_request_id)
+
+            key_name = (
+                "Start facility request"
+                if hour == start_hour
+                else "End facility request"
+            )
+
+            fields = {key_name: facility_request_list}
 
             data = {
                 "table_name": "equipment-hour",
                 "params": {
                     "record_id": time_record_id,
-                    "fields": {
-                        "Project and date": str(project_and_date_list),
-                    },
+                    "fields": fields,
                 },
             }
 
@@ -557,11 +572,13 @@ def create_request(request):
         status, reason, msg = (
             "PROCESSING",
             "CHECKING_FOR_UNAVAILABLE_ITEM",
-            "사용 불가 기자재가 있는지 확인하고 있어요.",
+            "기자재 상태를 확인하고 있어요.",
         )
+
         yield json.dumps(
             {"id": id, "status": status, "reason": reason, "msg": msg}
         ) + "\n"
+        
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         fields = ["Collection ID", "ID", "Name", "Status"]
@@ -585,9 +602,11 @@ def create_request(request):
                 "FINDING_ALTERNATIVE_ITEM",
                 "대체 기자재를 찾고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
+
             purpose_keyword = cart[0]["purpose"]["keyword"]
 
             collection_id_list = [
@@ -615,11 +634,13 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "REPLACING_UNAVAILABLE_ITEM",
-                "사용 불가 기자재를 대체 기자재로 교체하고 있어요.",
+                "대체 기자재로 교체하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
+
             alternative_items_by_collection = {}
 
             for item in alternative_item_list:
@@ -666,9 +687,11 @@ def create_request(request):
             "PROCESSING_SIGNATURE",
             "서명을 처리하고 있어요.",
         )
+
         yield json.dumps(
             {"id": id, "status": status, "reason": reason, "msg": msg}
         ) + "\n"
+
         signature = request.FILES.get("signature")
         signature_bs64_encoded_data = process_signature(signature)
         student_name = request.user.metadata.name
@@ -687,17 +710,20 @@ def create_request(request):
                 "PREPARING_REQUEST_DATA",
                 "기자재 예약 신청 정보를 처리하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
+
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
 
             if is_for_instructor:
                 project_record_id = None
                 film_title = "-"
-                project_id = subject_code = request.POST.get("subjectCode", None)
+                purpose_record_id = cart[0]["purpose"]["record_id"]
                 academic_year = request.POST.get("academicYear", None)
                 academic_semester = request.POST.get("academicSemester", None)
+                subject_code = request.POST.get("subjectCode", None)
                 subject_name = request.POST.get("subjectName", None)
                 instructor_id = request.POST.get("instructor", None)
                 instructor_name = request.POST.get("instructorName", None)
@@ -724,8 +750,8 @@ def create_request(request):
                 }
 
                 project = airtable("get", "record", data)
-                project_id = project["project_id"]
                 film_title = project["film_title"]
+                purpose_record_id = project["purpose"]["record_id"]
 
                 base_date = timezone.datetime.fromisoformat(
                     project["created_time"]
@@ -754,8 +780,10 @@ def create_request(request):
 
                     if "A01" in position_priority:
                         director_student_id = student_id
+
                     if "C01" in position_priority:
                         director_of_photography_student_id = student_id
+
                     if "E02" in position_priority:
                         production_sound_mixer_student_id = student_id
 
@@ -806,11 +834,13 @@ def create_request(request):
             datetime = f"{date_str}({get_weekday(date_str)}) {time_str}"
             student_id = request.user.username
             student_name = request.user.metadata.name
+
             status, reason, msg = (
                 "PROCESSING",
                 "PREPARING_REQUEST_DOCUMENT",
                 "기자재 예약 신청서를 준비하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
@@ -858,18 +888,22 @@ def create_request(request):
                 "WRITING_REQUEST_DOCUMENT",
                 "기자재 예약 신청서를 작성하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
+
             insert_signature(private_id, signature_id)
             GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
             add_equipment_to_table(private_id, cart)
             replace_text(private_id, replacements)
+
             status, reason, msg = (
                 "PROCESSING",
                 "FINDING_PERSONAL_INFORMATION",
                 "마스킹할 개인정보를 찾고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
@@ -918,36 +952,30 @@ def create_request(request):
                 "MASKING_PERSONAL_INFORMATION",
                 "개인정보를 마스킹하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
+
             add_equipment_to_table(public_id, cart)
             replace_text(public_id, replacements)
             make_file_public(public_id)
+
             status, reason, msg = (
                 "PROCESSING",
                 "CREATING_RECORD",
                 "기자재 예약 신청 정보를 저장하고 있어요.",
             )
+
             yield json.dumps(
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
 
-            # Update equipment hour
-            data = {
-                "start_date": start_date,
-                "start_time_record_id": start_time_record_id,
-                "end_date": end_date,
-                "end_time_record_id": end_time_record_id,
-                "project_id": project_id,
-            }
-
-            update_equipment_hour(data)
-
             # Create facility request
             fields = {
                 "Category": "Equipment",
-                "Project team": [project_record_id] if not is_for_instructor else None,
+                "Project team": [project_record_id] if not is_for_instructor else [],
+                "Purpose": [purpose_record_id],
                 "Subject name": subject_name,
                 "Start datetime": start_datetime,
                 "End datetime": end_datetime,
@@ -966,7 +994,19 @@ def create_request(request):
                 },
             }
 
-            airtable("create", "record", data)
+            equipment_request = airtable("create", "record", data)
+
+            # Update equipment hour
+            data = {
+                "start_date": start_date,
+                "start_time_record_id": start_time_record_id,
+                "end_date": end_date,
+                "end_time_record_id": end_time_record_id,
+                "equipment_request_id": equipment_request["id"],
+            }
+
+            update_equipment_hour(data)
+
             status, reason, msg = (
                 "DONE",
                 "NOTHING_UNUSUAL",
@@ -993,12 +1033,12 @@ def create_request(request):
         send_msg(request, "CREATE_EQUIPMENT_REQUEST", "MGT", response)
 
         data = {
-            "type": "FACILITY_REQUEST_COMPLETED",
+            "type": "FACILITY_REQUEST_CREATED",
             "email": request.user.email,
             "phone": request.user.metadata.phone,
             "content": {
                 "is_for_instructor": is_for_instructor,
-                "name_of_subject_or_project": f"{name_of_subject_or_project}",
+                "name_of_subject_or_project": name_of_subject_or_project,
                 "facility_category": "기자재",
                 "public_id": public_id,
             },
@@ -1255,7 +1295,9 @@ def equipment(request):
                 project["purpose"]["priority"] == cart[0]["purpose"]["priority"]
                 and convert_datetime(project["production_end_date"]).date()
                 >= cart_end_date
-                and project["facility_request"] is None
+                and not "Pending" in project["facility_request_status"]
+                and not "Approved" in project["facility_request_status"]
+                and not "In Progress" in project["facility_request_status"]
             ):
                 for staff in project["staff"]:
                     if int(staff["pk"]) == request.user.pk and (
@@ -1301,18 +1343,19 @@ def equipment(request):
             end_hour = hour.copy()
             start_hour["available"] = True
             end_hour["available"] = True
+            SFRD_LIST = hour["start_facility_request_date"]
+            EFRD_LIST = hour["end_facility_request_date"]
 
-            if len(hour["project_and_date"]) > 0:
-                date_count = {}
+            if len(SFRD_LIST) > 0:
+                SFRD_COUNT = count_date(SFRD_LIST).get(start_date, 0)
 
-                for project_and_date in hour["project_and_date"]:
-                    date = project_and_date["date"]
-                    date_count[date] = date_count.get(date, 0) + 1
-
-                if date_count.get(start_date, 0) >= hour["max_capacity"]:
+                if SFRD_COUNT >= hour["max_capacity"]:
                     start_hour["available"] = False
+            
+            if len(EFRD_LIST) > 0:
+                EFRD_COUNT = count_date(EFRD_LIST).get(end_date, 0)
 
-                if date_count.get(end_date, 0) >= hour["max_capacity"]:
+                if EFRD_COUNT >= hour["max_capacity"]:
                     end_hour["available"] = False
 
             if hour["day_of_the_week"] == start_day:
@@ -1336,5 +1379,75 @@ def equipment(request):
     # id: create_request
     elif id == "create_request":
         return create_request(request)
+
+    # id: cancel_request
+    elif id == "cancel_request":
+        data = {
+            "table_name": "facility-request",
+            "params": {
+                "view": "Grid view",
+                "record_id": record_id,
+            },
+        }
+
+        equipment_request = airtable("get", "record", data)
+        film_title = equipment_request["film_title"]
+        subject_name = equipment_request["subject_name"]
+        public_id = equipment_request["public_id"]
+        private_id = equipment_request["private_id"]
+        is_for_instructor = equipment_request["for_instructor"]
+        name_of_subject_or_project = subject_name if is_for_instructor else film_title
+
+        fields = {
+            "Start equipment hour": None,
+            "End equipment hour": None,
+            "Equipment item": None,
+            "Status": "Canceled",
+        }
+
+        data = {
+            "table_name": "facility-request",
+            "params": {
+                "record_id": record_id,
+                "fields": fields,
+            },
+        }
+
+        response = airtable("update", "record", data)
+        is_updated = response.get("id", False)
+
+        if is_updated:
+            status = "DONE"
+            reason = "NOTHING_UNUSUAL"
+            msg = "예약이 취소되었어요! 🗑️"
+        else:
+            status = "FAIL"
+            reason = response
+            msg = "앗, 알 수 없는 오류가 발생했어요!"
+
+        response = {
+            "id": id,
+            "status": status,
+            "reason": reason,
+            "msg": msg,
+            "public_id": public_id,
+            "private_id": private_id,
+        }
+
+        send_msg(request, "CANCEL_EQUIPMENT_REQUEST", "MGT", response)
+
+        data = {
+            "type": "FACILITY_REQUEST_CANCELED",
+            "email": request.user.email,
+            "phone": request.user.metadata.phone,
+            "content": {
+                "is_for_instructor": is_for_instructor,
+                "name_of_subject_or_project": name_of_subject_or_project,
+                "facility_category": "기자재",
+            },
+        }
+
+        send_mail(data)
+        send_sms(data)
 
     return JsonResponse(response)

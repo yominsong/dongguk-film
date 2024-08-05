@@ -16,7 +16,7 @@ def send_mail(data):
     - type | `str`:
         - IDENTITY_VERIFICATION_REQUIRED
         - INACTIVE_USER_AUTO_DELETED
-        - FACILITY_REQUEST_COMPLETED
+        - FACILITY_REQUEST_CREATED
     """
 
     type = data["type"]
@@ -56,23 +56,45 @@ def send_mail(data):
             },
         )
 
-    # type: "FACILITY_REQUEST_COMPLETED"
-    elif type == "FACILITY_REQUEST_COMPLETED":
+    # type: "FACILITY_REQUEST_CREATED"
+    elif type == "FACILITY_REQUEST_CREATED":
         is_for_instructor = content.get("is_for_instructor", False)
         type = "교과목" if is_for_instructor else "프로젝트"
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
         subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요!"
-        message = f"내 계정 페이지에서 신청 내역을 확인해보세요."
+        message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",
             {
                 "title": f"{facility_category} 예약 신청이 완료되었어요!",
                 "body": f"다음 {type}의 {facility_category} 예약 신청이 완료되었어요.",
                 "highlighted": name_of_subject_or_project,
-                "conclusion": "아래 버튼을 눌러 신청 내역을 확인해보세요.",
+                "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
                 "button": {
-                    "text": "신청 내역 보기",
+                    "text": "내 시설예약 보기",
+                    "url": f"https://dongguk.film/account",
+                },
+            },
+        )
+    
+    # type: "FACILITY_REQUEST_CANCELED"
+    elif type == "FACILITY_REQUEST_CANCELED":
+        is_for_instructor = content.get("is_for_instructor", False)
+        type = "교과목" if is_for_instructor else "프로젝트"
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요!"
+        message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
+        html_message = render_to_string(
+            "mail_base.html",
+            {
+                "title": f"{facility_category} 예약이 취소되었어요!",
+                "body": f"다음 {type}의 {facility_category} 예약이 취소되었어요.",
+                "highlighted": name_of_subject_or_project,
+                "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
+                "button": {
+                    "text": "내 시설예약 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },

@@ -155,6 +155,31 @@ def format_datetime(dt: datetime.datetime, format_str: str = "%Y-%m-%d %H:%M") -
     return dt.strftime(format_str)
 
 
+def format_datetime(
+    dt: datetime.datetime, format_str: str = "%Y-%m-%d(%a) %H:%M"
+) -> str:
+    """
+    - dt | `datetime.datetime`: Datetime object to format
+    - format_str | `str`: Format string (default: "%Y-%m-%d(%a) %H:%M")
+    """
+    weekdays = {
+        "Mon": "월",
+        "Tue": "화",
+        "Wed": "수",
+        "Thu": "목",
+        "Fri": "금",
+        "Sat": "토",
+        "Sun": "일",
+    }
+
+    formatted = dt.strftime(format_str)
+
+    for eng, kor in weekdays.items():
+        formatted = formatted.replace(eng, kor)
+
+    return formatted
+
+
 def generate_random_string(int: int):
     """
     - int | `int`: Any string length you want
@@ -593,13 +618,48 @@ def airtable(
 
         fields = record["fields"]
 
-        if table_name == "equipment-hour":
+        if table_name == "facility-request":
+            start_datetime = format_datetime(convert_datetime(fields["Start datetime"]))
+
+            end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
+            created_time = format_datetime(convert_datetime(fields["Created time"]))
+            user = fields["User"]
+
+            user = (
+                mask_personal_information("student_id", user) if user and mask else user
+            )
+
+            record = {
+                "record_id": record["id"],
+                "name": fields["Name"],
+                "category": fields["Category"],
+                "category_in_korean": fields["Category in Korean"],
+                "project_id": fields.get("Project team", None),
+                "film_title": fields.get("Project team film title", [None])[0],
+                "purpose": {
+                    "priority": fields.get("Purpose priority", [None])[0],
+                    "keyword": fields.get("Purpose keyword", [None])[0],
+                },
+                "subject_name": fields["Subject name"],
+                "duration": fields["Duration"],
+                "start_datetime": start_datetime,
+                "end_datetime": end_datetime,
+                "start_equipment_hour": fields["Start equipment hour"],
+                "end_equipment_hour": fields["End equipment hour"],
+                "user": user,
+                "public_url": fields["Public URL"],
+                "public_id": fields["Public ID"],
+                "private_id": fields["Private ID"],
+                "for_instructor": fields.get("For instructor", False),
+                "status": fields["Status"],
+                "created_time": created_time,
+            }
+
+        elif table_name == "equipment-hour":
             project_and_date = fields.get("Project and date", [])
 
             if project_and_date:
-                project_and_date = json.loads(
-                    project_and_date.replace("'", '"')
-                )
+                project_and_date = json.loads(project_and_date.replace("'", '"'))
 
             record = {
                 "record_id": record["id"],
@@ -608,7 +668,14 @@ def airtable(
                 "day_of_the_week_in_korean": fields["Day of the week in Korean"],
                 "time": fields["Time"],
                 "max_capacity": fields["Max capacity"],
-                "project_and_date": project_and_date,
+                "start_facility_request": fields.get("Start facility request", []),
+                "end_facility_request": fields.get("End facility request", []),
+                "start_facility_request_date": fields.get(
+                    "Start facility request date", []
+                ),
+                "end_facility_request_date": fields.get(
+                    "End facility request date", []
+                ),
             }
 
         elif table_name == "equipment-collection":
@@ -660,12 +727,8 @@ def airtable(
                 "item_id": fields["ID"],
                 "serial_number": fields["Serial number"],
                 "purpose": fields["Purpose name"],
-                "start_datetime": fields.get(
-                    "Facility request start datetime", []
-                ),
-                "end_datetime": fields.get(
-                    "Facility request end datetime", []
-                ),
+                "start_datetime": fields.get("Facility request start datetime", []),
+                "end_datetime": fields.get("Facility request end datetime", []),
                 "status": fields["Status"],
                 "validation": fields["Validation"],
             }
@@ -677,6 +740,7 @@ def airtable(
                 "name": fields["Name"],
                 "film_title": fields["Film title"],
                 "purpose": {
+                    "record_id": fields.get("Equipment purpose", [None])[0],
                     "priority": fields.get("Equipment purpose priority", [None])[0],
                     "keyword": fields.get("Equipment purpose keyword", [None])[0],
                 },
@@ -750,8 +814,15 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    start_datetime = format_datetime(convert_datetime(fields["Start datetime"]))
-                    end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
+                    start_datetime = format_datetime(
+                        convert_datetime(fields["Start datetime"])
+                    )
+                    end_datetime = format_datetime(
+                        convert_datetime(fields["End datetime"])
+                    )
+                    created_time = format_datetime(
+                        convert_datetime(fields["Created time"])
+                    )
                     user = fields["User"]
 
                     user = (
@@ -761,20 +832,31 @@ def airtable(
                     )
 
                     request = {
+                        "record_id": record["id"],
                         "name": fields.get("Name", None),
-                        "category": fields.get("Category in Korean", None),
+                        "category": fields.get("Category", None),
+                        "category_in_korean": fields.get("Category in Korean", None),
+                        "project_id": fields.get("Project team", None),
+                        "film_title": fields.get("Project team film title", None),
                         "purpose": {
-                            "priority": fields.get(
-                                "Project team purpose priority", None
-                            ),
-                            "keyword": fields.get("Project team purpose keyword", None),
+                            "priority": fields.get("Purpose priority", [None])[0],
+                            "keyword": fields.get("Purpose keyword", [None])[0],
                         },
+                        "subject_name": fields["Subject name"],
                         "duration": fields.get("Duration", None),
                         "start_datetime": start_datetime,
                         "end_datetime": end_datetime,
+                        "start_equipment_hour": fields.get(
+                            "Start equipment hour", None
+                        ),
+                        "end_equipment_hour": fields.get("End equipment hour", None),
                         "user": user,
                         "public_url": fields.get("Public URL", None),
+                        "public_id": fields.get("Public ID", None),
+                        "private_id": fields.get("Private ID", None),
+                        "for_instructor": fields.get("For instructor", False),
                         "status": fields.get("Status", None),
+                        "created_time": created_time,
                     }
 
                     record_list.append(request)
@@ -796,10 +878,22 @@ def airtable(
                         "record_id": record["id"],
                         "name": fields.get("Name", None),
                         "day_of_the_week": fields.get("Day of the week", None),
-                        "day_of_the_week_in_korean": fields.get("Day of the week in Korean", None),
+                        "day_of_the_week_in_korean": fields.get(
+                            "Day of the week in Korean", None
+                        ),
                         "time": fields.get("Time", None),
                         "max_capacity": fields.get("Max capacity", None),
                         "project_and_date": project_and_date,
+                        "start_facility_request": fields.get(
+                            "Start facility request", []
+                        ),
+                        "end_facility_request": fields.get("End facility request", []),
+                        "start_facility_request_date": fields.get(
+                            "Start facility request date", []
+                        ),
+                        "end_facility_request_date": fields.get(
+                            "End facility request date", []
+                        ),
                     }
 
                     record_list.append(hour)
@@ -894,7 +988,7 @@ def airtable(
                             set(fields.get("Item purpose", None).split(", "))
                         ),
                     }
-                    
+
                     record_list.append(collection)
             except:
                 pass
@@ -903,7 +997,7 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    
+
                     item = {
                         "record_id": record["id"],
                         "item_id": fields["ID"],
@@ -964,6 +1058,9 @@ def airtable(
                         "subject_name": fields.get("Subject name", None),
                         "user": user,
                         "facility_request": fields.get("Facility request", None),
+                        "facility_request_status": fields.get(
+                            "Facility request status", []
+                        ),
                         "created_date": created_date,
                     }
 
@@ -1120,16 +1217,10 @@ def notion(
         property_id = data.get("property_id", None)
         title = data.get("title", None)
         category = data.get("category", None)
-        purpose = data.get("purpose", None)
-        production_end_date = data.get("production_end_date", None)
         content = data.get("content", None)
         keyword = data.get("keyword", None)
         img_key_list = data.get("img_key_list", None)
         file = data.get("file", None)
-        instructor = data.get("instructor", None)
-        subject_code = data.get("subject_code", None)
-        subject_name = data.get("subject_name", None)
-        staff = data.get("staff", None)
         user = data.get("user", None)
 
     # action: query / target: db
@@ -1331,34 +1422,7 @@ def notion(
     elif action == "update" and target == "page_properties":
         url = f"https://api.notion.com/v1/pages/{page_id}"
 
-        if db_name == "project":
-            payload = {
-                "properties": {
-                    "Purpose": {"rich_text": [{"text": {"content": purpose}}]},
-                    "Title": {"title": [{"text": {"content": title}}]},
-                    "Production end date": {
-                        "date": {
-                            "start": production_end_date,
-                            "end": None,
-                            "time_zone": None,
-                        }
-                    },
-                    "Staff": {"rich_text": [{"text": {"content": str(staff)}}]},
-                    "Instructor": {
-                        "rich_text": [{"text": {"content": str(instructor)}}]
-                    },
-                    "Subject code": {
-                        "rich_text": [{"text": {"content": str(subject_code)}}]
-                    },
-                    "Subject name": {
-                        "rich_text": [{"text": {"content": str(subject_name)}}]
-                    },
-                    "User": {"number": int(str(user))},
-                },
-            }
-            response = requests.patch(url, json=payload, headers=set_headers("NOTION"))
-
-        elif db_name == "notice":
+        if db_name == "notice":
             payload = {
                 "properties": {
                     "Category": {
