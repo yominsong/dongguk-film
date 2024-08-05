@@ -556,11 +556,11 @@ function initRequest() {
                         if (!isItDoubleChecked) {
                             const id_double_check_text = document.getElementById("id_double_check_text");
 
-                            id_double_check_text.innerHTML = "정말&nbsp;";
+                            id_double_check_text.hidden = false;
                             isItDoubleChecked = true;
 
                             doubleCheckTimer = setTimeout(() => {
-                                id_double_check_text.innerHTML = null;
+                                id_double_check_text.hidden = true;
                                 isItDoubleChecked = false;
                             }, 5000);
                         } else if (isItDoubleChecked) {
