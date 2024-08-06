@@ -42,7 +42,53 @@
             </div>
         </div>
     </div>
+    <!-- Information -->
     <div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between gap-1">
+            <div class="flex gap-2 text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="currentColor"
+                     class="w-6 h-6 text-gray-500">
+                    <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
+                </svg>
+                <h3 class="text-lg font-medium leading-6">내 정보</h3>
+            </div>
+            <div class="cursor-not-allowed ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray"
+                 tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="currentColor"
+                     class="w-6 h-6">
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                    <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                </svg>
+                <span class="sr-only">내 정보 수정하기</span>
+            </div>
+        </div>
+        <dl class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">학번, 성명</dt>
+                <dd class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
+                    {{ user.metadata.student_id }}, {{ user.metadata.name }}
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">이메일 주소</dt>
+                <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
+                    {{ user.email }}
+                </dd>
+            </div>
+            <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
+                <dt class="truncate text-sm font-medium text-gray-500">휴대전화 번호</dt>
+                <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
+                    {{ user.metadata.phone }}
+                </dd>
+            </div>
+        </dl>
+        <p class="pulse-off mt-3 text-sm text-right text-gray-400">{{ date_joined }} 가입</p>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
             <!-- Facility -->
             <div>
