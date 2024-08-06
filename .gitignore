@@ -9,9 +9,7 @@ d_dot_f/static/css/output.css
 secrets.json
 
 ### Static JSON ###
-equipment.json
-img.json
-project.json
+dongguk_film/static/json/*.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django
