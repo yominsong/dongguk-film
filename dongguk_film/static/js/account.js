@@ -4,8 +4,14 @@
 
 // modal
 const id_modal = document.getElementById("id_modal");
+const id_email = document.getElementById("id_email");
+const id_phone = document.getElementById("id_phone");
+const id_send_vcode = document.getElementById("id_send_vcode");
+const id_confirm_vcode = document.getElementById("id_confirm_vcode");
 const id_record_id = document.getElementById("id_record_id");
 const id_cancel_or_delete = document.getElementById("id_cancel_or_delete");
+const class_firsts = document.querySelectorAll(".class-first");
+let class_seconds = document.querySelectorAll(".class-second");
 
 // boolean
 let isItDoubleChecked = false;
@@ -44,13 +50,43 @@ function loadPageState() {
     };
 }
 
+function hasInfoChanged(inputs) {
+    let hasChanged = false;
+
+    inputs.forEach(input => {
+        if (input.value !== input.dataset.original) {
+            hasChanged = true;
+        };
+    });
+
+    return hasChanged;
+}
+
 //
 // Main functions
 //
 
+function initForm() {
+    [id_email, id_phone].forEach(input => {
+        const data = input.dataset;
+
+        input.value = data.original;
+    });
+
+    inputs.forEach((input) => {
+        displayError(false, input);
+    });
+
+    [id_send_vcode, id_cancel_or_delete].forEach(button => {
+        displayButtonMsg(false, button, "error");
+    });
+}
+
 function updateForm(action, datasetObj = null) {
     const class_headings = document.querySelectorAll(".class-heading");
     const class_keywords = document.querySelectorAll(".class-keyword");
+    const id_modal_info = code(id_modal, "_info");
+    const id_modal_facility = code(id_modal, "_facility");
 
     // action: all
     isModalOpen = true;
@@ -59,8 +95,25 @@ function updateForm(action, datasetObj = null) {
     handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
 
-    // action: "read"
-    if (action === "read_request") {
+    if (action === "adjust_info") {
+        id_modal_info.hidden = false;
+        id_modal_facility.hidden = true;
+        initForm();
+
+        class_headings.forEach(heading => {
+            heading.innerText = "회원정보 수정하기";
+        });
+
+        class_keywords.forEach(keyword => {
+            keyword.innerText = "수정하기";
+        });
+    }
+
+    // action: "read_request"
+    else if (action === "read_request") {
+        id_modal_info.hidden = true;
+        id_modal_facility.hidden = false;
+
         class_headings.forEach(heading => {
             heading.innerText = "시설예약 상세 보기";
         });
@@ -141,12 +194,23 @@ function updateForm(action, datasetObj = null) {
 
 function initModal() {
     const class_read_requests = document.querySelectorAll(".class-read-request");
+    const class_adjust_infos = document.querySelectorAll(".class-adjust-info");
 
     class_read_requests.forEach(read => {
         ["click", "keyup"].forEach(type => {
             read.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
                     updateForm("read_request", read);
+                };
+            });
+        });
+    });
+
+    class_adjust_infos.forEach(adjust => {
+        ["click", "keyup"].forEach(type => {
+            adjust.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("adjust_info");
                 };
             });
         });
@@ -176,12 +240,10 @@ function handleShortcut() {
         });
     }
 
-    // const class_search_facility = document.querySelectorAll(".class-search-facility");
     const class_search_project = document.querySelectorAll(".class-search-project");
     const class_search_dflink = document.querySelectorAll(".class-search-dflink");
     const class_search_notice = document.querySelectorAll(".class-search-notice");
 
-    // addEventListeners(class_search_facility);
     addEventListeners(class_search_project);
     addEventListeners(class_search_dflink);
     addEventListeners(class_search_notice);
@@ -526,6 +588,28 @@ function requestGetPaginatedData(target, page) {
     request = {};
 }
 
+function requestCreateVcodeForAccount() {
+    request.url = `${location.origin}/account/utils/vcode/`;
+    request.type = "POST";
+    request.data = { id: "create_vcode_for_account", student_id: userStudentId, email: `${id_email.value}`, phone: `${id_phone.value}` };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestConfirmVcodeForAccount() {
+    request.url = `${location.origin}/account/utils/vcode/`;
+    request.type = "POST";
+    request.data = { id: "confirm_vcode_for_account", student_id: userStudentId, email: `${id_email.value}`, phone: `${id_phone.value}`, email_vcode: `${id_email_vcode.value}`, phone_vcode: `${id_phone_vcode.value}` };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestCancelRequest() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
@@ -547,6 +631,51 @@ function initRequest() {
         };
 
         if (id_modal !== null) {
+            initValidation(class_firsts, id_send_vcode);
+
+            id_send_vcode.addEventListener("click", () => {
+                if (hasInfoChanged(inputs) && isItOkayToSubmitForm()) {
+                    requestCreateVcodeForAccount();
+                    displayButtonMsg(false, id_send_vcode, "descr");
+                    displayButtonMsg(false, id_send_vcode, "error");
+                    code(id_send_vcode, "_spin").classList.remove("hidden");
+                } else if (!hasInfoChanged(inputs)) {
+                    displayButtonMsg(true, id_send_vcode, "error", "변경된 회원정보가 없어요.");
+                } else {
+                    inputs.forEach((input) => {
+                        controlError(input);
+                    });
+                };
+
+                ["keydown", "focusin"].forEach((type) => {
+                    inputs.forEach((input) => {
+                        input.addEventListener(type, () => {
+                            displayButtonMsg(false, id_send_vcode, "error");
+                        });
+                    });
+                });
+            });
+
+            id_confirm_vcode.addEventListener("click", () => {
+                if (isItOkayToSubmitForm()) {
+                    requestConfirmVcodeForAccount();
+                    displayButtonMsg(false, id_confirm_vcode, "error");
+                    code(id_confirm_vcode, "_spin").classList.remove("hidden");
+                } else {
+                    inputs.forEach((input) => {
+                        controlError(input);
+                    });
+                };
+    
+                ["keydown", "focusin"].forEach((type) => {
+                    inputs.forEach((input) => {
+                        input.addEventListener(type, () => {
+                            displayButtonMsg(false, id_confirm_vcode, "error");
+                        });
+                    });
+                });
+            });
+
             ["click", "keyup"].forEach(type => {
                 id_cancel_or_delete.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;

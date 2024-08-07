@@ -25,14 +25,15 @@ def send_mail(data):
 
     # type: "IDENTITY_VERIFICATION_REQUIRED"
     if type == "IDENTITY_VERIFICATION_REQUIRED":
+        target = content["target"]
         email_vcode = content["email_vcode"]
         subject = "[디닷에프] 이메일 주소를 인증해주세요!"
-        message = f'회원가입 페이지에서 {handle_hangul(email_vcode, "을를", True)} 입력해주세요.'
+        message = f'{target}에서 {handle_hangul(email_vcode, "을를", True)} 입력해주세요.'
         html_message = render_to_string(
             "mail_base.html",
             {
                 "title": "이메일 주소를 인증해주세요!",
-                "body": "회원가입 페이지에서 다음 인증번호를 입력해주세요.",
+                "body": f"{target}에서 다음 인증번호를 입력해주세요.",
                 "highlighted": email_vcode,
             },
         )

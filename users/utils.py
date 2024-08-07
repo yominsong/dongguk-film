@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
-from users.models import Vcode
+from users.models import Metadata, Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
 from utility.msg import send_msg
@@ -58,9 +58,11 @@ def delete_inactive_user(request):
 def delete_expired_vcode(request):
     expired_vcode_queryset = Vcode.objects.filter(will_expire_on__lt=timezone.now())
     expired_vcode_count = expired_vcode_queryset.count()
-    expired_vcode_list = list(expired_vcode_queryset.values(
-        "id", "email_vcode", "phone_vcode", "confirmed", "will_expire_on"
-    ))
+    expired_vcode_list = list(
+        expired_vcode_queryset.values(
+            "id", "email_vcode", "phone_vcode", "confirmed", "will_expire_on"
+        )
+    )
     data = {"expired_vcode_list": expired_vcode_list}
     json_data = json.dumps(data, indent=4, cls=DjangoJSONEncoder)
 
@@ -75,6 +77,70 @@ def delete_expired_vcode(request):
 #
 # Sub functions
 #
+
+
+def generate_vcode():
+    return "".join(random.choice(string.digits) for _ in range(6))
+
+
+def create_vcode(student_id, email_vcode, phone_vcode):
+    will_expire_on = timezone.now() + timezone.timedelta(minutes=5)
+    Vcode.objects.filter(student_id=student_id).delete()
+
+    Vcode.objects.create(
+        student_id=student_id,
+        email_vcode=email_vcode,
+        phone_vcode=phone_vcode,
+        will_expire_on=will_expire_on,
+    )
+
+
+def send_vcode(email, phone, email_vcode, phone_vcode, target):
+    status = "DONE"
+    is_email_vcode_sent = is_phone_vcode_sent = False
+
+    if email_vcode:
+        mail_data = {
+            "type": "IDENTITY_VERIFICATION_REQUIRED",
+            "email": email,
+            "content": {
+                "target": target,
+                "email_vcode": email_vcode,
+            },
+        }
+        if send_mail(mail_data) == 1:
+            is_email_vcode_sent = True
+        else:
+            status = "FAIL"
+
+    if phone_vcode and status == "DONE":
+        sms_data = {
+            "type": "IDENTITY_VERIFICATION_REQUIRED",
+            "phone": phone,
+            "content": {"phone_vcode": phone_vcode},
+        }
+        try:
+            if json.loads(send_sms(sms_data))["statusCode"] == "202":
+                is_phone_vcode_sent = True
+            else:
+                status = "FAIL"
+        except:
+            status = "FAIL"
+
+    if status == "DONE":
+        if is_email_vcode_sent and is_phone_vcode_sent:
+            msg = "이메일 주소 및 휴대전화 번호 인증번호가 전송되었어요!"
+        elif is_email_vcode_sent:
+            msg = "이메일 주소 인증번호가 전송되었어요!"
+        elif is_phone_vcode_sent:
+            msg = "휴대전화 번호 인증번호가 전송되었어요!"
+        else:
+            status = "FAIL"
+            msg = "앗, 다시 한 번 시도해주세요!"
+    else:
+        msg = "앗, 다시 한 번 시도해주세요!"
+
+    return status, msg, is_email_vcode_sent, is_phone_vcode_sent
 
 
 def is_registered_student(student_id: str, name: str):
@@ -238,64 +304,28 @@ def pinpoint_user(request):
 
 
 def vcode(request):
-    """
-    - request | `HttpRequest`:
-        - id:
-            - create_vcode_for_SNP
-            - confirm_vcode_for_SNP
-        - student_id
-        - name
-        - email
-        - phone
-        - email_vcode
-        - phone_vcode
-    """
     id = request.POST["id"]
     student_id = request.POST["student_id"]
-    name = request.POST["name"]
+    name = request.POST.get("name", None)
     email = request.POST["email"]
     phone = "".join(filter(str.isalnum, request.POST["phone"]))
+
+    status = msg = None
+    is_email_vcode_sent = is_phone_vcode_sent = False
 
     # id: create_vcode_for_SNP
     if id == "create_vcode_for_SNP":
         data = {"student_id": student_id, "name": name, "request": request}
         status, msg = validation(data)
 
-        if status == None:
-            email_vcode = ""
-            phone_vcode = ""
-            will_expire_on = timezone.now() + timezone.timedelta(minutes=5)
-            for i in range(6):
-                email_vcode += random.choice(string.digits)
-                phone_vcode += random.choice(string.digits)
-            Vcode.objects.filter(student_id=student_id).delete()
-            Vcode.objects.create(
-                student_id=student_id,
-                email_vcode=email_vcode,
-                phone_vcode=phone_vcode,
-                will_expire_on=will_expire_on,
+        if status is None:
+            email_vcode = generate_vcode()
+            phone_vcode = generate_vcode()
+            create_vcode(student_id, email_vcode, phone_vcode)
+
+            status, msg, is_email_vcode_sent, is_phone_vcode_sent = send_vcode(
+                email, phone, email_vcode, phone_vcode, "회원가입 페이지"
             )
-            data = {
-                "type": "IDENTITY_VERIFICATION_REQUIRED",
-                "email": email,
-                "phone": phone,
-                "content": {
-                    "email_vcode": email_vcode,
-                    "phone_vcode": phone_vcode,
-                },
-            }
-            mail_response = send_mail(data)
-            sms_response = json.loads(send_sms(data))
-            try:
-                if mail_response == 1 and sms_response["statusCode"] == "202":
-                    status = "DONE"
-                    msg = "인증번호가 전송되었어요!"
-                else:
-                    status = "FAIL"
-                    msg = "앗, 다시 한 번 시도해주세요!"
-            except:
-                status = "FAIL"
-                msg = "앗, 다시 한 번 시도해주세요!"
 
     # id: confirm_vcode_for_SNP
     elif id == "confirm_vcode_for_SNP":
@@ -304,26 +334,70 @@ def vcode(request):
         data = {"student_id": student_id, "name": name, "request": request}
         status, msg = validation(data)
 
-        if status == None and msg == None:
+        if status is None and msg is None:
             try:
                 vcode = Vcode.objects.get(
                     student_id=student_id,
                     email_vcode=email_vcode,
                     phone_vcode=phone_vcode,
                 )
-                if vcode.will_expire_on > timezone.datetime.now():
+
+                if vcode.will_expire_on > timezone.now():
                     vcode.confirmed = True
                     vcode.save()
-                    status = "DONE"
-                    msg = "회원가입이 완료되었어요. 환영해요! 👋"
+                    status, msg = "DONE", "회원가입이 완료되었어요. 환영해요! 👋"
                 else:
-                    status = "FAIL"
-                    msg = "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요."
+                    status, msg = "FAIL", "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요."
             except:
-                status = "FAIL"
-                msg = "인증번호가 잘못 입력된 것 같아요."
+                status, msg = "FAIL", "인증번호가 잘못 입력된 것 같아요."
 
-    response = {"id": id, "result": {"status": status, "msg": msg}}
+    # id: create_vcode_for_account
+    elif id == "create_vcode_for_account":
+        original_email = request.user.email
+        original_phone = request.user.metadata.phone
+        email_vcode = generate_vcode() if email != original_email else ""
+        phone_vcode = generate_vcode() if phone != "".join(filter(str.isalnum, original_phone)) else ""
+
+        create_vcode(student_id, email_vcode, phone_vcode)
+
+        status, msg, is_email_vcode_sent, is_phone_vcode_sent = send_vcode(
+            email, phone, email_vcode, phone_vcode, "내 계정 페이지"
+        )
+    
+    # id: confirm_vcode_for_account
+    elif id == "confirm_vcode_for_account":
+        email_vcode = request.POST.get("email_vcode", "")
+        phone_vcode = request.POST.get("phone_vcode", "")
+
+        try:
+            vcode = Vcode.objects.get(
+                student_id=student_id,
+                email_vcode=email_vcode,
+                phone_vcode=phone_vcode,
+            )
+
+            if vcode.will_expire_on > timezone.now():
+                vcode.confirmed = True
+                vcode.save()
+                user = User.objects.get(username=student_id)
+                user.email = email
+                user.save()
+                user_metadata = Metadata.objects.get(user=user)
+                user_metadata.phone = f"{phone[:3]}-{phone[3:7]}-{phone[7:]}"
+                user_metadata.save()
+                status, msg = "DONE", "회원정보 수정이 완료되었어요! 👍"
+            else:
+                status, msg = "FAIL", "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요."
+        except:
+            status, msg = "FAIL", "인증번호가 잘못 입력된 것 같아요."
+
+    response = {
+        "id": id,
+        "status": status,
+        "msg": msg,
+        "is_email_vcode_sent": is_email_vcode_sent,
+        "is_phone_vcode_sent": is_phone_vcode_sent,
+    }
 
     return JsonResponse(response)
 
@@ -339,7 +413,7 @@ def account(request):
 
         if target == "facility":
             formula = f"AND(User = '{request.user.username}', FIND('🟢', Validation))"
-            
+
             data = {
                 "table_name": "facility-request",
                 "params": {

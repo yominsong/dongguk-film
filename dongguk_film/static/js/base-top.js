@@ -200,37 +200,37 @@ function makeAjaxCall(request) {
                 "X-CSRFToken": csrftoken,
             }
         })
-        .then(response => {
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
 
-            function readStream() {
-                reader.read().then(({ done, value }) => {
-                    if (done) return;
-                    const chunk = decoder.decode(value, { stream: true });
-                    const messages = chunk.split("\n").filter(msg => msg.trim() !== "");
-                    
-                    messages.forEach(msg => {
-                        try {
-                            const data = JSON.parse(msg);
-                            console.log(data);
-                            handleAjaxCallback(data);
-                        } catch (e) {
-                            console.error("Error parsing JSON: ", e);
-                        };
+                function readStream() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) return;
+                        const chunk = decoder.decode(value, { stream: true });
+                        const messages = chunk.split("\n").filter(msg => msg.trim() !== "");
+
+                        messages.forEach(msg => {
+                            try {
+                                const data = JSON.parse(msg);
+                                console.log(data);
+                                handleAjaxCallback(data);
+                            } catch (e) {
+                                console.error("Error parsing JSON: ", e);
+                            };
+                        });
+
+                        readStream();
+                    }).catch(error => {
+                        console.error("Stream reading error:", error);
                     });
+                }
 
-                    readStream();
-                }).catch(error => {
-                    console.error("Stream reading error:", error);
-                });
-            }
-
-            readStream();
-        })
-        .catch(error => {
-            console.error("Fetch error: ", error);
-        });
+                readStream();
+            })
+            .catch(error => {
+                console.error("Fetch error: ", error);
+            });
     } else {
         const ajaxSettings = {
             url: request.url,
@@ -244,12 +244,12 @@ function makeAjaxCall(request) {
                 };
             }
         }
-    
+
         if (request.data instanceof FormData) {
             ajaxSettings.processData = false;
             ajaxSettings.contentType = false;
         };
-    
+
         $.ajax(ajaxSettings).done((response) => {
             console.log(response);
             handleAjaxCallback(response);
@@ -336,9 +336,9 @@ function handleAjaxCallback(response) {
     }
 
     // requestCreateVcodeForSNP()
-    else if (resID === "create_vcode_for_SNP") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_create, "descr", resResult.msg);
+    else if (response.id === "create_vcode_for_SNP") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_create, "descr", response.msg);
             displayButtonMsg(false, id_create, "error");
             class_firsts.forEach((input) => {
                 input.type === "checkbox" ? input.disabled = true : input.readOnly = true;
@@ -348,9 +348,9 @@ function handleAjaxCallback(response) {
             });
             id_confirm.disabled = false;
             initValidation(class_seconds, id_confirm);
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_create, "error", resResult.msg);
+            displayButtonMsg(true, id_create, "error", response.msg);
             displayButtonMsg(false, id_create, "descr");
             id_create.disabled = false;
             id_confirm.disabled = true;
@@ -361,9 +361,9 @@ function handleAjaxCallback(response) {
     }
 
     // requestConfirmVcodeForSNP()
-    else if (resID === "confirm_vcode_for_SNP") {
-        if (resResult.status === "DONE") {
-            displayButtonMsg(true, id_confirm, "descr", resResult.msg);
+    else if (response.id === "confirm_vcode_for_SNP") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_confirm, "descr", response.msg);
             displayButtonMsg(false, id_confirm, "error");
             inputs = document.querySelectorAll("input");
             inputs.forEach((input) => {
@@ -372,11 +372,68 @@ function handleAjaxCallback(response) {
             });
             id_confirm.disabled = true;
             document.querySelector("form").submit();
-        } else if (resResult.status === "FAIL") {
+        } else if (response.status === "FAIL") {
             freezeForm(false);
-            displayButtonMsg(true, id_confirm, "error", resResult.msg);
+            displayButtonMsg(true, id_confirm, "error", response.msg);
             id_confirm.disabled = false;
         };
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
+    // requestCreateVcodeForAccount()
+    else if (response.id === "create_vcode_for_account") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_send_vcode, "descr", response.msg);
+            displayButtonMsg(false, id_send_vcode, "error");
+            class_firsts.forEach((input) => { input.readOnly = true });
+
+            class_seconds.forEach((input) => {
+                if (response.is_email_vcode_sent && input.id.includes("email") ||
+                    response.is_phone_vcode_sent && input.id.includes("phone")) {
+                    input.disabled = false;
+                } else {
+                    input.classList.remove("class-second");
+                };
+            });
+
+            id_confirm_vcode.disabled = false;
+            class_seconds = document.querySelectorAll(".class-second");
+            initValidation(class_seconds, id_confirm_vcode);
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+            displayButtonMsg(true, id_send_vcode, "error", response.msg);
+            displayButtonMsg(false, id_send_vcode, "descr");
+            id_send_vcode.disabled = false;
+            id_confirm_vcode.disabled = true;
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
+    // requestConfirmVcodeForAccount()
+    else if (response.id === "confirm_vcode_for_account") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_confirm_vcode, "descr", response.msg);
+            displayButtonMsg(false, id_confirm_vcode, "error");
+            inputs = document.querySelectorAll("input");
+
+            inputs.forEach((input) => {
+                input.disabled = false;
+                input.readOnly = true;
+            });
+
+            id_confirm_vcode.disabled = true;
+            location.href = `${location.origin}${location.pathname}`;
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+            displayButtonMsg(true, id_confirm_vcode, "error", response.msg);
+            id_confirm_vcode.disabled = false;
+        };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
@@ -432,7 +489,7 @@ function handleAjaxCallback(response) {
             freezeForm(false);
 
             const id_cart_alert = document.getElementById("id_cart_alert");
-            
+
             if (id_cart_alert !== null && !id_cart_alert.hidden) {
                 const id_decrease_quantity = document.getElementById("id_decrease_quantity");
                 const id_requested_quantity = document.getElementById("id_requested_quantity");
@@ -490,7 +547,7 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_cancel_or_delete, "descr");
             displayButtonMsg(true, id_cancel_or_delete, "error", response.msg);
         };
-        
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
@@ -571,7 +628,7 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_delete, "descr");
             displayButtonMsg(true, id_delete, "error", response.msg);
         };
-        
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
@@ -594,7 +651,7 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update, "descr");
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
         };
-        
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
@@ -608,7 +665,7 @@ function handleAjaxCallback(response) {
             location.href = location.href.replace("#id_main_content", "");
         } else if (response.status === "FAIL") {
             freezeForm(false);
-            
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });

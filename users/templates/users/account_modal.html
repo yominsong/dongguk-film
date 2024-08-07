@@ -54,7 +54,138 @@
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
-                        <div class="space-y-5">
+                        <div id="id_modal_info" class="space-y-5">
+                            <div class="space-y-5 divide-y divide-gray-200">
+                                <div class="space-y-5">
+                                    <div>
+                                        <label for="id_email"
+                                               class="flex-1 text-sm font-medium leading-6 text-gray-900">
+                                            이메일 주소
+                                        </label>
+                                        <div class="mt-2">
+                                            <input type="text"
+                                                   id="id_email"
+                                                   class="class-first only-email space-allowed block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                                   value="{{ user.email }}"
+                                                   data-type="이메일 주소"
+                                                   data-original="{{ user.email }}"
+                                                   placeholder="gildong@example.com"
+                                                   maxlength="100"
+                                                   required>
+                                        </div>
+                                        <!-- <p class="mt-2 text-sm text-gray-500" id="id_email_help" hidden></p> -->
+                                        <p class="mt-2 text-sm text-gray-500" id="id_email_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600" id="id_email_error" hidden></p>
+                                    </div>
+                                    <div>
+                                        <label for="id_phone"
+                                               class="flex-1 text-sm font-medium leading-6 text-gray-900">
+                                            휴대전화 번호
+                                        </label>
+                                        <div class="mt-2">
+                                            <input type="tel"
+                                                   id="id_phone"
+                                                   class="class-first only-phone block w-full rounded-md py-1.5 text-gray-900 shadow-sm df-ring-inset-gray placeholder:text-gray-400 hover:bg-gray-50 hover:df-ring-inset-gray focus:df-focus-ring-inset text-sm leading-6 read-only:hover:bg-gray-100 read-only:bg-gray-100 read-only:cursor-not-allowed"
+                                                   value="{{ user.metadata.phone }}"
+                                                   data-type="휴대전화 번호"
+                                                   data-original="{{ user.metadata.phone }}"
+                                                   placeholder="010-0000-0000"
+                                                   maxlength="13"
+                                                   minlength="13"
+                                                   required>
+                                        </div>
+                                        <!-- <p class="mt-2 text-sm text-gray-500" id="id_phone_help" hidden></p> -->
+                                        <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
+                                    </div>
+                                    <div>
+                                        <button type="button"
+                                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-stone-600 hover:bg-stone-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
+                                                id="id_send_vcode">
+                                            <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24"
+                                                 id="id_send_vcode_spin">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                            인증번호 받기
+                                        </button>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_send_vcode_descr" hidden></p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_send_vcode_error"
+                                           hidden></p>
+                                    </div>
+                                </div>
+                                <div class="space-y-5 pt-5">
+                                    <div>
+                                        <label for="id_email_vcode" class="flex-1 text-sm font-medium text-gray-700">이메일 주소 인증번호</label>
+                                        <div class="mt-2">
+                                            <input type="text"
+                                                   name="email_vcode"
+                                                   class="block w-full text-sm placeholder-gray-400 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50 hover:df-ring-inset-gray class-second only-number focus:df-focus-ring-inset read-only:bg-gray-100 read-only:cursor-not-allowed disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                   placeholder="000000"
+                                                   required=""
+                                                   disabled=""
+                                                   maxlength="6"
+                                                   minlength="6"
+                                                   id="id_email_vcode">
+                                        </div>
+                                        <p class="mt-2 text-sm text-gray-500"
+                                           id="id_email_vcode_descr"
+                                           hidden=""></p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_email_vcode_error"
+                                           hidden=""></p>
+                                    </div>
+                                    <div>
+                                        <label for="id_phone_vcode" class="flex-1 text-sm font-medium text-gray-700">휴대전화 번호 인증번호</label>
+                                        <div class="mt-2">
+                                            <input type="text"
+                                                   name="phone_vcode"
+                                                   class="block w-full text-sm placeholder-gray-400 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50 hover:df-ring-inset-gray class-second only-number focus:df-focus-ring-inset read-only:bg-gray-100 read-only:cursor-not-allowed disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                                   placeholder="000000"
+                                                   autocomplete="one-time-code"
+                                                   required=""
+                                                   disabled=""
+                                                   maxlength="6"
+                                                   minlength="6"
+                                                   id="id_phone_vcode">
+                                        </div>
+                                        <p class="mt-2 text-sm text-gray-500"
+                                           id="id_phone_vcode_descr"
+                                           hidden=""></p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_phone_vcode_error"
+                                           hidden=""></p>
+                                    </div>
+                                    <div>
+                                        <button type="button"
+                                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                                id="id_confirm_vcode"
+                                                disabled="">
+                                            <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24"
+                                                 id="id_confirm_vcode_spin">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                            수정하기
+                                        </button>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden=""></p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_confirm_vcode_error"
+                                           hidden=""></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="id_modal_facility" class="space-y-5">
                             <div class="class-link-list-item text-sm flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6">
                                 <a id="id_public_url_from_request"
                                    href="#"
@@ -62,7 +193,7 @@
                                    class="absolute inset-x-0 -top-px bottom-0 cursor-pointer focus:df-focus-ring-inset"></a>
                                 <div class="flex min-w-0 items-center">
                                     <div class="min-w-0 flex-auto">
-                                        <p class="font-semibold leading-6 text-gray-900 ">
+                                        <p class="font-semibold leading-6 text-gray-900">
                                             <span id="id_name_from_request">시설</span>
                                         </p>
                                         <p id="id_status_descr"
