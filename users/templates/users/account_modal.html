@@ -73,7 +73,6 @@
                                                    maxlength="100"
                                                    required>
                                         </div>
-                                        <!-- <p class="mt-2 text-sm text-gray-500" id="id_email_help" hidden></p> -->
                                         <p class="mt-2 text-sm text-gray-500" id="id_email_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_email_error" hidden></p>
                                     </div>
@@ -94,7 +93,6 @@
                                                    minlength="13"
                                                    required>
                                         </div>
-                                        <!-- <p class="mt-2 text-sm text-gray-500" id="id_phone_help" hidden></p> -->
                                         <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
                                     </div>
@@ -223,6 +221,21 @@
                                     <div class="flex justify-between items-center">
                                         <div class="flex">└ 신청일시</div>
                                         <div id="id_created_time_from_request"
+                                             class="animate-pulse pulse-on mt-0.5 h-4 w-36 bg-gray-200 rounded"></div>
+                                    </div>
+                                    <div class="hidden justify-between items-center">
+                                        <div class="flex">└ 확정일시</div>
+                                        <div id="id_approved_time_from_request"
+                                             class="animate-pulse pulse-on mt-0.5 h-4 w-36 bg-gray-200 rounded"></div>
+                                    </div>
+                                    <div class="hidden justify-between items-center">
+                                        <div class="flex">└ 취소일시</div>
+                                        <div id="id_canceled_time_from_request"
+                                             class="animate-pulse pulse-on mt-0.5 h-4 w-36 bg-gray-200 rounded"></div>
+                                    </div>
+                                    <div class="hidden justify-between items-center">
+                                        <div class="flex">└ 반려일시</div>
+                                        <div id="id_rejected_time_from_request"
                                              class="animate-pulse pulse-on mt-0.5 h-4 w-36 bg-gray-200 rounded"></div>
                                     </div>
                                 </div>

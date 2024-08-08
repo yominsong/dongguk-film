@@ -153,10 +153,14 @@ function updateForm(action, datasetObj = null) {
         const id_status_descr = code(id_status, "_descr");
         const id_status_from_request = document.getElementById("id_status_from_request");
         const id_created_time_from_request = document.getElementById("id_created_time_from_request");
+        const id_approved_time_from_request = document.getElementById("id_approved_time_from_request");
+        const id_canceled_time_from_request = document.getElementById("id_canceled_time_from_request");
+        const id_rejected_time_from_request = document.getElementById("id_rejected_time_from_request");
         const id_purpose_from_request = document.getElementById("id_purpose_from_request");
         const id_duration_from_request = document.getElementById("id_duration_from_request");
         const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
         const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
+        const class_request_details = document.querySelectorAll(".class-request-detail");
         let status, statusDescr;
         let duration = data.duration;
 
@@ -164,26 +168,30 @@ function updateForm(action, datasetObj = null) {
             status = "대기 중";
             statusDescr = "운영진이 예약 정보를 확인하고 있어요.";
 
-            const class_request_details = document.querySelectorAll(".class-request-detail");
-
             class_request_details.forEach(detail => {
                 detail.hidden = false;
             });
-        } else if (data.status === "Approved") {
-            status = "승인됨";
-            statusDescr = "이제 이 시설을 사용할 수 있어요.";
-        } else if (data.status === "In Progress") {
-            status = "사용 중";
-            statusDescr = "현재 이 시설을 사용하고 있어요.";
-        } else if (data.status === "Completed") {
-            status = "완료됨";
-            statusDescr = "시설 사용이 종료되었어요.";
-        } else if (data.status === "Canceled") {
-            status = "취소됨";
-            statusDescr = "예약이 취소되었어요.";
-        } else if (data.status === "Rejected") {
-            status = "반려됨";
-            statusDescr = "예약이 반려되었어요.";
+        } else {
+            if (data.status === "Approved") {
+                status = "확정됨";
+                statusDescr = "예약이 확정되었어요.";
+            } else if (data.status === "In Progress") {
+                status = "사용 중";
+                statusDescr = "현재 이 시설을 사용하고 있어요.";
+            } else if (data.status === "Completed") {
+                status = "사용 완료됨";
+                statusDescr = "시설 사용이 종료되었어요.";
+            } else if (data.status === "Canceled") {
+                status = "취소됨";
+                statusDescr = "예약이 취소되었어요.";
+            } else if (data.status === "Rejected") {
+                status = "반려됨";
+                statusDescr = "예약이 반려되었어요.";
+            };
+
+            class_request_details.forEach(detail => {
+                detail.hidden = true;
+            });
         };
 
         if (Number(duration) > 0) {
@@ -206,7 +214,32 @@ function updateForm(action, datasetObj = null) {
         id_start_datetime_from_request.innerText = data.startDatetime;
         id_end_datetime_from_request.innerText = data.endDatetime;
 
-        [id_status_from_request, id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request].forEach(element => {
+        [id_approved_time_from_request, id_canceled_time_from_request, id_rejected_time_from_request].forEach(element => {
+            element.innerText = "";
+            element.parentElement.classList.replace("flex", "hidden");
+        });
+
+        let innerTextArray = [id_status_from_request, id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request];
+
+        if (data.approvedTime !== "null") {
+            id_approved_time_from_request.innerText = data.approvedTime;
+            id_approved_time_from_request.parentElement.classList.replace("hidden", "flex");
+            innerTextArray.push(id_approved_time_from_request);
+        };
+        
+        if (data.canceledTime !== "null") {
+            id_canceled_time_from_request.innerText = data.canceledTime;
+            id_canceled_time_from_request.parentElement.classList.replace("hidden", "flex");
+            innerTextArray.push(id_canceled_time_from_request);
+        };
+
+        if (data.rejectedTime !== "null") {
+            id_rejected_time_from_request.innerText = data.rejectedTime;
+            id_rejected_time_from_request.parentElement.classList.replace("hidden", "flex");
+            innerTextArray.push(id_rejected_time_from_request);
+        };
+
+        innerTextArray.forEach(element => {
             element.className = "flex font-semibold text-right";
         });
 
@@ -325,13 +358,13 @@ function updateList(data) {
                 status = "대기 중";
             } else if (item.status === "Approved") {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
-                status = "승인됨";
+                status = "확정됨";
             } else if (item.status === "In Progress") {
                 badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
                 status = "사용 중";
             } else if (item.status === "Completed") {
                 badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
-                status = "완료됨";
+                status = "사용 완료됨";
             } else if (item.status === "Canceled") {
                 badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
                 status = "취소됨";
@@ -384,6 +417,9 @@ function updateList(data) {
                                 data-for-instructor="${item.for_instructor}"
                                 data-status="${item.status}"
                                 data-created-time="${item.created_time}"
+                                data-approved-time="${item.approved_time}"
+                                data-canceled-time="${item.canceled_time}"
+                                data-rejected-time="${item.rejected_time}"
                                 class="class-read-request relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                 tabindex="0">상세 보기</span>
                     </p>

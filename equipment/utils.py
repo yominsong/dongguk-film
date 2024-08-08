@@ -1403,6 +1403,7 @@ def equipment(request):
             "End equipment hour": None,
             "Equipment item": None,
             "Status": "Canceled",
+            "Canceled time": timezone.now().isoformat(),
         }
 
         data = {

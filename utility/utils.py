@@ -619,9 +619,21 @@ def airtable(
 
         if table_name == "facility-request":
             start_datetime = format_datetime(convert_datetime(fields["Start datetime"]))
-
             end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
             created_time = format_datetime(convert_datetime(fields["Created time"]))
+            approved_time = fields.get("Approved time", None)
+            canceled_time = fields.get("Canceled time", None)
+            rejected_time = fields.get("Rejected time", None)
+
+            if approved_time:
+                approved_time = format_datetime(convert_datetime(approved_time))
+
+            if canceled_time:
+                canceled_time = format_datetime(convert_datetime(canceled_time))
+
+            if rejected_time:
+                rejected_time = format_datetime(convert_datetime(rejected_time))
+                
             user = fields["User"]
 
             user = (
@@ -652,6 +664,9 @@ def airtable(
                 "for_instructor": fields.get("For instructor", False),
                 "status": fields["Status"],
                 "created_time": created_time,
+                "approved_time": approved_time,
+                "canceled_time": canceled_time,
+                "rejected_time": rejected_time,
             }
 
         elif table_name == "equipment-hour":
@@ -813,15 +828,38 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
+
                     start_datetime = format_datetime(
                         convert_datetime(fields["Start datetime"])
                     )
+
                     end_datetime = format_datetime(
                         convert_datetime(fields["End datetime"])
                     )
+
                     created_time = format_datetime(
                         convert_datetime(fields["Created time"])
                     )
+
+                    approved_time = fields.get("Approved time", None)
+                    canceled_time = fields.get("Canceled time", None)
+                    rejected_time = fields.get("Rejected time", None)
+
+                    if approved_time:
+                        approved_time = format_datetime(
+                            convert_datetime(approved_time)
+                        )
+
+                    if canceled_time:
+                        canceled_time = format_datetime(
+                            convert_datetime(canceled_time)
+                        )
+                    
+                    if rejected_time:
+                        rejected_time = format_datetime(
+                            convert_datetime(rejected_time)
+                        )
+
                     user = fields["User"]
 
                     user = (
@@ -856,6 +894,9 @@ def airtable(
                         "for_instructor": fields.get("For instructor", False),
                         "status": fields.get("Status", None),
                         "created_time": created_time,
+                        "approved_time": approved_time,
+                        "canceled_time": canceled_time,
+                        "rejected_time": rejected_time,
                     }
 
                     record_list.append(request)
