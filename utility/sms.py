@@ -57,19 +57,19 @@ def send_sms(data: dict):
     # type: "IDENTITY_VERIFICATION_REQUIRED"
     if type == "IDENTITY_VERIFICATION_REQUIRED":
         phone_vcode = content["phone_vcode"]
-        content = f'[디닷에프] 휴대전화 번호 인증번호는 [{phone_vcode}]{handle_hangul(phone_vcode, "이에요예요", False)}!'
+        content = f'[디닷에프] 휴대전화 번호 인증번호는 [{phone_vcode}]{handle_hangul(phone_vcode, "이에요예요", False)}.'
 
     # type: "FACILITY_REQUEST_CREATED"
     elif type == "FACILITY_REQUEST_CREATED":
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요! https://dongguk.film/account"
+        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요. https://dongguk.film/account"
     
     # type: "FACILITY_REQUEST_CANCELED"
     elif type == "FACILITY_REQUEST_CANCELED":
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요! https://dongguk.film/account"
+        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요. https://dongguk.film/account"
 
     service = init_service()
     from_no = MGT_PHONE

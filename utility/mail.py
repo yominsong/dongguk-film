@@ -27,12 +27,12 @@ def send_mail(data):
     if type == "IDENTITY_VERIFICATION_REQUIRED":
         target = content["target"]
         email_vcode = content["email_vcode"]
-        subject = "[디닷에프] 이메일 주소를 인증해주세요!"
+        subject = "[디닷에프] 이메일 주소를 인증해주세요."
         message = f'{target}에서 {handle_hangul(email_vcode, "을를", True)} 입력해주세요.'
         html_message = render_to_string(
             "mail_base.html",
             {
-                "title": "이메일 주소를 인증해주세요!",
+                "title": "이메일 주소를 인증해주세요.",
                 "body": f"{target}에서 다음 인증번호를 입력해주세요.",
                 "highlighted": email_vcode,
             },
@@ -41,12 +41,12 @@ def send_mail(data):
     # type: "INACTIVE_USER_AUTO_DELETED"
     elif type == "INACTIVE_USER_AUTO_DELETED":
         student_id = mask_personal_information("student_id", content["student_id"])
-        subject = "[디닷에프] 계정이 안전하게 삭제되었어요!"
+        subject = "[디닷에프] 계정이 안전하게 삭제되었어요."
         message = "30일간 로그인 기록이 없어 자동으로 삭제되었어요."
         html_message = render_to_string(
             "mail_base.html",
             {
-                "title": "계정이 안전하게 삭제되었어요!",
+                "title": "계정이 안전하게 삭제되었어요.",
                 "body": "다음 학번의 계정이 30일간 로그인 기록 부재로 자동 삭제되었어요.",
                 "highlighted": student_id,
                 "conclusion": "디닷에프를 다시 이용하려면 아래 버튼을 눌러 재가입해주세요. 감사합니다. 🙇",
@@ -63,12 +63,12 @@ def send_mail(data):
         type = "교과목" if is_for_instructor else "프로젝트"
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요!"
+        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요."
         message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",
             {
-                "title": f"{facility_category} 예약 신청이 완료되었어요!",
+                "title": f"{facility_category} 예약 신청이 완료되었어요.",
                 "body": f"다음 {type}의 {facility_category} 예약 신청이 완료되었어요.",
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
@@ -85,12 +85,12 @@ def send_mail(data):
         type = "교과목" if is_for_instructor else "프로젝트"
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요!"
+        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요."
         message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",
             {
-                "title": f"{facility_category} 예약이 취소되었어요!",
+                "title": f"{facility_category} 예약이 취소되었어요.",
                 "body": f"다음 {type}의 {facility_category} 예약이 취소되었어요.",
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
