@@ -70,19 +70,19 @@
             <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
                 <dt class="truncate text-sm font-medium text-gray-500">학번, 성명</dt>
                 <dd class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
-                    {{ user.metadata.student_id }}, {{ user.metadata.name }}
+                    <span id="id_user_student_id" data-original="{{ user.username }}">{{ masked_student_id }}</span>, <span id="id_user_name" data-original="{{ user.metadata.name }}">{{ masked_name }}</span>
                 </dd>
             </div>
             <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
                 <dt class="truncate text-sm font-medium text-gray-500">이메일 주소</dt>
                 <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
-                    {{ user.email }}
+                    <span id="id_user_email" data-original="{{ user.email }}">{{ masked_email }}</span>
                 </dd>
             </div>
             <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6">
                 <dt class="truncate text-sm font-medium text-gray-500">휴대전화 번호</dt>
                 <dd class="pulse-off mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
-                    {{ user.metadata.phone }}
+                    <span id="id_user_phone" data-original="{{ user.metadata.phone }}">{{ masked_phone }}</span>
                 </dd>
             </div>
         </dl>

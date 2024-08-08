@@ -50,6 +50,28 @@ function loadPageState() {
     };
 }
 
+function executePrivacyMasking() {
+    const elements = [
+        { id: "id_user_student_id", type: "student_id" },
+        { id: "id_user_name", type: "name" },
+        { id: "id_user_email", type: "email_address" },
+        { id: "id_user_phone", type: "phone_number" }
+    ];
+
+    elements.forEach(({ id, type }) => {
+        const element = document.getElementById(id);
+
+        if (!element) return;
+        element.parentElement.parentElement.addEventListener("mouseenter", () => {
+            element.innerText = element.dataset.original;
+        });
+
+        element.parentElement.parentElement.addEventListener("mouseleave", () => {
+            element.innerText = maskPersonalInformation(type, element.dataset.original);
+        });
+    });
+}
+
 function hasInfoChanged(inputs) {
     let hasChanged = false;
 
@@ -629,6 +651,8 @@ function initRequest() {
             requestVerifyAuthentication();
             loadPageState();
         };
+
+        executePrivacyMasking();
 
         if (id_modal !== null) {
             initValidation(class_firsts, id_send_vcode);

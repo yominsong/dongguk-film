@@ -83,6 +83,42 @@ function code(one, two) {
     return eval(result);
 }
 
+function maskPersonalInformation(type, string) {
+    let maskedString;
+
+    switch (type) {
+        case "instructor_id":
+            maskedString = "*".repeat(4) + string.slice(-4);
+            break;
+        case "student_id":
+            maskedString = string.slice(0, 2) + "*".repeat(5) + string.slice(-3);
+            break;
+        case "name":
+            if (string.length === 2) {
+                maskedString = string[0] + "*";
+            } else {
+                maskedString = string[0] + "*".repeat(string.length - 2) + string[string.length - 1];
+            }
+            break;
+        case "email_address":
+            const [local, domain] = string.split("@");
+            let maskedLocal;
+            if (local.length <= 2) {
+                maskedLocal = "*".repeat(local.length);
+            } else {
+                maskedLocal = local[0] + "*".repeat(local.length - 2) + local[local.length - 1];
+            }
+            maskedString = `${maskedLocal}@${domain}`;
+            break;
+        case "phone_number":
+            const splitString = string.split("-");
+            maskedString = `${splitString[0]}-${splitString[1].slice(0, 2)}**-**${splitString[2].slice(2)}`;
+            break;
+    }
+
+    return maskedString;
+}
+
 /**
  * @param {Array} array1 An array of strings
  * @param {Array} array2 An array consisting of strings paired with array1

@@ -146,15 +146,6 @@ def convert_datetime(datetime_str: str) -> datetime.datetime:
         return kor_tz.localize(dt)
 
 
-def format_datetime(dt: datetime.datetime, format_str: str = "%Y-%m-%d %H:%M") -> str:
-    """
-    - dt | `datetime.datetime`: Datetime object to format
-    - format_str | `str`: Format string (default: "%Y-%m-%d %H:%M")
-    """
-
-    return dt.strftime(format_str)
-
-
 def format_datetime(
     dt: datetime.datetime, format_str: str = "%Y-%m-%d(%a) %H:%M"
 ) -> str:
@@ -200,6 +191,14 @@ def mask_personal_information(type: str, string: str):
             masked_string = f"{string[0]}*"
         else:
             masked_string = f"{string[0]}{'*' * (len(string) - 2)}{string[-1]}"
+    elif type == "email_address":
+        local, domain = string.split("@")
+
+        if len(local) <= 2:
+            masked_local = '*' * len(local)
+        else:
+            masked_local = f"{local[0]}{'*' * (len(local) - 2)}{local[-1]}"
+        masked_string = f"{masked_local}@{domain}"
     elif type == "phone_number":
         split_string = string.split("-")
         masked_string = (
