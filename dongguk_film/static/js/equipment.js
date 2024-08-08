@@ -1510,6 +1510,7 @@ function updateForm(action, datasetObj = null) {
     const id_modal_cart = code(id_modal, "_cart");
     const id_modal_share = code(id_modal, "_share");
     const id_total_quantity = document.getElementById("id_total_quantity");
+    const class_headings = document.querySelectorAll(".class-heading");
     const class_keywords = document.querySelectorAll(".class-keyword");
     const cart = getCart();
 
@@ -1527,13 +1528,16 @@ function updateForm(action, datasetObj = null) {
         id_modal_checkout.hidden = true;
         id_modal_share.hidden = true;
 
+        class_headings.forEach(heading => {
+            heading.innerText = "검색 필터";
+        });
+
         class_keywords.forEach(keyword => {
-            keyword.innerText = "검색 필터";
+            keyword.innerText = "적용하기";
         });
 
         initForm();
 
-        id_filter_or_checkout_text.innerText = "적용하기";
         id_filter_or_checkout.classList.replace("hidden", "inline-flex");
     }
 
@@ -1549,8 +1553,12 @@ function updateForm(action, datasetObj = null) {
         id_modal_share.hidden = true;
         firstSubject.style.setProperty("border-top", "none", "important");
 
+        class_headings.forEach(heading => {
+            heading.innerText = "장바구니";
+        });
+
         class_keywords.forEach(keyword => {
-            keyword.innerText = "장바구니";
+            keyword.innerText = "신청하기";
         });
 
         inputs.forEach((input) => {
@@ -1634,7 +1642,6 @@ function updateForm(action, datasetObj = null) {
             });
 
             id_modal_cart.classList.remove("-mb-5");
-            id_filter_or_checkout_text.innerText = "신청하기";
             id_filter_or_checkout.classList.replace("hidden", "inline-flex");
             id_filter_or_checkout.classList.add("class-checkout");
         };
@@ -1668,8 +1675,12 @@ function updateForm(action, datasetObj = null) {
         id_modal_checkout.hidden = false;
         id_modal_share.hidden = true;
 
+        class_headings.forEach(heading => {
+            heading.innerText = "예약 신청하기";
+        });
+
         class_keywords.forEach(keyword => {
-            keyword.innerText = "예약 신청하기";
+            keyword.innerText = "신청하기";
         });
 
         const id_purpose_in_cart = code(id_purpose, "_in_cart");

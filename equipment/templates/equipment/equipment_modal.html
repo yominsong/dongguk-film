@@ -27,7 +27,7 @@
                  x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  id="id_modal_base"
-                 class="w-full relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6"
+                 class="w-full relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:max-w-lg sm:p-6"
                  @click.away="open = true">
                 <div class="absolute right-0 top-0 pr-4 pt-5 sm:pr-5 block">
                     <button id="id_close_modal"
@@ -36,7 +36,7 @@
                             @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
                             @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
                             @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }">
-                        <span class="sr-only">기자재 <span class="class-keyword">검색 필터</span> 화면 닫기</span>
+                        <span class="sr-only">기자재 <span class="class-heading">검색 필터</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -52,7 +52,7 @@
                         <div class="mt-0 text-left">
                             <h3 id="id_modal_title"
                                 class="text-base font-semibold leading-6 text-gray-900">
-                                기자재 <span class="class-keyword">검색 필터</span>
+                                기자재 <span class="class-heading">검색 필터</span>
                             </h3>
                         </div>
                     </div>
@@ -622,14 +622,14 @@
                                         </div>
                                         <div class="ml-3">
                                             <h3 class="text-sm font-medium text-flamingo-800">
-                                                <span class="class-keyword">예약 신청하기</span> 전 꼭 읽어주세요.
+                                                <span class="class-keyword">신청하기</span> 전 꼭 읽어주세요.
                                             </h3>
                                             <div class="mt-2 text-sm text-flamingo-700">
                                                 <ul role="list" class="list-disc space-y-1 pl-5">
                                                     <li>기자재 예약 신청 권한은 연출, 촬영, 동시녹음 담당(Director, Director of Photography, Production Sound Mixer)에게 있으며, 취소 권한은 신청자 본인에게 있어요.</li>
                                                     <li>예약이 확정되면 문자 메시지와 이메일로 안내해드릴게요.</li>
                                                     <li>안정적인 서비스 제공을 위해 운영진은 본 <span id="id_subject_or_project">프로젝트</span>의 기자재 예약 신청 및 취소 내역을 조회할 수 있어요.</li>
-                                                    <li>하단의 '<span class="class-keyword">예약 신청하기</span>' 버튼 클릭 시 기자재 예약 신청서 작성 및 제출이 진행돼요.</li>
+                                                    <li>하단의 '<span class="class-keyword">신청하기</span>' 버튼 클릭 시 기자재 예약 신청서 작성 및 제출이 진행돼요.</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -795,7 +795,7 @@
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span id="id_filter_or_checkout_text">적용하기</span>
+                            <span id="id_filter_or_checkout_text" class="class-keyword">적용하기</span>
                         </button>
                     </div>
                 </div>

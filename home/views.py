@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render
 from utility.img import get_hero_img
-from utility.utils import short_io, notion
+from utility.utils import short_io, airtable, notion
 
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
@@ -30,6 +30,20 @@ def home(request):
     )
 
     image_list = get_hero_img("home")
+
+    data = {
+        "table_name": "facility-request",
+        "params": {"view": "Grid view"},
+    }
+
+    facility_request_list = airtable("get_all", "records", data, 5)
+
+    data = {
+        "table_name": "project-team",
+        "params": {"view": "Grid view"},
+    }
+
+    project_list = airtable("get_all", "records", data, 5)
     dflink_list = short_io("retrieve", limit=5)
     notice_list = notion("query", "db", data={"db_name": "notice"}, limit=5)
 
@@ -39,6 +53,8 @@ def home(request):
         {
             "is_new_user": new_user_bool,
             "image_list": image_list,
+            "facility_request_list": facility_request_list,
+            "project_list": project_list,
             "dflink_list": dflink_list,
             "notice_list": notice_list,
         },

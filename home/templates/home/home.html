@@ -123,8 +123,151 @@
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
-            <!-- DF link -->
+            <!-- Facility -->
             <div>
+                <div class="flex">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'equipment:equipment' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700">
+                            <path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z" />
+                        </svg>
+                        <h3 class="text-lg font-medium leading-6">시설예약</h3>
+                    </a>
+                </div>
+                <ul role="list"
+                    class="flex flex-col mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    {% for facility_request in facility_request_list %}
+                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- facility.name -->
+                                <p class="text-sm font-semibold leading-6 text-gray-900">
+                                    <a href="https://docs.google.com/document/d/123"
+                                       target="_blank"
+                                       class="rounded-md focus:df-focus-ring-offset-gray">
+                                        <span class="absolute inset-x-0 -top-px bottom-0"></span>
+                                        {{ facility_request.name }}
+                                    </a>
+                                </p>
+                                <!-- facility.status -->
+                                <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset {% if facility_request.status == 'Pending' %} text-slate-700 bg-slate-50 ring-slate-600/20 {% elif facility_request.status == 'Approved' %} text-green-700 bg-green-50 ring-green-600/20 {% elif facility_request.status == 'In Progress' %} text-yellow-700 bg-yellow-50 ring-yellow-600/20 {% elif facility_request.status == 'Completed' %} text-slate-700 bg-slate-50 ring-slate-600/20 {% elif facility_request.status == 'Canceled' %} text-pink-700 bg-pink-50 ring-pink-700/10 {% elif facility_request.status == 'Rejected' %} text-red-700 bg-red-50 ring-red-600/10 {% endif %} ">
+                                    {% if facility_request.status == "Pending" %}
+                                        대기 중
+                                    {% elif facility_request.status == "Approved" %}
+                                        승인됨
+                                    {% elif facility_request.status == "In Progress" %}
+                                        사용 중
+                                    {% elif facility_request.status == "Completed" %}
+                                        완료됨
+                                    {% elif facility_request.status == "Canceled" %}
+                                        취소됨
+                                    {% elif facility_request.status == "Rejected" %}
+                                        거절됨
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- facility.start_datetime -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">
+                                    <time datetime="{{ facility_request.start_datetime }}">{{ facility_request.start_datetime }} 시작</time>
+                                </p>
+                                <!-- facility.end_datetime(>sm) -->
+                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                    <time datetime="{{ facility_request.end_datetime }}">{{ facility_request.end_datetime }} 종료</time>
+                                </p>
+                            </div>
+                            <div class="flex justify-start items-center">
+                                <!-- facility.end_datetime(<=sm ) -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                    <time datetime="{{ facility_request.end_datetime }}">{{ facility_request.end_datetime }} 종료</time>
+                                </p>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                            불러올 시설예약이 없어요.
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- Project -->
+            <div>
+                <div class="flex">
+                    <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
+                       href="{% url 'project:project' %}"
+                       target="_self">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="currentColor"
+                             class="w-6 h-6 text-gray-500 group-hover:text-gray-700"
+                             aria-hidden="true">
+                            <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 18.375V5.625zm1.5 0v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5A.375.375 0 003 5.625zm16.125-.375a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5A.375.375 0 0021 7.125v-1.5a.375.375 0 00-.375-.375h-1.5zM21 9.375A.375.375 0 0020.625 9h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zM4.875 18.75a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5zM3.375 15h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375zm0-3.75h1.5a.375.375 0 00.375-.375v-1.5A.375.375 0 004.875 9h-1.5A.375.375 0 003 9.375v1.5c0 .207.168.375.375.375zm4.125 0a.75.75 0 000 1.5h9a.75.75 0 000-1.5h-9z" clip-rule="evenodd" />
+                        </svg>
+                        <h3 class="text-lg font-medium leading-6">프로젝트</h3>
+                    </a>
+                </div>
+                <ul role="list"
+                    class="flex flex-col mt-5 lg:min-h-[443.200px] divide-y divide-gray-100 overflow-hidden bg-white shadow rounded-md">
+                    {% for project in project_list %}
+                        <li class="relative flex flex-col justify-between px-4 py-5 hover:bg-gray-50 sm:px-6">
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- project.name -->
+                                <p class="text-sm font-semibold leading-6 text-gray-900">
+                                    <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">{{ project.name }}</span>
+                                </p>
+                                <!-- project.purpose -->
+                                <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
+                                    {{ project.purpose.keyword }}
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <!-- project.director & project.producer -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500">
+                                    연출&nbsp;
+                                    <span class="font-semibold">
+                                        {% for director in project.director %}
+                                            {% if not forloop.last %}
+                                                {{ director.name }},
+                                            {% else %}
+                                                {{ director.name }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    &nbsp;·&nbsp;제작&nbsp;
+                                    <span class="font-semibold">
+                                        {% for producer in project.producer %}
+                                            {% if not forloop.last %}
+                                                {{ producer.name }},
+                                            {% else %}
+                                                {{ producer.name }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </p>
+                                <!-- project.created_date(>sm) -->
+                                <p class="hidden sm:flex sm:mt-1 sm:text-sm sm:leading-5 sm:text-gray-500">
+                                    <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
+                                </p>
+                            </div>
+                            <div class="flex justify-start items-center">
+                                <!-- project.created_date(<=sm ) -->
+                                <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                    <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
+                                </p>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
+                            불러올 프로젝트가 없어요.
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- DF link -->
+            <div class="lg:mt-3">
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
@@ -190,13 +333,13 @@
                         </li>
                     {% empty %}
                         <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                            등록된 동영링크가 없어요.
+                            불러올 동영링크가 없어요.
                         </li>
                     {% endfor %}
                 </ul>
             </div>
             <!-- Notice -->
-            <div>
+            <div class="lg:mt-3">
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'notice:notice' %}"
@@ -270,7 +413,7 @@
                         </li>
                     {% empty %}
                         <li class="flex-grow flex items-center justify-center px-4 py-4 text-gray-500 text-sm font-medium sm:px-6">
-                            등록된 공지사항이 없어요.
+                            불러올 공지사항이 없어요.
                         </li>
                     {% endfor %}
                 </ul>
