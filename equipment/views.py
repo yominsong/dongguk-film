@@ -38,21 +38,6 @@ def is_not_two_numeric_format(period):
     return not (len(parts) == 2 and all(part.isnumeric() for part in parts))
 
 
-# def has_equipment_room_permission(request):
-#     operator_list = notion("query", "db", data={"db_name": "operator"})
-#     has_equipment_room_permission = False
-
-#     for operator in operator_list:
-#         if operator["student_id"] == request.user.username and (
-#             operator["permission"] == "EQUIPMENT_ROOM"
-#             or operator["permission"] == "ADMIN"
-#         ):
-#             has_equipment_room_permission = True
-#             break
-
-#     return has_equipment_room_permission
-
-
 def redirect_with_query_string(base_url, query_string):
     url = f"{base_url}?{urlencode(query_string)}"
 
@@ -239,7 +224,6 @@ def equipment(request):
             "equipment_collection_count": equipment_collection_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,
-            # "has_equipment_room_permission": has_equipment_room_permission(request),
             "page_value": page_value,
             "page_range": page_range,
             "category_list": category_list,

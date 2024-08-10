@@ -13,8 +13,6 @@ current_minute = current_time.strftime("%M")
 # equipment
 #
 
-requests.get("https://dongguk.film/equipment/utils/delete-expired-carts/")
-
 if current_hour % 2 == 0 and current_minute == "00":
     requests.get("https://dongguk.film/equipment/utils/synchronize-equipment-data/")
 
@@ -44,6 +42,8 @@ if current_time.strftime("%H:%M") == "08:00":
 #
 # utility
 #
+
+requests.get("https://dongguk.film/utility/utils/send-facility-use-reminder/")
 
 if current_time.strftime("%H:%M") == "23:00":
     requests.get("https://dongguk.film/utility/utils/update-hero-img/")

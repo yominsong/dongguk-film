@@ -1394,13 +1394,8 @@ def equipment(request):
         }
 
         equipment_request = airtable("get", "record", data)
-        # film_title = equipment_request["film_title"]
-        # subject_name = equipment_request["subject_name"]
         public_id = equipment_request["public_id"]
         private_id = equipment_request["private_id"]
-        # is_for_instructor = equipment_request["for_instructor"]
-        # name_of_subject_or_project = subject_name if is_for_instructor else film_title
-
         fields = {"Status": "Canceled"} # The values of these fields are changed through automation in Airtable: "Start equipment hour", "End equipment hour", "Equipment item", "Approved time", "Started time", "Completed time", "Canceled time", "Rejected time"
 
         data = {
@@ -1431,21 +1426,5 @@ def equipment(request):
             "public_id": public_id,
             "private_id": private_id,
         }
-
-        # send_msg(request, "CANCEL_FACILITY_REQUEST", "MGT", response)
-
-        # data = {
-        #     "type": "FACILITY_REQUEST_CANCELED",
-        #     "email": request.user.email,
-        #     "phone": request.user.metadata.phone,
-        #     "content": {
-        #         "is_for_instructor": is_for_instructor,
-        #         "name_of_subject_or_project": name_of_subject_or_project,
-        #         "facility_category": "기자재",
-        #     },
-        # }
-
-        # send_mail(data)
-        # send_sms(data)
 
     return JsonResponse(response)

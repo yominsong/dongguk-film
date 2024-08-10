@@ -186,6 +186,37 @@ def send_facility_request_status_update(request):
 #
 
 
+def send_facility_use_reminder(request):
+    formula = "AND(Status = 'Canceled', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
+
+    data = {
+        "table_name": "facility-request",
+        "params": {"formula": formula},
+    }
+
+    target_facility_request_list = airtable("get_all", "records", data)
+
+    for facility_request in target_facility_request_list:
+        user = User.objects.get(username=facility_request["user"])
+        subject_name = facility_request["subject_name"]
+        project_name = facility_request["film_title"]
+        is_for_instructor = facility_request["for_instructor"]
+        name_of_subject_or_project = subject_name if is_for_instructor else project_name
+
+        data = {
+            "type": "FACILITY_REQUEST_STARTING_SOON",
+            "phone": user.metadata.phone,
+            "content": {
+                "name_of_subject_or_project": name_of_subject_or_project,
+                "facility_category": facility_request["category_in_korean"],
+            },
+        }
+
+        send_sms(data)
+
+    return HttpResponse(f"{len(target_facility_request_list)}")
+
+
 def update_dmd_cookie(request):
     cookie = ""
 
