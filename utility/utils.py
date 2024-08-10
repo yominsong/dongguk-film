@@ -102,7 +102,7 @@ def send_facility_request_status_update(request):
                 "user": facility_request["user"],
                 "public_id": facility_request["public_id"],
                 "private_id": facility_request["private_id"],
-                "for_instructor": facility_request["for_instructor"],
+                "for_instructor": is_for_instructor,
                 "status": status,
                 "name_of_subject_or_project": name_of_subject_or_project,
                 "msg_type": msg_type,
