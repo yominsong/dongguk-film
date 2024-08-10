@@ -116,6 +116,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - CREATE_NOTICE
         - UPDATE_NOTICE
         - DELETE_NOTICE
+        - TEST
     - channel | `str`:
         - DEV: Development
         - MGT: Management
@@ -591,6 +592,18 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "url": "https://dongguk.film/notice",
             "thumbnail_url": "",
             "description": f"ㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
+        }
+    
+    # msg_type: "TEST"
+    elif msg_type == "TEST":
+        content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{success_emoji} 테스트 메시지 전송 완료",
+            "url": "",
+            "thumbnail_url": "",
+            "description": "테스트 메시지",
         }
 
     if not settings.IS_PRODUCTION:

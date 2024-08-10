@@ -88,9 +88,7 @@ def send_facility_request_status_update(request):
     signature = request.headers.get("X-Signature")
 
     if is_timestamp_valid(data["timestamp"]) and verify_signature(data, signature):
-        print("Request verified")
-
-        return JsonResponse({"message": "Request processed successfully"})
+        return send_msg(request, "TEST", "DEV")
 
 
 #
