@@ -144,7 +144,7 @@ def send_facility_request_status_update(request):
         record = get_record(record_id)
 
         response = {
-            "status": record["status"],
+            "status": "DONE",
             "reason": "NOTHING_UNUSUAL",
             "public_id": record["public_id"],
             "private_id": record["private_id"],
