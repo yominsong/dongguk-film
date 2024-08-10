@@ -292,8 +292,8 @@
                                  @keydown.arrow-up.prevent="onArrowUp()"
                                  @keydown.arrow-down.prevent="onArrowDown()"
                                  @keydown.tab="open = false"
-                                 @keydown.enter.prevent="open = false; focusButton()"
-                                 @keyup.space.prevent="open = false; focusButton()"
+                                 @keydown.enter.prevent="open = false; focusButton(); $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
+                                 @keyup.space.prevent="open = false; focusButton(); $event.target.children[activeIndex].click(); if (activeIndex === 1) { setTimeout(() => { freezeCkEditor() }, 0.00001) }"
                                  style="display: none">
                                 <a href="{% url 'users:account' %}"
                                    class="block px-4 py-2 text-sm text-gray-700"

@@ -649,6 +649,7 @@ function updateForm(action, datasetObj = null) {
 
     // action: all
     isModalOpen = true;
+    id_modal.classList.remove("sm:max-w-lg");
     id_modal_container.hidden = false;
     id_modal_container.setAttribute("x-data", "{ open: true }");
     handleFocusForModal(true, id_modal_container);  // The action when the modal is closed is being controlled by Alpine.js
@@ -710,6 +711,7 @@ function updateForm(action, datasetObj = null) {
     else if (action === "share") {
         handleModalWidth(false);
         if (id_modal_notice !== null) { id_modal_notice.hidden = true };
+        id_modal.classList.add("sm:max-w-lg");
         id_modal_share.hidden = false;
 
         class_keywords.forEach(keyword => {
