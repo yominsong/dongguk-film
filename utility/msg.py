@@ -104,8 +104,10 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - SIGNUP_COMPLETED
         - EXPIRED_VCODE_AUTO_DELETED
         - INACTIVE_USER_AUTO_DELETED
-        - CREATE_EQUIPMENT_REQUEST
-        - CANCEL_EQUIPMENT_REQUEST
+        - CREATE_FACILITY_REQUEST
+        - APPROVE_FACILITY_REQUEST
+        - CANCEL_FACILITY_REQUEST
+        - REJECT_FACILITY_REQUEST
         - CREATE_PROJECT
         - UPDATE_PROJECT
         - DELETE_PROJECT
@@ -298,8 +300,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
         }
 
-    # msg_type: "CREATE_EQUIPMENT_REQUEST"
-    elif msg_type == "CREATE_EQUIPMENT_REQUEST":
+    # msg_type: "CREATE_FACILITY_REQUEST"
+    elif msg_type == "CREATE_FACILITY_REQUEST":
         reason = data.get("reason", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
@@ -322,7 +324,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         if len(occupied_item_list) > 0:
-            description += f"\nㆍ사용 불가 기자재: {occupied_item_list}"
+            description += f"\nㆍ사용 불가 시설: {occupied_item_list}"
 
         content = {
             "important": True if status == "FAIL" else False,
@@ -332,14 +334,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{status_emoji} 기자재 예약 신청 {status_in_kor}",
+            "title": f"{status_emoji} 시설예약 신청 {status_in_kor}",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,
         }
 
-    # msg_type: "CANCEL_EQUIPMENT_REQUEST"
-    elif msg_type == "CANCEL_EQUIPMENT_REQUEST":
+    # msg_type: "APPROVE_FACILITY_REQUEST"
+    elif msg_type == "APPROVE_FACILITY_REQUEST":
         reason = data.get("reason", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
@@ -368,7 +370,79 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{status_emoji} 기자재 예약 취소 {status_in_kor}",
+            "title": f"{status_emoji} 시설예약 확정 {status_in_kor}",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": description,
+        }
+
+    # msg_type: "CANCEL_FACILITY_REQUEST"
+    elif msg_type == "CANCEL_FACILITY_REQUEST":
+        reason = data.get("reason", "Unknown")
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
+
+        if public_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
+            )
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
+            )
+
+        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 시설예약 취소 {status_in_kor}",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": description,
+        }
+    
+    # msg_type: "REJECT_FACILITY_REQUEST"
+    elif msg_type == "REJECT_FACILITY_REQUEST":
+        reason = data.get("reason", "Unknown")
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
+
+        if public_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
+            )
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
+            )
+
+        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 시설예약 반려 {status_in_kor}",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,

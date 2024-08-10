@@ -1,24 +1,27 @@
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
+from django.urls import reverse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 from .img import save_hero_img
 from .msg import send_msg
+from .sms import send_sms
+from .mail import send_mail
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from dateutil import parser
-import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast, html
+import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
 # Global variables
 #
+
 SECRET_KEY = getattr(settings, "SECRET_KEY", None)
 
 NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
@@ -29,6 +32,7 @@ NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
 AIRTABLE_TOKEN = getattr(settings, "AIRTABLE_TOKEN", None)
 AIRTABLE_BASE_ID = getattr(settings, "AIRTABLE_BASE_ID", None)
 AIRTABLE_TABLE_ID = getattr(settings, "AIRTABLE_TABLE_ID", None)
+AIRTABLE_SCRIPT_API_KEY = getattr(settings, "AIRTABLE_SCRIPT_API_KEY", None)
 AIRTABLE = pyairtable.Api(AIRTABLE_TOKEN)
 
 NOTION_SECRET = getattr(settings, "NOTION_SECRET", None)
@@ -61,38 +65,110 @@ AWS_S3 = boto3.client(
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
 def send_facility_request_status_update(request):
+    def get_record(record_id):
+        data = {
+            "table_name": "facility-request",
+            "params": {"record_id": record_id},
+        }
+
+        facility_request = airtable("get", "record", data)
+        validation = facility_request["validation"]
+        record = None
+
+        if "🟢" in validation:
+            film_title = facility_request["film_title"]
+            subject_name = facility_request["subject_name"]
+            is_for_instructor = facility_request["for_instructor"]
+            name_of_subject_or_project = (
+                subject_name if is_for_instructor else film_title
+            )
+            status = facility_request["status"]
+
+            if status == "Approved":
+                msg_type = "APPROVE_FACILITY_REQUEST"
+                sms_and_mail_type = "FACILITY_REQUEST_APPROVED"
+            elif status == "Canceled":
+                msg_type = "CANCEL_FACILITY_REQUEST"
+                sms_and_mail_type = "FACILITY_REQUEST_CANCELED"
+            elif status == "Rejected":
+                msg_type = "REJECT_FACILITY_REQUEST"
+                sms_and_mail_type = "FACILITY_REQUEST_REJECTED"
+
+            record = {
+                "film_title": film_title,
+                "category_in_korean": facility_request["category_in_korean"],
+                "subject_name": subject_name,
+                "user": facility_request["user"],
+                "public_id": facility_request["public_id"],
+                "private_id": facility_request["private_id"],
+                "for_instructor": facility_request["for_instructor"],
+                "status": status,
+                "name_of_subject_or_project": name_of_subject_or_project,
+                "msg_type": msg_type,
+                "sms_and_mail_type": sms_and_mail_type,
+            }
+
+        return record
+
+    if request.method == "GET":
+        return HttpResponseRedirect(reverse("home:home"))
+
     MAX_REQUESTS_PER_MINUTE = 10
     REQUEST_TIMEOUT = 5 * 60
 
-    if request.headers.get('X-Secret-Key') != SECRET_KEY:
+    if request.headers.get("X-API-Key") != AIRTABLE_SCRIPT_API_KEY:
         return JsonResponse({"error": "Invalid Secret key"}, status=403)
 
-    client_ip = request.META.get('REMOTE_ADDR')
-    request_count = cache.get(f'request_count:{client_ip}', 0)
+    client_ip = request.META.get("REMOTE_ADDR")
+    request_count = cache.get(f"request_count:{client_ip}", 0)
+
     if request_count >= MAX_REQUESTS_PER_MINUTE:
         return JsonResponse({"error": "Too many requests"}, status=429)
-    cache.set(f'request_count:{client_ip}', request_count + 1, 60)
+
+    cache.set(f"request_count:{client_ip}", request_count + 1, 60)
 
     try:
         data = json.loads(request.body)
+        required_fields = ["recordId", "timestamp"]
 
-        required_fields = ['message', 'timestamp']
         if not all(field in data for field in required_fields):
             return JsonResponse({"error": "Missing required fields"}, status=400)
 
-        timestamp = datetime.datetime.fromtimestamp(data['timestamp'] / 1000.0)
+        timestamp = datetime.datetime.fromtimestamp(data["timestamp"] / 1000.0)
+
         if abs((datetime.datetime.now() - timestamp).total_seconds()) > REQUEST_TIMEOUT:
             return JsonResponse({"error": "Invalid timestamp"}, status=400)
 
-        send_msg(request, "TEST", "DEV")
+        record_id = data["recordId"]
+        record = get_record(record_id)
 
-        return JsonResponse({
-            "message": "Request processed successfully",
-            "received_data": data
-        })
+        response = {
+            "status": record["status"],
+            "reason": "NOTHING_UNUSUAL",
+            "public_id": record["public_id"],
+            "private_id": record["private_id"],
+        }
 
+        send_msg(request, record["msg_type"], "MGT", response)
+
+        user = User.objects.get(username=record["user"])
+
+        data = {
+            "type": record["sms_and_mail_type"],
+            "email": user.email,
+            "phone": user.metadata.phone,
+            "content": {
+                "is_for_instructor": record["for_instructor"],
+                "name_of_subject_or_project": record["name_of_subject_or_project"],
+                "facility_category": record["category_in_korean"],
+            },
+        }
+
+        send_mail(data)
+        send_sms(data)
+
+        return JsonResponse({"message": "Request processed successfully"}, status=200)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:

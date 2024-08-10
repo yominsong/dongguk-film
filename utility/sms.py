@@ -48,6 +48,9 @@ def send_sms(data: dict):
     - type | `str`:
         - IDENTITY_VERIFICATION_REQUIRED
         - FACILITY_REQUEST_CREATED
+        - FACILITY_REQUEST_APPROVED
+        - FACILITY_REQUEST_CANCELED
+        - FACILITY_REQUEST_REJECTED
     - content | `dict`
     """
 
@@ -65,11 +68,29 @@ def send_sms(data: dict):
         facility_category = content["facility_category"]
         content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요. https://dongguk.film/account"
     
+    # type: "FACILITY_REQUEST_APPROVED"
+    elif type == "FACILITY_REQUEST_APPROVED":
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 확정되었어요. https://dongguk.film/account"
+    
+    # type: "FACILITY_REQUEST_STARTING_SOON"
+    elif type == "FACILITY_REQUEST_STARTING_SOON":
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        content = f"[디닷에프] 약 10분 후 {name_of_subject_or_project} {handle_hangul(facility_category, "을를", True)} 사용할 수 있어요."
+    
     # type: "FACILITY_REQUEST_CANCELED"
     elif type == "FACILITY_REQUEST_CANCELED":
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
         content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요. https://dongguk.film/account"
+    
+    # type: "FACILITY_REQUEST_REJECTED"
+    elif type == "FACILITY_REQUEST_REJECTED":
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 반려되었어요. https://dongguk.film/account"
 
     service = init_service()
     from_no = MGT_PHONE

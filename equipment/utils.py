@@ -1033,7 +1033,7 @@ def create_request(request):
         }
 
         yield json.dumps(response) + "\n"
-        send_msg(request, "CREATE_EQUIPMENT_REQUEST", "MGT", response)
+        send_msg(request, "CREATE_FACILITY_REQUEST", "MGT", response)
 
         data = {
             "type": "FACILITY_REQUEST_CREATED",
@@ -1432,7 +1432,7 @@ def equipment(request):
             "private_id": private_id,
         }
 
-        send_msg(request, "CANCEL_EQUIPMENT_REQUEST", "MGT", response)
+        send_msg(request, "CANCEL_FACILITY_REQUEST", "MGT", response)
 
         data = {
             "type": "FACILITY_REQUEST_CANCELED",
