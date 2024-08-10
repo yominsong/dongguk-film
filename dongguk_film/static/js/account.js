@@ -52,23 +52,33 @@ function loadPageState() {
 
 function executePrivacyMasking() {
     const elements = [
-        { id: "id_user_student_id", type: "student_id" },
-        { id: "id_user_name", type: "name" },
-        { id: "id_user_email", type: "email_address" },
-        { id: "id_user_phone", type: "phone_number" }
+        { id: "id_user_student_id", type: "student_id", label: "학번" },
+        { id: "id_user_name", type: "name", label: "성명" },
+        { id: "id_user_email", type: "email_address", label: "이메일 주소" },
+        { id: "id_user_phone", type: "phone_number", label: "휴대전화 번호" }
     ];
 
-    elements.forEach(({ id, type }) => {
+    elements.forEach(({ id, type, label }) => {
         const element = document.getElementById(id);
-
+        
         if (!element) return;
-        element.parentElement.parentElement.addEventListener("mouseenter", () => {
-            element.innerText = element.dataset.original;
-        });
 
-        element.parentElement.parentElement.addEventListener("mouseleave", () => {
-            element.innerText = maskPersonalInformation(type, element.dataset.original);
-        });
+        const container = element.closest("div");
+
+        if (!container) return;
+
+        function toggleVisibility(show) {
+            const originalText = element.dataset.original;
+            const maskedText = maskPersonalInformation(type, originalText);
+            element.textContent = show ? originalText : maskedText;
+            element.setAttribute("aria-label", `${label}: ${show ? "원본 정보 표시 중" : "마스킹된 정보 표시 중"}`);
+        }
+
+        container.addEventListener("mouseenter", () => toggleVisibility(true));
+        container.addEventListener("mouseleave", () => toggleVisibility(false));
+        container.addEventListener("focus", () => toggleVisibility(true));
+        container.addEventListener("blur", () => toggleVisibility(false));
+        toggleVisibility(false);
     });
 }
 
