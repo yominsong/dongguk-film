@@ -63,7 +63,7 @@ def send_mail(data):
         type = "교과목" if is_for_instructor else "프로젝트"
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약 신청이 완료되었어요."
+        subject = f"[디닷에프] {facility_category} 예약 신청이 완료되었어요."
         message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",
@@ -85,7 +85,7 @@ def send_mail(data):
         type = "교과목" if is_for_instructor else "프로젝트"
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        subject = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 취소되었어요."
+        subject = f"[디닷에프] {facility_category} 예약이 취소되었어요."
         message = f"내 계정 페이지에서 세부 사항을 확인해보세요."
         html_message = render_to_string(
             "mail_base.html",

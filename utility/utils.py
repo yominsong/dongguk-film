@@ -1,7 +1,9 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -50,6 +52,46 @@ AWS_S3 = boto3.client(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     region_name="ap-northeast-2",
 )
+
+#
+# Airtable functions
+#
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def send_facility_request_status_update(request):
+    SECRET_KEY = getattr(settings, "SECRET_KEY", None)
+    VALID_DURATION = datetime.timedelta(minutes=5)
+
+    def is_timestamp_valid(timestamp):
+        request_time = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+
+        return datetime.datetime.now() - request_time < VALID_DURATION
+
+    def generate_simple_hash(s):
+        hash_value = 0
+
+        for char in s:
+            hash_value = ((hash_value << 5) - hash_value) + ord(char)
+            hash_value = hash_value & 0xFFFFFFFF
+
+        return hex(hash_value)[2:]
+
+    def verify_signature(data, signature):
+        message = json.dumps(data, sort_keys=True) + SECRET_KEY
+        expected_signature = generate_simple_hash(message)
+
+        return signature == expected_signature
+
+    data = json.loads(request.body)
+    signature = request.headers.get("X-Signature")
+
+    if is_timestamp_valid(data["timestamp"]) and verify_signature(data, signature):
+        print("Request verified")
+
+        return JsonResponse({"message": "Request processed successfully"})
+
 
 #
 # Cron functions
@@ -195,7 +237,7 @@ def mask_personal_information(type: str, string: str):
         local, domain = string.split("@")
 
         if len(local) <= 2:
-            masked_local = '*' * len(local)
+            masked_local = "*" * len(local)
         else:
             masked_local = f"{local[0]}{'*' * (len(local) - 2)}{local[-1]}"
         masked_string = f"{masked_local}@{domain}"
@@ -641,7 +683,7 @@ def airtable(
 
             if rejected_time:
                 rejected_time = format_datetime(convert_datetime(rejected_time))
-                
+
             user = fields["User"]
 
             user = (
@@ -858,14 +900,10 @@ def airtable(
                     rejected_time = fields.get("Rejected time", None)
 
                     if approved_time:
-                        approved_time = format_datetime(
-                            convert_datetime(approved_time)
-                        )
+                        approved_time = format_datetime(convert_datetime(approved_time))
 
                     if started_time:
-                        started_time = format_datetime(
-                            convert_datetime(started_time)
-                        )
+                        started_time = format_datetime(convert_datetime(started_time))
 
                     if completed_time:
                         completed_time = format_datetime(
@@ -873,14 +911,10 @@ def airtable(
                         )
 
                     if canceled_time:
-                        canceled_time = format_datetime(
-                            convert_datetime(canceled_time)
-                        )
-                    
+                        canceled_time = format_datetime(convert_datetime(canceled_time))
+
                     if rejected_time:
-                        rejected_time = format_datetime(
-                            convert_datetime(rejected_time)
-                        )
+                        rejected_time = format_datetime(convert_datetime(rejected_time))
 
                     user = fields["User"]
 
