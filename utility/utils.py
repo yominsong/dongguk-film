@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -18,6 +19,7 @@ import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, st
 #
 # Global variables
 #
+SECRET_KEY = getattr(settings, "SECRET_KEY", None)
 
 NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
 NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
@@ -61,20 +63,39 @@ AWS_S3 = boto3.client(
 @csrf_exempt
 @require_http_methods(["POST"])
 def send_facility_request_status_update(request):
+    MAX_REQUESTS_PER_MINUTE = 10
+    REQUEST_TIMEOUT = 5 * 60
+
+    if request.headers.get('X-Secret-Key') != SECRET_KEY:
+        return JsonResponse({"error": "Invalid Secret key"}, status=403)
+
+    client_ip = request.META.get('REMOTE_ADDR')
+    request_count = cache.get(f'request_count:{client_ip}', 0)
+    if request_count >= MAX_REQUESTS_PER_MINUTE:
+        return JsonResponse({"error": "Too many requests"}, status=429)
+    cache.set(f'request_count:{client_ip}', request_count + 1, 60)
+
     try:
         data = json.loads(request.body)
-        print("Received data:", data)  # 서버 콘솔에 로그 출력
-        
-        # 여기서 send_msg 함수 호출은 제거하고 단순 응답만 반환
+
+        required_fields = ['message', 'timestamp']
+        if not all(field in data for field in required_fields):
+            return JsonResponse({"error": "Missing required fields"}, status=400)
+
+        timestamp = datetime.datetime.fromtimestamp(data['timestamp'] / 1000.0)
+        if abs((datetime.datetime.now() - timestamp).total_seconds()) > REQUEST_TIMEOUT:
+            return JsonResponse({"error": "Invalid timestamp"}, status=400)
+
+        send_msg(request, "TEST", "DEV")
+
         return JsonResponse({
-            "message": "Request received successfully",
+            "message": "Request processed successfully",
             "received_data": data
         })
+
     except json.JSONDecodeError:
-        print("Failed to parse JSON")  # 서버 콘솔에 로그 출력
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
-        print(f"Error occurred: {str(e)}")  # 서버 콘솔에 로그 출력
         return JsonResponse({"error": str(e)}, status=500)
 
 
