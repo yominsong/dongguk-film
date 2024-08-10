@@ -622,11 +622,19 @@ def airtable(
             end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
             created_time = format_datetime(convert_datetime(fields["Created time"]))
             approved_time = fields.get("Approved time", None)
+            started_time = fields.get("Started time", None)
+            completed_time = fields.get("Completed time", None)
             canceled_time = fields.get("Canceled time", None)
             rejected_time = fields.get("Rejected time", None)
 
             if approved_time:
                 approved_time = format_datetime(convert_datetime(approved_time))
+
+            if started_time:
+                started_time = format_datetime(convert_datetime(started_time))
+
+            if completed_time:
+                completed_time = format_datetime(convert_datetime(completed_time))
 
             if canceled_time:
                 canceled_time = format_datetime(convert_datetime(canceled_time))
@@ -665,6 +673,8 @@ def airtable(
                 "status": fields["Status"],
                 "created_time": created_time,
                 "approved_time": approved_time,
+                "started_time": started_time,
+                "completed_time": completed_time,
                 "canceled_time": canceled_time,
                 "rejected_time": rejected_time,
             }
@@ -842,12 +852,24 @@ def airtable(
                     )
 
                     approved_time = fields.get("Approved time", None)
+                    started_time = fields.get("Started time", None)
+                    completed_time = fields.get("Completed time", None)
                     canceled_time = fields.get("Canceled time", None)
                     rejected_time = fields.get("Rejected time", None)
 
                     if approved_time:
                         approved_time = format_datetime(
                             convert_datetime(approved_time)
+                        )
+
+                    if started_time:
+                        started_time = format_datetime(
+                            convert_datetime(started_time)
+                        )
+
+                    if completed_time:
+                        completed_time = format_datetime(
+                            convert_datetime(completed_time)
                         )
 
                     if canceled_time:
@@ -895,6 +917,8 @@ def airtable(
                         "status": fields.get("Status", None),
                         "created_time": created_time,
                         "approved_time": approved_time,
+                        "started_time": started_time,
+                        "completed_time": completed_time,
                         "canceled_time": canceled_time,
                         "rejected_time": rejected_time,
                     }

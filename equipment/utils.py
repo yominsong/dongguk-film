@@ -530,10 +530,13 @@ def update_equipment_hour(data: dict):
         else:
             facility_request_list = equipment_hour["end_facility_request"]
             facility_request_date_list = equipment_hour["end_facility_request_date"]
-        
+
         facility_request_date_count_dict = count_date(facility_request_date_list)
 
-        if date not in facility_request_date_list or facility_request_date_count_dict[date] < max_capacity:
+        if (
+            date not in facility_request_date_list
+            or facility_request_date_count_dict[date] < max_capacity
+        ):
             facility_request_list.append(equipment_request_id)
 
             key_name = (
@@ -578,7 +581,7 @@ def create_request(request):
         yield json.dumps(
             {"id": id, "status": status, "reason": reason, "msg": msg}
         ) + "\n"
-        
+
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         fields = ["Collection ID", "ID", "Name", "Status"]
@@ -1351,7 +1354,7 @@ def equipment(request):
 
                 if SFRD_COUNT >= hour["max_capacity"]:
                     start_hour["available"] = False
-            
+
             if len(EFRD_LIST) > 0:
                 EFRD_COUNT = count_date(EFRD_LIST).get(end_date, 0)
 
@@ -1398,13 +1401,7 @@ def equipment(request):
         is_for_instructor = equipment_request["for_instructor"]
         name_of_subject_or_project = subject_name if is_for_instructor else film_title
 
-        fields = {
-            "Start equipment hour": None,
-            "End equipment hour": None,
-            "Equipment item": None,
-            "Status": "Canceled",
-            "Canceled time": timezone.now().isoformat(),
-        }
+        fields = {"Status": "Canceled"} # The values of these fields are changed through automation in Airtable: "Start equipment hour", "End equipment hour", "Equipment item", "Approved time", "Started time", "Completed time", "Canceled time", "Rejected time"
 
         data = {
             "table_name": "facility-request",

@@ -154,6 +154,8 @@ function updateForm(action, datasetObj = null) {
         const id_status_from_request = document.getElementById("id_status_from_request");
         const id_created_time_from_request = document.getElementById("id_created_time_from_request");
         const id_approved_time_from_request = document.getElementById("id_approved_time_from_request");
+        const id_started_time_from_request = document.getElementById("id_started_time_from_request");
+        const id_completed_time_from_request = document.getElementById("id_completed_time_from_request");
         const id_canceled_time_from_request = document.getElementById("id_canceled_time_from_request");
         const id_rejected_time_from_request = document.getElementById("id_rejected_time_from_request");
         const id_purpose_from_request = document.getElementById("id_purpose_from_request");
@@ -167,28 +169,28 @@ function updateForm(action, datasetObj = null) {
         if (data.status === "Pending") {
             status = "대기 중";
             statusDescr = "운영진이 예약 정보를 확인하고 있어요.";
+        } else if (data.status === "Approved") {
+            status = "확정됨";
+            statusDescr = "예약이 확정되었어요.";
+        } else if (data.status === "In Progress") {
+            status = "사용 중";
+            statusDescr = "현재 이 시설을 사용하고 있어요.";
+        } else if (data.status === "Completed") {
+            status = "종료됨";
+            statusDescr = "시설 사용이 종료되었어요.";
+        } else if (data.status === "Canceled") {
+            status = "취소됨";
+            statusDescr = "예약이 취소되었어요.";
+        } else if (data.status === "Rejected") {
+            status = "반려됨";
+            statusDescr = "예약이 반려되었어요.";
+        };
 
+        if (data.status === "Pending" || data.status === "Approved") {
             class_request_details.forEach(detail => {
                 detail.hidden = false;
             });
         } else {
-            if (data.status === "Approved") {
-                status = "확정됨";
-                statusDescr = "예약이 확정되었어요.";
-            } else if (data.status === "In Progress") {
-                status = "사용 중";
-                statusDescr = "현재 이 시설을 사용하고 있어요.";
-            } else if (data.status === "Completed") {
-                status = "사용 완료됨";
-                statusDescr = "시설 사용이 종료되었어요.";
-            } else if (data.status === "Canceled") {
-                status = "취소됨";
-                statusDescr = "예약이 취소되었어요.";
-            } else if (data.status === "Rejected") {
-                status = "반려됨";
-                statusDescr = "예약이 반려되었어요.";
-            };
-
             class_request_details.forEach(detail => {
                 detail.hidden = true;
             });
@@ -214,7 +216,7 @@ function updateForm(action, datasetObj = null) {
         id_start_datetime_from_request.innerText = data.startDatetime;
         id_end_datetime_from_request.innerText = data.endDatetime;
 
-        [id_approved_time_from_request, id_canceled_time_from_request, id_rejected_time_from_request].forEach(element => {
+        [id_approved_time_from_request, id_started_time_from_request, id_completed_time_from_request, id_canceled_time_from_request, id_rejected_time_from_request].forEach(element => {
             element.innerText = "";
             element.parentElement.classList.replace("flex", "hidden");
         });
@@ -225,6 +227,18 @@ function updateForm(action, datasetObj = null) {
             id_approved_time_from_request.innerText = data.approvedTime;
             id_approved_time_from_request.parentElement.classList.replace("hidden", "flex");
             innerTextArray.push(id_approved_time_from_request);
+        };
+
+        if (data.startedTime !== "null") {
+            id_started_time_from_request.innerText = data.startedTime;
+            id_started_time_from_request.parentElement.classList.replace("hidden", "flex");
+            innerTextArray.push(id_started_time_from_request);
+        };
+
+        if (data.completedTime !== "null") {
+            id_completed_time_from_request.innerText = data.completedTime;
+            id_completed_time_from_request.parentElement.classList.replace("hidden", "flex");
+            innerTextArray.push(id_completed_time_from_request);
         };
         
         if (data.canceledTime !== "null") {
@@ -305,6 +319,18 @@ function handleShortcut() {
 }
 
 function updateList(data) {
+    function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag)
+        );
+    }
+
     const list = document.getElementById(`id_${data.target}_list`);
 
     if (data.total_items === 0) {
@@ -364,7 +390,7 @@ function updateList(data) {
                 status = "사용 중";
             } else if (item.status === "Completed") {
                 badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
-                status = "사용 완료됨";
+                status = "종료됨";
             } else if (item.status === "Canceled") {
                 badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
                 status = "취소됨";
@@ -381,7 +407,7 @@ function updateList(data) {
                             target="_blank"
                             class="rounded-md focus:df-focus-ring-offset-gray">
                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
-                            ${item.name}
+                            ${escapeHTML(item.name)}
                         </a>
                     </p>
                     <!-- facility.status -->
@@ -418,6 +444,8 @@ function updateList(data) {
                                 data-status="${item.status}"
                                 data-created-time="${item.created_time}"
                                 data-approved-time="${item.approved_time}"
+                                data-started-time="${item.started_time}"
+                                data-completed-time="${item.completed_time}"
                                 data-canceled-time="${item.canceled_time}"
                                 data-rejected-time="${item.rejected_time}"
                                 class="class-read-request relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
@@ -433,7 +461,7 @@ function updateList(data) {
                 <div class="flex justify-between items-center gap-x-2">
                     <!-- project.name -->
                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                        <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">${item.name}</span>
+                        <span class="class-detail rounded-md focus:df-focus-ring-offset-gray">${escapeHTML(item.name)}</span>
                     </p>
                     <!-- project.purpose -->
                     <p class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
