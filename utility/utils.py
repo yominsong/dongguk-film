@@ -172,7 +172,13 @@ def send_facility_request_status_update(request):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        return JsonResponse(
+            {
+                "error": str(e),
+                "recieved_data": json.loads(request.body),
+            },
+            status=500,
+        )
 
 
 #
