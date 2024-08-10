@@ -62,33 +62,53 @@ AWS_S3 = boto3.client(
 @require_http_methods(["POST"])
 def send_facility_request_status_update(request):
     SECRET_KEY = getattr(settings, "SECRET_KEY", None)
+    if not SECRET_KEY:
+        return JsonResponse({"error": "Server configuration error"}, status=500)
+
     VALID_DURATION = datetime.timedelta(minutes=5)
 
     def is_timestamp_valid(timestamp):
-        request_time = datetime.datetime.fromtimestamp(timestamp / 1000.0)
-
-        return datetime.datetime.now() - request_time < VALID_DURATION
+        try:
+            request_time = datetime.datetime.fromtimestamp(timestamp / 1000.0)
+            return datetime.datetime.now() - request_time < VALID_DURATION
+        except (TypeError, ValueError):
+            return False
 
     def generate_simple_hash(s):
         hash_value = 0
-
         for char in s:
             hash_value = ((hash_value << 5) - hash_value) + ord(char)
             hash_value = hash_value & 0xFFFFFFFF
-
         return hex(hash_value)[2:]
 
     def verify_signature(data, signature):
         message = json.dumps(data, sort_keys=True) + SECRET_KEY
         expected_signature = generate_simple_hash(message)
-
         return signature == expected_signature
 
-    data = json.loads(request.body)
-    signature = request.headers.get("X-Signature")
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    if is_timestamp_valid(data["timestamp"]) and verify_signature(data, signature):
-        return send_msg(request, "TEST", "DEV")
+    signature = request.headers.get("X-Signature")
+    if not signature:
+        return JsonResponse({"error": "Missing signature"}, status=400)
+
+    if "timestamp" not in data:
+        return JsonResponse({"error": "Missing timestamp"}, status=400)
+
+    if not is_timestamp_valid(data["timestamp"]):
+        return JsonResponse({"error": "Invalid or expired timestamp"}, status=400)
+
+    if not verify_signature(data, signature):
+        return JsonResponse({"error": "Invalid signature"}, status=403)
+
+    try:
+        result = send_msg(request, "TEST", "DEV")
+        return JsonResponse({"message": "Request processed successfully"})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 #
