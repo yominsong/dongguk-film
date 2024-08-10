@@ -807,6 +807,7 @@ def airtable(
                 "completed_time": completed_time,
                 "canceled_time": canceled_time,
                 "rejected_time": rejected_time,
+                "validation": fields["Validation"],
             }
 
         elif table_name == "equipment-hour":
