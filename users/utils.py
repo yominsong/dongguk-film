@@ -8,7 +8,7 @@ from users.models import Metadata, Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
 from utility.msg import send_msg
-from utility.utils import reg_test, airtable, short_io, notion
+from utility.utils import reg_test, mask_personal_information, airtable, short_io, notion
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
@@ -41,7 +41,7 @@ def delete_inactive_user(request):
                 "type": "INACTIVE_USER_AUTO_DELETED",
                 "email": email,
                 "content": {
-                    "student_id": student_id,
+                    "student_id": mask_personal_information("student_id", student_id),
                     "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
                 },
             }

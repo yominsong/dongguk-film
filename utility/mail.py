@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail as django_send_mail
 from django.template.loader import render_to_string
-from .utils import mask_personal_information
 from .hangul import handle_hangul
 
 EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", "EMAIL_HOST_USER")
@@ -43,7 +42,7 @@ def send_mail(data):
 
     # type: "INACTIVE_USER_AUTO_DELETED"
     elif type == "INACTIVE_USER_AUTO_DELETED":
-        student_id = mask_personal_information("student_id", content["student_id"])
+        student_id = content["student_id"]
         subject = "[디닷에프] 계정이 안전하게 삭제되었어요."
         message = "30일간 로그인 기록이 없어 자동으로 삭제되었어요."
         html_message = render_to_string(

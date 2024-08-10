@@ -78,7 +78,7 @@ def send_sms(data: dict):
     elif type == "FACILITY_REQUEST_STARTING_SOON":
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        content = f"[디닷에프] 약 10분 후 {name_of_subject_or_project} {handle_hangul(facility_category, "을를", True)} 사용할 수 있어요."
+        content = f'[디닷에프] 약 10분 후 {name_of_subject_or_project} {handle_hangul(facility_category, "을를", True)} 사용할 수 있어요.'
     
     # type: "FACILITY_REQUEST_CANCELED"
     elif type == "FACILITY_REQUEST_CANCELED":
