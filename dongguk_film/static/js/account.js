@@ -60,7 +60,7 @@ function executePrivacyMasking() {
 
     elements.forEach(({ id, type, label }) => {
         const element = document.getElementById(id);
-        
+
         if (!element) return;
 
         const container = element.closest("div");
@@ -250,7 +250,7 @@ function updateForm(action, datasetObj = null) {
             id_completed_time_from_request.parentElement.classList.replace("hidden", "flex");
             innerTextArray.push(id_completed_time_from_request);
         };
-        
+
         if (data.canceledTime !== "null") {
             id_canceled_time_from_request.innerText = data.canceledTime;
             id_canceled_time_from_request.parentElement.classList.replace("hidden", "flex");
@@ -330,7 +330,7 @@ function handleShortcut() {
 
 function updateList(data) {
     function escapeHTML(str) {
-        return str.replace(/[&<>'"]/g, 
+        return str.replace(/[&<>'"]/g,
             tag => ({
                 '&': '&amp;',
                 '<': '&lt;',
@@ -706,6 +706,17 @@ function requestConfirmVcodeForAccount() {
     request = {};
 }
 
+function requestDeleteUser() {
+    request.url = `${location.origin}/account/utils/account/`;
+    request.type = "GET";
+    request.data = { id: "delete_user" };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
 function requestCancelRequest() {
     request.url = `${location.origin}/equipment/utils/equipment/`;
     request.type = "POST";
@@ -730,6 +741,8 @@ function initRequest() {
 
         if (id_modal !== null) {
             initValidation(class_firsts, id_send_vcode);
+
+            const class_double_checks = document.querySelectorAll(".class-double-check");
 
             id_send_vcode.addEventListener("click", () => {
                 if (hasInfoChanged(inputs) && isItOkayToSubmitForm()) {
@@ -764,7 +777,7 @@ function initRequest() {
                         controlError(input);
                     });
                 };
-    
+
                 ["keydown", "focusin"].forEach((type) => {
                     inputs.forEach((input) => {
                         input.addEventListener(type, () => {
@@ -774,6 +787,28 @@ function initRequest() {
                 });
             });
 
+            const id_delete_user = document.getElementById("id_delete_user");
+
+            id_delete_user.addEventListener("click", () => {
+                if (!isItDoubleChecked) {
+                    class_double_checks.forEach(double_check => { double_check.hidden = false });
+                    isItDoubleChecked = true;
+
+                    doubleCheckTimer = setTimeout(() => {
+                        class_double_checks.forEach(double_check => { double_check.hidden = true });
+                        isItDoubleChecked = false;
+                    }, 5000);
+                } else if (isItDoubleChecked) {
+                    const id_delete_user_spin = code(id_delete_user, "_spin");
+
+                    clearTimeout(doubleCheckTimer);
+                    requestDeleteUser();
+                    displayButtonMsg(true, id_delete_user, "descr", "잠시만 기다려주세요.");
+                    id_delete_user_spin.classList.remove("hidden");
+                    isItDoubleChecked = false;
+                };
+            });
+
             ["click", "keyup"].forEach(type => {
                 id_cancel_or_delete.addEventListener(type, event => {
                     const targetTagName = event.target.tagName;
@@ -781,13 +816,11 @@ function initRequest() {
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
                         if (!isItDoubleChecked) {
-                            const id_double_check_text = document.getElementById("id_double_check_text");
-
-                            id_double_check_text.hidden = false;
+                            class_double_checks.forEach(double_check => { double_check.hidden = false });
                             isItDoubleChecked = true;
 
                             doubleCheckTimer = setTimeout(() => {
-                                id_double_check_text.hidden = true;
+                                class_double_checks.forEach(double_check => { double_check.hidden = true });
                                 isItDoubleChecked = false;
                             }, 5000);
                         } else if (isItDoubleChecked) {

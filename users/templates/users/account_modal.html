@@ -96,25 +96,27 @@
                                         <p class="mt-2 text-sm text-gray-500" id="id_phone_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_phone_error" hidden></p>
                                     </div>
-                                    <div>
-                                        <button type="button"
-                                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-stone-600 hover:bg-stone-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
-                                                id="id_send_vcode">
-                                            <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
-                                                 xmlns="http://www.w3.org/2000/svg"
-                                                 fill="none"
-                                                 viewBox="0 0 24 24"
-                                                 id="id_send_vcode_spin">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                            인증번호 받기
-                                        </button>
-                                        <p class="mt-2 text-sm text-gray-500" id="id_send_vcode_descr" hidden></p>
-                                        <p class="mt-2 text-sm text-flamingo-600"
-                                           id="id_send_vcode_error"
-                                           hidden></p>
+                                    <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
+                                        <div class="flex mt-2 text-sm sm:mt-0">
+                                            <p class="text-gray-500 sm:mt-0" id="id_send_vcode_descr" hidden>잠시만 기다려주세요.</p>
+                                            <p class="text-flamingo-600 sm:mt-0" id="id_send_vcode_error" hidden></p>
+                                        </div>
+                                        <div class="sm:flex sm:flex-row-reverse">
+                                            <button type="button"
+                                                    class="inline-flex w-full justify-center rounded-md bg-stone-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-700sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
+                                                    id="id_send_vcode">
+                                                <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     id="id_send_vcode_spin">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                    </path>
+                                                </svg>
+                                                인증번호 받기
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="space-y-5 pt-5">
@@ -159,26 +161,89 @@
                                            id="id_phone_vcode_error"
                                            hidden=""></p>
                                     </div>
+                                    <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
+                                        <div class="flex mt-2 text-sm sm:mt-0">
+                                            <p class="text-gray-500 sm:mt-0" id="id_confirm_vcode_descr" hidden>잠시만 기다려주세요.</p>
+                                            <p class="text-flamingo-600 sm:mt-0" id="id_confirm_vcode_error" hidden></p>
+                                        </div>
+                                        <div class="sm:flex sm:flex-row-reverse">
+                                            <button type="button"
+                                                    class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                                    id="id_confirm_vcode"
+                                                    disabled="">
+                                                <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     id="id_confirm_vcode_spin">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                    </path>
+                                                </svg>
+                                                수정하기
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-5 pt-5">
                                     <div>
-                                        <button type="button"
-                                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
-                                                id="id_confirm_vcode"
-                                                disabled="">
-                                            <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
-                                                 xmlns="http://www.w3.org/2000/svg"
-                                                 fill="none"
-                                                 viewBox="0 0 24 24"
-                                                 id="id_confirm_vcode_spin">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                </path>
-                                            </svg>
-                                            수정하기
-                                        </button>
-                                        <p class="mt-2 text-sm text-gray-500" id="id_confirm_vcode_descr" hidden=""></p>
-                                        <p class="mt-2 text-sm text-flamingo-600"
-                                           id="id_confirm_vcode_error"
-                                           hidden=""></p>
+                                        <label for="id_delete_user"
+                                               class="flex-1 text-sm font-medium leading-6 text-gray-900">회원탈퇴</label>
+                                        <div class="mt-2 rounded-md shadow bg-flamingo-50 p-4">
+                                            <div class="flex">
+                                                <div class="flex-shrink-0">
+                                                    <svg class="h-5 w-5 text-flamingo-400"
+                                                         xmlns="http://www.w3.org/2000/svg"
+                                                         viewBox="0 0 20 20"
+                                                         fill="currentColor"
+                                                         aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <h3 class="text-sm font-medium text-flamingo-800">탈퇴하기 전 꼭 읽어주세요.</h3>
+                                                    <div class="mt-2 text-sm text-flamingo-700 space-y-2">
+                                                        <p>
+                                                            <span class="font-semibold">디닷에프</span>는 회원 개인정보를 회원탈퇴 시까지 보유하며 30일간 로그인 기록 부재 시 자동 회원탈퇴 처리합니다. <span class="font-semibold">단, 다음의 경우 학번에 한하여 영구 보유하며 해당 회원 파기 요청 접수 시 또는 운영진 판단 하 보유 필요성 부재 시 파기</span>합니다.
+                                                        </p>
+                                                        <ul role="list" class="list-disc pl-5 space-y-2">
+                                                            <li>
+                                                                시설예약을 신청한 경우
+                                                            </li>
+                                                            <li>
+                                                                프로젝트 등록 후, 해당 프로젝트를 삭제하지 않은 상태에서 탈퇴한 경우
+                                                            </li>
+                                                            <li>
+                                                                프로젝트 스태프로 추가된 후, 해당 프로젝트가 삭제되지 않은 상태 또는 스태프 명단에서 제외되지 않은 상태에서 탈퇴한 경우
+                                                            </li>
+                                                        </ul>
+                                                        <p>탈퇴 후 파기된 정보는 복구할 수 없으며, 디닷에프를 다시 이용하려면 재가입해주시기 바랍니다.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex sm:flex-row">
+                                        <div class="flex mt-2 text-sm sm:mt-0">
+                                            <p class="text-gray-500 sm:mt-0" id="id_delete_user_descr" hidden>잠시만 기다려주세요.</p>
+                                            <p class="text-flamingo-600 sm:mt-0" id="id_delete_user_error" hidden></p>
+                                        </div>
+                                        <div class="sm:flex sm:flex-row-reverse">
+                                            <button type="button"
+                                                    id="id_delete_user"
+                                                    class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                                <svg class="animate-spin mr-2 h-5 w-5 hidden"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none"
+                                                     viewBox="0 0 24 24"
+                                                     id="id_delete_user_spin">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                    </path>
+                                                </svg>
+                                                <span class="class-double-check" hidden>정말&nbsp;</span>탈퇴하기
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -329,7 +394,7 @@
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                     </path>
                                 </svg>
-                                <span id="id_double_check_text" hidden>정말&nbsp;</span><span class="class-keyword">취소하기</span>
+                                <span class="class-double-check" hidden>정말&nbsp;</span><span class="class-keyword">취소하기</span>
                             </button>
                         </div>
                     </div>

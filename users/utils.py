@@ -453,15 +453,26 @@ def account(request):
 
         response = {
             "id": id,
-            "result": {
-                "target": target,
-                "item_list": list(page),
-                "has_next": page.has_next(),
-                "has_previous": page.has_previous(),
-                "page_number": page.number,
-                "total_items": paginator.count,
-                "total_pages": paginator.num_pages,
-            },
+            "target": target,
+            "item_list": list(page),
+            "has_next": page.has_next(),
+            "has_previous": page.has_previous(),
+            "page_number": page.number,
+            "total_items": paginator.count,
+            "total_pages": paginator.num_pages,
+        }
+    
+    # id: delete_user
+    elif id == "delete_user":
+        user = request.user
+        data = {"status": "DONE"}
+        send_msg(request, "USER_DELETED", "MGT", data)
+        user.delete()
+
+        response = {
+            "id": id,
+            "status": "DONE",
+            "msg": "지금까지 디닷에프를 이용해주셔서 감사합니다. 🙇",
         }
 
     return JsonResponse(response)

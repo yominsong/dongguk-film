@@ -859,9 +859,22 @@ function handleAjaxCallback(response) {
     }
 
     // requestGetPaginatedData()
-    else if (resID === "get_paginated_data") {
-        updatePaginationControl(resResult);
-        updateList(resResult);
+    else if (response.id === "get_paginated_data") {
+        updatePaginationControl(response);
+        updateList(response);
+    }
+
+    // requestDeleteUser()
+    else if (response.id === "delete_user") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_delete_user, "descr", response.msg);
+            displayButtonMsg(false, id_delete_user, "error");
+            location.href = `${location.origin}`;
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     };
 }
 

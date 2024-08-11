@@ -104,6 +104,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - SIGNUP_COMPLETED
         - EXPIRED_VCODE_AUTO_DELETED
         - INACTIVE_USER_AUTO_DELETED
+        - USER_DELETED
         - CREATE_FACILITY_REQUEST
         - APPROVE_FACILITY_REQUEST
         - CANCEL_FACILITY_REQUEST
@@ -298,6 +299,18 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "url": "",
             "thumbnail_url": "",
             "description": f"현 기준 사용자는 {User.objects.count() - inactive_user_count}명입니다.",
+        }
+
+    # msg_type: "USER_DELETED"
+    elif msg_type == "USER_DELETED":
+        content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{success_emoji} 사용자 계정 삭제 완료",
+            "url": "",
+            "thumbnail_url": "",
+            "description": f"현 기준 사용자는 {User.objects.count() - 1}명입니다.",
         }
 
     # msg_type: "CREATE_FACILITY_REQUEST"
