@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
 from django.urls import reverse
 from requests.sessions import Session
@@ -65,6 +66,7 @@ AWS_S3 = boto3.client(
 
 
 @csrf_exempt
+@require_http_methods(["POST"])
 def send_facility_request_status_update(request):
     def get_record(record_id):
         data = {
