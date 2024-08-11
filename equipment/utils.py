@@ -618,14 +618,12 @@ def create_request(request):
             ]
 
             collection_id_string = ", ".join(collection_id_list)
-            fields = ["Collection ID"]
             formula = f"AND(OR({collection_id_string}), FIND('{purpose_keyword}', Purpose), Status = 'Available')"
 
             data = {
                 "table_name": "equipment-item",
                 "params": {
                     "view": "Grid view",
-                    "fields": fields,
                     "formula": formula,
                 },
             }
@@ -886,6 +884,7 @@ def create_request(request):
             add_editor_permission(private_id)
             signature_id = upload_signature(signature, film_title, student_id)
             make_file_public(signature_id)
+
             status, reason, msg = (
                 "PROCESSING",
                 "WRITING_REQUEST_DOCUMENT",
@@ -1015,6 +1014,21 @@ def create_request(request):
                 "NOTHING_UNUSUAL",
                 "기자재 예약 신청이 완료되었어요! 👍",
             )
+
+            data = {
+                "type": "FACILITY_REQUEST_CREATED",
+                "email": request.user.email,
+                "phone": request.user.metadata.phone,
+                "content": {
+                    "is_for_instructor": is_for_instructor,
+                    "name_of_subject_or_project": name_of_subject_or_project,
+                    "facility_category": "기자재",
+                    "public_id": public_id,
+                },
+            }
+
+            send_mail(data)
+            send_sms(data)
         else:
             status, reason, msg = (
                 "FAIL",
@@ -1034,21 +1048,6 @@ def create_request(request):
 
         yield json.dumps(response) + "\n"
         send_msg(request, "CREATE_FACILITY_REQUEST", "MGT", response)
-
-        data = {
-            "type": "FACILITY_REQUEST_CREATED",
-            "email": request.user.email,
-            "phone": request.user.metadata.phone,
-            "content": {
-                "is_for_instructor": is_for_instructor,
-                "name_of_subject_or_project": name_of_subject_or_project,
-                "facility_category": "기자재",
-                "public_id": public_id,
-            },
-        }
-
-        send_mail(data)
-        send_sms(data)
 
     response = StreamingHttpResponse(stream_response(), content_type="application/json")
     response["X-Accel-Buffering"] = "no"

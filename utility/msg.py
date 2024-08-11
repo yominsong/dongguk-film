@@ -320,11 +320,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        occupied_item_list = data.get("occupied_item_list", [])
+        unavailable_item_list = data.get("unavailable_item_list", [])
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
-        if len(occupied_item_list) > 0:
-            description += f"\nㆍ사용 불가 시설: {occupied_item_list}"
+        if len(unavailable_item_list) > 0:
+            description += f"\nㆍ사용 불가 시설: {unavailable_item_list}"
 
         content = {
             "important": True if status == "FAIL" else False,
