@@ -66,8 +66,11 @@ AWS_S3 = boto3.client(
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def send_facility_request_status_update(request):
+    if request.method == "GET":
+        return HttpResponseRedirect(reverse("home:home"))
+    
     def get_record(record_id):
         data = {
             "table_name": "facility-request",
@@ -112,9 +115,6 @@ def send_facility_request_status_update(request):
             }
 
         return record
-
-    # if request.method == "GET":
-    #     return HttpResponseRedirect(reverse("home:home"))
 
     MAX_REQUESTS_PER_MINUTE = 10
     REQUEST_TIMEOUT = 5 * 60
