@@ -111,8 +111,8 @@ def send_facility_request_status_update(request):
 
         return record
 
-    if request.method == "GET":
-        return HttpResponseRedirect(reverse("home:home"))
+    # if request.method == "GET":
+    #     return HttpResponseRedirect(reverse("home:home"))
 
     MAX_REQUESTS_PER_MINUTE = 10
     REQUEST_TIMEOUT = 5 * 60
