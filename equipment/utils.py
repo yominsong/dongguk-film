@@ -472,7 +472,7 @@ def insert_signature(document_id, signature_id):
     requests = [
         {
             "insertInlineImage": {
-                "location": {"index": 1254},
+                "location": {"index": 1233},
                 "uri": image_url,
                 "objectSize": {
                     "height": {
