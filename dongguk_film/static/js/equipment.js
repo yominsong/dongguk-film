@@ -88,7 +88,7 @@ function updateUrlParams() {
 
     urlParams.set("purposePriority", purposeInCart);
     urlParams.set("period", periodInCart);
-    
+
     const url = new URL(location.href);
 
     url.search = urlParams.toString();
@@ -462,8 +462,11 @@ executeWhenCartIsUpdated();
 function executeWhenGroupLimitIsExceeded() {
     const id_close_modal = code("id_close_", id_modal);
 
-    setTimeout(() => { id_close_modal.click() }, 10);
-    id_detail_limit.scrollIntoView({ behavior: "smooth" })
+    if (isModalOpen) {
+        setTimeout(() => { id_close_modal.click() }, 10);
+    };
+
+    id_detail_limit.scrollIntoView({ behavior: "smooth" });
 
     if (id_detail_limit.getAttribute("aria-expanded") === "false") {
         id_detail_limit.click();
@@ -2144,7 +2147,7 @@ async function requestCreateRequest() {
         const academicYearAndSemester = id_target_academic_year_and_semester.innerText.trim().split(" ");
         const academicYear = academicYearAndSemester[0];
         const academicSemester = academicYearAndSemester[1];
-    
+
         formData.append("academicYear", academicYear);
         formData.append("academicSemester", academicSemester);
         formData.append("subjectCode", id_subject_code.value);
