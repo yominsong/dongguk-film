@@ -465,9 +465,20 @@ def account(request):
     # id: delete_user
     elif id == "delete_user":
         user = request.user
+        
+        mail_data = {
+            "type": "USER_DELETED",
+            "email": user.email,
+            "content": {
+                "student_id": mask_personal_information("student_id", user.student_id),
+                "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
+            },
+        }
+
+        send_mail(mail_data)
+        user.delete()
         data = {"status": "DONE"}
         send_msg(request, "USER_DELETED", "MGT", data)
-        user.delete()
 
         response = {
             "id": id,

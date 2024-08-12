@@ -58,6 +58,25 @@ def send_mail(data):
                 },
             },
         )
+    
+    # type: "USER_DELETED"
+    elif type == "USER_DELETED":
+        student_id = content["student_id"]
+        subject = "[디닷에프] 회원탈퇴가 완료되었어요."
+        message = "지금까지 디닷에프를 이용해주셔서 감사합니다."
+        html_message = render_to_string(
+            "mail_base.html",
+            {
+                "title": "회원탈퇴가 완료되었어요.",
+                "body": "다음 학번의 계정이 회원님의 요청에 의해 삭제되었어요.",
+                "highlighted": student_id,
+                "conclusion": "디닷에프를 다시 이용하려면 아래 버튼을 눌러 재가입해주세요. 감사합니다. 🙇",
+                "button": {
+                    "text": "디닷에프 재가입하기",
+                    "url": f"https://dongguk.film/accounts/login/",
+                },
+            },
+        )
 
     # type: "FACILITY_REQUEST_CREATED"
     elif type == "FACILITY_REQUEST_CREATED":
