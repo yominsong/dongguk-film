@@ -58,7 +58,7 @@ def notice(request):
                 + notice.get("keyword", "").lower().replace(" ", "")
                 + notice.get("listed_date", "").lower().replace(" ", "")
                 + User.objects.get(
-                    username=notice.get("user", "").lower().replace(" ", "")
+                    pk=str(notice.get("user", "")).lower().replace(" ", "")
                 ).metadata.name
             )
 
@@ -133,14 +133,14 @@ def notice_detail(request, notice_id):
         category = properties["Category"]["select"]["name"]
         keyword_string = properties["Keyword"]["rich_text"][0]["plain_text"]
         keyword_list = re.findall(r"#\w+", keyword_string)
-        student_id = str(properties["User"]["number"])
+        pk = int(properties["User"]["rich_text"][0]["plain_text"])
 
         user = None
         name = "사용자"
         profile_img = "/static/images/d_dot_f_logo.jpg"
 
         try:
-            user = User.objects.get(username=student_id)
+            user = User.objects.get(pk=pk)
         except:
             pass
 
@@ -163,7 +163,7 @@ def notice_detail(request, notice_id):
             "category": category,
             "keyword": {"string": keyword_string, "list": keyword_list},
             "user": {
-                "student_id": student_id,
+                "pk": pk,
                 "name": name,
                 "profile_img": profile_img,
             },

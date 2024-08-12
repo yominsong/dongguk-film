@@ -441,7 +441,7 @@ def account(request):
         elif target == "notice":
             filter = {
                 "property": "User",
-                "number": {"equals": int(request.user.username)},
+                "rich_text": {"equals": str(request.user.pk)},
             }
 
             item_list = notion(

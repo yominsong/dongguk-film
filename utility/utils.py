@@ -1524,11 +1524,7 @@ def notion(
                     title = properties["Title"]["title"][0]["plain_text"]
                     category = properties["Category"]["select"]["name"]
                     keyword = properties["Keyword"]["rich_text"][0]["plain_text"]
-                    user = str(properties["User"]["number"])
-
-                    user = (
-                        mask_personal_information("student_id", user) if mask else user
-                    )
+                    user = properties["User"]["rich_text"][0]["plain_text"]
 
                     notice = {
                         "page_id": item["id"],
@@ -1536,7 +1532,7 @@ def notion(
                         "title": title,
                         "category": category,
                         "keyword": keyword,
-                        "user": user,
+                        "user": int(user),
                         "listed_date": listed_time.strftime("%Y-%m-%d"),
                     }
 
@@ -1601,7 +1597,7 @@ def notion(
                         "rich_text": [{"text": {"content": str(img_key_list)}}]
                     },
                     "File": {"rich_text": [{"text": {"content": str(file)}}]},
-                    "User": {"number": int(str(user))},
+                    "User": {"rich_text": [{"text": {"content": user}}]},
                 },
                 "children": paragraph_list,
             }

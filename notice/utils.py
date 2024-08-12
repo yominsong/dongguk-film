@@ -506,7 +506,7 @@ def notice(request):
                 "keyword": create_hashtag(content),
                 "img_key_list": img_key_list,
                 "file": file,
-                "user": request.user,
+                "user": request.user.pk,
             }
 
             response = notion("create", "page", data=data)
@@ -540,7 +540,7 @@ def notice(request):
             "title": title,
             "category": category,
             "keyword": data["keyword"] if status == "DONE" else None,
-            "user": f"{request.user}",
+            "user": request.user.pk,
             "element": element if status == "FAIL" else None,
         }
 
@@ -646,7 +646,7 @@ def notice(request):
             "title": title,
             "category": category,
             "keyword": data["keyword"] if status == "DONE" else None,
-            "user": f"{request.user}",
+            "user": request.user.pk,
             "element": element if status == "FAIL" else None,
         }
 
@@ -702,7 +702,7 @@ def notice(request):
             "title": title,
             "category": category,
             "keyword": keyword,
-            "user": f"{request.user}",
+            "user": request.user.pk,
         }
         
         send_msg(request, "DELETE_NOTICE", "MGT", response)
