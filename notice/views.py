@@ -128,13 +128,11 @@ def notice_detail(request, notice_id):
     elif response.status_code == 200:
         notice = response.json()
         properties = notice["properties"]
-
         title = properties["Title"]["title"][0]["plain_text"]
         category = properties["Category"]["select"]["name"]
         keyword_string = properties["Keyword"]["rich_text"][0]["plain_text"]
         keyword_list = re.findall(r"#\w+", keyword_string)
         pk = int(properties["User"]["rich_text"][0]["plain_text"])
-
         user = None
         name = "사용자"
         profile_img = "/static/images/d_dot_f_logo.jpg"
@@ -153,6 +151,7 @@ def notice_detail(request, notice_id):
         except:
             file_string = None
             file_dict = None
+            
         listed_time = notice["properties"]["Listed time"]["created_time"]
         listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
 

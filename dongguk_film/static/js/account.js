@@ -738,6 +738,7 @@ function initRequest() {
         };
 
         executePrivacyMasking();
+        initModal();
 
         if (id_modal !== null) {
             initValidation(class_firsts, id_send_vcode);
