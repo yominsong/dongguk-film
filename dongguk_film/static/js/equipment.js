@@ -277,17 +277,6 @@ function getKoreanCharacterCount(str) {
     };
 }
 
-function handleTouchStart(e) {
-    e.preventDefault();
-
-    const touch = e.touches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-    
-    if (element && element.tagName === 'BUTTON') {
-        element.click();
-    };
-}
-
 function displayErrorInSignatureCanvas(bool, errorType = null) {
     if (bool) {
         if (errorType === "empty") {
@@ -640,6 +629,9 @@ function initCalendar() {
         };
 
         buttons = document.querySelectorAll("button");
+        id_period_calendar.style.display = "none";
+        id_period_calendar.offsetHeight;
+        id_period_calendar.style.display = "";
     }
 
     function handleDateSelection(date) {
@@ -701,10 +693,6 @@ function initCalendar() {
 
         setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
         updateCalendar();
-
-        setTimeout(() => {
-            id_period_calendar.addEventListener("touchstart", handleTouchStart, { passive: false });
-        }, 300);
     }
 
     id_period_prev_month.addEventListener("click", () => {
