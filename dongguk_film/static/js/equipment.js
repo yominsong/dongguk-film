@@ -420,7 +420,6 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
 
     id_period.value = "";
     initCalendar();
-    // performMicroScroll();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
 }

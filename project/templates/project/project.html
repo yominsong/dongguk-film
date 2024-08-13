@@ -176,10 +176,14 @@
                             </p>
                         </div>
                     {% else %}
-                        <div class="flex justify-start">
+                        <div class="flex justify-between items-center gap-x-2">
                             <!-- project.created_date(<=sm ) -->
-                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
+                            </p>
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
+                                <span class="class-adjust class-unable relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
+                                      tabindex="0">수정하기</span>
                             </p>
                         </div>
                     {% endif %}

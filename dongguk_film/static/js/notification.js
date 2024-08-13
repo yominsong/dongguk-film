@@ -23,6 +23,7 @@ function editXDate(notiType, bool) {
  * - `CWF`: Complete Weather Fetch
  * - `RNP`: Request Notification Permission
  * - `WNU`: Welcome New User
+ * - `RBG`: Recommend Web Browser for Google Login
  * - RENTAL_RESTRICTED
  * - RENTAL_PURPOSE_CHANGED
  * - RENTAL_PERIOD_CHANGED
@@ -30,7 +31,7 @@ function editXDate(notiType, bool) {
  * - RENTAL_GROUP_LIMIT_EXCEEDED
  * - OUT_OF_STOCK
  * - EQUIPMENT_PARTIALLY_ADDED
- * - `RBG`: Recommend Web Browser for Google Login
+ * - UNABLE_TO_ADJUST_PROJECT
  * - DFLINK_DOES_NOT_EXIST
  * - `NPN`: No Permission to create Notice
  * - YOUTUBE_SHARE_LINK_REQUESTED
@@ -179,6 +180,19 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
         }
 
+        else if (notiType === "NUC") {
+            notiIcon = infoIcon;
+            notiTitle = "아직 준비 중인 기능이에요.";
+            notiContent = `언젠가 출시될 거예요! ${param}`;
+        }
+
+        // login
+        else if (notiType === "RBG") {
+            notiIcon = exclamationIcon;
+            notiTitle = "Google로 로그인할 수 없어요.";
+            notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome, Edge, Safari를 이용해주세요.`;
+        }
+
         // home
         else if (notiType === "RLP") {
             notiIcon = locationIcon;
@@ -267,11 +281,11 @@ function displayNoti(bool, notiType, param = null) {
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('${location.origin}/account/', '_self')">신청 내역 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
-        // login
-        else if (notiType === "RBG") {
+        // project
+        else if (notiType === "UNABLE_TO_ADJUST_PROJECT") {
             notiIcon = exclamationIcon;
-            notiTitle = "Google로 로그인할 수 없어요.";
-            notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome, Edge, Safari를 이용해주세요.`;
+            notiTitle = "프로젝트를 수정할 수 없어요.";
+            notiContent = "시설 사용이 진행 중이거나 예정되어 있는 프로젝트는 수정할 수 없어요.";
         }
 
         // dflink
@@ -330,13 +344,6 @@ function displayNoti(bool, notiType, param = null) {
             notiIcon = exclamationIcon;
             notiTitle = "파일은 총합 5MB까지 첨부할 수 있어요.";
             notiContent = `${param}개의 파일이 용량 제한으로 첨부되지 않았어요.`;
-        }
-
-        // everywhere
-        else if (notiType === "NUC") {
-            notiIcon = infoIcon;
-            notiTitle = "아직 준비 중인 기능이에요.";
-            notiContent = `언젠가 출시될 거예요! ${param}`;
         };
 
         notiFormat = `

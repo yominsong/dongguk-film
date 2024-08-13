@@ -1314,9 +1314,9 @@ def airtable(
                             0
                         ].get_avatar_url()
                     except:
-                        staff["pk"] = None
+                        staff["pk"] = ""
                         staff["name"] = "사용자"
-                        staff["student_id"] = None
+                        staff["student_id"] = "**********"
                         staff["avatar_url"] = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
                     for priority in staff["position_priority"]:

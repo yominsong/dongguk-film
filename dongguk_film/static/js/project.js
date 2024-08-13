@@ -920,6 +920,11 @@ function initModal() {
         ["click", "keyup"].forEach(type => {
             adjust.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    if (adjust.classList.contains("class-unable")) {
+                        displayNoti(true, "UNABLE_TO_ADJUST_PROJECT");
+                        return;
+                    };
+
                     updateForm("adjust", adjust);
                 };
             });
