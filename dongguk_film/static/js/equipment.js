@@ -629,9 +629,6 @@ function initCalendar() {
         };
 
         buttons = document.querySelectorAll("button");
-        id_period_calendar.style.display = "none";
-        id_period_calendar.offsetHeight;
-        id_period_calendar.style.display = "";
     }
 
     function handleDateSelection(date) {
