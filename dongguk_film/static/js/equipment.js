@@ -338,6 +338,24 @@ function convertSignatureToFile() {
     });
 }
 
+/**
+ * This function temporarily resolves a bug in the iOS web browser where in-modal input fields and buttons would not click in place
+ */
+function performMicroScroll() {
+    const scrollContainer = id_scrollable_part_of_modal;
+    const currentScroll = scrollContainer.scrollTop;
+    const microScrollAmount = 1;
+
+    if (currentScroll % 2 === 0) {
+        scrollContainer.scrollTop = currentScroll + microScrollAmount;
+    } else {
+        scrollContainer.scrollTop = currentScroll - microScrollAmount;
+    };
+
+    setTimeout(() => {
+        scrollContainer.scrollTop = currentScroll;
+    }, 10);
+}
 
 function executeWhenUserGoesToSelectPurpose() {
     if (id_detail !== null) {
@@ -402,6 +420,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
 
     id_period.value = "";
     initCalendar();
+    performMicroScroll();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
 }
@@ -688,6 +707,7 @@ function initCalendar() {
             };
         };
 
+        performMicroScroll();
         setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
         updateCalendar();
     }
