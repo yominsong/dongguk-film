@@ -1741,8 +1741,8 @@ function updateForm(action, datasetObj = null) {
         id_modal_checkout.hidden = true;
         id_modal_share.hidden = false;
 
-        class_keywords.forEach(keyword => {
-            keyword.innerText = "공유하기";
+        class_headings.forEach(heading => {
+            heading.innerText = "공유하기";
         });
 
         id_copy_url_ready.classList.remove("hidden");
