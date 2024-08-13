@@ -870,6 +870,16 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_delete_user, "descr", response.msg);
             displayButtonMsg(false, id_delete_user, "error");
             location.href = `${location.origin}`;
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+            displayButtonMsg(false, id_delete_user, "descr");
+            displayButtonMsg(true, id_delete_user, "error", response.msg);
+            id_delete_user.disabled = false;
+            if (id_email_vcode.disabled) id_confirm_vcode.disabled = true;
+
+            const class_double_checks = document.querySelectorAll(".class-double-check");
+
+            class_double_checks.forEach(double_check => { double_check.hidden = true });
         };
 
         spins.forEach((spin) => {

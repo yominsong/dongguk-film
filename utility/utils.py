@@ -1053,6 +1053,7 @@ def airtable(
                         "category_in_korean": fields.get("Category in Korean", None),
                         "project_id": fields.get("Project team", None),
                         "film_title": fields.get("Project team film title", None),
+                        "staff": fields.get("Project team staff", None),
                         "purpose": {
                             "priority": fields.get("Purpose priority", [None])[0],
                             "keyword": fields.get("Purpose keyword", [None])[0],

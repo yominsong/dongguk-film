@@ -8,7 +8,13 @@ from users.models import Metadata, Vcode
 from utility.mail import send_mail
 from utility.sms import send_sms
 from utility.msg import send_msg
-from utility.utils import reg_test, mask_personal_information, airtable, short_io, notion
+from utility.utils import (
+    reg_test,
+    mask_personal_information,
+    airtable,
+    short_io,
+    notion,
+)
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
@@ -347,7 +353,10 @@ def vcode(request):
                     vcode.save()
                     status, msg = "DONE", "회원가입이 완료되었어요. 환영해요! 👋"
                 else:
-                    status, msg = "FAIL", "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요."
+                    status, msg = (
+                        "FAIL",
+                        "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요.",
+                    )
             except:
                 status, msg = "FAIL", "인증번호가 잘못 입력된 것 같아요."
 
@@ -356,14 +365,18 @@ def vcode(request):
         original_email = request.user.email
         original_phone = request.user.metadata.phone
         email_vcode = generate_vcode() if email != original_email else ""
-        phone_vcode = generate_vcode() if phone != "".join(filter(str.isalnum, original_phone)) else ""
+        phone_vcode = (
+            generate_vcode()
+            if phone != "".join(filter(str.isalnum, original_phone))
+            else ""
+        )
 
         create_vcode(student_id, email_vcode, phone_vcode)
 
         status, msg, is_email_vcode_sent, is_phone_vcode_sent = send_vcode(
             email, phone, email_vcode, phone_vcode, "내 계정 페이지"
         )
-    
+
     # id: confirm_vcode_for_account
     elif id == "confirm_vcode_for_account":
         email_vcode = request.POST.get("email_vcode", "")
@@ -387,7 +400,10 @@ def vcode(request):
                 user_metadata.save()
                 status, msg = "DONE", "회원정보 수정이 완료되었어요! 👍"
             else:
-                status, msg = "FAIL", "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요."
+                status, msg = (
+                    "FAIL",
+                    "앗, 인증번호가 만료되었어요! 😢\n새로고침 후 다시 시도해주세요.",
+                )
         except:
             status, msg = "FAIL", "인증번호가 잘못 입력된 것 같아요."
 
@@ -461,29 +477,43 @@ def account(request):
             "total_items": paginator.count,
             "total_pages": paginator.num_pages,
         }
-    
+
     # id: delete_user
     elif id == "delete_user":
-        user = request.user
-        
-        mail_data = {
-            "type": "USER_DELETED",
-            "email": user.email,
-            "content": {
-                "student_id": mask_personal_information("student_id", user.student_id),
-                "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
+        data = {
+            "table_name": "facility-request",
+            "params": {
+                "view": "Grid view",
+                "formula": f"AND(OR(Status = 'Pending', Status = 'Approved', Status = 'In Progress'), OR(User = '{request.user.username}', FIND('{request.user.username}', {{Project team staff}}) = 0))",
             },
         }
 
-        send_mail(mail_data)
-        user.delete()
-        data = {"status": "DONE"}
-        send_msg(request, "USER_DELETED", "MGT", data)
+        facility_request_list = airtable("get_all", "records", data)
 
-        response = {
-            "id": id,
-            "status": "DONE",
-            "msg": "지금까지 디닷에프를 이용해주셔서 감사합니다. 🙇",
-        }
+        if len(facility_request_list) == 0:
+            user = request.user
+
+            mail_data = {
+                "type": "USER_DELETED",
+                "email": user.email,
+                "content": {
+                    "student_id": mask_personal_information(
+                        "student_id", user.student_id
+                    ),
+                    "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
+                },
+            }
+
+            send_mail(mail_data)
+            user.delete()
+            data = {"status": "DONE"}
+            send_msg(request, "USER_DELETED", "MGT", data)
+            status = "DONE"
+            msg = "지금까지 디닷에프를 이용해주셔서 감사합니다. 🙇"
+        else:
+            status = "FAIL"
+            msg = "시설 사용이 진행 중이거나 예정되어 있어 탈퇴할 수 없어요."
+
+        response = {"id": id, "status": status, "msg": msg}
 
     return JsonResponse(response)

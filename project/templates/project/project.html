@@ -175,7 +175,7 @@
                                       tabindex="0">수정하기</span>
                             </p>
                         </div>
-                    {% else %}
+                    {% elif user.metadata.name in project.producer_name and user.username in project.producer_student_id %}
                         <div class="flex justify-between items-center gap-x-2">
                             <!-- project.created_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
