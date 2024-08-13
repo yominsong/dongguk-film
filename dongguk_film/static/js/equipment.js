@@ -420,7 +420,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
 
     id_period.value = "";
     initCalendar();
-    performMicroScroll();
+    // performMicroScroll();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
 }
@@ -707,9 +707,9 @@ function initCalendar() {
             };
         };
 
-        performMicroScroll();
         setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
         updateCalendar();
+        performMicroScroll();
     }
 
     id_period_prev_month.addEventListener("click", () => {
