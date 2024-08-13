@@ -1598,7 +1598,7 @@ def notion(
                         "rich_text": [{"text": {"content": str(img_key_list)}}]
                     },
                     "File": {"rich_text": [{"text": {"content": str(file)}}]},
-                    "User": {"rich_text": [{"text": {"content": user}}]},
+                    "User": {"rich_text": [{"text": {"content": str(user)}}]},
                 },
                 "children": paragraph_list,
             }
