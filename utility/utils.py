@@ -189,7 +189,7 @@ def send_facility_request_status_update(request):
 
 
 def send_facility_use_reminder(request):
-    formula = "AND(Status = 'Canceled', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
