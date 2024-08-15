@@ -1345,19 +1345,16 @@ def equipment(request):
             end_hour = hour.copy()
             start_hour["available"] = True
             end_hour["available"] = True
-            SFRD_LIST = hour["start_facility_request_date"]
-            EFRD_LIST = hour["end_facility_request_date"]
+            date_list = hour["start_facility_request_date"] + hour["end_facility_request_date"]
 
-            if len(SFRD_LIST) > 0:
-                SFRD_COUNT = count_date(SFRD_LIST).get(start_date, 0)
+            if len(date_list) > 0:
+                start_date_count = count_date(date_list).get(start_date, 0)
+                end_date_count = count_date(date_list).get(end_date, 0)
 
-                if SFRD_COUNT >= hour["max_capacity"]:
+                if start_date_count >= hour["max_capacity"]:
                     start_hour["available"] = False
-
-            if len(EFRD_LIST) > 0:
-                EFRD_COUNT = count_date(EFRD_LIST).get(end_date, 0)
-
-                if EFRD_COUNT >= hour["max_capacity"]:
+                
+                if end_date_count >= hour["max_capacity"]:
                     end_hour["available"] = False
 
             if hour["day_of_the_week"] == start_day:
