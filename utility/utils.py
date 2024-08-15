@@ -20,7 +20,7 @@ from dateutil import parser
 import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
-# Global variables
+# Global variablesㅣ
 #
 
 SECRET_KEY = getattr(settings, "SECRET_KEY", None)
@@ -70,7 +70,7 @@ AWS_S3 = boto3.client(
 def send_facility_request_status_update(request):
     if request.method == "GET":
         return HttpResponseRedirect(reverse("home:home"))
-    
+
     def get_record(record_id):
         data = {
             "table_name": "facility-request",
@@ -188,7 +188,7 @@ def send_facility_request_status_update(request):
 #
 
 
-def send_facility_use_reminder(request):
+def remind_facility_use(request):
     formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 0, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
 
     data = {
@@ -215,6 +215,66 @@ def send_facility_use_reminder(request):
         }
 
         send_sms(data)
+
+    return HttpResponse(f"{len(target_facility_request_list)}")
+
+
+def warn_facility_request_not_processed(request):
+    formula = "AND(Status = 'Pending', DATETIME_DIFF({Created time}, NOW(), 'minutes') > 30, FIND('🟢', Validation))"
+
+    data = {
+        "table_name": "facility-request",
+        "params": {"formula": formula},
+    }
+
+    target_facility_request_list = airtable("get_all", "records", data)
+
+    for facility_request in target_facility_request_list:
+        public_id = facility_request["public_id"]
+        private_id = facility_request["private_id"]
+
+        data = {"public_id": public_id, "private_id": private_id}
+        send_msg(request, "FACILITY_REQUEST_NOT_PROCESSED", "MGT", data)
+
+    return HttpResponse(f"{len(target_facility_request_list)}")
+
+
+def warn_facility_use_start_delay(request):
+    formula = "AND(Status = 'Approved', {Is after start datetime}, NOT({Is after end datetime}), FIND('🟢', Validation))"
+
+    data = {
+        "table_name": "facility-request",
+        "params": {"formula": formula},
+    }
+
+    target_facility_request_list = airtable("get_all", "records", data)
+
+    for facility_request in target_facility_request_list:
+        public_id = facility_request["public_id"]
+        private_id = facility_request["private_id"]
+
+        data = {"public_id": public_id, "private_id": private_id}
+        send_msg(request, "FACILITY_USE_START_DELAYED", "MGT", data)
+
+    return HttpResponse(f"{len(target_facility_request_list)}")
+
+
+def warn_facility_use_end_delay(request):
+    formula = "AND(Status = 'In Progress', {Is after end datetime}, FIND('🟢', Validation))"
+
+    data = {
+        "table_name": "facility-request",
+        "params": {"formula": formula},
+    }
+
+    target_facility_request_list = airtable("get_all", "records", data)
+
+    for facility_request in target_facility_request_list:
+        public_id = facility_request["public_id"]
+        private_id = facility_request["private_id"]
+
+        data = {"public_id": public_id, "private_id": private_id}
+        send_msg(request, "FACILITY_USE_END_DELAYED", "MGT", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
 
@@ -1252,9 +1312,7 @@ def airtable(
                 )
 
                 created_time = fields.get("Created time", None)
-                created_time = (
-                    convert_datetime(created_time) if created_time else None
-                )
+                created_time = convert_datetime(created_time) if created_time else None
 
                 created_date = (
                     created_time.strftime("%Y-%m-%d") if created_time else None
@@ -1266,12 +1324,8 @@ def airtable(
                     "name": fields.get("Name", None),
                     "film_title": fields.get("Film title", None),
                     "purpose": {
-                        "priority": fields.get(
-                            "Equipment purpose priority", [None]
-                        )[0],
-                        "keyword": fields.get("Equipment purpose keyword", [None])[
-                            0
-                        ],
+                        "priority": fields.get("Equipment purpose priority", [None])[0],
+                        "keyword": fields.get("Equipment purpose keyword", [None])[0],
                     },
                     "production_end_date": fields.get("Production end date", None),
                     "instructor": instructor,
@@ -1318,7 +1372,9 @@ def airtable(
                         staff["pk"] = ""
                         staff["name"] = "사용자"
                         staff["student_id"] = "**********"
-                        staff["avatar_url"] = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
+                        staff["avatar_url"] = (
+                            "https://dongguk.film/static/images/d_dot_f_logo.jpg"
+                        )
 
                     for priority in staff["position_priority"]:
                         if priority == "A01":  # A01: 연출

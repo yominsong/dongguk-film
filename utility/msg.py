@@ -106,7 +106,10 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - INACTIVE_USER_AUTO_DELETED
         - USER_DELETED
         - CREATE_FACILITY_REQUEST
+        - FACILITY_REQUEST_NOT_PROCESSED
         - APPROVE_FACILITY_REQUEST
+        - FACILITY_USE_START_DELAYED
+        - FACILITY_USE_END_DELAYED
         - CANCEL_FACILITY_REQUEST
         - REJECT_FACILITY_REQUEST
         - CREATE_PROJECT
@@ -352,6 +355,41 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
+    
+    # msg_type: "FACILITY_REQUEST_NOT_PROCESSED"
+    elif msg_type == "FACILITY_REQUEST_NOT_PROCESSED":
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
+
+        if public_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
+            )
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
+            )
+
+        description = f"시설예약이 신청되었으나 아직 '확정됨' 또는 '반려됨'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        content = {
+            "important": True,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{warning_emoji} 시설예약 확정 또는 반려 지연",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": description,
+        }
 
     # msg_type: "APPROVE_FACILITY_REQUEST"
     elif msg_type == "APPROVE_FACILITY_REQUEST":
@@ -384,6 +422,76 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{status_emoji} 시설예약 확정 {status_in_kor}",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": description,
+        }
+    
+    # msg_type: "FACILITY_USE_START_DELAYED"
+    elif msg_type == "FACILITY_USE_START_DELAYED":
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
+
+        if public_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
+            )
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
+            )
+
+        description = f"예정 시작일시가 지났으나 아직 '사용 중'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        content = {
+            "important": True,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{warning_emoji} 시설 사용 시작 지연",
+            "url": "https://dongguk.film/equipment",
+            "thumbnail_url": "",
+            "description": description,
+        }
+    
+    # msg_type: "FACILITY_USE_END_DELAYED"
+    elif msg_type == "FACILITY_USE_END_DELAYED":
+        public_id = data.get("public_id", "Unknown")
+        private_id = data.get("private_id", "Unknown")
+        public_url = None
+        private_url = None
+
+        if public_id not in [
+            None,
+            "",
+            "Unknown",
+        ] and private_id not in [None, "", "Unknown"]:
+            public_url = (
+                f"https://docs.google.com/document/d/{public_id}"
+            )
+            private_url = (
+                f"https://docs.google.com/document/d/{private_id}"
+            )
+
+        description = f"예정 종료일시가 지났으나 아직 '종료됨'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+
+        content = {
+            "important": True,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{warning_emoji} 시설 사용 종료 지연",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,

@@ -43,7 +43,9 @@ if current_time.strftime("%H:%M") == "08:00":
 # utility
 #
 
-requests.get("https://dongguk.film/utility/utils/send-facility-use-reminder/")
+requests.get("https://dongguk.film/utility/utils/remind-facility-use/")
+requests.get("https://dongguk.film/utility/utils/warn-facility-use-start-delay/")
+requests.get("https://dongguk.film/utility/utils/warn-facility-use-end-delay/")
 
 if current_time.strftime("%H:%M") == "23:00":
     requests.get("https://dongguk.film/utility/utils/update-hero-img/")
