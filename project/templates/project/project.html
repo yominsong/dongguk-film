@@ -157,7 +157,7 @@
                     </div>
                     {% if user.metadata.name in project.producer_name and user.username in project.producer_student_id and not "Pending" in project.facility_request_status and not "Approved" in project.facility_request_status and not "In Progress" in project.facility_request_status %}
                         <div class="flex justify-between items-center gap-x-2">
-                            <!-- project.created_date(<=sm ) -->
+                            <!-- project.created_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                             </p>
@@ -177,13 +177,20 @@
                         </div>
                     {% elif user.metadata.name in project.producer_name and user.username in project.producer_student_id %}
                         <div class="flex justify-between items-center gap-x-2">
-                            <!-- project.created_date(<=sm ) -->
+                            <!-- project.created_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                             </p>
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:mt-1">
                                 <span class="class-adjust class-unable relative truncate cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-gray"
                                       tabindex="0">수정하기</span>
+                            </p>
+                        </div>
+                    {% else %}
+                        <div class="flex justify-start">
+                            <!-- project.created_date(<=sm) -->
+                            <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
+                                <time datetime="{{ project.created_date }}">{{ project.created_date }}</time>
                             </p>
                         </div>
                     {% endif %}

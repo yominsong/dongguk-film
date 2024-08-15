@@ -157,7 +157,7 @@
                     </div>
                     {% if user.pk == notice.user %}
                         <div class="flex justify-between items-center gap-x-2">
-                            <!-- notice.listed_date(<=sm ) -->
+                            <!-- notice.listed_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
@@ -175,7 +175,7 @@
                         </div>
                     {% else %}
                         <div class="flex justify-start">
-                            <!-- notice.listed_date(<=sm ) -->
+                            <!-- notice.listed_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
                                 <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>

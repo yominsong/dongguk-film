@@ -12,6 +12,7 @@ const id_record_id = document.getElementById("id_record_id");
 const id_cancel_or_delete = document.getElementById("id_cancel_or_delete");
 const class_firsts = document.querySelectorAll(".class-first");
 let class_seconds = document.querySelectorAll(".class-second");
+const class_double_checks = document.querySelectorAll(".class-double-check");
 
 // boolean
 let isItDoubleChecked = false;
@@ -119,6 +120,7 @@ function updateForm(action, datasetObj = null) {
     const class_keywords = document.querySelectorAll(".class-keyword");
     const id_modal_info = code(id_modal, "_info");
     const id_modal_facility = code(id_modal, "_facility");
+    const class_request_details = document.querySelectorAll(".class-request-detail");
 
     // action: all
     isModalOpen = true;
@@ -126,6 +128,8 @@ function updateForm(action, datasetObj = null) {
     id_modal.setAttribute("x-data", "{ open: true }");
     handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
+    class_double_checks.forEach(double_check => { double_check.hidden = true });
+    isItDoubleChecked = false;
 
     if (action === "adjust_info") {
         id_modal_info.hidden = false;
@@ -138,6 +142,10 @@ function updateForm(action, datasetObj = null) {
 
         class_keywords.forEach(keyword => {
             keyword.innerText = "수정하기";
+        });
+
+        class_request_details.forEach(detail => {
+            detail.hidden = true;
         });
     }
 
@@ -172,7 +180,6 @@ function updateForm(action, datasetObj = null) {
         const id_duration_from_request = document.getElementById("id_duration_from_request");
         const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
         const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
-        const class_request_details = document.querySelectorAll(".class-request-detail");
         let status, statusDescr;
         let duration = data.duration;
 
@@ -742,8 +749,6 @@ function initRequest() {
 
         if (id_modal !== null) {
             initValidation(class_firsts, id_send_vcode);
-
-            const class_double_checks = document.querySelectorAll(".class-double-check");
 
             id_send_vcode.addEventListener("click", () => {
                 if (hasInfoChanged(inputs) && isItOkayToSubmitForm()) {

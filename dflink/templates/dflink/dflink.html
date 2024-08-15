@@ -145,7 +145,7 @@
                     </div>
                     {% if user.username == dflink.user %}
                         <div class="flex justify-between items-center gap-x-2">
-                            <!-- dflink.expiration_date(<=sm ) -->
+                            <!-- dflink.expiration_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp;만료
                             </p>
@@ -167,7 +167,7 @@
                         </div>
                     {% else %}
                         <div class="flex justify-start">
-                            <!-- dflink.expiration_date(<=sm ) -->
+                            <!-- dflink.expiration_date(<=sm) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
                                 <time datetime="{{ dflink.expiration_date }}">{{ dflink.expiration_date }}</time>&nbsp;만료
                             </p>
