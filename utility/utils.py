@@ -220,7 +220,7 @@ def remind_facility_use(request):
 
 
 def warn_facility_request_not_processed(request):
-    formula = "AND(Status = 'Pending', DATETIME_DIFF({Created time}, NOW(), 'minutes') > 30, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Pending', DATETIME_DIFF(NOW(), {Created time}, 'minutes') > 30, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",

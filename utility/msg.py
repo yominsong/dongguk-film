@@ -134,7 +134,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     warning_emoji = "⚠️"
 
     if data is not None:
-        status = data["status"]
+        status = data.get("status", None)
         status_emoji = success_emoji if status == "DONE" else failure_emoji
         status_in_kor = "완료" if status == "DONE" else "실패"
 
@@ -375,7 +375,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"시설예약이 신청되었으나 아직 '확정됨' 또는 '반려됨'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 이 시설예약의 Status를 Approved 또는 Rejected 중 알맞은 것으로 바꿔주세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -385,7 +385,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{warning_emoji} 시설예약 확정 또는 반려 지연",
+            "title": f"{warning_emoji} 시설예약 확정 또는 반려 필요",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,
@@ -446,7 +446,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"예정 시작일시가 지났으나 아직 '사용 중'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 이 시설의 사용이 시작되었는지 확인 후 Status를 In Progress로 바꿔주세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -456,7 +456,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{warning_emoji} 시설 사용 시작 지연",
+            "title": f"{warning_emoji} 시설 사용 시작 확인 필요",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,
@@ -481,7 +481,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"예정 종료일시가 지났으나 아직 '종료됨'으로 설정되지 않아 조치가 필요합니다.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 이 시설의 사용이 종료되었는지 확인 후 Status를 Completed로 바꿔주세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -491,7 +491,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 else default_picture_url
             ),
             "author_url": "",
-            "title": f"{warning_emoji} 시설 사용 종료 지연",
+            "title": f"{warning_emoji} 시설 사용 종료 확인 필요",
             "url": "https://dongguk.film/equipment",
             "thumbnail_url": "",
             "description": description,
