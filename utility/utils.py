@@ -20,7 +20,7 @@ from dateutil import parser
 import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
-# Global variablesㅣ
+# Global variables
 #
 
 SECRET_KEY = getattr(settings, "SECRET_KEY", None)
