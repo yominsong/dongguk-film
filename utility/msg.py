@@ -375,7 +375,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"ㆍ제안: 이 시설예약의 Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -446,7 +446,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"ㆍ제안: 이 시설의 사용이 시작되었는지 확인 후 Status를 In Progress로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설이 문제없이 사용 시작되었는지 확인하고, Status를 In Progress로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -481,7 +481,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
                 f"https://docs.google.com/document/d/{private_id}"
             )
 
-        description = f"ㆍ제안: 이 시설의 사용이 종료되었는지 확인 후 Status를 Completed로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
