@@ -67,6 +67,8 @@ DMD_URL = get_secret("DMD_URL")
 
 DMD_COOKIE = get_secret("DMD_COOKIE")
 
+DND = get_secret("DND")
+
 AIRTABLE_TOKEN = get_secret("AIRTABLE_TOKEN")
 
 AIRTABLE_BASE_ID = get_secret("AIRTABLE_BASE_ID")

@@ -17,6 +17,19 @@ from .mail import send_mail
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from dateutil import parser
+from seleniumwire import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import (
+    TimeoutException,
+    NoSuchElementException,
+    JavascriptException,
+)
+from selenium.webdriver.common.keys import Keys
 import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
@@ -24,6 +37,12 @@ import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, st
 #
 
 SECRET_KEY = getattr(settings, "SECRET_KEY", None)
+
+DND = getattr(settings, "DND", None)
+DND_MAIN_URL = DND["MAIN_URL"]
+DND_STUDENT_ID = DND["STUDENT_ID"]
+DND_PASSWORD = DND["PASSWORD"]
+DND_SUBJECT_URL = DND["SUBJECT_URL"]
 
 NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
 NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
@@ -279,6 +298,270 @@ def warn_facility_use_end_delay(request):
     return HttpResponse(f"{len(target_facility_request_list)}")
 
 
+def update_subject(request):
+    # Use JavaScript to delete elements with cl-aside classes
+    def remove_cl_aside():
+        script = """
+            function removeElement() {
+                var elements = document.querySelectorAll('.cl-aside');
+                var removed = 0;
+                elements.forEach(function(element) {
+                    element.remove();
+                    removed++;
+                });
+                return {
+                    removed: removed,
+                    totalElements: document.querySelectorAll('*').length,
+                    bodyContent: document.body.innerHTML
+                };
+            }
+            return removeElement();
+        """
+
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            try:
+                result = driver.execute_script(script)
+                if result["removed"] > 0:
+                    print(
+                        f"{result['removed']} elements with class cl-aside have been successfully removed."
+                    )
+                    break
+                else:
+                    print(
+                        f"No elements with cl-aside class found, retrying... (attempts {attempt + 1}/{max_attempts})"
+                    )
+
+                if attempt == max_attempts - 1:
+                    print("No cl-aside element found after all attempts.")
+                    print("Part of the page content:")
+                    print(result["bodyContent"][:1000])
+
+                if attempt < max_attempts - 1:
+                    time.sleep(3)
+            except JavascriptException as e:
+                print(f"Error executing JavaScript: {e}")
+                break
+
+    # Set Chrome options
+    chrome_options = Options()
+    # chrome_options.add_experimental_option("detach", True)
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Set Selenium Wire options
+    seleniumwire_options = {"disable_encoding": True}
+
+    # WebDriver setup (using Selenium Wire)
+    service = Service(ChromeDriverManager().install())
+    
+    driver = webdriver.Chrome(
+        service=service,
+        options=chrome_options,
+        seleniumwire_options=seleniumwire_options,
+    )
+
+    # Set the browser window size
+    driver.set_window_size(1024, 768)
+
+    # Access a web page
+    driver.get(DND_MAIN_URL)
+    print(f"Accessing {DND_MAIN_URL}")
+
+    # Wait for page to load
+    wait = WebDriverWait(driver, 30)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+    # Use JavaScript to delete elements with cl-aside classes
+    remove_cl_aside()
+
+    # Enter student ID
+    try:
+        student_id_input = wait.until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "div.cl-control.cl-inputbox.cl-first-row input")
+            )
+        )
+
+        student_id_input.send_keys(DND_STUDENT_ID)
+        print(f"Student ID entered.")
+    except TimeoutException:
+        print("Failed to find the field for student ID.")
+
+    # Enter password
+    try:
+        password_input = wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    "div.cl-control.cl-inputbox.cl-last-row.login-input input",
+                )
+            )
+        )
+
+        password_input.send_keys(DND_PASSWORD)
+        print(f"Password entered.")
+    except TimeoutException:
+        print("Failed to find the field for password.")
+
+    # Click the login button
+    try:
+        login_button = wait.until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    "//a[contains(@class, 'cl-text-wrapper') and .//div[text()='로그인']]",
+                )
+            )
+        )
+
+        login_button.click()
+        print(f"Login button clicked.")
+    except (TimeoutException, NoSuchElementException):
+        print("Failed to find the login button.")
+
+    time.sleep(5)
+
+    # Use JavaScript to delete elements with cl-aside classes
+    remove_cl_aside()
+
+    # Change the language to Korean if it is set to English
+    try:
+        lang_button = wait.until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//a[@class='cl-text-wrapper' and @title='언어변경']/div")
+            )
+        )
+
+        print(f"Language change button found: {lang_button.text}")
+
+        if lang_button.text == "ENG":
+            lang_button.click()
+
+            kor_option = wait.until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//div[@class='cl-text' and text()='KOR']")
+                )
+            )
+
+            kor_option.click()
+            print("Language changed to Korean.")
+            wait.until(EC.staleness_of(lang_button))
+            remove_cl_aside()
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Falied to find the language change button. Error: {e}")
+
+    # Click the '수업' button
+    try:
+        timetable_button = wait.until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()='수업']"))
+        )
+
+        timetable_button.click()
+        print("수업 button clicked.")
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Failed to find or click the '수업' button. Error: {e}")
+
+    # Click the '종합강의시간표조회' button
+    try:
+        timetable_button = wait.until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()='종합강의시간표조회']"))
+        )
+
+        timetable_button.click()
+        print("종합강의시간표조회 button clicked.")
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Failed to find or click the '종합강의시간표조회' button. Error: {e}")
+
+    time.sleep(5)
+
+    # Set the semester to the current semester
+    try:
+        current = datetime.datetime.now()
+        current_year = current.year
+        current_month = current.month
+        semester = "1학기" if current_month < 7 else "2학기"
+        semester_num = "01" if current_month < 7 else "02"
+        
+        semester_input = wait.until(
+            EC.presence_of_element_located((By.XPATH, "//input[@aria-label='학기']"))
+        )
+
+        print("Found the semester input field.")
+
+        # Focus on the input field
+        semester_input.click()
+        print("Clicked the semester input field.")
+        time.sleep(0.5)
+
+        driver.execute_script(
+            "arguments[0].value = arguments[1]", semester_input, semester
+        )
+
+        print(f"Set the semester to '{semester}'.")
+
+        time.sleep(1)
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Failed to find or set the semester input field. Error: {e}")
+
+    # Set the subject code to 'FIL'
+    try:
+        subject_code_input = wait.until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[contains(@class, 'cl-control cl-inputbox cl-even-column cl-even-row cl-last-column')]//input",
+                )
+            )
+        )
+
+        driver.execute_script("arguments[0].value = 'FIL'", subject_code_input)
+        subject_code_input.click()
+        print("Set the subject code to 'FIL'.")
+        subject_code_input.send_keys(Keys.RETURN)
+        print("Pressed the Enter key to search.")
+        time.sleep(3)
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Failed to find or set the subject code input field. Error: {e}")
+
+    # Save the response data for the specific URL
+    def save_response():
+        for request in driver.requests:
+            if request.url == DND_SUBJECT_URL and request.response:
+                data = {
+                    "url": request.url,
+                    "method": request.method,
+                    "status_code": request.response.status_code,
+                    "headers": dict(request.response.headers),
+                    "body": json.loads(
+                        request.response.body.decode("utf-8", errors="ignore")
+                    ),
+                }
+
+                with open(f"subject/{current_year}{semester_num}.json", "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+
+                return data
+
+    data = save_response()
+    data["year"] = f"{current_year}학년도"
+    data["semester"] = semester
+
+    try:
+        data["status"] = "DONE"
+        data["length"] = len(data["body"]["dsMain"])
+    except:
+        data["status"] = "FAIL"
+        data["length"] = 0
+
+    send_msg(request, "UPDATE_SUBJECT", "DEV", data)
+    json_data = json.dumps(data, indent=4)
+    driver.quit()
+
+    return HttpResponse(json_data, content_type="application/json")
+
+
 def update_dmd_cookie(request):
     cookie = ""
 
@@ -453,10 +736,6 @@ def get_equipment_data(target: str):
 
 
 def get_subject(base_date: str):
-    DMD_URL = getattr(settings, "DMD_URL", None)
-    DMD_COOKIE = getattr(settings, "DMD_COOKIE", None)
-    headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
-
     try:
         base_date = timezone.datetime.strptime(base_date, "%Y-%m-%d").date()
     except:
@@ -464,35 +743,26 @@ def get_subject(base_date: str):
 
     base_year = base_date.year
     base_month = base_date.month
-    headers["Cookie"] = DMD_COOKIE
+    semester_num = "01" if base_month < 7 else "02"
+    subject_path = f"subject/{base_year}{semester_num}.json"
 
-    params = {
-        "strCampFg": "S",
-        "strUnivGrscFg": "U0001001",
-        "strLtYy": str(base_year),
-        "strLtShtmCd": "U0002001" if base_month < 7 else "U0002003",
-        "strFindType": "CODE",
-        "strSbjt": "FIL",
-    }
+    with open(subject_path) as f:
+        subject_list = json.loads(f.read())["body"]["dsMain"]
+        f.close()
 
     result_list = []
     subject_dict = {}
 
-    with Session() as session:
-        session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get(DMD_URL["timetable"], params=params, headers=headers)
-        subject_list = response.json()["out"]["DS_COUR110"]
-
     for subject in subject_list:
         key = (
-            subject["sbjtKorNm"],
-            subject["sbjtEngNm"],
-            subject["haksuNo"],
-            subject["openShyrNm"],
+            subject["SBJ_NM"],
+            subject["SBJ_ENG_NM"],
+            subject["SBJ_NO"], # subject["DVCLS"] is the serial number for the subject
+            subject["OBJ_SCHGRD"],
         )
 
-        if subject["ltSprfNo"] is not None and subject["ltSprfNm"] is not None:
-            instructor = {"id": subject["ltSprfNo"], "name": subject["ltSprfNm"]}
+        if subject["EMP_NO"] is not None and subject["EMP_NM"] is not None:
+            instructor = {"id": subject["EMP_NO"], "name": subject["EMP_NM"]}
 
             if key not in subject_dict:
                 subject_dict[key] = {(instructor["id"], instructor["name"])}

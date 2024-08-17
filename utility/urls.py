@@ -9,6 +9,7 @@ urlpatterns = [
     path("utils/warn-facility-request-not-processed/", warn_facility_request_not_processed, name="warn_facility_request_not_processed"),
     path("utils/warn-facility-use-start-delay/", warn_facility_use_start_delay, name="warn_facility_use_start_delay"),
     path("utils/warn-facility-use-end-delay/", warn_facility_use_end_delay, name="warn_facility_use_end_delay"),
+    path("utils/update-subject/", update_subject, name="update_subject"),
     path("utils/update-dmd-cookie/", update_dmd_cookie, name="update_dmd_cookie"),
     path("utils/update-hero-img/", update_hero_img, name="update_hero_img"),
 ]

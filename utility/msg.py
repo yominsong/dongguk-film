@@ -94,6 +94,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     """
     - request | `HttpRequest`
     - msg_type | `str`:
+        - UPDATE_SUBJECT
         - UPDATE_DMD_COOKIE
         - UPDATE_HERO_IMAGE
         - SYNC_EQUIPMENT_DATA
@@ -141,8 +142,35 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     webhook = get_webhook(channel)
     default_picture_url = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
+    # msg_type: "UPDATE_SUBJECT"
+    if msg_type == "UPDATE_SUBJECT":
+        year = data.get("year", None)
+        semester = data.get("semester", None)
+
+        if year is not None and semester is not None:
+            target_year_and_semester = f"{year} {semester}"
+        else:
+            target_year_and_semester = "Unknown"
+        
+        length = data.get("length", 0)
+        description = f"ㆍ학기: {target_year_and_semester}\nㆍ개수: {length}"
+
+        content = {
+            "important": False,
+            "picture_url": (
+                request.user.socialaccount_set.all()[0].get_avatar_url()
+                if request.user.is_authenticated
+                else default_picture_url
+            ),
+            "author_url": "",
+            "title": f"{status_emoji} 교과목 업데이트 {status_in_kor}",
+            "url": "",
+            "thumbnail_url": "",
+            "description": description,
+        }
+
     # msg_type: "UPDATE_DMD_COOKIE"
-    if msg_type == "UPDATE_DMD_COOKIE":
+    elif msg_type == "UPDATE_DMD_COOKIE":
         cookie = data.get("cookie", "")
 
         content = {

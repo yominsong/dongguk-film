@@ -53,3 +53,6 @@ if current_time.strftime("%H:%M") == "23:00":
 
 if current_time.strftime("%H:%M") == "23:30":
     requests.get("https://dongguk.film/utility/utils/update-dmd-cookie/")
+
+if ((current_time.month == 1 and current_time.day == 1) or (current_time.month == 7 and current_time.day == 1)) and current_time.strftime("%H:%M") == "00:00":
+    requests.get("https://dongguk.film/utility/utils/update-subject/")

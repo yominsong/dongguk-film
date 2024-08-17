@@ -1345,7 +1345,9 @@ def equipment(request):
             end_hour = hour.copy()
             start_hour["available"] = True
             end_hour["available"] = True
-            date_list = hour["start_facility_request_date"] + hour["end_facility_request_date"]
+            date_list = (
+                hour["start_facility_request_date"] + hour["end_facility_request_date"]
+            )
 
             if len(date_list) > 0:
                 start_date_count = count_date(date_list).get(start_date, 0)
@@ -1353,7 +1355,7 @@ def equipment(request):
 
                 if start_date_count >= hour["max_capacity"]:
                     start_hour["available"] = False
-                
+
                 if end_date_count >= hour["max_capacity"]:
                     end_hour["available"] = False
 
@@ -1392,7 +1394,9 @@ def equipment(request):
         equipment_request = airtable("get", "record", data)
         public_id = equipment_request["public_id"]
         private_id = equipment_request["private_id"]
-        fields = {"Status": "Canceled"} # The values of these fields are changed through automation in Airtable: "Start equipment hour", "End equipment hour", "Equipment item", "Approved time", "Started time", "Completed time", "Canceled time", "Rejected time"
+        fields = {
+            "Status": "Canceled"
+        }  # The values of these fields are changed through automation in Airtable: "Start equipment hour", "End equipment hour", "Equipment item", "Approved time", "Started time", "Completed time", "Canceled time", "Rejected time"
 
         data = {
             "table_name": "facility-request",
