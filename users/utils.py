@@ -498,7 +498,7 @@ def account(request):
                 "email": user.email,
                 "content": {
                     "student_id": mask_personal_information(
-                        "student_id", user.student_id
+                        "student_id", user.username
                     ),
                     "datetime": timezone.now().strftime("%Y-%m-%d %H:%M"),
                 },
