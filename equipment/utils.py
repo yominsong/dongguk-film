@@ -29,8 +29,6 @@ import json, base64
 # Global variables
 #
 
-DMD_URL = getattr(settings, "DMD_URL", None)
-DMD_COOKIE = getattr(settings, "DMD_COOKIE", None)
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(

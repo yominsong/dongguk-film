@@ -63,10 +63,6 @@ NCP_CLOVA_OCR_APIGW_INVOKE_URL = get_secret("NCP_CLOVA_OCR_APIGW_INVOKE_URL")
 
 MGT_PHONE = get_secret("MGT_PHONE")
 
-DMD_URL = get_secret("DMD_URL")
-
-DMD_COOKIE = get_secret("DMD_COOKIE")
-
 DND = get_secret("DND")
 
 AIRTABLE_TOKEN = get_secret("AIRTABLE_TOKEN")

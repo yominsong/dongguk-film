@@ -95,7 +95,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     - request | `HttpRequest`
     - msg_type | `str`:
         - UPDATE_SUBJECT
-        - UPDATE_DMD_COOKIE
+        - UPDATE_DND_COOKIE
         - UPDATE_HERO_IMAGE
         - SYNC_EQUIPMENT_DATA
         - UPDATE_PROJECT_POLICY
@@ -169,15 +169,15 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": description,
         }
 
-    # msg_type: "UPDATE_DMD_COOKIE"
-    elif msg_type == "UPDATE_DMD_COOKIE":
+    # msg_type: "UPDATE_DND_COOKIE"
+    elif msg_type == "UPDATE_DND_COOKIE":
         cookie = data.get("cookie", "")
 
         content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": f"{status_emoji} DMD 쿠키 업데이트 {status_in_kor}",
+            "title": f"{status_emoji} DND 쿠키 업데이트 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
             "description": cookie,

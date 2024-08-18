@@ -562,18 +562,18 @@ def update_subject(request):
     return HttpResponse(json_data, content_type="application/json")
 
 
-def update_dmd_cookie(request):
+def update_dnd_cookie(request):
     cookie = ""
 
     with Session() as session:
         session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get("https://util.dgufilm.link/get-dmd-cookie")
+        response = session.get("https://util.dgufilm.link/get-dnd-cookie")
         cookie = response.text.rstrip()
 
     if "WMONID" in cookie:
         with open("secrets.json", "r+") as f:
             data = json.load(f)
-            data["DMD_COOKIE"] = cookie
+            data["DND"]["COOKIE"] = cookie
             f.seek(0)
             f.write(json.dumps(data, indent=4))
             f.truncate()
@@ -585,7 +585,7 @@ def update_dmd_cookie(request):
         "cookie": cookie,
     }
 
-    send_msg(request, "UPDATE_DMD_COOKIE", "DEV", data)
+    send_msg(request, "UPDATE_DND_COOKIE", "DEV", data)
     json_data = json.dumps(data, indent=4)
 
     return HttpResponse(json_data, content_type="application/json")

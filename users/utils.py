@@ -16,12 +16,8 @@ from utility.utils import (
     notion,
 )
 from fake_useragent import UserAgent
-from requests.sessions import Session
-from requests.adapters import HTTPAdapter
 import requests, random, string, json
 
-DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
-DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
 DND = getattr(settings, "DND", "DND")
 DND_COOKIE = DND["COOKIE"]
 DND_DIRECTORY_URL = DND["DIRECTORY_URL"]
