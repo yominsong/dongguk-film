@@ -18,10 +18,13 @@ from utility.utils import (
 from fake_useragent import UserAgent
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
-import random, string, json
+import requests, random, string, json
 
 DMD_URL = getattr(settings, "DMD_URL", "DMD_URL")
 DMD_COOKIE = getattr(settings, "DMD_COOKIE", "DMD_COOKIE")
+DND = getattr(settings, "DND", "DND")
+DND_COOKIE = DND["COOKIE"]
+DND_DIRECTORY_URL = DND["DIRECTORY_URL"]
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
 #
@@ -151,27 +154,44 @@ def send_vcode(email, phone, email_vcode, phone_vcode, target):
 
 def is_registered_student(student_id: str, name: str):
     """
-    This function relies on the 'Find Student ID' feature of Dongguk University's mDRIMS.
+    This function relies on the 'Find Student ID' feature of Dongguk University's nDRIMS.
 
     - student_id | `str`
     - name | `str`
     """
 
-    headers["Cookie"] = DMD_COOKIE
-    params = {"strCampFg": "S", "strEntrYy": student_id[:4], "strKorNm": name}
+    data = {
+        '@d1#CAMPUS_CD': 'CM030.10',
+        '@d1#STD_NM': name,
+        '@d1#ENT_YY': student_id[:4],
+        '@d#': '@d1#',
+        '@d1#': 'dmSearch',
+        '@d1#tp': 'dm',
+    }
 
-    with Session() as session:
-        session.mount("https://", HTTPAdapter(max_retries=3))
-        response = session.get(DMD_URL["directory"], params=params, headers=headers)
-        student_info = response.json()["out"]
-        matched_element = [
-            element for element in student_info if element["stdNo"] == student_id
-        ]
-        result = (
-            True
-            if len(matched_element) == 1 and "영화" in matched_element[0]["deptNm"]
-            else False
-        )
+    headers = {
+        'accept': '*/*',
+        'accept-encoding': 'gzip, deflate, br, zstd',
+        'accept-language': 'en-US,en;q=0.9,ko;q=0.8',
+        'connection': 'keep-alive',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'cookie': DND_COOKIE,
+        'user-agent': UserAgent(browsers=["edge", "chrome"]).random,
+        'x-requested-with': 'XMLHttpRequest',
+    }
+
+    response = requests.post(DND_DIRECTORY_URL, data, headers)
+    student_list = response.json()["dsMain"]
+
+    matched_student = [
+        student for student in student_list if student["STD_NO"] == student_id
+    ]
+
+    result = (
+        True
+        if len(matched_student) == 1 and "영화" in matched_student[0]["DPT_NM"]
+        else False
+    )
 
     return result
 
