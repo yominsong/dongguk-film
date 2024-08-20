@@ -185,7 +185,7 @@ function updateForm(action, datasetObj = null) {
 
         if (data.status === "Pending") {
             status = "대기 중";
-            statusDescr = "운영진이 예약 정보를 확인하고 있어요.";
+            statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
         } else if (data.status === "Approved") {
             status = "확정됨";
             statusDescr = "예약이 확정되었어요.";
