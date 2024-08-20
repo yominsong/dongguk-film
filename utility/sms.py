@@ -49,7 +49,8 @@ def send_sms(data: dict):
         - IDENTITY_VERIFICATION_REQUIRED
         - FACILITY_REQUEST_CREATED
         - FACILITY_REQUEST_APPROVED
-        - FACILITY_REQUEST_STARTING_SOON
+        - FACILITY_USE_START_TIME_APPROACHING
+        - FACILITY_USE_END_TIME_APPROACHING
         - FACILITY_REQUEST_CANCELED
         - FACILITY_REQUEST_REJECTED
     - content | `dict`
@@ -75,11 +76,17 @@ def send_sms(data: dict):
         facility_category = content["facility_category"]
         content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 확정되었어요."
     
-    # type: "FACILITY_REQUEST_STARTING_SOON"
-    elif type == "FACILITY_REQUEST_STARTING_SOON":
+    # type: "FACILITY_USE_START_TIME_APPROACHING"
+    elif type == "FACILITY_USE_START_TIME_APPROACHING":
         name_of_subject_or_project = content["name_of_subject_or_project"]
         facility_category = content["facility_category"]
-        content = f'[디닷에프] 약 30분 후부터 {name_of_subject_or_project} {handle_hangul(facility_category, "을를", True)} 사용할 수 있어요.'
+        content = f'[디닷에프] {name_of_subject_or_project} {facility_category} 사용 시작까지 약 30분 남았어요.'
+    
+    # type: "FACILITY_USE_END_TIME_APPROACHING"
+    elif type == "FACILITY_USE_END_TIME_APPROACHING":
+        name_of_subject_or_project = content["name_of_subject_or_project"]
+        facility_category = content["facility_category"]
+        content = f'[디닷에프] {name_of_subject_or_project} {facility_category} 사용 종료까지 약 30분 남았어요.'
     
     # type: "FACILITY_REQUEST_CANCELED"
     elif type == "FACILITY_REQUEST_CANCELED":

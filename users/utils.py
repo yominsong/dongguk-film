@@ -444,7 +444,7 @@ def account(request):
         items_per_page = 4
 
         if target == "facility":
-            formula = f"AND(User = '{request.user.username}', FIND('🟢', Validation))"
+            formula = f"User = '{request.user.username}'"
 
             data = {
                 "table_name": "facility-request",

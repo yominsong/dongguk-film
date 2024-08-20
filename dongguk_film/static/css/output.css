@@ -1509,6 +1509,11 @@ select {
   margin-bottom: 0.5rem;
 }
 
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .-mb-5 {
   margin-bottom: -1.25rem;
 }
@@ -1543,6 +1548,10 @@ select {
 
 .mb-2\.5 {
   margin-bottom: 0.625rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
 .mb-4 {
@@ -2883,6 +2892,10 @@ select {
 
 .text-justify {
   text-align: justify;
+}
+
+.align-top {
+  vertical-align: top;
 }
 
 .font-pretendard {
@@ -4342,16 +4355,12 @@ select {
     display: grid;
   }
 
-  .lg\:min-h-\[443\.200px\] {
-    min-height: 443.200px;
+  .lg\:min-h-\[444px\] {
+    min-height: 444px;
   }
 
   .lg\:min-h-\[452px\] {
     min-height: 452px;
-  }
-
-  .lg\:min-h-\[444px\] {
-    min-height: 444px;
   }
 
   .lg\:max-w-7xl {
