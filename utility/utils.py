@@ -290,7 +290,7 @@ def warn_facility_request_not_processed(request):
 
 
 def warn_facility_use_start_delay(request):
-    formula = "AND(Status = 'Approved', {Is after start datetime}, NOT({Is after end datetime}), FIND('🟢', Validation))"
+    formula = "AND(Status = 'Approved', {Is after start datetime}, NOT({Is after end datetime}))"
 
     data = {
         "table_name": "facility-request",
@@ -310,7 +310,7 @@ def warn_facility_use_start_delay(request):
 
 
 def warn_facility_use_end_delay(request):
-    formula = "AND(Status = 'In Progress', {Is after end datetime}, FIND('🟢', Validation))"
+    formula = "AND(Status = 'In Progress', {Is after end datetime})"
 
     data = {
         "table_name": "facility-request",
@@ -1427,6 +1427,7 @@ def airtable(
                             "Start equipment hour", None
                         ),
                         "end_equipment_hour": fields.get("End equipment hour", None),
+                        "is_after_end_datetime": fields.get("Is after end datetime", False),
                         "user": user,
                         "public_url": fields.get("Public URL", None),
                         "public_id": fields.get("Public ID", None),

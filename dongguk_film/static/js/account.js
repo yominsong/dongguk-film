@@ -131,6 +131,7 @@ function updateForm(action, datasetObj = null) {
     class_double_checks.forEach(double_check => { double_check.hidden = true });
     isItDoubleChecked = false;
 
+    // action: "adjust_info"
     if (action === "adjust_info") {
         id_modal_info.hidden = false;
         id_modal_facility.hidden = true;
@@ -180,25 +181,35 @@ function updateForm(action, datasetObj = null) {
         const id_duration_from_request = document.getElementById("id_duration_from_request");
         const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
         const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
-        let status, statusDescr;
+        let badgeColor, status, statusDescr;
         let duration = data.duration;
 
         if (data.status === "Pending") {
+            badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
             status = "대기 중";
             statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
         } else if (data.status === "Approved") {
+            badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
             status = "확정됨";
             statusDescr = "예약이 확정되었어요.";
-        } else if (data.status === "In Progress") {
+        } else if (data.status === "In Progress" && data.isAfterEndDatetime === "false") {
+            badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
             status = "사용 중";
             statusDescr = "현재 이 시설을 사용하고 있어요.";
+        } else if (data.status === "In Progress" && data.isAfterEndDatetime === "true") {
+            badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
+            status = "종료 지연됨";
+            statusDescr = "시설 사용 종료가 늦춰지고 있어요.";
         } else if (data.status === "Completed") {
+            badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
             status = "종료됨";
             statusDescr = "시설 사용이 종료되었어요.";
         } else if (data.status === "Canceled") {
+            badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
             status = "취소됨";
             statusDescr = "예약이 취소되었어요.";
         } else if (data.status === "Rejected") {
+            badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
             status = "반려됨";
             statusDescr = "예약이 반려되었어요.";
         };
@@ -226,6 +237,7 @@ function updateForm(action, datasetObj = null) {
         id_name_from_request.innerText = data.name;
         id_public_url_from_request.href = data.publicUrl;
         id_status_descr.innerText = statusDescr;
+        id_status_from_request.className = `rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}`;
         id_status_from_request.innerText = status;
         id_created_time_from_request.innerText = data.createdTime;
         id_purpose_from_request.innerText = data.purposeKeyword;
@@ -238,7 +250,7 @@ function updateForm(action, datasetObj = null) {
             element.parentElement.classList.replace("flex", "hidden");
         });
 
-        let innerTextArray = [id_status_from_request, id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request];
+        let innerTextArray = [id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request];
 
         if (data.approvedTime !== "null") {
             id_approved_time_from_request.innerText = data.approvedTime;
@@ -354,7 +366,7 @@ function updateList(data) {
         let msg;
 
         if (data.target === "facility") {
-            msg = "내가 예약한 시설이";
+            msg = "내가 예약 신청한 시설이";
         } else if (data.target === "project") {
             msg = "내가 참여한 프로젝트가";
         } else if (data.target === "dflink") {
@@ -402,9 +414,12 @@ function updateList(data) {
             } else if (item.status === "Approved") {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
                 status = "확정됨";
-            } else if (item.status === "In Progress") {
+            } else if (item.status === "In Progress" && !item.is_after_end_datetime) {
                 badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
                 status = "사용 중";
+            } else if (item.status === "In Progress" && item.is_after_end_datetime) {
+                badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
+                status = "종료 지연됨";
             } else if (item.status === "Completed") {
                 badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
                 status = "종료됨";
@@ -456,6 +471,7 @@ function updateList(data) {
                                 data-duration="${item.duration}"
                                 data-start-datetime="${item.start_datetime}"
                                 data-end-datetime="${item.end_datetime}"
+                                data-is-after-end-datetime="${item.is_after_end_datetime}"
                                 data-public-url="${item.public_url}"
                                 data-for-instructor="${item.for_instructor}"
                                 data-status="${item.status}"
