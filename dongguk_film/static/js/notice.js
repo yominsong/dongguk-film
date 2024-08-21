@@ -162,9 +162,9 @@ function initCkEditor() {
                         };
 
                         if (!hasOnlyImages(data)) {
-                            displayNoti(false, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
+                            displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
                         } else if (hasOnlyImages(data)) {
-                            displayNoti(true, "REQUIRE_IMAGE_DESCRIPTION_TEXT");
+                            displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
                         };
 
                         id_content.value = ckEditor.getData();
