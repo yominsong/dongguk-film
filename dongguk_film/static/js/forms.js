@@ -719,6 +719,14 @@ function displayError(bool, input, errorType = null) {
             input.classList.add("border-flamingo-300");
         }
 
+        // id_content in Notice app
+        else if (input.id === "id_content" && appName === "notice") {
+            const content = document.querySelector("div[role='textbox']");
+
+            content.style.setProperty("background-color", "#FCDBCF", "important");
+            content.style.setProperty("--tw-ring-opacity", "0", "important");
+        }
+
         // alt-calendar
         else if (input.classList.contains("alt-calendar")) {
             const calendar = code(input.id + "_calendar");
@@ -754,8 +762,7 @@ function displayError(bool, input, errorType = null) {
         // alt-select
         else if (input.classList.contains("alt-select")) {
             const select = document.getElementById(`id_select_${input.id.replace("id_", "")}`);
-
-            console.log(select + "스타일 변화 주기");
+            // Not sure why this conditional exists
         }
 
         // else
@@ -843,8 +850,7 @@ function displayError(bool, input, errorType = null) {
         // alt-select
         else if (input.classList.contains("alt-select")) {
             const select = document.getElementById(`id_select_${input.id.replace("id_", "")}`);
-
-            console.log(select + "스타일 초기화하기");
+            // Not sure why this conditional exists
         }
 
         // else

@@ -152,14 +152,14 @@ function initCkEditor() {
 
                     textboxModel.on("change:data", () => {
                         const data = ckEditor.getData();
-                        const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
-                        const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
+                        // const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
+                        // const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
 
-                        if (hasYouTubeShareLink) {
-                            displayNoti(false, "RYS");
-                        } else if (hasYouTubeRegularLink) {
-                            displayNoti(true, "RYS");
-                        };
+                        // if (hasYouTubeShareLink) {
+                        //     displayNoti(false, "YOUTUBE_SHARE_LINK_REQUESTED");
+                        // } else if (hasYouTubeRegularLink) {
+                        //     displayNoti(true, "YOUTUBE_SHARE_LINK_REQUESTED");
+                        // };
 
                         if (!hasOnlyImages(data)) {
                             displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
@@ -171,7 +171,10 @@ function initCkEditor() {
                     });
 
                     ckElements.forEach((ck) => {
-                        ck.addEventListener("focus", () => { displayError(false, id_content) });
+                        ck.addEventListener("focus", () => {
+                            displayError(false, id_content);
+                            displayButtonMsg(false, id_create_or_update, "error");
+                        });
 
                         ck.addEventListener("blur", event => {
                             if (!ckElements.includes(event.relatedTarget)) {
@@ -179,6 +182,7 @@ function initCkEditor() {
                                     displayError(true, id_content, "empty");
                                 } else {
                                     displayError(false, id_content);
+                                    displayButtonMsg(false, id_create_or_update, "error");
                                 };
                             };
                         });
@@ -200,7 +204,10 @@ function initCkEditor() {
                             };
                         });
 
-                        ck.addEventListener("click", () => { displayError(false, id_content) });
+                        ck.addEventListener("click", () => {
+                            displayError(false, id_content);
+                            displayButtonMsg(false, id_create_or_update, "error");
+                        });
 
                         eventTypes.forEach(type => {
                             ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
@@ -626,6 +633,7 @@ function initForm() {
     });
 
     watchdog.editor.setData("");
+    id_content.value = "";
     id_file.value = null;
     class_files.forEach(file => { file.remove() });
     attachedFiles.length = 0;
