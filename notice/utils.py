@@ -43,22 +43,25 @@ def is_description_text_included(content: str):
     return result
 
 
-def is_not_swearing(title_or_content: str):
-    prompt = [
-        {
-            "type": "text",
-            "text": f"'{title_or_content}'에 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는 내용이 있는지 'True' 또는 'False'로만 답해줘.",
-        }
-    ]
+def is_not_swearing(slug_or_title: str):
+    system_message = {
+        "role": "system",
+        "content": "You are a moderation expert.",
+    }
 
-    openai_response = chat_gpt("3.5-turbo", prompt)
+    user_message = {
+        "role": "user",
+        "content": f"Could the phrase '{slug_or_title}' be construed as violent, sexually explicit, or sexist?",
+    }
 
-    if "False" in openai_response:
+    openai_response = chat_gpt("4o-mini", system_message, user_message)
+
+    if "false" in openai_response.lower():
         result = True
-    elif "True" in openai_response:
+    elif "true" in openai_response.lower():
         result = False
     else:
-        result = True
+        result = False
 
     return result
 
@@ -134,14 +137,17 @@ def create_hashtag(content):
         .replace("   ", " ")
     )
 
-    prompt = [
-        {
-            "type": "text",
-            "text": f"{content}\n위 글의 핵심 주제를 최소 1개 ~ 최대 3개의 해시태그로 만들어줘. 반드시 최소 1개 ~ 최대 3개여야 해. 그리고 1~3개를 오직 ' '(띄어쓰기)로만 구분해줘. '#'(해시) 외에 다른 기호는 절대 사용하지 마.",
-        }
-    ]
+    system_message = {
+        "role": "system",
+        "content": "You are an expert in extracting keywords from the text. You are obligated to extract keywords and list them separated by hashtags.",
+    }
 
-    keywords = chat_gpt("3.5-turbo", prompt)
+    user_message = {
+        "role": "user",
+        "content": f"Extract a minimum of one and a maximum of three keywords that penetrate the core topic of this article, and list them separated by hashtags. There must be a minimum of one and a maximum of three, and only ' ' (space) between them. Never use any symbols other than '#' (hash). {content}",
+    }
+
+    keywords = chat_gpt("4o-mini", system_message, user_message)
 
     if keywords == "":
         okt = Okt()

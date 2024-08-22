@@ -1730,7 +1730,7 @@ function updateForm(action, datasetObj = null) {
         if (userName.length >= 5) {
             id_signature_canvas_help.innerText = `${userName}님의 성명 첫 다섯 글자 '${userName.slice(0, 5)}'${matchJosa(userName[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
         } else {
-            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 인식될 경우 예약이 불가할 수 있어요.";
+            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 인식될 경우 재서명이 요구될 수 있어요.";
         };
     }
 

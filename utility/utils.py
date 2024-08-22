@@ -265,7 +265,7 @@ def remind_facility_use_end(request):
         }
 
         send_sms(data)
-    
+
     return HttpResponse(f"{len(target_facility_request_list)}")
 
 
@@ -386,7 +386,7 @@ def update_subject(request):
 
     # WebDriver setup (using Selenium Wire)
     service = Service(ChromeDriverManager().install())
-    
+
     driver = webdriver.Chrome(
         service=service,
         options=chrome_options,
@@ -514,7 +514,7 @@ def update_subject(request):
         current_month = current.month
         semester = "1학기" if current_month < 7 else "2학기"
         semester_num = "01" if current_month < 7 else "02"
-        
+
         semester_input = wait.until(
             EC.presence_of_element_located((By.XPATH, "//input[@aria-label='학기']"))
         )
@@ -570,7 +570,9 @@ def update_subject(request):
                     ),
                 }
 
-                with open(f"subject/{current_year}{semester_num}.json", "w", encoding="utf-8") as f:
+                with open(
+                    f"subject/{current_year}{semester_num}.json", "w", encoding="utf-8"
+                ) as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
 
                 return data
@@ -788,7 +790,7 @@ def get_subject(base_date: str):
         key = (
             subject["SBJ_NM"],
             subject["SBJ_ENG_NM"],
-            subject["SBJ_NO"], # subject["DVCLS"] is the serial number for the subject
+            subject["SBJ_NO"],  # subject["DVCLS"] is the serial number for the subject
             subject["OBJ_SCHGRD"],
         )
 
@@ -955,7 +957,7 @@ def reg_test(value: str, type: str):
     return result
 
 
-def chat_gpt(model: str, prompt: list):
+def chat_gpt(model: str, system_message: dict, user_message: dict):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
@@ -964,10 +966,12 @@ def chat_gpt(model: str, prompt: list):
     data = {
         "model": f"gpt-{model}",
         "messages": [
+            system_message,
             {
-                "role": "user",
-                "content": prompt,
-            }
+                "role": "system",
+                "content": "You have a very short amount of time, so you can only answer with a simple 'True' or 'False' - no vague answers like 'but' or 'however' are allowed.",
+            },
+            user_message,
         ],
         "temperature": 0,
     }
@@ -1427,7 +1431,9 @@ def airtable(
                             "Start equipment hour", None
                         ),
                         "end_equipment_hour": fields.get("End equipment hour", None),
-                        "is_after_end_datetime": fields.get("Is after end datetime", False),
+                        "is_after_end_datetime": fields.get(
+                            "Is after end datetime", False
+                        ),
                         "user": user,
                         "public_url": fields.get("Public URL", None),
                         "public_id": fields.get("Public ID", None),

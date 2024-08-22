@@ -123,6 +123,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - CREATE_NOTICE
         - UPDATE_NOTICE
         - DELETE_NOTICE
+        - PROCESSING_SKIPPED
         - TEST
     - channel | `str`:
         - DEV: Development
@@ -133,11 +134,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     success_emoji = "✅"
     failure_emoji = "❌"
     warning_emoji = "⚠️"
+    status_emoji = "❓"
+    status_in_kor = "알 수 없음"
 
     if data is not None:
         status = data.get("status", None)
-        status_emoji = success_emoji if status == "DONE" else failure_emoji
-        status_in_kor = "완료" if status == "DONE" else "실패"
+        if status is not None:
+            status_emoji = success_emoji if status == "DONE" else failure_emoji
+            status_in_kor = "완료" if status == "DONE" else "실패"
 
     webhook = get_webhook(channel)
     default_picture_url = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
@@ -816,6 +820,22 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": f"ㆍNotion URL: {notion_url}\nㆍ제목: {title}\nㆍ범주: {category}\nㆍ키워드: {keyword}",
         }
+
+    # msg_type: "PROCESSING_SKIPPED"
+    elif msg_type == "PROCESSING_SKIPPED":
+        reason = data.get("reason", "Unknown")
+        function_name = data.get("function_name", "Unknown")
+        description = f"ㆍ발생 이유: {reason}\nㆍ함수 이름: {function_name}"
+
+        content = {
+            "important": True,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{warning_emoji} 처리 생략 발생",
+            "url": "",
+            "thumbnail_url": "",
+            "description": description,
+        }
     
     # msg_type: "TEST"
     elif msg_type == "TEST":
@@ -826,7 +846,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{success_emoji} 테스트 메시지 전송 완료",
             "url": "",
             "thumbnail_url": "",
-            "description": "테스트 메시지",
+            "description": "테스트 메시지입니다.",
         }
 
     if not settings.IS_PRODUCTION:

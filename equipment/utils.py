@@ -295,10 +295,15 @@ def is_within_limits(
 def is_invalid_signature(signature_bs64_encoded_data, student_name):
     image_url = f"data:image/png;base64,{signature_bs64_encoded_data}"
 
-    prompt = [
+    system_message = {
+        "role": "system",
+        "content": "You're an expert at appraising handwriting.",
+    }
+
+    user_message_content = [
         {
             "type": "text",
-            "text": f"이 이미지에 포함된 한글이 '{student_name}' 문자열과 동일한지 'True' 또는 'False'로만 답해줘.",
+            "text": f"Is this signature from '{student_name}' and if so, would it be recognizable to a third party?",
         },
         {
             "type": "image_url",
@@ -306,11 +311,16 @@ def is_invalid_signature(signature_bs64_encoded_data, student_name):
         },
     ]
 
-    openai_response = chat_gpt("4o", prompt)
+    user_message = {
+        "role": "user",
+        "content": user_message_content,
+    }
 
-    if "True" in openai_response:
+    openai_response = chat_gpt("4o", system_message, user_message)
+
+    if "true" in openai_response.lower():
         result = False
-    elif "False" in openai_response:
+    elif "false" in openai_response.lower():
         result = True
     else:
         result = True

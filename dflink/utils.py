@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
 from utility.utils import reg_test, set_headers, chat_gpt, short_io, notion
+from googlesearch import search
 import requests, json
 
 #
@@ -37,7 +38,7 @@ def delete_expired_dflink(request):
             expired_dflink_list.append(expired_dflink)
             url = f"https://api.short.io/links/{link_id}"
             requests.delete(url, headers=set_headers("SHORT_IO"))
-    
+
     data = {"expired_dflink_list": expired_dflink_list}
     json_data = json.dumps(data, indent=4)
 
@@ -63,6 +64,39 @@ def has_www(target_url: str):
         result = False
 
     return result
+
+
+def search_website_content(url):
+    search_result_list = list(search(url, num_results=5))
+    content_list = []
+
+    for result_url in search_result_list:
+        response = requests.get(result_url)
+
+        if response.status_code == 200:
+            content_list.append(response.text[:1000])
+
+    return content_list
+
+
+def check_harmful_content(content_list: list):
+    response_list = []
+
+    for content in content_list:
+        system_message = {
+            "role": "system",
+            "content": "You are an expert in determining the harmfulness of websites.",
+        }
+
+        user_message = {
+            "role": "user",
+            "content": f"Is the website absolutely harmful to the public? {content}",
+        }
+
+        openai_response = chat_gpt("4o-mini", system_message, user_message)
+        response_list.append(openai_response)
+
+    return response_list
 
 
 def is_correct_url(target_url: str):
@@ -144,52 +178,57 @@ def is_listed(target_url: str):
     return result
 
 
-def is_well_known(target_url: str):
-    if "://" in target_url:
-        target_url = urlparse(target_url).netloc
+# def is_well_known(target_url: str):
+#     if "://" in target_url:
+#         target_url = urlparse(target_url).netloc
 
-    prompt = [
-        {
-            "type": "text",
-            "text": f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.",
-        }
-    ]
+#     prompt = [
+#         {
+#             "type": "text",
+#             "text": f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.",
+#         }
+#     ]
 
-    openai_response = chat_gpt("3.5-turbo", prompt)
+#     openai_response = chat_gpt("4o-mini", prompt)
 
-    if "True" in openai_response:
+#     if "True" in openai_response:
+#         result = True
+#     elif "False" in openai_response:
+#         if not has_www(target_url):
+#             target_url = f"www.{target_url}"
+#             result = is_well_known(target_url)
+#         else:
+#             result = False
+#     else:
+#         result = False
+
+#     return result
+
+
+def is_harmless(request, target_url: str):
+    try:
+        if "://" in target_url:
+            target_url = urlparse(target_url).netloc
+        
+        search_result_list = list(search(target_url, num_results=5))
+        analysis_result_list = check_harmful_content(search_result_list)
+
+        for result in analysis_result_list:
+            if "true" in result.lower():
+                result = False
+                break
+            elif "false" in result.lower():
+                result = True
+                break
+    except Exception as e:
         result = True
-    elif "False" in openai_response:
-        if not has_www(target_url):
-            target_url = f"www.{target_url}"
-            result = is_well_known(target_url)
-        else:
-            result = False
-    else:
-        result = False
-
-    return result
-
-
-def is_harmless(target_url: str):
-    if "://" in target_url:
-        target_url = urlparse(target_url).netloc
-
-    prompt = [
-        {
-            "type": "text",
-            "text": f"{target_url}\n전혀 유해하지 않은 안전한 사이트인지 'True' 또는 'False'로만 답해줘.",
+        
+        data = {
+            "reason": e,
+            "function_name": "is_harmless",
         }
-    ]
 
-    openai_response = chat_gpt("3.5-turbo", prompt)
-
-    if "True" in openai_response:
-        result = True
-    elif "False" in openai_response:
-        result = False
-    else:
-        result = False
+        send_msg(request, "PROCESSING_SKIPPED", "DEV", data)
 
     return result
 
@@ -233,18 +272,21 @@ def is_correct_expiration_date(expiration_date: str):
 
 
 def is_not_swearing(slug_or_title: str):
-    prompt = [
-        {
-            "type": "text",
-            "text": f"'{slug_or_title}'이라는 말이 폭력적인 표현, 선정적인 표현, 성차별적인 표현으로 해석될 수 있는지 'True' 또는 'False'로만 답해줘.",
-        }
-    ]
+    system_message = {
+        "role": "system",
+        "content": "You are a moderation expert.",
+    }
 
-    openai_response = chat_gpt("3.5-turbo", prompt)
+    user_message = {
+        "role": "user",
+        "content": f"Could the phrase '{slug_or_title}' be construed as violent, sexually explicit, or sexist?",
+    }
 
-    if "False" in openai_response:
+    openai_response = chat_gpt("4o-mini", system_message, user_message)
+
+    if "false" in openai_response.lower():
         result = True
-    elif "True" in openai_response:
+    elif "true" in openai_response.lower():
         result = False
     else:
         result = False
@@ -352,16 +394,16 @@ def moderate_input_data(request):
     slug = request.GET["slug"]
     title = request.GET["title"]
 
-    if not is_listed(target_url) and not is_well_known(target_url):
-        status = "FAIL"
-        reason = "allowlist 등재 필요"
-        msg = "이 대상 URL은 현재 사용할 수 없어요."
-        element = "id_target_url"
+    # if not is_listed(target_url) and not is_well_known(target_url):
+    #     status = "FAIL"
+    #     reason = "Allowlist 등재 필요"
+    #     msg = "이 대상 URL은 현재 사용할 수 없어요."
+    #     element = "id_target_url"
 
-    elif not is_listed(target_url) and not is_harmless(target_url):
+    if not is_listed(target_url) and not is_harmless(request, target_url):
         status = "FAIL"
         reason = "유해 사이트"
-        msg = "이 대상 URL은 사용할 수 없어요."
+        msg = "이 대상 URL은 현재 사용할 수 없어요."
         element = "id_target_url"
 
     elif not is_not_swearing(slug):
