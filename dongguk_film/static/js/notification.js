@@ -37,8 +37,9 @@ function editXDate(notiType, bool) {
  * - YOUTUBE_SHARE_LINK_REQUESTED
  * - IMAGE_ALT_TEXT_REQUIRED
  * - IMAGE_DESCRIPTION_TEXT_REQUIRED
- * - EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED
- * - EXTRACTING_TEXT_FROM_IMAGE_FAILED
+ * - EXTRACTING_TEXT_SUCCEEDED
+ * - NO_IMAGES_FOUND
+ * - EXTRACTING_TEXT_FAILED
  * - `LDF`: Limit Duplicate Files
  * - `LFS`: Limit File Size
  * - `NUC`: Notify Under Construction
@@ -322,13 +323,19 @@ function displayNoti(bool, notiType, param = null) {
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'IMAGE_DESCRIPTION_TEXT_REQUIRED'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         }
         
-        else if (notiType === "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED") {
+        else if (notiType === "EXTRACTING_TEXT_SUCCEEDED") {
             notiIcon = textIcon;
             notiTitle = "텍스트 추출이 완료되었어요.";
             notiContent = "부정확한 내용이 포함되어 있을 수 있으니 반드시 추출 결과를 검토해주세요.";
         }
+
+        else if (notiType === "NO_IMAGES_FOUND") {
+            notiIcon = infoIcon;
+            notiTitle = "이미지가 없는 것 같아요.";
+            notiContent = "텍스트를 추출할 이미지를 찾지 못했어요. 이미지를 새로 삽입한 후 다시 시도해주세요.";
+        }
         
-        else if (notiType === "EXTRACTING_TEXT_FROM_IMAGE_FAILED") {
+        else if (notiType === "EXTRACTING_TEXT_FAILED") {
             notiIcon = exclamationIcon;
             notiTitle = "텍스트 추출에 실패했어요.";
             notiContent = "이미지를 직접 내려받아 삽입한 후 다시 시도해주세요.";

@@ -502,13 +502,16 @@ def notice(request):
         if pass_count != 0:
             if total_num_of_img_src != pass_count:
                 status = "DONE"
-                reason = f"총 {total_num_of_img_src}개 중 {pass_count}개 이미지 내 텍스트 추출 성공"
+                reason = f"EXTRACTING_TEXT_SUCCEEDED_FOR_{pass_count}_OUT_OF_{total_num_of_img_src}_IMAGES"
             elif total_num_of_img_src == pass_count:
                 status = "DONE"
-                reason = f"총 {pass_count}개 이미지 내 텍스트 추출 성공"
+                reason = f"EXTRACTING_TEXT_SUCCEEDED_FOR_{pass_count}_IMAGES"
+        elif len(b64_img_src_list) == 0 and len(bin_img_src_list) == 0:
+            status = "FAIL"
+            reason = "NO_IMAGES_FOUND"
         elif pass_count == 0:
             status = "FAIL"
-            reason = "이미지 내 텍스트 추출 실패"
+            reason = "EXTRACTING_TEXT_FAILED"
 
         response = {
             "id": id,

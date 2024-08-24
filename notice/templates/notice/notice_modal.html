@@ -87,16 +87,16 @@
                                             <div class="flex flex-1">
                                                 <span class="flex flex-col">
                                                     <span id="id_category_serv_label"
-                                                        class="block text-sm font-medium text-gray-900">서비스</span>
+                                                          class="block text-sm font-medium text-gray-900">서비스</span>
                                                     <span id="id_category_serv_descr"
-                                                        class="mt-1 flex items-center text-sm text-gray-500">디닷에프 서비스 관련 공지사항</span>
+                                                          class="mt-1 flex items-center text-sm text-gray-500">디닷에프 서비스 관련 공지사항</span>
                                                     <p id="id_category_serv_error" class="mt-2 text-flamingo-600" hidden></p>
                                                 </span>
                                             </div>
                                             <svg class="h-5 w-5 text-flamingo"
-                                                viewBox="0 0 16 20"
-                                                fill="currentColor"
-                                                aria-hidden="true">
+                                                 viewBox="0 0 16 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="pointer-events-none absolute -inset-px rounded-md"
@@ -140,8 +140,13 @@
                                     <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                                 </fieldset>
                                 <div>
-                                    <label for="id_content"
-                                           class="block text-sm font-medium leading-6 text-gray-900">내용</label>
+                                    <div class="flex justify-between items-center">
+                                        <label for="id_content"
+                                               class="block text-sm font-medium leading-6 text-gray-900">내용</label>
+                                        <span class="class-extract text-sm text-gray-500 cursor-pointer rounded-md hover:underline focus:df-focus-ring-offset-white"
+                                              tabindex="0"
+                                              aria-disabled="false">이미지 내 텍스트 추출하기</span>
+                                    </div>
                                     <div class="mt-2 rounded-md shadow-sm" id="id_content_container">
                                         <textarea id="id_content" class="class-first" required></textarea>
                                     </div>
@@ -195,7 +200,9 @@
                                                 </svg>
                                             </div>
                                             <div class="ml-3">
-                                                <h3 class="text-sm font-medium text-flamingo-800"><span class="class-keyword">작성하기</span> 전 꼭 읽어주세요.</h3>
+                                                <h3 class="text-sm font-medium text-flamingo-800">
+                                                    <span class="class-keyword">작성하기</span> 전 꼭 읽어주세요.
+                                                </h3>
                                                 <div class="mt-2 text-sm text-flamingo-700">
                                                     <ul role="list" class="list-disc space-y-1 pl-5">
                                                         <li>제목과 내용에 개인정보가 포함되지 않도록 유의해주세요.</li>

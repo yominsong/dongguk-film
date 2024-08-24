@@ -112,6 +112,32 @@ function hasOnlyImages(htmlData) {
     return false;
 }
 
+function executeWhenUserTryToExtractText() {
+    const class_extracts = document.querySelectorAll(".class-extract");
+
+    if (class_extracts.length === 0) return;
+
+    class_extracts.forEach(extract => {
+        ["click", "keyup"].forEach(type => {
+            extract.addEventListener(type, event => {
+                if ((type === "click" || event.key === "Enter" || event.key === " ") &&
+                    (!extract.classList.contains("cursor-not-allowed") && extract.getAttribute("aria-disabled") === "false")) {
+                    displayError(false, id_content);
+                    displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
+                    requestOcrNotice();
+                    extract.classList.replace("cursor-pointer", "cursor-not-allowed");
+                    extract.classList.remove("hover:underline");
+                    extract.classList.remove("focus:df-focus-ring-offset-white")
+                    extract.setAttribute("aria-disabled", "true");
+                    extract.tabIndex = "-1";
+                };
+            });
+        });
+    });
+}
+
+executeWhenUserTryToExtractText();
+
 function executeWhenUserHasNoPermission() {
     const class_no_permissions = document.querySelectorAll(".class-no-permission");
 
@@ -152,14 +178,6 @@ function initCkEditor() {
 
                     textboxModel.on("change:data", () => {
                         const data = ckEditor.getData();
-                        // const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
-                        // const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
-
-                        // if (hasYouTubeShareLink) {
-                        //     displayNoti(false, "YOUTUBE_SHARE_LINK_REQUESTED");
-                        // } else if (hasYouTubeRegularLink) {
-                        //     displayNoti(true, "YOUTUBE_SHARE_LINK_REQUESTED");
-                        // };
 
                         if (!hasOnlyImages(data)) {
                             displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
@@ -234,70 +252,6 @@ function initCkEditor() {
                     previewsInData: true
                 }
             })
-            // .then(editor => {
-            //     ckEditor = editor;
-            //     ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
-            //     toolbarViewRoot = ckEditor.ui.view.toolbar.element;
-            //     textboxModel = ckEditor.model.document;
-            //     textboxViewRoot = ckEditor.editing.view.getDomRoot();
-
-            //     textboxModel.on("change:data", () => {
-            //         const data = ckEditor.getData();
-            //         const hasYouTubeShareLink = data.match(/https:\/\/youtu\.be\/([\w-]+)/);
-            //         const hasYouTubeRegularLink = data.match(/https:\/\/www\.youtube\.com\/watch\?v=([\w-]+)/);
-
-            //         if (hasYouTubeShareLink) {
-            //             displayNoti(false, "RYS");
-            //         } else if (hasYouTubeRegularLink) {
-            //             displayNoti(true, "RYS");
-            //         };
-
-            //         if (!hasOnlyImages(data)) {
-            //             displayNoti(false, "SDI");
-            //         } else if (hasOnlyImages(data)) {
-            //             displayNoti(true, "SDI");
-            //         };
-
-            //         id_content.value = ckEditor.getData();
-            //     });
-
-            //     ckElements.forEach((ck) => {
-            //         ck.addEventListener("focus", () => { displayError(false, id_content) });
-
-            //         ck.addEventListener("blur", event => {
-            //             if (!ckElements.includes(event.relatedTarget)) {
-            //                 if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
-            //                     displayError(true, id_content, "empty");
-            //                 } else {
-            //                     displayError(false, id_content);
-            //                 };
-            //             };
-            //         });
-
-            //         ck.addEventListener("keydown", event => {
-            //             if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
-            //                 const id_category_error = code(id_category, "_error");
-
-            //                 if (id_category_error.innerText.length === 0) {
-            //                     setTimeout(() => {
-            //                         toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-            //                         displayError(false, id_category);
-            //                     });
-            //                 } else {
-            //                     setTimeout(() => {
-            //                         toolbarViewRoot.querySelector(".ck-font-size-dropdown").querySelector("button").focus();
-            //                     });
-            //                 };
-            //             };
-            //         });
-
-            //         ck.addEventListener("click", () => { displayError(false, id_content) });
-
-            //         eventTypes.forEach(type => {
-            //             ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
-            //         });
-            //     });
-            // })
             .catch(err => {
                 console.error(err.stack);
             });
@@ -1088,11 +1042,10 @@ function initRequest() {
                             displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
                             displayButtonMsg(false, id_create_or_update, "error");
                             id_create_or_update_spin.classList.remove("hidden");
-                            displayNoti(false, "RYS");
-                            displayNoti(false, "RAT");
-                            displayNoti(false, "RDI");
-                            displayNoti(false, "EIS");
-                            displayNoti(false, "EIF");
+                            displayNoti(false, "YOUTUBE_SHARE_LINK_REQUESTED");
+                            displayNoti(false, "EXTRACTING_TEXT_SUCCEEDED");
+                            displayNoti(false, "NO_IMAGES_FOUND");
+                            displayNoti(false, "EXTRACTING_TEXT_FAILED");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
                         } else {
@@ -1131,11 +1084,10 @@ function initRequest() {
                             requestDeleteNotice();
                             displayButtonMsg(true, id_delete, "descr", "잠시만 기다려주세요.");
                             id_delete_spin.classList.remove("hidden");
-                            displayNoti(false, "RYS");
-                            displayNoti(false, "RAT");
-                            displayNoti(false, "RDI");
-                            displayNoti(false, "EIS");
-                            displayNoti(false, "EIF");
+                            displayNoti(false, "YOUTUBE_SHARE_LINK_REQUESTED");
+                            displayNoti(false, "EXTRACTING_TEXT_SUCCEEDED");
+                            displayNoti(false, "NO_IMAGES_FOUND");
+                            displayNoti(false, "EXTRACTING_TEXT_FAILED");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
                             isDoubleChecked = false;
