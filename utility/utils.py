@@ -61,9 +61,6 @@ NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", None)
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", None)
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
 
-ANTHROPIC = getattr(settings, "ANTHROPIC", None)
-ANTHROPIC_API_KEY = ANTHROPIC["API_KEY"]
-
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", None)
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", None)
 
