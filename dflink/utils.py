@@ -168,7 +168,7 @@ def is_listed(target_url: str):
         },
     }
 
-    url_list = notion("query", "db", data=data)
+    url_list = notion("query", "db", data)
 
     try:
         result = True if target_url in url_list else False

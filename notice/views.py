@@ -4,7 +4,19 @@ from django.http import Http404
 from django.contrib.auth.models import User
 from utility.img import get_hero_img
 from utility.utils import notion, convert_datetime
+from bs4 import BeautifulSoup
 import re, ast, random
+
+#
+# Sub functions
+#
+
+
+def remove_html_tags(html_string: str) -> str:
+    soup = BeautifulSoup(html_string, "html.parser")
+
+    return soup.get_text()
+
 
 #
 # Main functions
@@ -33,6 +45,7 @@ def notice(request):
         "학교현장실습",
         "캡스톤디자인",
         "전주국제영화제",
+        "전주국제영화제 ACADEMY 배지",
         "교직과정",
         "계절학기",
         "졸업논문",
@@ -62,6 +75,14 @@ def notice(request):
                 ).metadata.name
             )
 
+            data = {"page_id": notice["page_id"]}
+
+            content = (
+                notion("retrieve", "block_children", data)[1]
+            )
+
+            content_search = remove_html_tags(content).lower().replace(" ", "")
+
             img_key_list_search = "".join(
                 item.replace("_", "").lower() for item in notice.get("img_key_list", [])
             )
@@ -70,7 +91,10 @@ def notice(request):
                 for file in notice.get("file", [])
             )
             full_searchable_text = (
-                searchable_text + img_key_list_search + file_name_search
+                searchable_text
+                + img_key_list_search
+                + file_name_search
+                + content_search
             )
 
             if query in full_searchable_text:
@@ -151,7 +175,7 @@ def notice_detail(request, notice_id):
         except:
             file_string = None
             file_dict = None
-            
+
         listed_time = notice["properties"]["Listed time"]["created_time"]
         listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
 

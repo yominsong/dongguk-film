@@ -258,9 +258,9 @@ def extract_text_from_img(type, img_src):
     extracted_text = ""
 
     if type == "b64":
-        response = ncp_clova("ocr", "b64_img", data=data)
+        response = ncp_clova("ocr", "b64_img", data)
     elif type == "bin":
-        response = ncp_clova("ocr", "bin_img", data=data)
+        response = ncp_clova("ocr", "bin_img", data)
 
     if response.status_code == 200:
         ocr_passed = True
@@ -340,7 +340,7 @@ def update_content_and_get_img_key_list(request):
             img_key = f"{generate_random_string(5)}_{img_name}"
 
             data = {"bin": src, "name": img_name, "key": img_key}
-            aws_s3("put", "object", data=data)
+            aws_s3("put", "object", data)
             img_key_list.append(img_key)
 
         content = replace_img_src_from_b64_to_bin(content, img_key_list)
@@ -356,7 +356,7 @@ def update_content_and_get_img_key_list(request):
         try:
             page_id = request.POST.get("page_id")
             data = {"page_id": page_id, "property_id": "yquB"}
-            old_img_key_str = notion("retrieve", "page_properties", data=data).json()[
+            old_img_key_str = notion("retrieve", "page_properties", data).json()[
                 "results"
             ][0]["rich_text"]["text"]["content"]
             old_img_key_list = ast.literal_eval(old_img_key_str)
@@ -364,7 +364,7 @@ def update_content_and_get_img_key_list(request):
             for old_img_key in old_img_key_list:
                 if old_img_key not in img_key_list:
                     data = {"key": old_img_key}
-                    aws_s3("delete", "object", data=data)
+                    aws_s3("delete", "object", data)
         except:
             pass
 
@@ -405,12 +405,12 @@ def get_file(request):
                 "name": file_dict["name"],
                 "key": file_dict["key"],
             }
-            aws_s3("put", "object", data=data)
+            aws_s3("put", "object", data)
 
     elif id == "update_notice":
         page_id = request.POST.get("page_id")
         data = {"page_id": page_id, "property_id": "B%5Dhc"}
-        response = notion("retrieve", "page_properties", data=data)
+        response = notion("retrieve", "page_properties", data)
 
         old_file_keys = set()
 
@@ -431,7 +431,7 @@ def get_file(request):
                 "key": file_dict["key"],
             }
             if file_dict["key"] not in old_file_keys:
-                aws_s3("put", "object", data=data)
+                aws_s3("put", "object", data)
 
     for file_dict in file_list:
         file_dict.pop("bin", None)
@@ -552,7 +552,7 @@ def notice(request):
                 "user": request.user.pk,
             }
 
-            response = notion("create", "page", data=data)
+            response = notion("create", "page", data)
 
             if response.status_code == 200:
                 status = "DONE"
@@ -592,11 +592,11 @@ def notice(request):
     # id: read_notice
     elif id == "read_notice":
         data = {"page_id": page_id, "property_id": "B%5Dhc"}
-        block_id_list, content = notion("retrieve", "block_children", data=data)
+        block_id_list, content = notion("retrieve", "block_children", data)
 
         try:
             file = ast.literal_eval(
-                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                notion("retrieve", "page_properties", data).json()["results"][0][
                     "rich_text"
                 ]["text"]["content"]
             )
@@ -648,13 +648,13 @@ def notice(request):
                 "file": file,
             }
 
-            response = notion("update", "page_properties", data=data)
+            response = notion("update", "page_properties", data)
 
             if response.status_code == 200:
-                response_list = notion("delete", "block", data=data)
+                response_list = notion("delete", "block", data)
 
                 if all(response.status_code == 200 for response in response_list):
-                    response = notion("append", "block_children", data=data)
+                    response = notion("append", "block_children", data)
 
                     if response.status_code == 200:
                         status = "DONE"
@@ -700,33 +700,33 @@ def notice(request):
         try:
             data = {"page_id": page_id, "property_id": "yquB"}
             old_img_key_list = ast.literal_eval(
-                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                notion("retrieve", "page_properties", data).json()["results"][0][
                     "rich_text"
                 ]["text"]["content"]
             )
 
             for old_img_key in old_img_key_list:
                 data = {"key": old_img_key}
-                aws_s3("delete", "object", data=data)
+                aws_s3("delete", "object", data)
         except:
             pass
 
         try:
             data = {"page_id": page_id, "property_id": "B%5Dhc"}
             old_file_list = ast.literal_eval(
-                notion("retrieve", "page_properties", data=data).json()["results"][0][
+                notion("retrieve", "page_properties", data).json()["results"][0][
                     "rich_text"
                 ]["text"]["content"]
             )
 
             for old_file in old_file_list:
                 data = {"key": old_file["key"]}
-                aws_s3("delete", "object", data=data)
+                aws_s3("delete", "object", data)
         except:
             pass
 
         data = {"page_id": page_id}
-        response = notion("delete", "page", data=data)
+        response = notion("delete", "page", data)
 
         if response.status_code == 200:
             status = "DONE"
