@@ -26,7 +26,7 @@ const allowedKeys = ["Enter", "Backspace", "Tab", "Shift", "Control", "Ctrl", "c
 
 const regHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/g;
 const regNotHangul = /[^ㄱ-ㅎㅏ-ㅣ가-힣]/g;
-const regNotLowerCaseRomanAndNumber = /[^a-z0-9]/g;
+const regNotLowerCaseRomanAndNumberAndHyphen = /[^a-z0-9-]/g;
 const regUpperCaseRoman = /[A-Z]/g;
 const regEmail = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/g;
 const regNotNumber = /[^0-9]/g;
@@ -346,7 +346,7 @@ function validate() {
         });
         onlySlugs.forEach(input => {
             input.addEventListener(type, () => {
-                input.value = input.value.replace(regNotLowerCaseRomanAndNumber, "");
+                input.value = input.value.replace(regNotLowerCaseRomanAndNumberAndHyphen, "");
                 input.value = input.value.replace(" ", "");
             });
         });
@@ -434,10 +434,10 @@ function controlDescr(input, event) {
 
     // only-slug
     if (input.classList.contains("only-slug")) {
-        if (regNotLowerCaseRomanAndNumber.test(input.value) ||
-            (regNotLowerCaseRomanAndNumber.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) === -1) ||
+        if (regNotLowerCaseRomanAndNumberAndHyphen.test(input.value) ||
+            (regNotLowerCaseRomanAndNumberAndHyphen.test(inputKeyChar) && allowedKeys.indexOf(inputKeyChar) === -1) ||
             (event.isComposing && allowedKeys.indexOf(inputKeyChar) === -1)) {
-            displayDescr(true, input, "only lower roman and number");
+            displayDescr(true, input, "only lower roman and number and hyphen");
         } else {
             displayDescr(false, input);
         };
@@ -472,7 +472,7 @@ function displayDescr(bool, input, descrType) {
     /* 
      * bool: Show/hide description
      * input: Target input
-     * descrType: "only hangul", "only number", "only lower roman and number", "no hangul", "no space"
+     * descrType: "only hangul", "only number", "only lower roman and number and hyphen", "no hangul", "no space"
      */
 
     let descrMsg = code(input, "_descr");
@@ -484,8 +484,8 @@ function displayDescr(bool, input, descrType) {
             sentence = "한글만 입력해주세요.";
         } else if (descrType === "only number") {
             sentence = "숫자만 입력해주세요.";
-        } else if (descrType === "only lower roman and number") {
-            sentence = "로마자 소문자, 숫자만 입력해주세요.";
+        } else if (descrType === "only lower roman and number and hyphen") {
+            sentence = "로마자 소문자, 숫자, 하이픈만 입력해주세요.";
         } else if (descrType === "no hangul") {
             sentence = "로마자, 숫자, 특수문자만 입력해주세요.";
         } else if (descrType === "no space") {
