@@ -4,7 +4,7 @@ from utility.msg import send_msg
 from utility.hangul import encode_hangul_to_url, decode_url_to_hangul
 from utility.utils import (
     generate_random_string,
-    chat_gpt,
+    gpt,
     notion,
     aws_s3,
     ncp_clova,
@@ -54,7 +54,7 @@ def is_not_swearing(slug_or_title: str):
         "content": f"Could the phrase '{slug_or_title}' be construed as violent, sexually explicit, or sexist?",
     }
 
-    openai_response = chat_gpt("4o-mini", system_message, user_message)
+    openai_response = gpt("4o-mini", system_message, user_message, True)
 
     if "false" in openai_response.lower():
         result = True
@@ -128,8 +128,8 @@ def moderate_input_data(request):
 
 def create_hashtag(content):
     keywords = ""
-
     soup = BeautifulSoup(content, "html.parser")
+
     content = (
         " ".join(soup.stripped_strings)
         .replace("\n", " ")
@@ -139,7 +139,7 @@ def create_hashtag(content):
 
     system_message = {
         "role": "system",
-        "content": "You are an expert in extracting keywords from the text. You are obligated to extract keywords and list them separated by hashtags.",
+        "content": "You are an expert at extracting keywords from text. You need to extract keywords and list them separated by hashtags as follows: #firstkeyword #secondkeyword #thirdkeyword",
     }
 
     user_message = {
@@ -147,7 +147,7 @@ def create_hashtag(content):
         "content": f"Extract a minimum of one and a maximum of three keywords that penetrate the core topic of this article, and list them separated by hashtags. There must be a minimum of one and a maximum of three, and only ' ' (space) between them. Never use any symbols other than '#' (hash). {content}",
     }
 
-    keywords = chat_gpt("4o-mini", system_message, user_message)
+    keywords = gpt("4o-mini", system_message, user_message)
 
     if keywords == "":
         okt = Okt()
@@ -265,23 +265,60 @@ def extract_text_from_img(type, img_src):
     if response.status_code == 200:
         ocr_passed = True
         fields = response.json()["images"][0]["fields"]
-        current_paragraph = "<p>"
 
         for field in fields:
             infer_text = field.get("inferText", "")
-            line_break = field.get("lineBreak", False)
-            current_paragraph += infer_text
+            extracted_text += infer_text + " "
+        
+        extracted_text = extracted_text.strip()
 
-            if line_break:
-                current_paragraph += "</p>"
-                extracted_text += current_paragraph
-                current_paragraph = "<p>"
-            else:
-                current_paragraph += " "
+        system_message = {
+            "role": "system",
+            "content": """
+                You're an expert at reconstructing embedded text within images into HTML.
 
-        if current_paragraph != "<p>":
-            current_paragraph += "</p>"
-            extracted_text += current_paragraph
+                Be absolutely sure to follow these points when working:
+                - Reorganize the given content into HTML that starts with <div> as it appears in the image.
+                - Convert as you see it, but make some configuration changes only if you think there's something that's not readable for the user.
+                - Convert URLs to <a> tags so that users can click on them.
+                - Do not use <head>, <body>, or <img>.
+                - Do not arbitrarily omit any characters when converting.
+                - Respond with code only, with no explanation. Do not include things like ```html'' in your answer.
+            """,
+        }
+
+        user_message_content = [
+            {
+                "type": "text",
+                "text": extracted_text,
+            },
+            {
+                "type": "image_url",
+                "image_url": {"url": img_src},
+            },
+        ]
+
+        user_message = {
+            "role": "user",
+            "content": user_message_content,
+        }
+
+        extracted_text = gpt("4o", system_message, user_message)
+        precaution = """
+            <table><tbody>
+                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
+                    <h2><span style="color:hsl(0, 75%, 60%);">유의 사항</span></h2>
+                    <div class="ck-table-column-resizer"></div>
+                </td></tr>
+                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출한 결과이며 일부 내용이 부정확할 수 있습니다.</strong></span></p>
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 추출 결과의 정확성을 보장하지 않으며 이에 대한 책임을 지지 않습니다.</strong></span></p>
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></p>
+                    <div class="ck-table-column-resizer"></div>
+                </td></tr>
+            </tbody></table>
+        """
+        extracted_text = f"{precaution}<p></p>{extracted_text}"
     else:
         ocr_passed = False
 

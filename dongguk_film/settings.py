@@ -83,6 +83,8 @@ OPENAI_ORG = get_secret("OPENAI_ORG")
 
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 
+ANTHROPIC = get_secret("ANTHROPIC")
+
 SHORT_IO_DOMAIN_ID = get_secret("SHORT_IO_DOMAIN_ID")
 
 SHORT_IO_API_KEY = get_secret("SHORT_IO_API_KEY")

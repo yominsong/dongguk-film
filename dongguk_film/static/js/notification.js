@@ -17,7 +17,7 @@ function editXDate(notiType, bool) {
 /**
  * @param {boolean} bool Show/hide the notification
  * @param {string} notiType Notification type
- * - `WIP`: Work In Progress
+ * - WORK_IN_PROGRESS
  * - `RLP`: Request Location Permission
  * - `RRL`: Request to Reload Location
  * - `CWF`: Complete Weather Fetch
@@ -174,7 +174,7 @@ function displayNoti(bool, notiType, param = null) {
         `;
 
         // all
-        if (notiType === "WIP") {
+        if (notiType === "WORK_IN_PROGRESS") {
             notiIcon = infoIcon;
             notiTitle = "잠시만 기다려주세요.";
             notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
@@ -318,14 +318,14 @@ function displayNoti(bool, notiType, param = null) {
         else if (notiType === "IMAGE_DESCRIPTION_TEXT_REQUIRED") {
             notiIcon = imageIcon;
             notiTitle = "내용에 텍스트를 포함해주세요.";
-            notiContent = "만약 이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
+            notiContent = "이미지에 텍스트가 포함되어 있다면 해당 내용을 입력해주세요.";
             notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayError(false, id_content); displayNoti(false, 'IMAGE_DESCRIPTION_TEXT_REQUIRED'); requestOcrNotice()">텍스트 추출하기<span aria-hidden="true"> →</span></span></div>`;
         }
         
         else if (notiType === "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED") {
             notiIcon = textIcon;
             notiTitle = "텍스트 추출이 완료되었어요.";
-            notiContent = "부정확한 결과가 포함되어 있을 수 있으니 유의해주세요.";
+            notiContent = "부정확한 내용이 포함되어 있을 수 있으니 반드시 추출 결과를 검토해주세요.";
         }
         
         else if (notiType === "EXTRACTING_TEXT_FROM_IMAGE_FAILED") {

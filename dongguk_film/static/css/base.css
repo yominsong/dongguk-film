@@ -84,7 +84,8 @@
         --tw-ring-color: inherit;
     }
 
-    10%, 90% {
+    10%,
+    90% {
         --tw-ring-color: rgb(241 89 34 / var(--tw-ring-opacity));
     }
 
@@ -139,6 +140,36 @@
 }
 
 /* CKEditor editor */
+.ck-content h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.ck-content h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.ck-content h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+}
+
+.ck-content h4 {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.ck-content h5 {
+    font-size: 0.83em;
+    font-weight: bold;
+}
+
+.ck-content h6 {
+    font-size: 0.67em;
+    font-weight: bold;
+}
+
 .ck.ck-editor__editable_inline {
     min-height: 150px !important;
     border-width: 0px !important;

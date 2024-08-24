@@ -140,10 +140,10 @@ function initCkEditor() {
     if (isUserAuthenticated) {
         window.watchdog = watchdog;
 
-        watchdog.setCreator( ( element, config ) => {
+        watchdog.setCreator((element, config) => {
             return CKSource.Editor
-                .create( element, config )
-                .then( editor => {
+                .create(element, config)
+                .then(editor => {
                     ckEditor = editor;
                     ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
                     toolbarViewRoot = ckEditor.ui.view.toolbar.element;
@@ -164,6 +164,8 @@ function initCkEditor() {
                         if (!hasOnlyImages(data)) {
                             displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
                         } else if (hasOnlyImages(data)) {
+                            displayNoti(false, "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED");
+                            displayNoti(false, "EXTRACTING_TEXT_FROM_IMAGE_FAILED");
                             displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
                         };
 
@@ -215,12 +217,12 @@ function initCkEditor() {
                     });
 
                     return editor;
-                } );
-        } );
+                });
+        });
 
-        watchdog.setDestructor( editor => {
+        watchdog.setDestructor(editor => {
             return editor.destroy();
-        } );
+        });
 
         watchdog
             .create(document.querySelector("#id_content"), {
@@ -961,7 +963,7 @@ function requestOcrNotice() {
     request.headers = null;
     displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
     displayButtonMsg(false, id_create_or_update, "error");
-    displayNoti(false, "RDI");
+    displayNoti(true, "WORK_IN_PROGRESS", "텍스트 추출");
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);
@@ -1052,7 +1054,17 @@ function requestDeleteNotice() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         freezeForm(false);
-        
+
+        const ckContent = document.querySelector(".ck-content");
+
+        if (ckContent) {
+            const links = ckContent.querySelectorAll("a");
+
+            links.forEach(link => {
+                link.setAttribute("target", "_blank");
+            });
+        };
+
         if (id_modal_container !== null) {
             const class_firsts = document.querySelectorAll(".class-first");
 

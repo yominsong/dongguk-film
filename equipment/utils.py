@@ -9,7 +9,7 @@ from utility.utils import (
     get_equipment_data,
     get_subject,
     find_instructor,
-    chat_gpt,
+    gpt,
     airtable,
     convert_datetime,
 )
@@ -316,7 +316,7 @@ def is_invalid_signature(signature_bs64_encoded_data, student_name):
         "content": user_message_content,
     }
 
-    openai_response = chat_gpt("4o", system_message, user_message)
+    openai_response = gpt("4o", system_message, user_message, True)
 
     if "true" in openai_response.lower():
         result = False

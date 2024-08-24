@@ -747,6 +747,7 @@ function handleAjaxCallback(response) {
         if (response.status === "DONE") {
             watchdog.editor.setData(response.content);
             watchdog.editor.disableReadOnlyMode("id_content");
+            displayNoti(false, "WORK_IN_PROGRESS");
             displayNoti(true, "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED");
         } else if (response.status === "FAIL") {
             displayNoti(true, "EXTRACTING_TEXT_FROM_IMAGE_FAILED");

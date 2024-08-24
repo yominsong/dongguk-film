@@ -61,6 +61,9 @@ NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", None)
 OPENAI_ORG = getattr(settings, "OPENAI_ORG", None)
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
 
+ANTHROPIC = getattr(settings, "ANTHROPIC", None)
+ANTHROPIC_API_KEY = ANTHROPIC["API_KEY"]
+
 SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", None)
 SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", None)
 
@@ -892,7 +895,7 @@ def find_instructor(purpose: str, base_date: str):
 def set_headers(type: str):
     if type == "RANDOM":
         headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
-    elif type == "OPEN_AI":
+    elif type == "OPENAI":
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {OPENAI_API_KEY}",
@@ -957,28 +960,32 @@ def reg_test(value: str, type: str):
     return result
 
 
-def chat_gpt(model: str, system_message: dict, user_message: dict):
+def gpt(model: str, system_message: dict, user_message: dict, true_or_false=False):
     openai.organization = OPENAI_ORG
     openai.api_key = OPENAI_API_KEY
     openai.Model.list()
+    message_list = [system_message]
 
+    if true_or_false:
+        additional_system_message = {
+            "role": "system",
+            "content": "You have a very short amount of time, so you can only answer with a simple 'True' or 'False' - no vague answers like 'but' or 'however' are allowed.",
+        }
+
+        message_list.append(additional_system_message)
+
+    message_list.append(user_message)
     url = "https://api.openai.com/v1/chat/completions"
+
     data = {
         "model": f"gpt-{model}",
-        "messages": [
-            system_message,
-            {
-                "role": "system",
-                "content": "You have a very short amount of time, so you can only answer with a simple 'True' or 'False' - no vague answers like 'but' or 'however' are allowed.",
-            },
-            user_message,
-        ],
+        "messages": message_list,
         "temperature": 0,
     }
 
     try:
         openai_response = requests.post(
-            url, headers=set_headers("OPEN_AI"), data=json.dumps(data)
+            url, headers=set_headers("OPENAI"), data=json.dumps(data)
         ).json()["choices"][0]["message"]["content"]
     except:
         openai_response = ""

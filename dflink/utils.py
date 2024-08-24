@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
-from utility.utils import reg_test, set_headers, chat_gpt, short_io, notion
+from utility.utils import reg_test, set_headers, gpt, short_io, notion
 from googlesearch import search
 import requests, json
 
@@ -93,7 +93,7 @@ def check_harmful_content(content_list: list):
             "content": f"Is the website absolutely harmful to the public? {content}",
         }
 
-        openai_response = chat_gpt("4o-mini", system_message, user_message)
+        openai_response = gpt("4o-mini", system_message, user_message, True)
         response_list.append(openai_response)
 
     return response_list
@@ -282,7 +282,7 @@ def is_not_swearing(slug_or_title: str):
         "content": f"Could the phrase '{slug_or_title}' be construed as violent, sexually explicit, or sexist?",
     }
 
-    openai_response = chat_gpt("4o-mini", system_message, user_message)
+    openai_response = gpt("4o-mini", system_message, user_message, True)
 
     if "false" in openai_response.lower():
         result = True
