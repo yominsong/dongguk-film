@@ -7,6 +7,7 @@ d_dot_f/static/css/output.css
 
 ### Secrets ###
 secrets.json
+subject/
 
 ### Static JSON ###
 dongguk_film/static/json/*.json
