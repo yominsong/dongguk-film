@@ -14,8 +14,6 @@ from .img import save_hero_img
 from .msg import send_msg
 from .sms import send_sms
 from .mail import send_mail
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
 from dateutil import parser
 from seleniumwire import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -67,25 +65,15 @@ SHORT_IO = getattr(settings, "SHORT_IO", None)
 SHORT_IO_DOMAIN_ID = SHORT_IO["DOMAIN_ID"]
 SHORT_IO_API_KEY = SHORT_IO["API_KEY"]
 
-GCP_SA = getattr(settings, "GCP_SA", None)
-GCP_SA_CREDS = GCP_SA["CREDS"]
-GCP_SA_SCOPES = GCP_SA["SCOPES"]
-
-GCP_SA_CREDS = service_account.Credentials.from_service_account_info(
-    GCP_SA_CREDS, scopes=[GCP_SA_SCOPES["DRIVE"]]
-)
-
-GOOGLE_DRIVE = build("drive", "v3", credentials=GCP_SA_CREDS)
-
 AWS = getattr(settings, "AWS", None)
 AWS_ACCESS_KEY_ID = AWS["ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = AWS["SECRET_ACCESS_KEY"]
-AWS_REGION_NAME = AWS["REGION_NAME"]
+
 AWS_S3 = boto3.client(
     "s3",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    region_name=AWS_REGION_NAME,
+    region_name="ap-northeast-2",
 )
 
 #
@@ -1144,15 +1132,17 @@ def airtable(
 
     # action: create / target: record
     if action == "create" and target == "record":
-        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).create(
-            fields=params.get("fields", None)
-        )
+        record = AIRTABLE_API.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).create(fields=params.get("fields", None))
 
         result = record
 
     # action: get / target: record
     elif action == "get" and target == "record":
-        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
+        record = AIRTABLE_API.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).get(
             record_id=params.get("record_id", None),
         )
 
@@ -1366,7 +1356,9 @@ def airtable(
 
     # action: get_all / target: records
     elif action == "get_all" and target == "records":
-        records = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).all(
+        records = AIRTABLE_API.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).all(
             view=params.get("view", None),
             fields=params.get("fields", None),
             formula=params.get("formula", None),
@@ -1744,9 +1736,9 @@ def airtable(
         record_id = params.get("record_id", None)
         fields = params.get("fields", None)
 
-        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).update(
-            record_id, fields
-        )
+        record = AIRTABLE_API.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).update(record_id, fields)
 
         result = record
 
@@ -1764,9 +1756,9 @@ def airtable(
     elif action == "delete" and target == "record":
         record_id = params.get("record_id", None)
 
-        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).delete(
-            record_id
-        )
+        record = AIRTABLE_API.table(
+            AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
+        ).delete(record_id)
 
         result = record
 
@@ -2130,7 +2122,7 @@ def aws_s3(action: str, target: str, data: dict = None):
     return result
 
 
-def ncp_clova(action: str, target: str, data: dict = None):
+def clova_ocr(action: str, target: str, data: dict = None):
     if data != None:
         img_src = data.get("img_src", None)
 

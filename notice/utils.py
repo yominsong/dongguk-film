@@ -7,7 +7,7 @@ from utility.utils import (
     gpt,
     notion,
     aws_s3,
-    ncp_clova,
+    clova_ocr,
 )
 from konlpy.tag import Okt
 from collections import Counter
@@ -258,9 +258,9 @@ def extract_text_from_img(type, img_src):
     extracted_text = ""
 
     if type == "b64":
-        response = ncp_clova("ocr", "b64_img", data)
+        response = clova_ocr("ocr", "b64_img", data)
     elif type == "bin":
-        response = ncp_clova("ocr", "bin_img", data)
+        response = clova_ocr("ocr", "bin_img", data)
 
     if response.status_code == 200:
         ocr_passed = True
@@ -308,12 +308,12 @@ def extract_text_from_img(type, img_src):
         precaution = """
             <table><tbody>
                 <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
-                    <h2><span style="color:hsl(0, 75%, 60%);">유의 사항</span></h2>
+                    <h2><span style="color:hsl(0, 75%, 60%);">⚠️ 유의 사항</span></h2>
                     <div class="ck-table-column-resizer"></div>
                 </td></tr>
                 <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
                     <p><span style="color:hsl(0, 75%, 60%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며 일부 내용이 부정확할 수 있습니다.</strong></span></p>
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 추출 결과의 정확성을 보장하지 않으며 이에 대한 책임을 지지 않습니다.</strong></span></p>
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며 이에 대한 책임을 지지 않습니다.</strong></span></p>
                     <p><span style="color:hsl(0, 75%, 60%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></p>
                     <div class="ck-table-column-resizer"></div>
                 </td></tr>
@@ -479,7 +479,6 @@ def notice(request):
     if id == "ocr_notice":
         b64_img_src_list = find_in_content("b64_img_src_list", content)
         bin_img_src_list = find_in_content("bin_img_src_list", content)
-
         total_num_of_img_src = len(b64_img_src_list) + len(bin_img_src_list)
         pass_count = 0
 
@@ -488,6 +487,7 @@ def notice(request):
                 ocr_passed, extracted_b64_img_text = extract_text_from_img(
                     "b64", b64_img_src
                 )
+
                 if ocr_passed:
                     pass_count += 1
                     content = f"{content}<p></p>{extracted_b64_img_text}"
@@ -497,6 +497,7 @@ def notice(request):
                 ocr_passed, extracted_bin_img_text = extract_text_from_img(
                     "bin", bin_img_src
                 )
+                
                 if ocr_passed:
                     pass_count += 1
                     content = f"{content}<p></p>{extracted_bin_img_text}"
