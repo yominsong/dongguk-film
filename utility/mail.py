@@ -3,7 +3,9 @@ from django.core.mail import send_mail as django_send_mail
 from django.template.loader import render_to_string
 from .hangul import handle_hangul
 
-EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", "EMAIL_HOST_USER")
+OPS_CONTACT = getattr(settings, "OPS_CONTACT", None)
+OPS_EMAIL = OPS_CONTACT["EMAIL"]
+OPS_EMAIL_ADDRESS = OPS_EMAIL["ADDRESS"]
 
 #
 # Main functions
@@ -166,7 +168,7 @@ def send_mail(data):
             },
         )
 
-    from_email = EMAIL_HOST_USER
+    from_email = OPS_EMAIL_ADDRESS
     recipient_list = [email]
 
     response = django_send_mail(

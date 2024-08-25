@@ -2,15 +2,13 @@ from django.conf import settings
 from .hangul import handle_hangul
 import time, hmac, hashlib, base64, requests, json
 
-NCP_ACCESS_KEY_ID = getattr(settings, "NCP_ACCESS_KEY_ID", "NCP_ACCESS_KEY_ID")
+NCP = getattr(settings, "NCP", None)
+NCP_ACCESS_KEY_ID = NCP["ACCESS_KEY_ID"]
+NCP_SECRET_KEY = NCP["SECRET_KEY"]
+NCP_SENS_SMS_SERVICE_ID = NCP["SENS_SMS_SERVICE_ID"]
 
-NCP_SECRET_KEY = getattr(settings, "NCP_SECRET_KEY", "NCP_SECRET_KEY")
-
-NCP_SENS_SMS_SERVICE_ID = getattr(
-    settings, "NCP_SENS_SMS_SERVICE_ID", "NCP_SENS_SMS_SERVICE_ID"
-)
-
-MGT_PHONE = getattr(settings, "MGT_PHONE", "MGT_PHONE")
+OPS_CONTACT = getattr(settings, "OPS_CONTACT", None)
+OPS_PHONE = OPS_CONTACT["PHONE"]
 
 #
 # Sun functions
@@ -101,7 +99,7 @@ def send_sms(data: dict):
         content = f"[디닷에프] {name_of_subject_or_project} {facility_category} 예약이 반려되었어요."
 
     service = init_service()
-    from_no = MGT_PHONE
+    from_no = OPS_PHONE
     to_no = "".join(filter(str.isalnum, data["phone"]))
 
     msg_data = {

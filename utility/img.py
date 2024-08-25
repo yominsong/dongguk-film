@@ -1,7 +1,8 @@
 from django.conf import settings
 import requests, json
 
-UNSPLASH_ACCESS_KEY = getattr(settings, "UNSPLASH_ACCESS_KEY", "UNSPLASH_ACCESS_KEY")
+UNSPLASH = getattr(settings, "UNSPLASH", None)
+UNSPLASH_ACCESS_KEY = UNSPLASH["ACCESS_KEY"]
 
 json_path = (
     "dongguk_film/static/json/img.json"

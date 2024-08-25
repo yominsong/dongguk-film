@@ -592,7 +592,7 @@ def notice(request):
             "element": element if status == "FAIL" else None,
         }
 
-        send_msg(request, "CREATE_NOTICE", "MGT", response)
+        send_msg(request, "CREATE_NOTICE", "OPS", response)
 
     # id: read_notice
     elif id == "read_notice":
@@ -698,7 +698,7 @@ def notice(request):
             "element": element if status == "FAIL" else None,
         }
 
-        send_msg(request, "UPDATE_NOTICE", "MGT", response)
+        send_msg(request, "UPDATE_NOTICE", "OPS", response)
 
     # id: delete_notice
     elif id == "delete_notice":
@@ -753,6 +753,6 @@ def notice(request):
             "user": request.user.pk,
         }
         
-        send_msg(request, "DELETE_NOTICE", "MGT", response)
+        send_msg(request, "DELETE_NOTICE", "OPS", response)
 
     return JsonResponse(response)

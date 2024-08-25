@@ -5,13 +5,8 @@ import discord
 from discord import SyncWebhook
 
 
-DISCORD_MGT_WEBHOOK_URL = getattr(
-    settings, "DISCORD_MGT_WEBHOOK_URL", "DISCORD_MGT_WEBHOOK_URL"
-)
-
-DISCORD_DEV_WEBHOOK_URL = getattr(
-    settings, "DISCORD_DEV_WEBHOOK_URL", "DISCORD_DEV_WEBHOOK_URL"
-)
+DISCORD = getattr(settings, "DISCORD", None)
+DISCORD_WEBHOOK_URL = DISCORD["WEBHOOK_URL"]
 
 #
 # Sub functions
@@ -68,21 +63,13 @@ def format_msg(content: dict):
 def get_webhook(channel: str):
     """
     - channel | `str`:
+        - OPS: Operations
         - DEV: Development
-        - MGT: Management
     """
 
-    # channel: "DEV"
-    if channel == "DEV":
-        webhook_url = DISCORD_DEV_WEBHOOK_URL
+    webhook_url = DISCORD_WEBHOOK_URL[channel]
 
-    # channel: "MGT"
-    elif channel == "MGT":
-        webhook_url = DISCORD_MGT_WEBHOOK_URL
-
-    webhook = SyncWebhook.from_url(webhook_url)
-
-    return webhook
+    return SyncWebhook.from_url(webhook_url)
 
 
 #
@@ -155,7 +142,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             target_year_and_semester = f"{year} {semester}"
         else:
             target_year_and_semester = "Unknown"
-        
+
         length = data.get("length", 0)
         description = f"ㆍ학기: {target_year_and_semester}\nㆍ개수: {length}"
 
@@ -361,12 +348,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         unavailable_item_list = data.get("unavailable_item_list", [])
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
@@ -387,7 +370,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
-    
+
     # msg_type: "FACILITY_REQUEST_NOT_PROCESSED"
     elif msg_type == "FACILITY_REQUEST_NOT_PROCESSED":
         public_id = data.get("public_id", "Unknown")
@@ -400,12 +383,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -436,12 +415,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -458,7 +433,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
-    
+
     # msg_type: "FACILITY_USE_START_DELAYED"
     elif msg_type == "FACILITY_USE_START_DELAYED":
         public_id = data.get("public_id", "Unknown")
@@ -471,12 +446,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ제안: 시설이 문제없이 사용 시작되었는지 확인하고, Status를 In Progress로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -493,7 +464,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
-    
+
     # msg_type: "FACILITY_USE_END_DELAYED"
     elif msg_type == "FACILITY_USE_END_DELAYED":
         public_id = data.get("public_id", "Unknown")
@@ -506,12 +477,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -542,12 +509,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -564,7 +527,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
-    
+
     # msg_type: "REJECT_FACILITY_REQUEST"
     elif msg_type == "REJECT_FACILITY_REQUEST":
         reason = data.get("reason", "Unknown")
@@ -578,12 +541,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "",
             "Unknown",
         ] and private_id not in [None, "", "Unknown"]:
-            public_url = (
-                f"https://docs.google.com/document/d/{public_id}"
-            )
-            private_url = (
-                f"https://docs.google.com/document/d/{private_id}"
-            )
+            public_url = f"https://docs.google.com/document/d/{public_id}"
+            private_url = f"https://docs.google.com/document/d/{private_id}"
 
         description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
@@ -836,7 +795,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "thumbnail_url": "",
             "description": description,
         }
-    
+
     # msg_type: "TEST"
     elif msg_type == "TEST":
         content = {
@@ -852,8 +811,16 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     if not settings.IS_PRODUCTION:
         content["title"] += f" (LOCAL)"
 
+    # channel: "OPS"
+    if channel == "OPS":
+        msg = {
+            "target": "OPS",
+            "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
+            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
+        }
+
     # channel: "DEV"
-    if channel == "DEV":
+    elif channel == "DEV":
         msg = {
             "target": "DEV",
             "name": get_safe_value(
@@ -868,14 +835,6 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "method": get_safe_value(lambda: request.method),
             "full_path": get_safe_value(lambda: request.get_full_path()),
             "user_auth": get_safe_value(lambda: request.user.is_authenticated),
-            "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
-        }
-
-    # channel: "MGT"
-    elif channel == "MGT":
-        msg = {
-            "target": "MGT",
-            "name": request.user if request.user.is_authenticated else "D-dot-f Bot",
             "footer": f"{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}에 처리됨",
         }
 

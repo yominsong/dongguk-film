@@ -31,18 +31,23 @@ import json, base64
 
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
-GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
-    getattr(settings, "GOOGLE_SA_CREDS", None),
-    scopes=[
-        "https://www.googleapis.com/auth/drive",
-        "https://www.googleapis.com/auth/documents",
-    ],
+GCP_SA = getattr(settings, "GCP_SA", None)
+GCP_SA_CREDS = GCP_SA["CREDS"]
+GCP_SA_SCOPES = GCP_SA["SCOPES"]
+
+GCP_SA_CREDS = service_account.Credentials.from_service_account_info(
+    GCP_SA_CREDS, scopes=[GCP_SA_SCOPES["DRIVE"], GCP_SA_SCOPES["DOCS"]]
 )
 
-GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
-GOOGLE_DOCS = build("docs", "v1", credentials=GOOGLE_SA_CREDS)
-GOOGLE_DOCS_TEMPLATE_ID = getattr(settings, "GOOGLE_DOCS_TEMPLATE_ID", None)
-EMAIL_HOST_USER = getattr(settings, "EMAIL_HOST_USER", None)
+GOOGLE_DRIVE_API = build("drive", "v3", credentials=GCP_SA_CREDS)
+GOOGLE_DOCS_API = build("docs", "v1", credentials=GCP_SA_CREDS)
+
+GOOGLE_DOCS = getattr(settings, "GOOGLE_DOCS", None)
+GOOGLE_DOCS_TEMPLATE_ID = GOOGLE_DOCS["TEMPLATE_ID"]
+
+OPS_CONTACT = getattr(settings, "OPS_CONTACT", None)
+OPS_EMAIL = OPS_CONTACT["EMAIL"]
+OPS_EMAIL_ADDRESS = OPS_EMAIL["ADDRESS"]
 
 JSON_PATH = (
     "dongguk_film/static/json/equipment.json"
@@ -336,7 +341,7 @@ def copy_equipment_use_request_form(
     )
 
     copied_document = (
-        GOOGLE_DRIVE.files()
+        GOOGLE_DRIVE_API.files()
         .copy(
             fileId=GOOGLE_DOCS_TEMPLATE_ID["equipment_use_request_form"],
             body={
@@ -350,10 +355,10 @@ def copy_equipment_use_request_form(
 
 
 def add_editor_permission(file_id):
-    permission = {"type": "user", "role": "writer", "emailAddress": EMAIL_HOST_USER}
+    permission = {"type": "user", "role": "writer", "emailAddress": OPS_EMAIL_ADDRESS}
 
     return (
-        GOOGLE_DRIVE.permissions()
+        GOOGLE_DRIVE_API.permissions()
         .create(fileId=file_id, body=permission, fields="id")
         .execute()
     )
@@ -362,7 +367,7 @@ def add_editor_permission(file_id):
 def make_file_public(file_id):
     permission = {"role": "reader", "type": "anyone"}
 
-    return GOOGLE_DRIVE.permissions().create(fileId=file_id, body=permission).execute()
+    return GOOGLE_DRIVE_API.permissions().create(fileId=file_id, body=permission).execute()
 
 
 def replace_text(document_id, replacements):
@@ -381,7 +386,7 @@ def replace_text(document_id, replacements):
     body = {"requests": requests}
 
     return (
-        GOOGLE_DOCS.documents().batchUpdate(documentId=document_id, body=body).execute()
+        GOOGLE_DOCS_API.documents().batchUpdate(documentId=document_id, body=body).execute()
     )
 
 
@@ -431,7 +436,7 @@ def add_equipment_to_table(document_id, cart):
 
     insert_requests.append(delete_request)
     body = {"requests": insert_requests}
-    GOOGLE_DOCS.documents().batchUpdate(documentId=document_id, body=body).execute()
+    GOOGLE_DOCS_API.documents().batchUpdate(documentId=document_id, body=body).execute()
     first_item = cart[0]
 
     replacements = {
@@ -450,7 +455,7 @@ def upload_signature(signature, project_name, student_id):
     file_metadata = {"name": f"{project_name}_{student_id}_signature.png"}
 
     uploaded_signature = (
-        GOOGLE_DRIVE.files()
+        GOOGLE_DRIVE_API.files()
         .create(body=file_metadata, media_body=media, fields="id")
         .execute()
     )
@@ -493,7 +498,7 @@ def insert_signature(document_id, signature_id):
     ]
 
     return (
-        GOOGLE_DOCS.documents()
+        GOOGLE_DOCS_API.documents()
         .batchUpdate(documentId=document_id, body={"requests": requests})
         .execute()
     )
@@ -904,7 +909,7 @@ def create_request(request):
             ) + "\n"
 
             insert_signature(private_id, signature_id)
-            GOOGLE_DRIVE.files().delete(fileId=signature_id).execute()
+            GOOGLE_DRIVE_API.files().delete(fileId=signature_id).execute()
             add_equipment_to_table(private_id, cart)
             replace_text(private_id, replacements)
 
@@ -1055,7 +1060,7 @@ def create_request(request):
         }
 
         yield json.dumps(response) + "\n"
-        send_msg(request, "CREATE_FACILITY_REQUEST", "MGT", response)
+        send_msg(request, "CREATE_FACILITY_REQUEST", "OPS", response)
 
     response = StreamingHttpResponse(stream_response(), content_type="application/json")
     response["X-Accel-Buffering"] = "no"

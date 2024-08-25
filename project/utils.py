@@ -248,7 +248,7 @@ def project(request):
             "user": f"{request.user}",
         }
 
-        send_msg(request, "CREATE_PROJECT", "MGT", response)
+        send_msg(request, "CREATE_PROJECT", "OPS", response)
 
     # id: update_project
     elif id == "update_project":
@@ -295,7 +295,7 @@ def project(request):
             "user": f"{request.user}",
         }
 
-        send_msg(request, "UPDATE_PROJECT", "MGT", response)
+        send_msg(request, "UPDATE_PROJECT", "OPS", response)
 
     # id: delete_project
     elif id == "delete_project":
@@ -330,6 +330,6 @@ def project(request):
             "user": f"{request.user}",
         }
 
-        send_msg(request, "DELETE_PROJECT", "MGT", response)
+        send_msg(request, "DELETE_PROJECT", "OPS", response)
 
     return JsonResponse(response)

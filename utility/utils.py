@@ -44,39 +44,48 @@ DND_STUDENT_ID = DND["STUDENT_ID"]
 DND_PASSWORD = DND["PASSWORD"]
 DND_SUBJECT_URL = DND["SUBJECT_URL"]
 
-NCP_CLOVA_OCR_SECRET_KEY = getattr(settings, "NCP_CLOVA_OCR_SECRET_KEY", None)
-NCP_CLOVA_OCR_APIGW_INVOKE_URL = getattr(
-    settings, "NCP_CLOVA_OCR_APIGW_INVOKE_URL", None
+NCP = getattr(settings, "NCP", None)
+NCP_CLOVA_OCR_SECRET_KEY = NCP["CLOVA_OCR_SECRET_KEY"]
+NCP_CLOVA_OCR_APIGW_INVOKE_URL = NCP["CLOVA_OCR_APIGW_INVOKE_URL"]
+
+AIRTABLE = getattr(settings, "AIRTABLE", None)
+AIRTABLE_TOKEN = AIRTABLE["TOKEN"]
+AIRTABLE_SCRIPT_API_KEY = AIRTABLE["SCRIPT_API_KEY"]
+AIRTABLE_BASE_ID = AIRTABLE["BASE_ID"]
+AIRTABLE_TABLE_ID = AIRTABLE["TABLE_ID"]
+AIRTABLE_API = pyairtable.Api(AIRTABLE_TOKEN)
+
+NOTION = getattr(settings, "NOTION", None)
+NOTION_SECRET = NOTION["SECRET"]
+NOTION_DB_ID = NOTION["DB_ID"]
+
+OPENAI = getattr(settings, "OPENAI", None)
+OPENAI_ORG = OPENAI["ORG"]
+OPENAI_API_KEY = OPENAI["API_KEY"]
+
+SHORT_IO = getattr(settings, "SHORT_IO", None)
+SHORT_IO_DOMAIN_ID = SHORT_IO["DOMAIN_ID"]
+SHORT_IO_API_KEY = SHORT_IO["API_KEY"]
+
+GCP_SA = getattr(settings, "GCP_SA", None)
+GCP_SA_CREDS = GCP_SA["CREDS"]
+GCP_SA_SCOPES = GCP_SA["SCOPES"]
+
+GCP_SA_CREDS = service_account.Credentials.from_service_account_info(
+    GCP_SA_CREDS, scopes=[GCP_SA_SCOPES["DRIVE"]]
 )
 
-AIRTABLE_TOKEN = getattr(settings, "AIRTABLE_TOKEN", None)
-AIRTABLE_BASE_ID = getattr(settings, "AIRTABLE_BASE_ID", None)
-AIRTABLE_TABLE_ID = getattr(settings, "AIRTABLE_TABLE_ID", None)
-AIRTABLE_SCRIPT_API_KEY = getattr(settings, "AIRTABLE_SCRIPT_API_KEY", None)
-AIRTABLE = pyairtable.Api(AIRTABLE_TOKEN)
+GOOGLE_DRIVE = build("drive", "v3", credentials=GCP_SA_CREDS)
 
-NOTION_SECRET = getattr(settings, "NOTION_SECRET", None)
-NOTION_DB_ID = getattr(settings, "NOTION_DB_ID", None)
-
-OPENAI_ORG = getattr(settings, "OPENAI_ORG", None)
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", None)
-
-SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", None)
-SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", None)
-
-GOOGLE_SA_CREDS = service_account.Credentials.from_service_account_info(
-    getattr(settings, "GOOGLE_SA_CREDS", "GOOGLE_SA_CREDS"),
-    scopes=["https://www.googleapis.com/auth/drive"],
-)
-GOOGLE_DRIVE = build("drive", "v3", credentials=GOOGLE_SA_CREDS)
-
-AWS_ACCESS_KEY = getattr(settings, "AWS_ACCESS_KEY", None)
-AWS_SECRET_ACCESS_KEY = getattr(settings, "AWS_SECRET_ACCESS_KEY", None)
+AWS = getattr(settings, "AWS", None)
+AWS_ACCESS_KEY_ID = AWS["ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = AWS["SECRET_ACCESS_KEY"]
+AWS_REGION_NAME = AWS["REGION_NAME"]
 AWS_S3 = boto3.client(
     "s3",
-    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    region_name="ap-northeast-2",
+    region_name=AWS_REGION_NAME,
 )
 
 #
@@ -171,7 +180,7 @@ def send_facility_request_status_update(request):
             "private_id": record["private_id"],
         }
 
-        send_msg(request, record["msg_type"], "MGT", response)
+        send_msg(request, record["msg_type"], "OPS", response)
 
         user = User.objects.get(username=record["user"])
 
@@ -284,7 +293,7 @@ def warn_facility_request_not_processed(request):
         private_id = facility_request["private_id"]
 
         data = {"public_id": public_id, "private_id": private_id}
-        send_msg(request, "FACILITY_REQUEST_NOT_PROCESSED", "MGT", data)
+        send_msg(request, "FACILITY_REQUEST_NOT_PROCESSED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
 
@@ -304,7 +313,7 @@ def warn_facility_use_start_delay(request):
         private_id = facility_request["private_id"]
 
         data = {"public_id": public_id, "private_id": private_id}
-        send_msg(request, "FACILITY_USE_START_DELAYED", "MGT", data)
+        send_msg(request, "FACILITY_USE_START_DELAYED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
 
@@ -324,7 +333,7 @@ def warn_facility_use_end_delay(request):
         private_id = facility_request["private_id"]
 
         data = {"public_id": public_id, "private_id": private_id}
-        send_msg(request, "FACILITY_USE_END_DELAYED", "MGT", data)
+        send_msg(request, "FACILITY_USE_END_DELAYED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
 
@@ -1135,7 +1144,7 @@ def airtable(
 
     # action: create / target: record
     if action == "create" and target == "record":
-        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).create(
+        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).create(
             fields=params.get("fields", None)
         )
 
@@ -1143,7 +1152,7 @@ def airtable(
 
     # action: get / target: record
     elif action == "get" and target == "record":
-        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
+        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).get(
             record_id=params.get("record_id", None),
         )
 
@@ -1357,7 +1366,7 @@ def airtable(
 
     # action: get_all / target: records
     elif action == "get_all" and target == "records":
-        records = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).all(
+        records = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).all(
             view=params.get("view", None),
             fields=params.get("fields", None),
             formula=params.get("formula", None),
@@ -1735,7 +1744,7 @@ def airtable(
         record_id = params.get("record_id", None)
         fields = params.get("fields", None)
 
-        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).update(
+        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).update(
             record_id, fields
         )
 
@@ -1745,7 +1754,7 @@ def airtable(
     elif action == "batch_update" and target == "records":
         record_list = params.get("record_list", None)
 
-        records = AIRTABLE.table(
+        records = AIRTABLE_API.table(
             AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]
         ).batch_update(record_list)
 
@@ -1755,7 +1764,7 @@ def airtable(
     elif action == "delete" and target == "record":
         record_id = params.get("record_id", None)
 
-        record = AIRTABLE.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).delete(
+        record = AIRTABLE_API.table(AIRTABLE_BASE_ID, AIRTABLE_TABLE_ID[table_name]).delete(
             record_id
         )
 

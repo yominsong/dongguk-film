@@ -37,67 +37,37 @@ def get_secret(setting):
 
 SECRET_KEY = get_secret("SECRET_KEY")
 
-PUBLIC_DATA_SERVICE_KEY = get_secret("PUBLIC_DATA_SERVICE_KEY")
+AIRTABLE = get_secret("AIRTABLE")
 
-KAKAO_REST_API_KEY = get_secret("KAKAO_REST_API_KEY")
+AWS = get_secret("AWS")
 
-UNSPLASH_ACCESS_KEY = get_secret("UNSPLASH_ACCESS_KEY")
+DISCORD = get_secret("DISCORD")
 
-DISCORD_TOKEN = get_secret("DISCORD_TOKEN")
+GCP_SA = get_secret("GCP_SA")
 
-DISCORD_CHANNEL_ID = get_secret("DISCORD_CHANNEL_ID")
+GOOGLE_DOCS = get_secret("GOOGLE_DOCS")
 
-DISCORD_MGT_WEBHOOK_URL = get_secret("DISCORD_MGT_WEBHOOK_URL")
+KAKAO = get_secret("KAKAO")
 
-DISCORD_DEV_WEBHOOK_URL = get_secret("DISCORD_DEV_WEBHOOK_URL")
+NCP = get_secret("NCP")
 
-NCP_ACCESS_KEY_ID = get_secret("NCP_ACCESS_KEY_ID")
+NOTION = get_secret("NOTION")
 
-NCP_SECRET_KEY = get_secret("NCP_SECRET_KEY")
+OPENAI = get_secret("OPENAI")
 
-NCP_SENS_SMS_SERVICE_ID = get_secret("NCP_SENS_SMS_SERVICE_ID")
+SCRAPEOPS = get_secret("SCRAPEOPS")
 
-NCP_CLOVA_OCR_SECRET_KEY = get_secret("NCP_CLOVA_OCR_SECRET_KEY")
+SHORT_IO = get_secret("SHORT_IO")
 
-NCP_CLOVA_OCR_APIGW_INVOKE_URL = get_secret("NCP_CLOVA_OCR_APIGW_INVOKE_URL")
+UNSPLASH = get_secret("UNSPLASH")
 
-MGT_PHONE = get_secret("MGT_PHONE")
+UPSTAGE = get_secret("UPSTAGE")
+
+PUBLIC_DATA = get_secret("PUBLIC_DATA")
+
+OPS_CONTACT = get_secret("OPS_CONTACT")
 
 DND = get_secret("DND")
-
-AIRTABLE_TOKEN = get_secret("AIRTABLE_TOKEN")
-
-AIRTABLE_BASE_ID = get_secret("AIRTABLE_BASE_ID")
-
-AIRTABLE_TABLE_ID = get_secret("AIRTABLE_TABLE_ID")
-
-AIRTABLE_SCRIPT_API_KEY = get_secret("AIRTABLE_SCRIPT_API_KEY")
-
-NOTION_SECRET = get_secret("NOTION_SECRET")
-
-NOTION_DB_ID = get_secret("NOTION_DB_ID")
-
-SCRAPEOPS_API_KEY = get_secret("SCRAPEOPS_API_KEY")
-
-OPENAI_ORG = get_secret("OPENAI_ORG")
-
-OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
-
-SHORT_IO_DOMAIN_ID = get_secret("SHORT_IO_DOMAIN_ID")
-
-SHORT_IO_API_KEY = get_secret("SHORT_IO_API_KEY")
-
-GOOGLE_SA_CREDS = get_secret("GOOGLE_SA_CREDS")
-
-GOOGLE_SA_EMAIL = get_secret("GOOGLE_SA_EMAIL")
-
-GOOGLE_DRIVE_FOLDER_ID = get_secret("GOOGLE_DRIVE_FOLDER_ID")
-
-GOOGLE_DOCS_TEMPLATE_ID = get_secret("GOOGLE_DOCS_TEMPLATE_ID")
-
-AWS_ACCESS_KEY = get_secret("AWS_ACCESS_KEY")
-
-AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if IS_PRODUCTION else True
@@ -290,10 +260,6 @@ EMAIL_HOST = "smtp.gmail.com"
 
 EMAIL_PORT = "587"
 
-EMAIL_HOST_USER = get_secret("EMAIL_HOST_USER")
-
-EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD")
-
 EMAIL_USE_TLS = True
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = OPS_CONTACT["EMAIL"]["ADDRESS"]

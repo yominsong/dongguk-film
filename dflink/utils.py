@@ -12,7 +12,8 @@ import requests, json
 # Global variables
 #
 
-SCRAPEOPS_API_KEY = getattr(settings, "SCRAPEOPS_API_KEY", "SCRAPEOPS_API_KEY")
+SCRAPEOPS = getattr(settings, "SCRAPEOPS", None)
+SCRAPEOPS_API_KEY = SCRAPEOPS["API_KEY"]
 
 global need_www
 need_www = False
@@ -44,7 +45,7 @@ def delete_expired_dflink(request):
 
     if len(expired_dflink_list) > 0:
         data["status"] = "DONE"
-        send_msg(request, "DELETE_EXPIRED_DFLINK", "MGT", data)
+        send_msg(request, "DELETE_EXPIRED_DFLINK", "OPS", data)
 
     return HttpResponse(json_data, content_type="application/json")
 
@@ -228,7 +229,7 @@ def is_harmless(request, target_url: str):
             "function_name": "is_harmless",
         }
 
-        send_msg(request, "PROCESSING_SKIPPED", "DEV", data)
+        send_msg(request, "PROCESSING_SKIPPED", "OPS", data)
 
     return result
 
@@ -511,7 +512,7 @@ def dflink(request):
             "element": element if status == "FAIL" else None,
         }
 
-        send_msg(request, "CREATE_DFLINK", "MGT", response)
+        send_msg(request, "CREATE_DFLINK", "OPS", response)
 
     # id: update_dflink
     elif id == "update_dflink":
@@ -568,7 +569,7 @@ def dflink(request):
             "element": element if status == "FAIL" else None,
         }
 
-        send_msg(request, "UPDATE_DFLINK", "MGT", response)
+        send_msg(request, "UPDATE_DFLINK", "OPS", response)
 
     # id: delete_dflink
     elif id == "delete_dflink":
@@ -593,6 +594,6 @@ def dflink(request):
             "expiration_date": expiration_date,
         }
 
-        send_msg(request, "DELETE_DFLINK", "MGT", response)
+        send_msg(request, "DELETE_DFLINK", "OPS", response)
 
     return JsonResponse(response)

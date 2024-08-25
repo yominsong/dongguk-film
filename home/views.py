@@ -4,8 +4,9 @@ from django.shortcuts import render
 from utility.img import get_hero_img
 from utility.utils import short_io, airtable, notion
 
-SHORT_IO_DOMAIN_ID = getattr(settings, "SHORT_IO_DOMAIN_ID", "SHORT_IO_DOMAIN_ID")
-SHORT_IO_API_KEY = getattr(settings, "SHORT_IO_API_KEY", "SHORT_IO_API_KEY")
+SHORT_IO = getattr(settings, "SHORT_IO", None)
+SHORT_IO_DOMAIN_ID = SHORT_IO["DOMAIN_ID"]
+SHORT_IO_API_KEY = SHORT_IO["API_KEY"]
 
 
 #

@@ -151,7 +151,7 @@ class SocialSignupForm(SignupForm):
                 return None
             else:
                 confirmed_vcode.delete()
-            send_msg(request, "SIGNUP_COMPLETED", "MGT")
+            send_msg(request, "SIGNUP_COMPLETED", "OPS")
         else:
             send_msg(request, "UNEXPECTED_REQUEST_OCCURRED", "DEV")
             return None

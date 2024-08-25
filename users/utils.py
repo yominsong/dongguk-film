@@ -54,7 +54,7 @@ def delete_inactive_user(request):
             send_mail(mail_data)
 
         data["status"] = "DONE"
-        send_msg(request, "INACTIVE_USER_AUTO_DELETED", "MGT", data)
+        send_msg(request, "INACTIVE_USER_AUTO_DELETED", "OPS", data)
         inactive_user_queryset.delete()
 
     return HttpResponse(json_data, content_type="application/json")
@@ -73,7 +73,7 @@ def delete_expired_vcode(request):
 
     if expired_vcode_count > 0:
         data["status"] = "DONE"
-        send_msg(request, "EXPIRED_VCODE_AUTO_DELETED", "MGT", data)
+        send_msg(request, "EXPIRED_VCODE_AUTO_DELETED", "OPS", data)
         expired_vcode_queryset.delete()
 
     return HttpResponse(json_data, content_type="application/json")
@@ -523,7 +523,7 @@ def account(request):
             send_mail(mail_data)
             user.delete()
             data = {"status": "DONE"}
-            send_msg(request, "USER_DELETED", "MGT", data)
+            send_msg(request, "USER_DELETED", "OPS", data)
             status = "DONE"
             msg = "지금까지 디닷에프를 이용해주셔서 감사합니다. 🙇"
         else:

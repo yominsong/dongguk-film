@@ -4,15 +4,14 @@
 # import xml.etree.ElementTree as ET
 # import asyncio, aiohttp, time
 
-# KAKAO_REST_API_KEY = getattr(settings, "KAKAO_REST_API_KEY", "KAKAO_REST_API_KEY")
+# KAKAO = getattr(settings, "KAKAO", None)
+# KAKAO_REST_API_KEY = KAKAO["REST_API_KEY"]
+# PUBLIC_DATA = getattr(settings, "PUBLIC_DATA", None)
+# PUBLIC_DATA_SERVICE_KEY = PUBLIC_DATA["SERVICE_KEY"]
 
-# PUBLIC_DATA_SERVICE_KEY = getattr(
-#     settings, "PUBLIC_DATA_SERVICE_KEY", "PUBLIC_DATA_SERVICE_KEY"
-# )
-
-#
-# Sub functions
-#
+# #
+# # Sub functions
+# #
 
 
 # def st(hhmm):  # set time
@@ -155,9 +154,9 @@
 #     return result
 
 
-#
-# Main functions
-#
+# #
+# # Main functions
+# #
 
 
 # async def weather(request):
