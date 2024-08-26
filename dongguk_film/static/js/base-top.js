@@ -754,15 +754,13 @@ function handleAjaxCallback(response) {
 
         displayNoti(false, "WORK_IN_PROGRESS");
 
-        const class_extracts = document.querySelectorAll(".class-extract");
+        const id_extract_text = document.getElementById("id_extract_text");
 
-        class_extracts.forEach((extract) => {
-            extract.classList.replace("cursor-not-allowed", "cursor-pointer");
-            extract.classList.add("hover:underline");
-            extract.classList.add("focus:df-focus-ring-offset-white")
-            extract.setAttribute("aria-disabled", "false");
-            extract.tabIndex = "0";
-        });
+        id_extract_text.classList.replace("cursor-not-allowed", "cursor-pointer");
+        id_extract_text.classList.add("hover:underline");
+        id_extract_text.classList.add("focus:df-focus-ring-offset-white")
+        id_extract_text.setAttribute("aria-disabled", "false");
+        id_extract_text.tabIndex = "0";
 
         spins.forEach((spin) => {
             spin.classList.add("hidden");

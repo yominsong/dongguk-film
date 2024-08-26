@@ -11,6 +11,7 @@ const id_title = document.getElementById("id_title");
 const id_category = document.getElementById("id_category");
 const id_category_serv = code(id_category, "_serv");
 const id_category_dept = code(id_category, "_dept");
+const id_extract_text = document.getElementById("id_extract_text");
 const id_content = document.getElementById("id_content");
 const id_file = document.getElementById("id_file");
 const id_receive_file = code("id_receive_", id_file);
@@ -113,25 +114,16 @@ function hasOnlyImages(htmlData) {
 }
 
 function executeWhenUserTryToExtractText() {
-    const class_extracts = document.querySelectorAll(".class-extract");
+    if (id_extract_text === null) return;
 
-    if (class_extracts.length === 0) return;
-
-    class_extracts.forEach(extract => {
-        ["click", "keyup"].forEach(type => {
-            extract.addEventListener(type, event => {
-                if ((type === "click" || event.key === "Enter" || event.key === " ") &&
-                    (!extract.classList.contains("cursor-not-allowed") && extract.getAttribute("aria-disabled") === "false")) {
-                    displayError(false, id_content);
-                    displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
-                    requestOcrNotice();
-                    extract.classList.replace("cursor-pointer", "cursor-not-allowed");
-                    extract.classList.remove("hover:underline");
-                    extract.classList.remove("focus:df-focus-ring-offset-white")
-                    extract.setAttribute("aria-disabled", "true");
-                    extract.tabIndex = "-1";
-                };
-            });
+    ["click", "keyup"].forEach(type => {
+        id_extract_text.addEventListener(type, event => {
+            if ((type === "click" || event.key === "Enter" || event.key === " ") &&
+                (!id_extract_text.classList.contains("cursor-not-allowed") && id_extract_text.getAttribute("aria-disabled") === "false")) {
+                displayError(false, id_content);
+                displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
+                requestOcrNotice();
+            };
         });
     });
 }
@@ -918,6 +910,11 @@ function requestOcrNotice() {
     displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
     displayButtonMsg(false, id_create_or_update, "error");
     displayNoti(true, "WORK_IN_PROGRESS", "텍스트 추출");
+    id_extract_text.classList.replace("cursor-pointer", "cursor-not-allowed");
+    id_extract_text.classList.remove("hover:underline");
+    id_extract_text.classList.remove("focus:df-focus-ring-offset-white")
+    id_extract_text.setAttribute("aria-disabled", "true");
+    id_extract_text.tabIndex = "-1";
     freezeForm(true);
     freezeFileForm(true);
     makeAjaxCall(request);

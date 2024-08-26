@@ -338,7 +338,7 @@ function displayNoti(bool, notiType, param = null) {
         else if (notiType === "EXTRACTING_TEXT_FAILED") {
             notiIcon = exclamationIcon;
             notiTitle = "텍스트 추출에 실패했어요.";
-            notiContent = "이미지를 직접 내려받아 삽입한 후 다시 시도해주세요.";
+            notiContent = "이미지를 직접 내려받아 삽입하거나 여러 이미지로 분할하여 다시 시도해주세요.";
         }
         
         else if (notiType === "LDF") {

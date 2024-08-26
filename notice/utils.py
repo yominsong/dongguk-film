@@ -307,13 +307,13 @@ def extract_text_from_img(type, img_src):
 
         precaution = """
             <table><tbody>
-                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
-                    <h2><span style="color:hsl(0, 75%, 60%);">⚠️ 유의 사항</span></h2>
+                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true" style="background-color:hsl(0, 75%, 60%);">
+                    <h2 style="text-align:center;"><span style="color:hsl(0, 0%, 100%);">⚠️ 유의 사항</span></h2>
                     <div class="ck-table-column-resizer"></div>
                 </td></tr>
                 <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며 일부 내용이 부정확할 수 있습니다.</strong></span></p>
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며 이에 대한 책임을 지지 않습니다.</strong></span></p>
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며, 일부 내용이 부정확할 수 있습니다.</strong></span></p>
+                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며, 이에 대한 책임을 지지 않습니다.</strong></span></p>
                     <p><span style="color:hsl(0, 75%, 60%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></p>
                     <div class="ck-table-column-resizer"></div>
                 </td></tr>
