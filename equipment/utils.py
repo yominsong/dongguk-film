@@ -60,7 +60,7 @@ JSON_PATH = (
 #
 
 
-def synchronize_equipment_data(request):
+def sync_equipment_data(request):
     data_list = []
 
     try:
