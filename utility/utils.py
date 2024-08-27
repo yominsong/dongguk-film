@@ -924,7 +924,7 @@ def reg_test(value: str, type: str):
     """
 
     reg_hangul = re.compile("[가-힣]+")
-    reg_lower_case_roman_and_number = re.compile("[a-z0-9]")
+    reg_lower_case_roman_and_number_and_hyphen = re.compile("[a-z0-9-]")
     reg_number = re.compile("[0-9]")
     reg_number_with_dash = re.compile("[0-9\-]")
     reg_email = re.compile(
@@ -937,7 +937,7 @@ def reg_test(value: str, type: str):
     if type == "HGL":
         tested_value = "".join(re.findall(reg_hangul, value))
     elif type == "LRN":
-        tested_value = "".join(re.findall(reg_lower_case_roman_and_number, value))
+        tested_value = "".join(re.findall(reg_lower_case_roman_and_number_and_hyphen, value))
     elif type == "NUM":
         tested_value = "".join(re.findall(reg_number, value))
     elif type == "DAT":
