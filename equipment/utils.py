@@ -740,7 +740,7 @@ def create_request(request):
             ) + "\n"
 
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
-            # is_curricular = cart[0]["purpose"]["curricular"]
+            is_curricular = cart[0]["purpose"]["curricular"]
 
             if is_for_instructor:
                 purpose_record_id = cart[0]["purpose"]["record_id"]
@@ -774,17 +774,20 @@ def create_request(request):
                 base_month = base_date.month
                 academic_year = f"{base_year}학년도"
                 academic_semester = "1학기" if base_month < 7 else "2학기"
-                instructor_id = project["instructor"]
                 purpose_priority = project["purpose"]["priority"]
                 found_instructor_list = find_instructor(purpose_priority, base_date)[0]
 
-                instuctor = next(
-                    (x for x in found_instructor_list if x["id"] == instructor_id), None
-                )
+                subject_code = subject_name = instructor_id = instructor_name = "-"
 
-                subject_code = instuctor["code"]
-                subject_name = instuctor["subject"]
-                instructor_name = instuctor["name"]
+                if is_curricular:
+                    instuctor = next(
+                        (x for x in found_instructor_list if x["id"] == project["instructor"]), None
+                    )
+
+                    subject_code = instuctor["code"]
+                    subject_name = instuctor["subject"]
+                    instructor_name = instuctor["name"]
+
                 staff_list = project["staff"]
 
                 for staff in staff_list:
@@ -972,13 +975,14 @@ def create_request(request):
                                 field, replacements[key]
                             )
 
-            replacements["instructor_id"] = mask_personal_information(
-                "instructor_id", instructor_id
-            )
+            if is_curricular:
+                replacements["instructor_id"] = mask_personal_information(
+                    "instructor_id", instructor_id
+                )
 
-            replacements["instructor_name"] = mask_personal_information(
-                "name", instructor_name
-            )
+                replacements["instructor_name"] = mask_personal_information(
+                    "name", instructor_name
+                )
 
             replacements["student_id"] = mask_personal_information(
                 "student_id", student_id
@@ -1035,7 +1039,7 @@ def create_request(request):
                 "Category": "Equipment",
                 "Project team": [project_record_id] if not is_for_instructor else [],
                 "Purpose": [purpose_record_id],
-                "Subject name": subject_name,
+                "Subject name": subject_name if is_curricular else None,
                 "Start datetime": start_datetime,
                 "End datetime": end_datetime,
                 "Equipment item": [item["record_id"] for item in cart],
