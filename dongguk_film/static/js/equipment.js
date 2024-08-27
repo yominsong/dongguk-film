@@ -2159,9 +2159,9 @@ async function requestCreateRequest() {
     formData.append("startTimeRecordId", id_start_time_record_id.value);
     formData.append("endTimeRecordId", id_end_time_record_id.value);
 
-    const forInstructor = getCart()[0].purpose.for_instructor;
+    const isForInstructor = getCart()[0].purpose.for_instructor;
 
-    if (forInstructor) {
+    if (isForInstructor) {
         const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
         const academicYearAndSemester = id_target_academic_year_and_semester.innerText.trim().split(" ");
         const academicYear = academicYearAndSemester[0];
@@ -2264,7 +2264,7 @@ function initRequest() {
                     } else if (readyToCheckout) {
                         const readyToStartCheckingOut = id_modal_checkout.hidden;
                         const readyToEndCheckingOut = id_modal_checkout.hidden === false;
-                        const forInstructor = getCart()[0].purpose.for_instructor;
+                        const isForInstructor = getCart()[0].purpose.for_instructor;
 
                         if (!isAuthenticated()) {
                             let params = {};
@@ -2279,7 +2279,7 @@ function initRequest() {
                             displayErrorInSignatureCanvas(false);
 
                             // If the purpose is for instructor
-                            if (forInstructor) {
+                            if (isForInstructor) {
                                 id_project.classList.remove("class-second");
                                 id_project.parentElement.hidden = true;
                             } else {
@@ -2288,12 +2288,26 @@ function initRequest() {
                                 requestFindProject();
                             };
 
+                            const class_responsible_parties = document.querySelectorAll(".class-responsible-party");
+
+                            class_responsible_parties.forEach((party) => {
+                                if (isForInstructor) {
+                                    party.innerText = "신청자";
+                                } else {
+                                    party.innerText = "촬영, 동시녹음 담당";
+                                };
+
+                                if (party.classList.contains("class-need-josa")) {
+                                    party.innerText = `${matchJosa(party.innerText, "이가", "WJS")}`;
+                                };
+                            });
+
                             requestFindHour();
                             // Vaildation for class_seconds is handled by initFoundProjectList() and initFoundHourList()
                             initSignatureCanvasValidation();
                         } else if (readyToEndCheckingOut) {
                             const readyToSubmitForm = () => {
-                                if (forInstructor) {
+                                if (isForInstructor) {
                                     return isItOkayToSubmitForm() && id_subject_code.value !== "" && isSignatureDrawn;
                                 } else {
                                     return isItOkayToSubmitForm() && isSignatureDrawn;

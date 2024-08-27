@@ -333,17 +333,20 @@ def is_invalid_signature(signature_bs64_encoded_data, student_name):
     return result
 
 
-def copy_equipment_use_request_form(
-    name_of_subject_or_project, student_id, public=False
-):
-    student_id = (
-        mask_personal_information("student_id", student_id) if public else student_id
-    )
+def copy_equipment_use_request(data):
+    public = data["public"]
+    name_of_subject_or_project = data["name_of_subject_or_project"]
+    student_id = mask_personal_information("student_id", data["student_id"]) if public else data["student_id"]
+
+    if data["is_for_instructor"]:
+        file_id = GOOGLE_DOCS_TEMPLATE_ID["INSTRUCTIONAL_EQUIPMENT_USE_REQUEST_COPY"]
+    else:
+        file_id = GOOGLE_DOCS_TEMPLATE_ID["EQUIPMENT_USE_REQUEST"]
 
     copied_document = (
         GOOGLE_DRIVE_API.files()
         .copy(
-            fileId=GOOGLE_DOCS_TEMPLATE_ID["equipment_use_request_form"],
+            fileId=file_id,
             body={
                 "name": f"{name_of_subject_or_project} {student_id} 기자재 예약 신청서"
             },
@@ -390,13 +393,15 @@ def replace_text(document_id, replacements):
     )
 
 
-def add_equipment_to_table(document_id, cart):
+def add_equipment_to_table(data):
+    document_id = data["document_id"]
+    cart = data["cart"]
     collection_count = Counter(item["collection_id"] for item in cart)
     unique_cart = list(
         reversed({item["collection_id"]: item for item in cart}.values())
     )
     insert_requests = []
-    table_start_index = 647
+    table_start_index = 271 if data["is_for_instructor"] else 647
 
     for item in unique_cart[:-1]:
         insert_requests.append(
@@ -411,7 +416,7 @@ def add_equipment_to_table(document_id, cart):
             }
         )
 
-        start_index = 736
+        start_index = 360 if data["is_for_instructor"] else 736
 
         for text in [
             item["category"]["keyword"],
@@ -450,9 +455,9 @@ def add_equipment_to_table(document_id, cart):
     replace_text(document_id, replacements)
 
 
-def upload_signature(signature, project_name, student_id):
+def upload_signature(signature, student_id):
     media = MediaIoBaseUpload(signature, mimetype="image/png", resumable=True)
-    file_metadata = {"name": f"{project_name}_{student_id}_signature.png"}
+    file_metadata = {"name": f"{student_id}_signature.png"}
 
     uploaded_signature = (
         GOOGLE_DRIVE_API.files()
@@ -479,13 +484,18 @@ def process_signature(signature):
     return signature_bs64_encoded_data
 
 
-def insert_signature(document_id, signature_id):
+def insert_signature(data):
+    document_id = data["document_id"]
+    signature_id = data["signature_id"]
+    is_for_instructor = data["is_for_instructor"]
+    index = 852 if is_for_instructor else 1233
+
     image_url = f"https://drive.google.com/uc?export=view&id={signature_id}"
 
     requests = [
         {
             "insertInlineImage": {
-                "location": {"index": 1233},
+                "location": {"index": index},
                 "uri": image_url,
                 "objectSize": {
                     "height": {
@@ -730,10 +740,9 @@ def create_request(request):
             ) + "\n"
 
             is_for_instructor = cart[0]["purpose"]["for_instructor"]
+            # is_curricular = cart[0]["purpose"]["curricular"]
 
             if is_for_instructor:
-                project_record_id = None
-                film_title = "-"
                 purpose_record_id = cart[0]["purpose"]["record_id"]
                 academic_year = request.POST.get("academicYear", None)
                 academic_semester = request.POST.get("academicSemester", None)
@@ -741,16 +750,6 @@ def create_request(request):
                 subject_name = request.POST.get("subjectName", None)
                 instructor_id = request.POST.get("instructor", None)
                 instructor_name = request.POST.get("instructorName", None)
-                director_student_id = director_name = director_phone_number = "-"
-
-                director_of_photography_student_id = director_of_photography_name = (
-                    director_of_photography_phone_number
-                ) = "-"
-
-                production_sound_mixer_student_id = production_sound_mixer_name = (
-                    production_sound_mixer_phone_number
-                ) = "-"
-
                 purpose_priority = cart[0]["purpose"]["priority"]
             else:
                 project_record_id = request.POST.get("project", None)
@@ -859,43 +858,65 @@ def create_request(request):
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
 
-            replacements = {
-                "film_title": film_title,
-                "academic_year": academic_year,
-                "academic_semester": academic_semester,
-                "subject_code": subject_code,
-                "subject_name": subject_name,
-                "instructor_id": instructor_id,
-                "instructor_name": instructor_name,
-                "director_student_id": director_student_id,
-                "director_name": director_name,
-                "director_phone_number": director_phone_number,
-                "director_of_photography_student_id": director_of_photography_student_id,
-                "director_of_photography_name": director_of_photography_name,
-                "director_of_photography_phone_number": director_of_photography_phone_number,
-                "production_sound_mixer_student_id": production_sound_mixer_student_id,
-                "production_sound_mixer_name": production_sound_mixer_name,
-                "production_sound_mixer_phone_number": production_sound_mixer_phone_number,
-                "purpose": purpose_keyword,
-                "duration": duration,
-                "start_datetime": start_datetime,
-                "end_datetime": end_datetime,
-                "datetime": datetime,
-                "student_id": student_id,
-                "student_name": student_name,
-                "signature": "",
-            }
+            if is_for_instructor:
+                replacements = {
+                    "academic_year": academic_year,
+                    "academic_semester": academic_semester,
+                    "subject_code": subject_code,
+                    "subject_name": subject_name,
+                    "instructor_id": instructor_id,
+                    "instructor_name": instructor_name,
+                    "purpose": purpose_keyword,
+                    "duration": duration,
+                    "start_datetime": start_datetime,
+                    "end_datetime": end_datetime,
+                    "datetime": datetime,
+                    "student_id": student_id,
+                    "student_name": student_name,
+                    "signature": "",
+                }
+            else:
+                replacements = {
+                    "film_title": film_title,
+                    "academic_year": academic_year,
+                    "academic_semester": academic_semester,
+                    "subject_code": subject_code,
+                    "subject_name": subject_name,
+                    "instructor_id": instructor_id,
+                    "instructor_name": instructor_name,
+                    "director_student_id": director_student_id,
+                    "director_name": director_name,
+                    "director_phone_number": director_phone_number,
+                    "director_of_photography_student_id": director_of_photography_student_id,
+                    "director_of_photography_name": director_of_photography_name,
+                    "director_of_photography_phone_number": director_of_photography_phone_number,
+                    "production_sound_mixer_student_id": production_sound_mixer_student_id,
+                    "production_sound_mixer_name": production_sound_mixer_name,
+                    "production_sound_mixer_phone_number": production_sound_mixer_phone_number,
+                    "purpose": purpose_keyword,
+                    "duration": duration,
+                    "start_datetime": start_datetime,
+                    "end_datetime": end_datetime,
+                    "datetime": datetime,
+                    "student_id": student_id,
+                    "student_name": student_name,
+                    "signature": "",
+                }
 
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else film_title
             )
 
-            private_id = copy_equipment_use_request_form(
-                name_of_subject_or_project, student_id
-            )
+            data = {
+                "public": False,
+                "name_of_subject_or_project": name_of_subject_or_project,
+                "student_id": student_id,
+                "is_for_instructor": is_for_instructor,
+            }
 
+            private_id = copy_equipment_use_request(data)
             add_editor_permission(private_id)
-            signature_id = upload_signature(signature, film_title, student_id)
+            signature_id = upload_signature(signature, student_id)
             make_file_public(signature_id)
 
             status, reason, msg = (
@@ -908,9 +929,22 @@ def create_request(request):
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
 
-            insert_signature(private_id, signature_id)
+            data = {
+                "document_id": private_id,
+                "signature_id": signature_id,
+                "is_for_instructor": is_for_instructor,
+            }
+
+            insert_signature(data)
             GOOGLE_DRIVE_API.files().delete(fileId=signature_id).execute()
-            add_equipment_to_table(private_id, cart)
+
+            data = {
+                "document_id": private_id,
+                "cart": cart,
+                "is_for_instructor": is_for_instructor,
+            }
+
+            add_equipment_to_table(data)
             replace_text(private_id, replacements)
 
             status, reason, msg = (
@@ -957,10 +991,14 @@ def create_request(request):
             replacements["datetime"] = f"{date_str}({get_weekday(date_str)}) **:**:**"
             replacements["signature"] = "(서명 마스킹됨)"
 
-            public_id = copy_equipment_use_request_form(
-                name_of_subject_or_project, student_id, public=True
-            )
+            data = {
+                "public": True,
+                "name_of_subject_or_project": name_of_subject_or_project,
+                "student_id": student_id,
+                "is_for_instructor": is_for_instructor,
+            }
 
+            public_id = copy_equipment_use_request(data)
             add_editor_permission(public_id)
             status, reason, msg = (
                 "PROCESSING",
@@ -972,7 +1010,13 @@ def create_request(request):
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
 
-            add_equipment_to_table(public_id, cart)
+            data = {
+                "document_id": public_id,
+                "cart": cart,
+                "is_for_instructor": is_for_instructor,
+            }
+
+            add_equipment_to_table(data)
             replace_text(public_id, replacements)
             make_file_public(public_id)
 
