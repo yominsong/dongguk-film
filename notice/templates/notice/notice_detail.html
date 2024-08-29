@@ -195,7 +195,7 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-            <div class="ck ck-content mt-2 break-words">{{ notice.content|safe }}</div>
+            <div class="ck ck-content mt-2 break-words overflow-x-auto transparent-scrollbar">{{ notice.content|safe }}</div>
             <div class="flex flex-nowrap overflow-x-auto transparent-scrollbar justify-start gap-2 mt-5 mb-2.5">
                 <span class="sr-only">해시태그:</span>
                 {% for keyword in notice.keyword.list %}

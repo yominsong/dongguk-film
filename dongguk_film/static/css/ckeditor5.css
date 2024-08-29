@@ -30,10 +30,6 @@
     border-color: rgb(210 213 218) !important;
 }
 
-.ck-content {
-    min-height: 107.58px !important;
-}
-
 .ck-content .ck-blurred {
     border-color: rgb(210 213 218) !important;
 }
@@ -90,6 +86,10 @@
     margin-left: 1.25rem !important;
 }
 
+.ck-content table {
+    word-break: keep-all;
+}
+
 .ck-read-only {
     background-color: rgb(243 244 246) !important;
     cursor: not-allowed !important;
@@ -100,6 +100,8 @@
 .ck-content {
     line-height: 1.6 !important;
     word-break: break-word !important;
+    min-height: 107.58px !important;
+    overflow-x: auto;
 }
 
 .ck-content h3.category {
