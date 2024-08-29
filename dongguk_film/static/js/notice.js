@@ -41,8 +41,7 @@ let isAddedToFileForm = false;
 let isDoubleChecked = false;
 
 // miscellaneous
-const watchdog = new CKSource.EditorWatchdog();
-let ckEditor, ckElements, toolbarViewRoot, textboxModel, textboxViewRoot;
+let editorElements, toolbarViewRoot, textboxModel, textboxViewRoot;
 let selectedFiles;
 let attachedFiles = [];
 let totalSizeOfFiles = 0;
@@ -80,30 +79,6 @@ function handleModalWidth(bool) {
     };
 }
 
-function adjustTextboxStyle(bool, type) {  // Adding and removing event listeners for this is covered in forms.js
-    if (bool) {
-        if (type === "mouseenter") {
-            textboxViewRoot.style.backgroundColor = "rgb(249 250 251)";
-            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-        };
-
-        if (type === "mouseleave") {
-            textboxViewRoot.style.backgroundColor = "#FCDBCF";
-            textboxViewRoot.style.boxShadow = "none";
-        };
-    } else {
-        if (type === "mouseenter") {
-            textboxViewRoot.style.backgroundColor = "rgb(249 250 251)";
-            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-        };
-
-        if (type === "mouseleave") {
-            textboxViewRoot.style.backgroundColor = "#FFFFFF";
-            textboxViewRoot.style.boxShadow = "var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)";
-        };
-    };
-}
-
 function hasOnlyImages(htmlData) {
     const hasImage = /<img\s+[^>]*src=["'][^"']*["'][^>]*>/gi.test(htmlData);
     const textWithoutTags = htmlData.replaceAll("&nbsp;", "").replace(/<[^>]*>/g, "");
@@ -111,6 +86,22 @@ function hasOnlyImages(htmlData) {
 
     if (hasImage && !hasText) return true;
     return false;
+}
+
+function freezeExtractionButton(bool) {
+    if (bool) {
+        id_extract_text.classList.replace("cursor-pointer", "cursor-not-allowed");
+        id_extract_text.classList.remove("hover:underline");
+        id_extract_text.classList.remove("focus:df-focus-ring-offset-white")
+        id_extract_text.setAttribute("aria-disabled", "true");
+        id_extract_text.tabIndex = "-1";
+    } else if (!bool) {
+        id_extract_text.classList.replace("cursor-not-allowed", "cursor-pointer");
+        id_extract_text.classList.add("hover:underline");
+        id_extract_text.classList.add("focus:df-focus-ring-offset-white")
+        id_extract_text.setAttribute("aria-disabled", "false");
+        id_extract_text.tabIndex = "0";
+    };
 }
 
 function executeWhenUserTryToExtractText() {
@@ -152,110 +143,7 @@ executeWhenUserHasNoPermission();
 // Main functions
 //
 
-function initCkEditor() {
-    const isUserAuthenticated = document.querySelector("#id_mobile_logout_btn") !== null ? true : false
-
-    if (isUserAuthenticated) {
-        window.watchdog = watchdog;
-
-        watchdog.setCreator((element, config) => {
-            return CKSource.Editor
-                .create(element, config)
-                .then(editor => {
-                    ckEditor = editor;
-                    ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
-                    toolbarViewRoot = ckEditor.ui.view.toolbar.element;
-                    textboxModel = ckEditor.model.document;
-                    textboxViewRoot = ckEditor.editing.view.getDomRoot();
-
-                    textboxModel.on("change:data", () => {
-                        const data = ckEditor.getData();
-
-                        if (!hasOnlyImages(data)) {
-                            displayNoti(false, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
-                        } else if (hasOnlyImages(data)) {
-                            displayNoti(false, "EXTRACTING_TEXT_FROM_IMAGE_SUCCEEDED");
-                            displayNoti(false, "EXTRACTING_TEXT_FROM_IMAGE_FAILED");
-                            displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
-                        };
-
-                        id_content.value = ckEditor.getData();
-                    });
-
-                    ckElements.forEach((ck) => {
-                        ck.addEventListener("focus", () => {
-                            displayError(false, id_content);
-                            displayButtonMsg(false, id_create_or_update, "error");
-                        });
-
-                        ck.addEventListener("blur", event => {
-                            if (!ckElements.includes(event.relatedTarget)) {
-                                if ((!ckEditor.getData() || ckEditor.getData().trim() === "")) {
-                                    displayError(true, id_content, "empty");
-                                } else {
-                                    displayError(false, id_content);
-                                    displayButtonMsg(false, id_create_or_update, "error");
-                                };
-                            };
-                        });
-
-                        ck.addEventListener("keydown", event => {
-                            if (ck === textboxViewRoot && event.shiftKey && event.key === "Tab") {
-                                const id_category_error = code(id_category, "_error");
-
-                                if (id_category_error.innerText.length === 0) {
-                                    setTimeout(() => {
-                                        toolbarViewRoot.querySelector(".ck-toolbar__items").querySelector("button").focus();
-                                        displayError(false, id_category);
-                                    });
-                                } else {
-                                    setTimeout(() => {
-                                        toolbarViewRoot.querySelector(".ck-toolbar__items").querySelector("button").focus();
-                                    });
-                                };
-                            };
-                        });
-
-                        ck.addEventListener("click", () => {
-                            displayError(false, id_content);
-                            displayButtonMsg(false, id_create_or_update, "error");
-                        });
-
-                        eventTypes.forEach(type => {
-                            ck.addEventListener(type, () => { textboxViewRoot.setAttribute("spellcheck", "false") });
-                        });
-                    });
-
-                    return editor;
-                });
-        });
-
-        watchdog.setDestructor(editor => {
-            return editor.destroy();
-        });
-
-        watchdog
-            .create(document.querySelector("#id_content"), {
-                removePlugins: ["Title", "Markdown"],
-                language: "ko",
-                outputFormat: "html",
-                placeholder: "여기에 내용을 입력하세요.",
-                mediaEmbed: {
-                    previewsInData: true
-                }
-            })
-            .catch(err => {
-                console.error(err.stack);
-            });
-    };
-}
-
-initCkEditor();
-
-function freezeCkEditor() {
-    watchdog.editor.setData('<p style="text-align:center;">&nbsp;</p><p style="text-align:center;">&nbsp;</p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
-    watchdog.editor.enableReadOnlyMode("id_content");
-}
+// Initializing the editor is covered in ckeditor5.js
 
 function attachFile(event = null, sudo = false) {
     let id, name, key, size, readableSize, fileElement;
@@ -580,8 +468,7 @@ function initForm() {
         };
     });
 
-    watchdog.editor.setData("");
-    id_content.value = "";
+    id_editor.setData("");
     id_file.value = null;
     class_files.forEach(file => { file.remove() });
     attachedFiles.length = 0;
@@ -659,7 +546,10 @@ function updateForm(action, datasetObj = null) {
         id_delete_confirmation_text.innerText = "삭제하기";
         isDoubleChecked = false;
         clearTimeout(doubleCheckTimer);
-        setTimeout(() => { freezeCkEditor() }, 0.00001);
+        setTimeout(() => {
+            id_editor.setData('<p style="text-align:center;"></p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
+            id_editor.enableReadOnlyMode("id_content");
+        }, 0.00001);
         requestReadNotice();
     }
 
@@ -904,18 +794,15 @@ share();
 function requestOcrNotice() {
     request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
-    request.data = { id: "ocr_notice", content: `${id_content.value}` };
+    request.data = { id: "ocr_notice", content: `${id_editor.getData()}` };
     request.async = true;
     request.headers = null;
     displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
     displayButtonMsg(false, id_create_or_update, "error");
     displayNoti(true, "WORK_IN_PROGRESS", "텍스트 추출");
-    id_extract_text.classList.replace("cursor-pointer", "cursor-not-allowed");
-    id_extract_text.classList.remove("hover:underline");
-    id_extract_text.classList.remove("focus:df-focus-ring-offset-white")
-    id_extract_text.setAttribute("aria-disabled", "true");
-    id_extract_text.tabIndex = "-1";
     freezeForm(true);
+    freezeExtractionButton(true);
+    id_editor.enableReadOnlyMode("id_content");
     freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
@@ -927,7 +814,7 @@ function requestCreateNotice() {
     formData.append("id", "create_notice");
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
-    formData.append("content", id_content.value);
+    formData.append("content", id_editor.getData());
 
     attachedFiles.forEach((fileObj, index) => {
         formData.append(`file_${index}`, fileObj.file);
@@ -944,6 +831,8 @@ function requestCreateNotice() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    freezeExtractionButton(true);
+    id_editor.enableReadOnlyMode("id_content");
     freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
@@ -968,7 +857,7 @@ function requestUpdateNotice() {
     formData.append("title", id_title.value);
     formData.append("category", id_category.value);
     formData.append("block_id_list", id_block_id_list.value);
-    formData.append("content", id_content.value);
+    formData.append("content", id_editor.getData());
 
     attachedFiles.forEach((fileObj, index) => {
         formData.append(`file_${index}`, fileObj.file);
@@ -985,6 +874,8 @@ function requestUpdateNotice() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    freezeExtractionButton(true);
+    id_editor.enableReadOnlyMode("id_content");
     freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
@@ -993,10 +884,12 @@ function requestUpdateNotice() {
 function requestDeleteNotice() {
     request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
-    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_content.value}`, keyword: `${id_keyword.value}` };
+    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_editor.getData()}`, keyword: `${id_keyword.value}` };
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    freezeExtractionButton(true);
+    id_editor.enableReadOnlyMode("id_content");
     freezeFileForm(true);
     makeAjaxCall(request);
     request = {};
@@ -1005,6 +898,7 @@ function requestDeleteNotice() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         freezeForm(false);
+        id_editor.disableReadOnlyMode("id_content");
 
         const ckContent = document.querySelector(".ck-content");
 
@@ -1043,6 +937,7 @@ function initRequest() {
                             displayNoti(false, "EXTRACTING_TEXT_SUCCEEDED");
                             displayNoti(false, "NO_IMAGES_FOUND");
                             displayNoti(false, "EXTRACTING_TEXT_FAILED");
+                            displayNoti(false, "IMAGE_ALT_TEXT_REQUIRED");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
                         } else {
@@ -1085,6 +980,7 @@ function initRequest() {
                             displayNoti(false, "EXTRACTING_TEXT_SUCCEEDED");
                             displayNoti(false, "NO_IMAGES_FOUND");
                             displayNoti(false, "EXTRACTING_TEXT_FAILED");
+                            displayNoti(false, "IMAGE_ALT_TEXT_REQUIRED");
                             displayNoti(false, "LDF");
                             displayNoti(false, "LFS");
                             isDoubleChecked = false;

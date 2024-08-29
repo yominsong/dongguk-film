@@ -93,6 +93,7 @@
                   sizes="16x16"
                   href="{% static 'favicon/favicon-16x16.png' %}">
             <link rel="manifest" href="{% static 'favicon/manifest.json' %}">
+            {% block external %}{% endblock external %}
             <title>
                   {% block title %}{% endblock title %}
             </title>

@@ -745,26 +745,19 @@ function handleAjaxCallback(response) {
     // requestOcrNotice()
     else if (response.id === "ocr_notice") {
         freezeFileForm(false);
+        id_editor.disableReadOnlyMode("id_content");
+        freezeExtractionButton(false);
         freezeForm(false);
         displayButtonMsg(false, id_create_or_update, "descr");
 
         if (response.status === "DONE") {
-            watchdog.editor.setData(response.content);
-            watchdog.editor.disableReadOnlyMode("id_content");
+            id_editor.setData(response.content);
             displayNoti(true, "EXTRACTING_TEXT_SUCCEEDED");
         } else if (response.status === "FAIL") {
             displayNoti(true, response.reason);
         };
 
         displayNoti(false, "WORK_IN_PROGRESS");
-
-        const id_extract_text = document.getElementById("id_extract_text");
-
-        id_extract_text.classList.replace("cursor-not-allowed", "cursor-pointer");
-        id_extract_text.classList.add("hover:underline");
-        id_extract_text.classList.add("focus:df-focus-ring-offset-white")
-        id_extract_text.setAttribute("aria-disabled", "false");
-        id_extract_text.tabIndex = "0";
 
         spins.forEach((spin) => {
             spin.classList.add("hidden");
@@ -779,6 +772,8 @@ function handleAjaxCallback(response) {
             location.href = `${location.origin}${location.pathname}`;
         } else if (response.status === "FAIL") {
             freezeFileForm(false);
+            id_editor.disableReadOnlyMode("id_content");
+            freezeExtractionButton(false);
             freezeForm(false);
 
             buttons.forEach((button) => {
@@ -804,8 +799,8 @@ function handleAjaxCallback(response) {
     // requestReadNotice()
     else if (response.id === "read_notice") {
         if (response.status === "DONE") {
-            watchdog.editor.setData(response.content);
-            watchdog.editor.disableReadOnlyMode("id_content");
+            id_editor.setData(response.content);
+            id_editor.disableReadOnlyMode("id_content");
             id_block_id_list.value = response.block_id_list;
             freezeFileForm(false);
             selectedFiles = response.file;
@@ -821,19 +816,25 @@ function handleAjaxCallback(response) {
             location.href = location.href;
         } else if (response.status === "FAIL") {
             freezeFileForm(false);
+            id_editor.disableReadOnlyMode("id_content");
+            freezeExtractionButton(false);
             freezeForm(false);
+
             buttons.forEach((button) => {
                 button.disabled = false;
             });
+
             response.element != null ? displayError(true, code(response.element), "inappropriate") : null;
             displayButtonMsg(false, id_create_or_update, "descr");
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
+
             if (response.reason.includes("대체 텍스트")) {
                 displayNoti(true, "IMAGE_ALT_TEXT_REQUIRED");
             } else if (response.reason.includes("설명 텍스트")) {
                 displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
             };
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
@@ -857,6 +858,8 @@ function handleAjaxCallback(response) {
             };
         } else if (response.status === "FAIL") {
             freezeFileForm(false);
+            id_editor.disableReadOnlyMode("id_content");
+            freezeExtractionButton(false);
             freezeForm(false);
 
             buttons.forEach((button) => {

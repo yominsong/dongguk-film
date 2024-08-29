@@ -100,7 +100,7 @@
 }
 
 /* CKEditor root */
-:root {
+/* :root {
     --ck-color-focus-border-coordinates: 17, 85%, 54% !important;
     --ck-color-base-focus: #F8AF95 !important;
     --ck-color-base-active: #F37648 !important;
@@ -117,10 +117,10 @@
     --ck-color-focus-outer-shadow: #fff3ef !important;
     --ck-color-focus-disabled-shadow: rgba(255, 243, 239, .3) !important;
     --ck-color-engine-placeholder-text: #9ca3af !important;
-}
+} */
 
 /* CKEditor toolbar */
-.ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
+/* .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
     border: none !important;
 }
 
@@ -137,10 +137,10 @@
     --tw-ring-inset: inset !important;
     --tw-ring-opacity: 1 !important;
     --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity)) !important;
-}
+} */
 
 /* CKEditor editor */
-.ck-content h1 {
+/* .ck-content h1 {
     font-size: 2em;
     font-weight: bold;
 }
@@ -261,4 +261,4 @@
 
 .ck-media__wrapper[data-oembed-url*="x.com"] .ck.ck-media__placeholder .ck-media__placeholder__icon {
     background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSIxMjI3IiB2aWV3Qm94PSIwIDAgMTIwMCAxMjI3IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNzE0LjE2MyA1MTkuMjg0TDExNjAuODkgMEgxMDU1LjAzTDY2Ny4xMzcgNDUwLjg4N0wzNTcuMzI4IDBIMEw0NjguNDkyIDY4MS44MjFMMCAxMjI2LjM3SDEwNS44NjZMNTE1LjQ5MSA3NTAuMjE4TDg0Mi42NzIgMTIyNi4zN0gxMjAwTDcxNC4xMzcgNTE5LjI4NEg3MTQuMTYzWk01NjkuMTY1IDY4Ny44MjhMNTIxLjY5NyA2MTkuOTM0TDE0NC4wMTEgNzkuNjk0NEgzMDYuNjE1TDYxMS40MTIgNTE1LjY4NUw2NTguODggNTgzLjU3OUwxMDU1LjA4IDExNTAuM0g4OTIuNDc2TDU2OS4xNjUgNjg3Ljg1NFY2ODcuODI4WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==) !important;
-}
+} */

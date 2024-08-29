@@ -12,7 +12,7 @@ from utility.utils import (
 from konlpy.tag import Okt
 from collections import Counter
 from bs4 import BeautifulSoup
-import base64, ast
+import base64, ast, re
 
 #
 # Sub functions
@@ -43,27 +43,35 @@ def is_description_text_included(content: str):
     return result
 
 
-def is_not_swearing(slug_or_title: str):
+def is_not_swearing(title_or_content: str):
     system_message = {
         "role": "system",
-        "content": "You are a moderation expert.",
+        "content": """
+            You are a moderation expert. You have a very short amount of time, so you must answer concisely. Your response should be in one of two formats:
+            
+            - If the content is safe: 'False'
+            - If the content is problematic: 'True: [problematic expression]'
+        """,
     }
 
     user_message = {
         "role": "user",
-        "content": f"Could the phrase '{slug_or_title}' be construed as violent, sexually explicit, or sexist?",
+        "content": f"""
+            {title_or_content}\n
+            Could the content be construed as violent, sexually explicit, or sexist?
+        """,
     }
 
-    openai_response = gpt("4o-mini", system_message, user_message, True)
+    openai_response = gpt("4o-mini", system_message, user_message, False)
+    problematic_expression = None
 
     if "false" in openai_response.lower():
         result = True
     elif "true" in openai_response.lower():
         result = False
-    else:
-        result = False
+        problematic_expression = openai_response.split(":")[1].strip()
 
-    return result
+    return result, problematic_expression
 
 
 def evaluate_accessibility(request):
@@ -103,17 +111,19 @@ def moderate_input_data(request):
     """
 
     title = request.POST["title"]
-    content = request.POST["content"]
+    content = re.sub(r'(<img[^>]*\s)src\s*=\s*["\'](data:image\/[^;]+;base64,)[^"\']*["\']', r'\1', request.POST["content"])
+    is_safe_title, unsafe_expression_in_title = is_not_swearing(title)
+    is_safe_content, unsafe_expression_in_content = is_not_swearing(content)
 
-    if not is_not_swearing(title):
+    if not is_safe_title:
         status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 제목"
+        reason = f"TITLE_MODERATION_FAILED: {unsafe_expression_in_title}"
         msg = "이 제목은 사용할 수 없어요."
         element = "id_title"
 
-    elif not is_not_swearing(content):
+    if not is_safe_content:
         status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 표현이 포함된 내용"
+        reason = f"CONTENT_MODERATION_FAILED: {unsafe_expression_in_content}"
         msg = "내용에 적절치 않은 표현이 포함된 것 같아요."
         element = "id_content"
 
@@ -269,7 +279,7 @@ def extract_text_from_img(type, img_src):
         for field in fields:
             infer_text = field.get("inferText", "")
             extracted_text += infer_text + " "
-        
+
         extracted_text = extracted_text.strip()
 
         system_message = {
@@ -281,7 +291,8 @@ def extract_text_from_img(type, img_src):
                 - Reorganize the given content into HTML that starts with <div> as it appears in the image.
                 - Convert as you see it, but make some configuration changes only if you think there's something that's not readable for the user.
                 - Convert URLs to <a> tags so that users can click on them.
-                - Do not use <head>, <body>, or <img>.
+                - Do not use <head>, <body>, or <img>, and in particular, inserting images is strictly prohibited.
+                - Omit logos and illustrations embedded in the image.
                 - Do not arbitrarily omit any characters when converting.
                 - Respond with code only, with no explanation. Do not include things like ```html'' in your answer.
             """,
@@ -307,15 +318,13 @@ def extract_text_from_img(type, img_src):
 
         precaution = """
             <table><tbody>
-                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true" style="background-color:hsl(0, 75%, 60%);">
-                    <h2 style="text-align:center;"><span style="color:hsl(0, 0%, 100%);">⚠️ 유의 사항</span></h2>
-                    <div class="ck-table-column-resizer"></div>
+                <tr><td style="background-color:hsl(0, 75%, 60%);">
+                    <h3 style="text-align:center;"><span style="color:hsl(0, 0%, 100%);"><span class="s1">⚠️</span><span class="s2"> </span>유의<span class="s2"> </span>사항</span></h3>
                 </td></tr>
-                <tr><td class="ck-editor__editable ck-editor__nested-editable" role="textbox" tabindex="-1" contenteditable="true">
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며, 일부 내용이 부정확할 수 있습니다.</strong></span></p>
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며, 이에 대한 책임을 지지 않습니다.</strong></span></p>
-                    <p><span style="color:hsl(0, 75%, 60%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></p>
-                    <div class="ck-table-column-resizer"></div>
+                <tr><td>
+                    <p class="p1"><span style="color:hsl(0, 0%, 30%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며, 일부 내용이 부정확할 수 있습니다.</strong></span></p>
+                    <p class="p1"><span style="color:hsl(0, 0%, 30%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며, 이에 대한 책임을 지지 않습니다.</strong></span></p>
+                    <p class="p2"><span style="color:hsl(0, 0%, 30%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></span></p>
                 </td></tr>
             </tbody></table>
         """
@@ -497,7 +506,7 @@ def notice(request):
                 ocr_passed, extracted_bin_img_text = extract_text_from_img(
                     "bin", bin_img_src
                 )
-                
+
                 if ocr_passed:
                     pass_count += 1
                     content = f"{content}<p></p>{extracted_bin_img_text}"
@@ -753,7 +762,7 @@ def notice(request):
             "keyword": keyword,
             "user": request.user.pk,
         }
-        
+
         send_msg(request, "DELETE_NOTICE", "OPS", response)
 
     return JsonResponse(response)

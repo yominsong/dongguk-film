@@ -6,6 +6,11 @@
     <meta property="og:url" content="{% url 'notice:notice' %}">
     <meta name="robots" content="index,follow">
 {% endblock meta %}
+{% block external %}
+    <link rel="stylesheet" href="{% static 'css/ckeditor5.css' %}">
+    <link rel="stylesheet"
+          href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css">
+{% endblock external %}
 {% block title %}
     {{ notice.title }} - 공지사항 - 디닷에프
 {% endblock title %}
@@ -225,7 +230,15 @@
     <!-- Modal -->
     {% include "notice/notice_modal.html" %}
     <script src="{% static 'js/forms.js' %}"></script>
-    <script src="{% static 'js/ckeditor.js' %}"></script>
+    <script type="importmap">
+		{
+			"imports": {
+				"ckeditor5-resource": "{% static 'js/ckeditor5-resource.js' %}",
+				"ckeditor5-ko": "{% static 'js/ckeditor5-ko.js' %}"
+			}
+		}
+    </script>
+    <script type="module" src="{% static 'js/ckeditor5.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
     <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

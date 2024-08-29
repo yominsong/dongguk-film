@@ -1,0 +1,222 @@
+/* Start custom CSS for CKEditor5 */
+
+:root {
+    --ck-color-focus-border-coordinates: 17, 85%, 54% !important;
+    --ck-color-base-focus: #F8AF95 !important;
+    --ck-color-base-active: #F37648 !important;
+    --ck-color-base-active-focus: #F15922 !important;
+    --ck-color-base-action: #CE400D !important;
+    --ck-color-button-on-color: #F37648 !important;
+    --ck-color-button-on-background: #fff3ef !important;
+    --ck-color-button-on-hover-background: #ffe9e0 !important;
+    --ck-color-button-on-active-background: #ffe9e0 !important;
+    --ck-color-button-action-hover-background: #99300A !important;
+    --ck-color-button-action-active-background: #99300A !important;
+    --ck-color-button-action-disabled-background: #99300A !important;
+    --ck-color-switch-button-on-hover-background: #99300A !important;
+    --ck-color-focus-outer-shadow: #fff3ef !important;
+    --ck-color-focus-disabled-shadow: rgba(255, 243, 239, .3) !important;
+    --ck-color-engine-placeholder-text: #9ca3af !important;
+    --ck-border-radius: 0.375rem !important;
+    --ck-spacing-large: 14.4px !important;
+}
+
+.ck.ck-menu-bar {
+    border-top-left-radius: var(--ck-border-radius) !important;
+    border-top-right-radius: var(--ck-border-radius) !important;
+}
+
+.ck.ck-sticky-panel__content {
+    border-color: rgb(210 213 218) !important;
+}
+
+.ck-content {
+    min-height: 107.58px !important;
+}
+
+.ck-content .ck-blurred {
+    border-color: rgb(210 213 218) !important;
+}
+
+.ck-content h1 {
+    font-size: 2em !important;
+    font-weight: bold !important;
+}
+
+.ck-content h2 {
+    font-size: 1.5em !important;
+    font-weight: bold !important;
+}
+
+.ck-content h3 {
+    font-size: 1.17em !important;
+    font-weight: bold !important;
+}
+
+.ck-content h4 {
+    font-size: 1em !important;
+    font-weight: bold !important;
+}
+
+.ck-content h5 {
+    font-size: 0.83em !important;
+    font-weight: bold !important;
+}
+
+.ck-content h6 {
+    font-size: 0.67em !important;
+    font-weight: bold !important;
+}
+
+.ck-read-only {
+    background-color: rgb(243 244 246) !important;
+    cursor: not-allowed !important;
+}
+
+.ck a {
+    color: rgb(37 99 235) !important;
+    background-color: rgba(37, 99, 235, 0.055) !important;
+    border-radius: 0.375rem !important;
+    padding-left: 0.3rem !important;
+    padding-right: 0.3rem !important;
+}
+
+.ck a:hover {
+    color: rgb(30 64 175) !important;
+    background-color: rgba(30, 64, 175, 0.055) !important;
+}
+
+.ck a:focus {
+    color: rgb(30 64 175) !important;
+    background-color: rgba(30, 64, 175, 0.055) !important;
+}
+
+.ck li {
+    margin-left: 1.25rem !important;
+}
+
+/* End custom CSS for CKEditor5 */
+
+.ck-content {
+    line-height: 1.6 !important;
+    word-break: break-word !important;
+}
+
+.ck-content h3.category {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #555 !important;
+    letter-spacing: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ck-content h2.document-title {
+    font-size: 50px !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+.ck-content h3.document-subtitle {
+    font-size: 20px !important;
+    color: #555 !important;
+    margin: 0 0 1em !important;
+    font-weight: bold !important;
+    padding: 0 !important;
+}
+
+.ck-content p.info-box {
+    --background-size: 30px !important;
+    --background-color: #e91e63 !important;
+    padding: 1.2em 2em !important;
+    border: 1px solid var(--background-color) !important;
+    background: linear-gradient(135deg,
+            var(--background-color) 0%,
+            var(--background-color) var(--background-size),
+            transparent var(--background-size)),
+        linear-gradient(135deg,
+            transparent calc(100% - var(--background-size)),
+            var(--background-color) calc(100% - var(--background-size)),
+            var(--background-color)) !important;
+    border-radius: 10px !important;
+    margin: 1.5em 2em !important;
+    box-shadow: 5px 5px 0 #ffe6ef !important;
+}
+
+.ck-content blockquote.side-quote {
+    font-style: normal !important;
+    float: right !important;
+    width: 35% !important;
+    position: relative !important;
+    border: 0 !important;
+    overflow: visible !important;
+    z-index: 1 !important;
+    margin-left: 1em !important;
+}
+
+.ck-content blockquote.side-quote::before {
+    content: '“' !important;
+    position: absolute !important;
+    top: -37px !important;
+    left: -10px !important;
+    display: block !important;
+    font-size: 200px !important;
+    color: #e7e7e7 !important;
+    z-index: -1 !important;
+    line-height: 1 !important;
+}
+
+.ck-content blockquote.side-quote p {
+    font-size: 2em !important;
+    line-height: 1 !important;
+}
+
+.ck-content blockquote.side-quote p:last-child:not(:first-child) {
+    font-size: 1.3em !important;
+    text-align: right !important;
+    color: #555 !important;
+}
+
+.ck-content span.marker {
+    background: yellow !important;
+}
+
+.ck-content span.spoiler {
+    background: #000 !important;
+    color: #000 !important;
+}
+
+.ck-content span.spoiler:hover {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+.ck-content pre.fancy-code {
+    border: 0 !important;
+    margin-left: 2em !important;
+    margin-right: 2em !important;
+    border-radius: 10px !important;
+}
+
+.ck-content pre.fancy-code::before {
+    content: '' !important;
+    display: block !important;
+    height: 13px !important;
+    background: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NCAxMyI+CiAgPGNpcmNsZSBjeD0iNi41IiBjeT0iNi41IiByPSI2LjUiIGZpbGw9IiNGMzZCNUMiLz4KICA8Y2lyY2xlIGN4PSIyNi41IiBjeT0iNi41IiByPSI2LjUiIGZpbGw9IiNGOUJFNEQiLz4KICA8Y2lyY2xlIGN4PSI0Ny41IiBjeT0iNi41IiByPSI2LjUiIGZpbGw9IiM1NkM0NTMiLz4KPC9zdmc+Cg==) !important;
+    margin-bottom: 8px !important;
+    background-repeat: no-repeat !important;
+}
+
+.ck-content pre.fancy-code-dark {
+    background: #272822 !important;
+    color: #fff !important;
+    box-shadow: 5px 5px 0 #0000001f !important;
+}
+
+.ck-content pre.fancy-code-bright {
+    background: #dddfe0 !important;
+    color: #000 !important;
+    box-shadow: 5px 5px 0 #b3b3b3 !important;
+}

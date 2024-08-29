@@ -6,6 +6,11 @@
     <meta property="og:url" content="{% url 'notice:notice' %}">
     <meta name="robots" content="index,follow">
 {% endblock meta %}
+{% block external %}
+    <link rel="stylesheet" href="{% static 'css/ckeditor5.css' %}">
+    <link rel="stylesheet"
+          href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css">
+{% endblock external %}
 {% block title %}
     공지사항 - 디닷에프
 {% endblock title %}
@@ -157,7 +162,7 @@
                     </div>
                     {% if user.pk == notice.user %}
                         <div class="flex justify-between items-center gap-x-2">
-                            <!-- notice.listed_date(<=sm) -->
+                            <!-- notice.listed_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
                                 <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
@@ -175,7 +180,7 @@
                         </div>
                     {% else %}
                         <div class="flex justify-start">
-                            <!-- notice.listed_date(<=sm) -->
+                            <!-- notice.listed_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:hidden">
                                 <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                             </p>
@@ -295,7 +300,15 @@
         {% include "notice/notice_modal.html" %}
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
-    <script src="{% static 'js/ckeditor.js' %}"></script>
+    <script type="importmap">
+		{
+			"imports": {
+				"ckeditor5-resource": "{% static 'js/ckeditor5-resource.js' %}",
+				"ckeditor5-ko": "{% static 'js/ckeditor5-ko.js' %}"
+			}
+		}
+    </script>
+    <script type="module" src="{% static 'js/ckeditor5.js' %}"></script>
     <script src="{% static 'js/notice.js' %}"></script>
     <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

@@ -136,8 +136,6 @@ function freezeForm(bool) {
             });
         } else if (input.type === "text") {
             bool ? input.readOnly = true : input.readOnly = false;
-        } else if (input.type === "textarea" && ckEditor) {
-            bool ? ckEditor.enableReadOnlyMode(input.id) : ckEditor.disableReadOnlyMode(input.id);
         } else if (input.type === "checkbox") {
             bool ? input.disabled = true : input.disabled = false;
         } else {
