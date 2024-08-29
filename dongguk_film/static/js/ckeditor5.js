@@ -43,7 +43,7 @@ import {
     ListProperties,
     Markdown,
     MediaEmbed,
-    PageBreak,
+    // PageBreak,
     Paragraph,
     PasteFromMarkdownExperimental,
     PasteFromOffice,
@@ -81,6 +81,8 @@ import translations from 'ckeditor5-ko';
 const editorConfig = {
     toolbar: {
         items: [
+            'accessibilityHelp',
+            '|',
             'undo',
             'redo',
             '|',
@@ -91,19 +93,23 @@ const editorConfig = {
             // 'style',
             '|',
             'fontSize',
-            'fontFamily',
             'fontColor',
             'fontBackgroundColor',
             '|',
             'bold',
             'italic',
             'underline',
+            'strikethrough',
+            'code',
             '|',
             'link',
             'insertImage',
+            'mediaEmbed',
             'insertTable',
             'highlight',
+            'specialCharacters',
             'blockQuote',
+            'horizontalLine',
             '|',
             'alignment',
             '|',
@@ -111,7 +117,10 @@ const editorConfig = {
             'numberedList',
             'todoList',
             'outdent',
-            'indent'
+            'indent',
+            '|',
+            'selectAll',
+            'findAndReplace'
         ],
         shouldNotGroupWhenFull: false
     },
@@ -159,7 +168,7 @@ const editorConfig = {
         ListProperties,
         Markdown,
         MediaEmbed,
-        PageBreak,
+        // PageBreak,
         Paragraph,
         PasteFromMarkdownExperimental,
         PasteFromOffice,
@@ -289,7 +298,7 @@ const editorConfig = {
         }
     },
     menuBar: {
-        isVisible: true
+        isVisible: false
     },
     placeholder: '여기에 내용을 입력하세요.',
     // style: {
@@ -356,7 +365,7 @@ if (isUserAuthenticated) {
     .then(editor => {
         window.id_editor = editor;
         ckElements = Array.from(document.querySelectorAll(".ck")).filter(element => !(element instanceof SVGElement));
-        toolbarViewRoot = editor.ui.view.toolbar.element;
+        // toolbarViewRoot = editor.ui.view.toolbar.element;
         textboxModel = editor.model.document;
         textboxViewRoot = editor.editing.view.getDomRoot();
 
@@ -370,8 +379,6 @@ if (isUserAuthenticated) {
                 displayNoti(false, "EXTRACTING_TEXT_FROM_IMAGE_FAILED");
                 displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
             };
-
-            id_content.value = editor.getData();
         });
 
         ckElements.forEach((ck) => {

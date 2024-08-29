@@ -68,12 +68,7 @@
     font-weight: bold !important;
 }
 
-.ck-read-only {
-    background-color: rgb(243 244 246) !important;
-    cursor: not-allowed !important;
-}
-
-.ck a {
+.ck-content a {
     color: rgb(37 99 235) !important;
     background-color: rgba(37, 99, 235, 0.055) !important;
     border-radius: 0.375rem !important;
@@ -81,18 +76,23 @@
     padding-right: 0.3rem !important;
 }
 
-.ck a:hover {
+.ck-content a:hover {
     color: rgb(30 64 175) !important;
     background-color: rgba(30, 64, 175, 0.055) !important;
 }
 
-.ck a:focus {
+.ck-content a:focus {
     color: rgb(30 64 175) !important;
     background-color: rgba(30, 64, 175, 0.055) !important;
 }
 
-.ck li {
+.ck-content li {
     margin-left: 1.25rem !important;
+}
+
+.ck-read-only {
+    background-color: rgb(243 244 246) !important;
+    cursor: not-allowed !important;
 }
 
 /* End custom CSS for CKEditor5 */

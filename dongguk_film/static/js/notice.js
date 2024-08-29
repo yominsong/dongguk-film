@@ -546,10 +546,12 @@ function updateForm(action, datasetObj = null) {
         id_delete_confirmation_text.innerText = "삭제하기";
         isDoubleChecked = false;
         clearTimeout(doubleCheckTimer);
+
         setTimeout(() => {
             id_editor.setData('<p style="text-align:center;"></p><p style="text-align:center;">내용을 불러오고 있어요. 🕗</p>');
             id_editor.enableReadOnlyMode("id_content");
         }, 0.00001);
+
         requestReadNotice();
     }
 
@@ -884,7 +886,14 @@ function requestUpdateNotice() {
 function requestDeleteNotice() {
     request.url = `${location.origin}/notice/utils/notice/`;
     request.type = "POST";
-    request.data = { id: "delete_notice", page_id: `${id_page_id.value}`, title: `${id_title.value}`, category: `${id_category.value}`, content: `${id_editor.getData()}`, keyword: `${id_keyword.value}` };
+    request.data = {
+        id: "delete_notice",
+        page_id: `${id_page_id.value}`,
+        title: `${id_title.value}`,
+        category: `${id_category.value}`,
+        content: `${id_editor.getData()}`,
+        keyword: `${id_keyword.value}`
+    };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -898,7 +907,6 @@ function requestDeleteNotice() {
 function initRequest() {
     window.addEventListener("pageshow", () => {
         freezeForm(false);
-        id_editor.disableReadOnlyMode("id_content");
 
         const ckContent = document.querySelector(".ck-content");
 
