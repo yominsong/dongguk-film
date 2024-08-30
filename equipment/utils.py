@@ -589,6 +589,7 @@ def update_equipment_hour(data: dict):
 def create_request(request):
     id = request.POST.get("id", None)
     cart = json.loads(request.POST.get("cart", "[]"))
+    start_date, end_date = get_start_end_date(cart)
 
     def stream_response():
         public_id = private_id = None
@@ -608,7 +609,7 @@ def create_request(request):
         item_id_list = [f"ID = '{item['item_id']}'" for item in cart]
         item_id_string = ", ".join(item_id_list)
         fields = ["Collection ID", "ID", "Name", "Status"]
-        formula = f"AND(OR({item_id_string}), Status != 'Available')"
+        formula = f"AND(OR({item_id_string}), OR(FIND({start_date}, {{Facility request start datetime}}), FIND({end_date}, {{Facility request end datetime}}), Status != 'Available'))"
 
         data = {
             "table_name": "equipment-item",
@@ -786,6 +787,7 @@ def create_request(request):
 
                     subject_code = instuctor["code"]
                     subject_name = instuctor["subject"]
+                    instructor_id = instuctor["id"]
                     instructor_name = instuctor["name"]
 
                 staff_list = project["staff"]
@@ -838,7 +840,6 @@ def create_request(request):
             period = cart[0]["period"]
             duration = split_period(period)[1]
             duration = f"{duration}일" if duration > 0 else "당일"
-            start_date, end_date = get_start_end_date(cart)
             start_time = request.POST.get("startTime")
             end_time = request.POST.get("endTime")
             start_time_record_id = request.POST.get("startTimeRecordId")
@@ -1256,7 +1257,6 @@ def equipment(request):
                         break
                     elif not any(it["period"] == period for it in cart):
                         user_start_date, user_end_date = get_start_end_date(cart)
-
                         reason = "MISMATCHED_PERIOD"
                         msg = f"검색 필터에 대여 기간을 '{user_start_date} 대여 ~ {user_end_date} 반납'으로 적용하거나 장바구니를 비우고 다시 담아주세요."
                         break

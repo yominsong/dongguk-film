@@ -50,8 +50,10 @@ const id_requested_quantity = document.getElementById("id_requested_quantity");
 
 // classes
 let class_firsts = document.querySelectorAll(".class-first");
+const class_categories = document.querySelectorAll(".class-category");
 
 // boolean
+let isQuickFilterToggled = JSON.parse(sessionStorage.getItem("isQuickFilterToggled")) || false;
 let isQuantityButtonUpdated = false;
 let isSignatureCanvasReady = false;
 let isSignaturePlaceholderCleared = false;
@@ -498,6 +500,31 @@ function executeWhenGroupLimitIsExceeded() {
             setTimeout(() => { limit.classList.remove("blink") }, 3500);
         };
     });
+}
+
+function toggleQuickFilter() {
+    isQuickFilterToggled = !isQuickFilterToggled;
+    sessionStorage.setItem("isQuickFilterToggled", JSON.stringify(isQuickFilterToggled));
+
+    updateQuickFilterHandler();
+}
+
+function handleQuickFilter() {
+    setTimeout(() => { id_filter_or_checkout.click() }, 50);
+}
+
+function updateQuickFilterHandler() {
+    class_categories.forEach(category => {
+        category.removeEventListener("click", handleQuickFilter);
+    });
+
+    if (isQuickFilterToggled) {
+        class_categories.forEach(category => {
+            if (category.value !== urlParams.get("categoryPriority")) {
+                category.addEventListener("click", handleQuickFilter);
+            };
+        });
+    };
 }
 
 //
@@ -1417,7 +1444,6 @@ function freezeSignatureCanvas(bool) {
 
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
-    const class_categories = document.querySelectorAll(".class-category");
     const firstPurpose = id_purpose_placeholder.nextElementSibling;
 
     id_category.value = null;
@@ -1730,7 +1756,7 @@ function updateForm(action, datasetObj = null) {
         if (userName.length >= 5) {
             id_signature_canvas_help.innerText = `${userName}님의 성명 첫 다섯 글자 '${userName.slice(0, 5)}'${matchJosa(userName[4], "로으로", "OJS")} 서명해주세요.\n` + id_signature_canvas_help.innerText;
         } else {
-            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 인식될 경우 재서명이 요구될 수 있어요.";
+            id_signature_canvas_help.innerText = "서명은 정자체만 허용되며 흘림체로 인식될 경우 예약 신청이 어려울 수 있어요.";
         };
     }
 
@@ -2225,8 +2251,9 @@ function initFeedback() {
 
 function initRequest() {
     window.addEventListener("pageshow", () => {
-        updateUrlParams();
         requestVerifyAuthentication();
+        updateUrlParams();
+        updateQuickFilterHandler();
         initFeedback();
         initSubjectValidation();
 

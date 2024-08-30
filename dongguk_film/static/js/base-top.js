@@ -499,10 +499,16 @@ function handleAjaxCallback(response) {
 
     // requestFindProject()
     else if (response.id === "find_project") {
+        const id_project_help = code(id_project, "_help");
+        
         if (response.status === "DONE") {
             initFoundProjectList(response);
+            id_project_help.innerHTML = null;
+            id_project_help.hidden = true;
         } else if (response.status === "FAIL") {
             initFoundProjectList();
+            id_project_help.innerHTML = "<a href='/project/' class='underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white'>프로젝트를 새로 등록</a>해보세요.";
+            id_project_help.hidden = false;
         };
     }
 

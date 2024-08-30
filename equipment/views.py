@@ -4,7 +4,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from urllib.parse import urlencode
-from .utils import get_equipment_data, get_subject, split_period, filter_limit_list, get_weekday
+from .utils import (
+    get_equipment_data,
+    get_subject,
+    split_period,
+    filter_limit_list,
+    get_weekday,
+)
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, mask_personal_information, airtable
 import random, json
@@ -77,11 +83,65 @@ def get_subject_list():
     subject_list = get_subject(base_date)
 
     for subject in subject_list:
-        subject["instructor"] = ", ".join(f"{mask_personal_information('instructor_id', instructor['id'])}#{instructor['name']}" for instructor in subject["instructor"])
+        subject["instructor"] = ", ".join(
+            f"{mask_personal_information('instructor_id', instructor['id'])}#{instructor['name']}"
+            for instructor in subject["instructor"]
+        )
 
-    target_academic_year_and_semester = f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
+    target_academic_year_and_semester = (
+        f"{base_year}학년도 {'1' if base_month < 7 else '2'}학기"
+    )
 
     return subject_list, target_academic_year_and_semester
+
+
+def get_unavailable_date_list(scheduled_period_list, length_of_items):
+    date_count_dict = {}
+
+    for start, end in scheduled_period_list:
+        start = convert_datetime(start).date()
+        end = convert_datetime(end).date()
+        current = start
+
+        while current <= end:
+            date_count_dict[current] = date_count_dict.get(current, 0) + 1
+            current += timezone.timedelta(days=1)
+
+    unavailable_date_list = [
+        date for date, count in date_count_dict.items() if count == length_of_items
+    ]
+
+    return sorted(unavailable_date_list)
+
+
+def group_consecutive_date(unavailable_date_list):
+    if not unavailable_date_list:
+        return []
+
+    date_group_list = []
+    current_group_list = [unavailable_date_list[0]]
+
+    for i in range(1, len(unavailable_date_list)):
+        if unavailable_date_list[i] - unavailable_date_list[
+            i - 1
+        ] == timezone.timedelta(days=1):
+            current_group_list.append(unavailable_date_list[i])
+        else:
+            date_group_list.append(current_group_list)
+            current_group_list = [unavailable_date_list[i]]
+
+    date_group_list.append(current_group_list)
+
+    return date_group_list
+
+
+def format_date_range(date_group_list):
+    formatted_range_list = []
+
+    for group in date_group_list:
+        formatted_range_list.append({"start_date": group[0], "end_date": group[-1]})
+
+    return formatted_range_list
 
 
 #
@@ -150,7 +210,8 @@ def equipment(request):
             if (
                 collection["category"]["priority"] == category_priority
                 and any(
-                    purpose_priority in purpose for purpose in collection["item_purpose"]
+                    purpose_priority in purpose
+                    for purpose in collection["item_purpose"]
                 )
             )
         ]
@@ -183,7 +244,7 @@ def equipment(request):
     if query:
         query = query.lower().replace(" ", "")
         query_result_list = []
-        
+
         for collection in equipment_collection_list:
             if collection not in query_result_list:
                 for k, v in collection.items():
@@ -266,15 +327,27 @@ def equipment_detail(request, collection_id):
     }
 
     collection = airtable("get", "record", data)
-    
+
     # Add thumbnail to collection
     equipment_collection_list = get_equipment_data("collection")
-    collection["thumbnail"] = next((ec["thumbnail"] for ec in equipment_collection_list if ec["record_id"] == collection["record_id"]), None)
+    collection["thumbnail"] = next(
+        (
+            ec["thumbnail"]
+            for ec in equipment_collection_list
+            if ec["record_id"] == collection["record_id"]
+        ),
+        None,
+    )
 
     # Query string validation and redirect if necessary
-    if collection_id[0] != category_priority or is_query_string_invalid(category_priority, purpose_priority, period, category_list, purpose_list):
-        base_url = reverse("equipment:equipment_detail", kwargs={"collection_id": collection_id})
+    if collection_id[0] != category_priority or is_query_string_invalid(
+        category_priority, purpose_priority, period, category_list, purpose_list
+    ):
+        base_url = reverse(
+            "equipment:equipment_detail", kwargs={"collection_id": collection_id}
+        )
         query_string = {"categoryPriority": collection["category"]["priority"]}
+
         return redirect_with_query_string(base_url, query_string)
 
     # Process period
@@ -283,26 +356,43 @@ def equipment_detail(request, collection_id):
     # Check if rental is allowed and redirect if necessary
     if period:
         is_category_same = collection["category"]["priority"] == category_priority
-        is_rental_allowed = any(purpose_priority in collection_purpose for collection_purpose in collection["item_purpose"])
-        
+        is_rental_allowed = any(
+            purpose_priority in collection_purpose
+            for collection_purpose in collection["item_purpose"]
+        )
+
         if not is_category_same or not is_rental_allowed:
             base_url = reverse("equipment:equipment")
+
             query_string = {
                 "categoryPriority": category_priority,
                 "purposePriority": purpose_priority,
                 "period": period,
             }
+
             if not is_rental_allowed:
                 query_string["rentalLimited"] = collection["name"]
+
             return redirect_with_query_string(base_url, query_string)
 
         # Validate period against purpose constraints
         for purpose in purpose_list:
             if purpose["priority"] == purpose_priority:
-                at_least, up_to, max_duration = purpose["at_least"], purpose["up_to"], purpose["max"]
-                if days_from_now < at_least or days_from_now > up_to or duration < 0 or duration > max_duration:
+                at_least, up_to, max_duration = (
+                    purpose["at_least"],
+                    purpose["up_to"],
+                    purpose["max"],
+                )
+
+                if (
+                    days_from_now < at_least
+                    or days_from_now > up_to
+                    or duration < 0
+                    or duration > max_duration
+                ):
                     base_url = reverse("equipment:equipment")
                     query_string = {"categoryPriority": category_priority}
+
                     return redirect_with_query_string(base_url, query_string)
 
     # Prepare data for template
@@ -311,9 +401,29 @@ def equipment_detail(request, collection_id):
 
     # Process stock and unavailable periods
     stock_list = []
-    unavailable_period_list = []
-    user_start_date = timezone.now().date() + timezone.timedelta(days=days_from_now) if period else None
-    user_end_date = user_start_date + timezone.timedelta(days=duration) if user_start_date else None
+
+    scheduled_period_list = [
+        period
+        for item in collection["item"]
+        for period in zip(item["start_datetime"], item["end_datetime"])
+    ]
+
+    unavailable_date_list = get_unavailable_date_list(
+        scheduled_period_list, len(collection["item"])
+    )
+
+    unavailable_date_group_list = group_consecutive_date(unavailable_date_list)
+    unavailable_period_list = format_date_range(unavailable_date_group_list)
+
+    user_start_date = (
+        timezone.now().date() + timezone.timedelta(days=days_from_now)
+        if period
+        else None
+    )
+
+    user_end_date = (
+        user_start_date + timezone.timedelta(days=duration) if user_start_date else None
+    )
 
     for purpose in purpose_list:
         purpose["permitted"] = purpose["name"] in collection["item_purpose"]
@@ -321,50 +431,71 @@ def equipment_detail(request, collection_id):
 
         if period and purpose["permitted"]:
             for item in collection["item"]:
-                if purpose["name"] in item["purpose"] and "🟢" in item["validation"] and item["status"] != "Unavailable":
+                if (
+                    purpose["name"] in item["purpose"]
+                    and "🟢" in item["validation"]
+                    and item["status"] != "Unavailable"
+                ):
                     item_unavailable_periods = [
                         {
                             "start_date": convert_datetime(start).date(),
-                            "end_date": convert_datetime(end).date()
+                            "end_date": convert_datetime(end).date(),
                         }
-                        for start, end in zip(item["start_datetime"], item["end_datetime"])
+                        for start, end in zip(
+                            item["start_datetime"], item["end_datetime"]
+                        )
                         if start and end
                     ]
-                    
+
                     item_unavailable_periods.sort(key=lambda x: x["start_date"])
-                    unavailable_period_list.extend(item_unavailable_periods)
 
                     item_available = all(
-                        user_end_date < period["start_date"] or user_start_date > period["end_date"]
+                        user_end_date < period["start_date"]
+                        or user_start_date > period["end_date"]
                         for period in item_unavailable_periods
                     )
 
                     if item_available:
                         purpose["in_stock"] = True
-                        if purpose_priority == purpose["priority"] and item not in stock_list:
+
+                        if (
+                            purpose_priority == purpose["priority"]
+                            and item not in stock_list
+                        ):
                             stock_list.append(item)
 
     # Remove duplicates and sort unavailable periods
     unavailable_period_list = sorted(
         [dict(t) for t in {tuple(d.items()) for d in unavailable_period_list}],
-        key=lambda x: x["start_date"]
+        key=lambda x: x["start_date"],
     )
 
     # Merge overlapping periods and add weekday information
     merged_unavailable_period_list = []
+
     for period in unavailable_period_list:
-        if not merged_unavailable_period_list or period["start_date"] > merged_unavailable_period_list[-1]["end_date"]:
+        if (
+            not merged_unavailable_period_list
+            or period["start_date"] > merged_unavailable_period_list[-1]["end_date"]
+        ):
             start_weekday = get_weekday(period["start_date"].strftime("%Y-%m-%d"))
             end_weekday = get_weekday(period["end_date"].strftime("%Y-%m-%d"))
-            merged_unavailable_period_list.append({
-                "start_date": period["start_date"],
-                "end_date": period["end_date"],
-                "start_weekday": start_weekday,
-                "end_weekday": end_weekday
-            })
+
+            merged_unavailable_period_list.append(
+                {
+                    "start_date": period["start_date"],
+                    "end_date": period["end_date"],
+                    "start_weekday": start_weekday,
+                    "end_weekday": end_weekday,
+                }
+            )
         else:
-            merged_unavailable_period_list[-1]["end_date"] = max(merged_unavailable_period_list[-1]["end_date"], period["end_date"])
-            merged_unavailable_period_list[-1]["end_weekday"] = get_weekday(merged_unavailable_period_list[-1]["end_date"].strftime("%Y-%m-%d"))
+            merged_unavailable_period_list[-1]["end_date"] = max(
+                merged_unavailable_period_list[-1]["end_date"], period["end_date"]
+            )
+            merged_unavailable_period_list[-1]["end_weekday"] = get_weekday(
+                merged_unavailable_period_list[-1]["end_date"].strftime("%Y-%m-%d")
+            )
 
     # Get and filter limit list
     limit_list = get_equipment_data("limit")

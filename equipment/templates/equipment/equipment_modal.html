@@ -61,7 +61,33 @@
                         <div id="id_modal_filter" class="space-y-5">
                             <!-- id_category -->
                             <fieldset>
-                                <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
+                                <div class="flex justify-between items-center">
+                                    <legend class="text-sm font-medium leading-6 text-gray-900">범주</legend>
+                                    <div class="flex items-center group" x-data="{ on: isQuickFilterToggled }">
+                                        <button type="button"
+                                                class="relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:df-focus-ring-offset-white bg-gray-200"
+                                                role="switch"
+                                                aria-checked="false"
+                                                x-ref="switch"
+                                                x-state:on="Enabled"
+                                                x-state:off="Not Enabled"
+                                                :class="{ 'bg-flamingo group-hover:bg-flamingo-600': on, 'bg-gray-200 group-hover:bg-gray-300': !(on) }"
+                                                aria-labelledby="id_toggle_quick_filter"
+                                                :aria-checked="on.toString()"
+                                                @click="on = !on; toggleQuickFilter()">
+                                            <span aria-hidden="true"
+                                                  class="pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"
+                                                  x-state:on="Enabled"
+                                                  x-state:off="Not Enabled"
+                                                  :class="{ 'translate-x-4': on, 'translate-x-0': !(on) }"></span>
+                                        </button>
+                                        <span class="ml-1.5 text-sm cursor-pointer"
+                                              id="id_toggle_quick_filter"
+                                              @click="on = !on; $refs.switch.focus(); toggleQuickFilter()">
+                                            <span class="font-medium text-gray-500 group-hover:text-gray-700">빠른 적용</span>
+                                        </span>
+                                    </div>
+                                </div>
                                 <div class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
                                     {% for category in category_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
@@ -222,7 +248,9 @@
                                        data-max=""
                                        required
                                        hidden>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_purpose_cart_reset_msg" hidden></p>
+                                <p class="mt-2 text-sm text-flamingo-600"
+                                   id="id_purpose_cart_reset_msg"
+                                   hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_purpose_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_purpose_error" hidden></p>
                             </div>
@@ -296,7 +324,9 @@
                                        required
                                        hidden>
                                 <p class="mt-2 text-sm text-gray-500" id="id_period_help" hidden></p>
-                                <p class="mt-2 text-sm text-flamingo-600" id="id_period_cart_reset_msg" hidden></p>
+                                <p class="mt-2 text-sm text-flamingo-600"
+                                   id="id_period_cart_reset_msg"
+                                   hidden></p>
                                 <p class="mt-2 text-sm text-gray-500" id="id_period_descr" hidden></p>
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_period_error" hidden></p>
                             </div>
@@ -369,6 +399,7 @@
                                                value=""
                                                required
                                                hidden>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_project_help" hidden></p>
                                         <p class="mt-2 text-sm text-gray-500" id="id_project_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_project_error" hidden></p>
                                     </fieldset>
@@ -380,10 +411,13 @@
                                         ] })" x-init="init()">
                                         <div class="flex justify-between items-center">
                                             <label id="id_subject_label"
-                                                for="id_subject"
-                                                class="block text-sm font-medium leading-6 text-gray-900"
-                                                @click="$refs.button.focus()">교과목</label>
-                                            <div id="id_target_academic_year_and_semester" class="flex justify-end items-center text-sm leading-6 text-gray-700">{{ target_academic_year_and_semester }}</div>
+                                                   for="id_subject"
+                                                   class="block text-sm font-medium leading-6 text-gray-900"
+                                                   @click="$refs.button.focus()">교과목</label>
+                                            <div id="id_target_academic_year_and_semester"
+                                                 class="flex justify-end items-center text-sm leading-6 text-gray-700">
+                                                {{ target_academic_year_and_semester }}
+                                            </div>
                                         </div>
                                         <div class="relative mt-2">
                                             <button id="id_select_subject"
@@ -400,9 +434,9 @@
                                                 <span x-text="selected.kor_name" class="block truncate"></span>
                                                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                     <svg class="h-5 w-5 text-gray-400"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                        aria-hidden="true">
+                                                         viewBox="0 0 20 20"
+                                                         fill="currentColor"
+                                                         aria-hidden="true">
                                                         <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd">
                                                         </path>
                                                     </svg>
@@ -445,23 +479,23 @@
                                                         @mouseleave="onMouseLeave($event)"
                                                         :class="{ 'bg-flamingo-600 text-white': activeIndex === {{ forloop.counter }}, 'text-gray-900': !(activeIndex === {{ forloop.counter }}) }">
                                                         <span x-state:on="Selected"
-                                                            x-state:off="Not Selected"
-                                                            class="font-semibold block mr-4 truncate"
-                                                            :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ subject.kor_name }}</span>
+                                                              x-state:off="Not Selected"
+                                                              class="font-semibold block mr-4 truncate"
+                                                              :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': selectedIndex === {{ forloop.counter }} }">{{ subject.kor_name }}</span>
                                                         <span x-state:on="Highlighted"
-                                                            x-state:off="Not Highlighted"
-                                                            class="font-normal block mt-1 mr-2 text-gray-500"
-                                                            :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ subject.code }}</span>
+                                                              x-state:off="Not Highlighted"
+                                                              class="font-normal block mt-1 mr-2 text-gray-500"
+                                                              :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-gray-500': !(activeIndex === {{ forloop.counter }}) }">{{ subject.code }}</span>
                                                         <span x-state:on="Highlighted"
-                                                            x-state:off="Not Highlighted"
-                                                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
-                                                            :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
-                                                            x-show="selectedIndex === {{ forloop.counter }}"
-                                                            style="display: none">
+                                                              x-state:off="Not Highlighted"
+                                                              class="absolute inset-y-0 right-0 flex items-center pr-4 text-flamingo-600"
+                                                              :class="{ 'text-white': activeIndex === {{ forloop.counter }}, 'text-flamingo-600': !(activeIndex === {{ forloop.counter }}) }"
+                                                              x-show="selectedIndex === {{ forloop.counter }}"
+                                                              style="display: none">
                                                             <svg class="h-5 w-5"
-                                                                viewBox="0 0 20 20"
-                                                                fill="currentColor"
-                                                                aria-hidden="true">
+                                                                 viewBox="0 0 20 20"
+                                                                 fill="currentColor"
+                                                                 aria-hidden="true">
                                                                 <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd">
                                                                 </path>
                                                             </svg>
@@ -470,16 +504,8 @@
                                                 {% endfor %}
                                             </ul>
                                         </div>
-                                        <input id="id_subject_code"
-                                            type="text"
-                                            value=""
-                                            required
-                                            hidden>
-                                        <input id="id_subject_name"
-                                            type="text"
-                                            value=""
-                                            required
-                                            hidden>
+                                        <input id="id_subject_code" type="text" value="" required hidden>
+                                        <input id="id_subject_name" type="text" value="" required hidden>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_subject_error" hidden></p>
                                     </div>
                                     <fieldset>
@@ -487,7 +513,7 @@
                                             <legend class="text-sm font-medium leading-6 text-gray-900">교원</legend>
                                         </div>
                                         <div id="id_found_instructor_list" class="mt-2 grid gap-4">
-                                             <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
+                                            <div class="relative flex items-center h-[72px] p-4 shadow-sm rounded-md df-ring-inset-gray bg-gray-50">
                                                 <div class="flex flex-1 justify-center">
                                                     <span id="id_found_instructor_list_help"
                                                           class="text-sm text-center text-gray-500">교과목을 선택하면 선택 가능한 교원이 표시돼요.</span>
@@ -501,11 +527,7 @@
                                                value=""
                                                required
                                                hidden>
-                                        <input id="id_instructor_name"
-                                               type="text"
-                                               value=""
-                                               required
-                                               hidden>
+                                        <input id="id_instructor_name" type="text" value="" required hidden>
                                         <p class="mt-2 text-sm text-gray-500" id="id_instructor_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600"
                                            id="id_instructor_error"
@@ -529,11 +551,7 @@
                                                value=""
                                                required
                                                hidden>
-                                        <input id="id_start_time_record_id"
-                                               type="text"
-                                               value=""
-                                               required
-                                               hidden>
+                                        <input id="id_start_time_record_id" type="text" value="" required hidden>
                                         <p class="mt-2 text-sm text-gray-500" id="id_start_time_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600"
                                            id="id_start_time_error"
@@ -556,11 +574,7 @@
                                                value=""
                                                required
                                                hidden>
-                                        <input id="id_end_time_record_id"
-                                               type="text"
-                                               value=""
-                                               required
-                                               hidden>
+                                        <input id="id_end_time_record_id" type="text" value="" required hidden>
                                         <p class="mt-2 text-sm text-gray-500" id="id_end_time_descr" hidden></p>
                                         <p class="mt-2 text-sm text-flamingo-600" id="id_end_time_error" hidden></p>
                                     </fieldset>
@@ -569,18 +583,22 @@
                                 <div class="space-y-5 pt-5">
                                     <div class="flex rounded-md bg-gray-50 p-4">
                                         <div>
-                                            <h3 class="text-sm font-semibold text-gray-800">
-                                                기자재 예약 신청을 위한 서약
-                                            </h3>
+                                            <h3 class="text-sm font-semibold text-gray-800">기자재 예약 신청을 위한 서약</h3>
                                             <div class="mt-2 text-sm text-gray-700 space-y-2">
                                                 <p>본인은 다음 사항을 숙지하고 있습니다.</p>
                                                 <ul role="list" class="list-disc space-y-1 pl-5 pb-2">
                                                     <li>디닷에프는 시설예약을 신청한 회원의 개인정보 중 학번에 한하여 영구 보유하며 해당 회원의 파기 요청 접수 시 또는 운영진 판단 하 보유 필요성 부재 시 파기합니다.</li>
-                                                    <li>대여 및 반납 시 <span class="class-responsible-party class-need-josa">촬영, 동시녹음 담당</span> 직접 기자재를 점검하고 이상 유무를 확인하여야 합니다.</li>
-                                                    <li><span class="class-responsible-party">촬영, 동시녹음 담당</span>의 기자재 취급 및 운용 역량이 부족할 경우 대여가 거부될 수 있습니다.</li>
+                                                    <li>
+                                                        대여 및 반납 시 <span class="class-responsible-party class-need-josa">촬영, 동시녹음 담당</span> 직접 기자재를 점검하고 이상 유무를 확인하여야 합니다.
+                                                    </li>
+                                                    <li>
+                                                        <span class="class-responsible-party">촬영, 동시녹음 담당</span>의 기자재 취급 및 운용 역량이 부족할 경우 대여가 거부될 수 있습니다.
+                                                    </li>
                                                     <li>대여 목적 및 기간을 준수하지 않을 경우 불이익이 발생할 수 있습니다.</li>
                                                 </ul>
-                                                <p class="border-t border-gray-100 pt-4">상기 내용 및 선택사항은 사실과 다름이 없으며 허위 내용이 포함된 경우 관련 규정에 의거한 처분 및 그 외 모든 조치에 대해 이의를 제기하지 않을 것을 서약합니다.</p>
+                                                <p class="border-t border-gray-100 pt-4">
+                                                    상기 내용 및 선택사항은 사실과 다름이 없으며 허위 내용이 포함된 경우 관련 규정에 의거한 처분 및 그 외 모든 조치에 대해 이의를 제기하지 않을 것을 서약합니다.
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -611,13 +629,20 @@
                                                     aria-labelledby="id_signature_canvas_label"
                                                     tabindex="0"></canvas>
                                         </div>
-                                        <p class="mt-2 text-sm text-gray-500" id="id_signature_canvas_help">서명은 정자체만 허용되며 흘림체로 인식될 경우 재서명이 요구될 수 있어요.</p>
-                                        <p class="mt-2 text-sm text-flamingo-600" id="id_signature_canvas_error" hidden></p>
+                                        <p class="mt-2 text-sm text-gray-500" id="id_signature_canvas_help">서명은 정자체만 허용되며 흘림체로 인식될 경우 예약 신청이 어려울 수 있어요.</p>
+                                        <p class="mt-2 text-sm text-flamingo-600"
+                                           id="id_signature_canvas_error"
+                                           hidden></p>
                                     </div>
                                     <div class="flex rounded-md shadow bg-flamingo-50 p-4">
                                         <div class="flex-shrink-0">
-                                            <svg class="h-5 w-5 text-flamingo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            <svg class="h-5 w-5 text-flamingo-400"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                                 aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd">
+                                                </path>
                                             </svg>
                                         </div>
                                         <div class="ml-3">
