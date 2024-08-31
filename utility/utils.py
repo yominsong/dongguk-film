@@ -99,7 +99,7 @@ def send_facility_request_status_update(request):
 
         if "🟢" in validation:
             film_title = facility_request["film_title"]
-            subject_name = facility_request["subject_name"]
+            subject_name = facility_request.get("subject_name", None)
             is_for_instructor = facility_request["for_instructor"]
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else film_title
