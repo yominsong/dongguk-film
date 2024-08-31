@@ -1190,7 +1190,7 @@ def airtable(
                     "priority": fields.get("Purpose priority", [None])[0],
                     "keyword": fields.get("Purpose keyword", [None])[0],
                 },
-                "subject_name": fields["Subject name"],
+                "subject_name": fields.get("Subject name", None),
                 "duration": fields["Duration"],
                 "start_datetime": start_datetime,
                 "end_datetime": end_datetime,

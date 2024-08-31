@@ -397,9 +397,11 @@ def add_equipment_to_table(data):
     document_id = data["document_id"]
     cart = data["cart"]
     collection_count = Counter(item["collection_id"] for item in cart)
+
     unique_cart = list(
         reversed({item["collection_id"]: item for item in cart}.values())
     )
+    
     insert_requests = []
     table_start_index = 271 if data["is_for_instructor"] else 647
 
