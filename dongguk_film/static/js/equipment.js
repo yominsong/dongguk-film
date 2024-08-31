@@ -502,13 +502,6 @@ function executeWhenGroupLimitIsExceeded() {
     });
 }
 
-function toggleQuickFilter() {
-    isQuickFilterToggled = !isQuickFilterToggled;
-    sessionStorage.setItem("isQuickFilterToggled", JSON.stringify(isQuickFilterToggled));
-
-    updateQuickFilterHandler();
-}
-
 function handleQuickFilter() {
     setTimeout(() => { id_filter_or_checkout.click() }, 50);
 }
@@ -516,15 +509,23 @@ function handleQuickFilter() {
 function updateQuickFilterHandler() {
     class_categories.forEach(category => {
         category.removeEventListener("click", handleQuickFilter);
+        category.onclick = null;
     });
 
     if (isQuickFilterToggled) {
         class_categories.forEach(category => {
-            if (category.value !== urlParams.get("categoryPriority")) {
-                category.addEventListener("click", handleQuickFilter);
-            };
+            category.addEventListener("click", handleQuickFilter);
+            // category.onclick = () => { id_category.value = category.value; id_filter_or_checkout.click() };
         });
     };
+}
+
+updateQuickFilterHandler();
+
+function toggleQuickFilter() {
+    isQuickFilterToggled = !isQuickFilterToggled;
+    sessionStorage.setItem("isQuickFilterToggled", JSON.stringify(isQuickFilterToggled));
+    updateQuickFilterHandler();
 }
 
 //
@@ -634,7 +635,7 @@ function initCalendar() {
             };
 
             if (isStartDate) {
-                id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight, behavior: "auto" })
+                id_scrollable_part_of_modal.scrollTo({ top: id_scrollable_part_of_modal.scrollHeight, behavior: "auto" });
             };
 
             if (isSelected) {
@@ -1453,7 +1454,12 @@ function initForm() {
         const svg = label.querySelector("svg");
 
         if (category.id.indexOf("category") !== -1 && category.value === urlParams.get("categoryPriority")) {
-            category.click();
+            setTimeout(() => {
+                id_category.value = category.value;
+                label.classList.add("df-ring-inset-flamingo");
+                label.classList.remove("df-ring-inset-gray");
+                svg.classList.remove("invisible");
+            }, 50);
         };
 
         category.addEventListener("click", () => {
@@ -1506,14 +1512,7 @@ function initForm() {
         };
     });
 
-    if (urlParams.get("categoryPriority") !== null) {
-        const currentCategory = code("id_category_", urlParams.get("categoryPriority"));
-
-        currentCategory.click();
-    };
-
     id_purpose.value = null;
-    // id_initialize_purpose.click();
     firstPurpose.style.setProperty("border-top", "none", "important");
 
     if (currentPurpose !== null && currentPurpose !== "") {
@@ -2253,7 +2252,6 @@ function initRequest() {
     window.addEventListener("pageshow", () => {
         requestVerifyAuthentication();
         updateUrlParams();
-        updateQuickFilterHandler();
         initFeedback();
         initSubjectValidation();
 
