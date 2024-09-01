@@ -122,20 +122,16 @@ def send_facility_request_status_update(request):
                 "created_time": facility_request["created_time"],
                 "approved_time": (
                     facility_request["approved_time"]
-                    if status == "Canceled"
-                    else (
-                        format_datetime(timezone.now())
-                        if status == "Approved"
-                        else None
-                    )
+                    if status == "Approved" or status == "Canceled"
+                    else None
                 ),
                 "start_datetime": facility_request["start_datetime"],
                 "end_datetime": facility_request["end_datetime"],
                 "canceled_time": (
-                    format_datetime(timezone.now()) if status == "Canceled" else None
+                    facility_request["canceled_time"] if status == "Canceled" else None
                 ),
                 "rejected_time": (
-                    format_datetime(timezone.now()) if status == "Rejected" else None
+                    facility_request["rejected_time"] if status == "Rejected" else None
                 ),
                 "public_id": facility_request["public_id"],
                 "private_id": facility_request["private_id"],
