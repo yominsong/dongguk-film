@@ -117,9 +117,7 @@ def send_facility_request_status_update(request):
                 sms_and_mail_type = "FACILITY_REQUEST_REJECTED"
 
             record = {
-                # "film_title": film_title,
                 "category_in_korean": facility_request["category_in_korean"],
-                # "subject_name": subject_name,
                 "user": facility_request["user"],
                 "public_id": facility_request["public_id"],
                 "private_id": facility_request["private_id"],
