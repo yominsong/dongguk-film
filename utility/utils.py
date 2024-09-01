@@ -181,6 +181,8 @@ def send_facility_request_status_update(request):
             "approved_time": record["approved_time"],
             "start_datetime": record["start_datetime"],
             "end_datetime": record["end_datetime"],
+            "canceled_time": record["canceled_time"],
+            "rejected_time": record["rejected_time"],
             "public_id": record["public_id"],
             "private_id": record["private_id"],
         }
