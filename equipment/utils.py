@@ -336,7 +336,11 @@ def is_invalid_signature(signature_bs64_encoded_data, student_name):
 def copy_equipment_use_request(data):
     public = data["public"]
     name_of_subject_or_project = data["name_of_subject_or_project"]
-    student_id = mask_personal_information("student_id", data["student_id"]) if public else data["student_id"]
+    student_id = (
+        mask_personal_information("student_id", data["student_id"])
+        if public
+        else data["student_id"]
+    )
 
     if data["is_for_instructor"]:
         file_id = GOOGLE_DOCS_TEMPLATE_ID["INSTRUCTIONAL_EQUIPMENT_USE_REQUEST_COPY"]
@@ -370,7 +374,9 @@ def add_editor_permission(file_id):
 def make_file_public(file_id):
     permission = {"role": "reader", "type": "anyone"}
 
-    return GOOGLE_DRIVE_API.permissions().create(fileId=file_id, body=permission).execute()
+    return (
+        GOOGLE_DRIVE_API.permissions().create(fileId=file_id, body=permission).execute()
+    )
 
 
 def replace_text(document_id, replacements):
@@ -389,7 +395,9 @@ def replace_text(document_id, replacements):
     body = {"requests": requests}
 
     return (
-        GOOGLE_DOCS_API.documents().batchUpdate(documentId=document_id, body=body).execute()
+        GOOGLE_DOCS_API.documents()
+        .batchUpdate(documentId=document_id, body=body)
+        .execute()
     )
 
 
@@ -401,7 +409,7 @@ def add_equipment_to_table(data):
     unique_cart = list(
         reversed({item["collection_id"]: item for item in cart}.values())
     )
-    
+
     insert_requests = []
     table_start_index = 271 if data["is_for_instructor"] else 647
 
@@ -601,7 +609,7 @@ def create_request(request):
         status, reason, msg = (
             "PROCESSING",
             "CHECKING_FOR_UNAVAILABLE_ITEM",
-            "기자재 상태를 확인하고 있어요.",
+            "기자재 상태를 확인하고 있어요. 🔍",
         )
 
         yield json.dumps(
@@ -629,7 +637,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "FINDING_ALTERNATIVE_ITEM",
-                "대체 기자재를 찾고 있어요.",
+                "대체 기자재를 찾고 있어요. 👀",
             )
 
             yield json.dumps(
@@ -661,7 +669,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "REPLACING_UNAVAILABLE_ITEM",
-                "대체 기자재로 교체하고 있어요.",
+                "대체 기자재로 교체하고 있어요. 🔄",
             )
 
             yield json.dumps(
@@ -712,7 +720,7 @@ def create_request(request):
         status, reason, msg = (
             "PROCESSING",
             "PROCESSING_SIGNATURE",
-            "서명을 처리하고 있어요.",
+            "서명을 처리하고 있어요. 🖋️",
         )
 
         yield json.dumps(
@@ -735,7 +743,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "PREPARING_REQUEST_DATA",
-                "기자재 예약 신청 정보를 처리하고 있어요.",
+                "기자재 예약 신청 정보를 처리하고 있어요. 💿",
             )
 
             yield json.dumps(
@@ -753,6 +761,16 @@ def create_request(request):
                 subject_name = request.POST.get("subjectName", None)
                 instructor_id = request.POST.get("instructor", None)
                 instructor_name = request.POST.get("instructorName", None)
+                base_date = timezone.now().date()
+                found_subject_list = get_subject(base_date)
+                subject_dict = {subject["code"]: subject["instructor"] for subject in found_subject_list}
+                instructor_list = subject_dict.get(subject_code, [])
+
+                for instructor in instructor_list:
+                    if instructor_id.replace("*", "") in instructor["id"] and instructor["name"] == instructor_name:
+                        instructor_id = instructor["id"]
+                        break
+
                 purpose_priority = cart[0]["purpose"]["priority"]
             else:
                 project_record_id = request.POST.get("project", None)
@@ -773,18 +791,26 @@ def create_request(request):
                     project["created_time"]
                 ).date()
 
-                base_year = base_date.year
-                base_month = base_date.month
-                academic_year = f"{base_year}학년도"
-                academic_semester = "1학기" if base_month < 7 else "2학기"
+                academic_year = academic_semester = "-"
                 purpose_priority = project["purpose"]["priority"]
-                found_instructor_list = find_instructor(purpose_priority, base_date)[0]
-
                 subject_code = subject_name = instructor_id = instructor_name = "-"
 
                 if is_curricular:
+                    base_year = base_date.year
+                    base_month = base_date.month
+                    academic_year = f"{base_year}학년도"
+                    academic_semester = "1학기" if base_month < 7 else "2학기"
+                    found_instructor_list = find_instructor(
+                        purpose_priority, base_date
+                    )[0]
+
                     instuctor = next(
-                        (x for x in found_instructor_list if x["id"] == project["instructor"]), None
+                        (
+                            x
+                            for x in found_instructor_list
+                            if x["id"] == project["instructor"]
+                        ),
+                        None,
                     )
 
                     subject_code = instuctor["code"]
@@ -857,7 +883,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "PREPARING_REQUEST_DOCUMENT",
-                "기자재 예약 신청서를 준비하고 있어요.",
+                "기자재 예약 신청서를 준비하고 있어요. 📄",
             )
 
             yield json.dumps(
@@ -928,7 +954,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "WRITING_REQUEST_DOCUMENT",
-                "기자재 예약 신청서를 작성하고 있어요.",
+                "기자재 예약 신청서를 작성하고 있어요. 📝",
             )
 
             yield json.dumps(
@@ -956,7 +982,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "FINDING_PERSONAL_INFORMATION",
-                "마스킹할 개인정보를 찾고 있어요.",
+                "마스킹할 개인정보를 찾고 있어요. 🕵️",
             )
 
             yield json.dumps(
@@ -1010,7 +1036,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "MASKING_PERSONAL_INFORMATION",
-                "개인정보를 마스킹하고 있어요.",
+                "개인정보를 마스킹하고 있어요. 🔐",
             )
 
             yield json.dumps(
@@ -1030,7 +1056,7 @@ def create_request(request):
             status, reason, msg = (
                 "PROCESSING",
                 "CREATING_RECORD",
-                "기자재 예약 신청 정보를 저장하고 있어요.",
+                "기자재 예약 신청 정보를 저장하고 있어요. 💾",
             )
 
             yield json.dumps(
@@ -1491,3 +1517,183 @@ def equipment(request):
         }
 
     return JsonResponse(response)
+
+
+[
+    {
+        "kor_name": "현대영화감상",
+        "eng_name": "Screening of Modern Film",
+        "code": "FIL2080",
+        "target_university_year": [1],
+        "instructor": [{"id": "NL190481", "name": "이종승"}],
+    },
+    {
+        "kor_name": "영상미학분석",
+        "eng_name": "Aesthetics of Film",
+        "code": "FIL2083",
+        "target_university_year": [1],
+        "instructor": [
+            {"id": "NL190391", "name": "백태현"},
+            {"id": "19960033", "name": "유지나"},
+        ],
+    },
+    {
+        "kor_name": "다큐멘타리분석",
+        "eng_name": "Documentary",
+        "code": "FIL2088",
+        "target_university_year": [2],
+        "instructor": [{"id": "20010743", "name": "박종호"}],
+    },
+    {
+        "kor_name": "고전영화분석",
+        "eng_name": "Classical Cinema",
+        "code": "FIL2092",
+        "target_university_year": [2],
+        "instructor": [{"id": "NL190506", "name": "박우성"}],
+    },
+    {
+        "kor_name": "편집",
+        "eng_name": "Editing Basics",
+        "code": "FIL2093",
+        "target_university_year": [2],
+        "instructor": [{"id": "NP230020", "name": "이승호"}],
+    },
+    {
+        "kor_name": "애니메이션실습",
+        "eng_name": "Introductory Animation Workshop",
+        "code": "FIL2095",
+        "target_university_year": [2],
+        "instructor": [
+            {"id": "NL190471", "name": "김현영"},
+            {"id": "NL190633", "name": "정군"},
+        ],
+    },
+    {
+        "kor_name": "세계영화사2",
+        "eng_name": "World Film History 2",
+        "code": "FIL2100",
+        "target_university_year": [2],
+        "instructor": [
+            {"id": "NL190793", "name": "하정현"},
+            {"id": "NL190481", "name": "이종승"},
+        ],
+    },
+    {
+        "kor_name": "영화제작워크숍2",
+        "eng_name": "Film Production Workshop II",
+        "code": "FIL2102",
+        "target_university_year": [2],
+        "instructor": [
+            {"id": "20131148", "name": "핍초도로프"},
+            {"id": "NL210145", "name": "최윤영"},
+        ],
+    },
+    {
+        "kor_name": "촬영심화",
+        "eng_name": "Cinematography Techniques",
+        "code": "FIL2103",
+        "target_university_year": [2],
+        "instructor": [{"id": "NP180062", "name": "백성빈"}],
+    },
+    {
+        "kor_name": "졸업영화캡스톤디자인",
+        "eng_name": "Thesis Project(Capstone Design)",
+        "code": "FIL4067",
+        "target_university_year": [4],
+        "instructor": [
+            {"id": "20180291", "name": "양윤호"},
+            {"id": "NL190503", "name": "조은희"},
+            {"id": "NP220180", "name": "김윤신"},
+        ],
+    },
+    {
+        "kor_name": "사운드실습심화",
+        "eng_name": "Sound Production Techniques",
+        "code": "FIL4068",
+        "target_university_year": [3],
+        "instructor": [{"id": "NP210028", "name": "한명환"}],
+    },
+    {
+        "kor_name": "다큐멘타리제작캡스톤디자인",
+        "eng_name": "Documentary Production Capstone Design",
+        "code": "FIL4071",
+        "target_university_year": [3],
+        "instructor": [{"id": "20010743", "name": "박종호"}],
+    },
+    {
+        "kor_name": "극영화제작캡스톤디자인",
+        "eng_name": "Film Production Capstone Design",
+        "code": "FIL4072",
+        "target_university_year": [3],
+        "instructor": [{"id": "NP220180", "name": "김윤신"}],
+    },
+    {
+        "kor_name": "예술과젠더",
+        "eng_name": "Arts and Gender",
+        "code": "FIL4073",
+        "target_university_year": [3],
+        "instructor": [{"id": "19960033", "name": "유지나"}],
+    },
+    {
+        "kor_name": "편집심화",
+        "eng_name": "Editing Techniques",
+        "code": "FIL4074",
+        "target_university_year": [3, 4],
+        "instructor": [{"id": "NL190495", "name": "박영삼"}],
+    },
+    {
+        "kor_name": "프로덕션디자인",
+        "eng_name": "Production Design",
+        "code": "FIL4080",
+        "target_university_year": [3, 4],
+        "instructor": [{"id": "NL190538", "name": "조우정"}],
+    },
+    {
+        "kor_name": "지역과영상교육",
+        "eng_name": "Community Media Education Partnership",
+        "code": "FIL4083",
+        "target_university_year": [3, 4],
+        "instructor": [{"id": "NP200315", "name": "문다원"}],
+    },
+    {
+        "kor_name": "실험영화캡스톤디자인",
+        "eng_name": "Experimental Film Capstone Design",
+        "code": "FIL4084",
+        "target_university_year": [3, 4],
+        "instructor": [{"id": "20131148", "name": "핍초도로프"}],
+    },
+    {
+        "kor_name": "감독스타일분석",
+        "eng_name": "Seminar on Major Filmmakers",
+        "code": "FIL4087",
+        "target_university_year": [3, 4],
+        "instructor": [
+            {"id": "NL190639", "name": "이대범"},
+            {"id": "20060217", "name": "정수완"},
+        ],
+    },
+    {
+        "kor_name": "영화홍보마케팅",
+        "eng_name": "Film Publicity & Marketing",
+        "code": "FIL4088",
+        "target_university_year": [3, 4],
+        "instructor": [{"id": "NL190463", "name": "한순호"}],
+    },
+    {
+        "kor_name": "각색시나리오실습",
+        "eng_name": "Novel into Screenplay",
+        "code": "FIL4091",
+        "target_university_year": [3],
+        "instructor": [
+            {"id": "NL190792", "name": "이수진"},
+            {"id": "NL190503", "name": "조은희"},
+        ],
+    },
+    {
+        "kor_name": "융복합매체캡스톤디자인",
+        "eng_name": "Capstone Design of Expanded Media",
+        "code": "FIL4093",
+        "target_university_year": [3],
+        "instructor": [{"id": "NP200315", "name": "문다원"}],
+    },
+]

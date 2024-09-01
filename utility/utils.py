@@ -830,19 +830,21 @@ def get_subject(base_date: str):
     return result_list
 
 
-def find_instructor(purpose: str, base_date: str):
+def find_instructor(purpose_priority: str, base_date: str):
     purpose_list = get_equipment_data("purpose")
     purpose_curricular = False
 
     for purpose_item in purpose_list:
-        if purpose_item["priority"] == purpose:
+        if purpose_item["priority"] == purpose_priority:
             purpose_keyword = purpose_item["keyword"].replace(" ", "")
             purpose_secondary_keyword = purpose_item.get("secondary_keyword", None)
+
             purpose_secondary_keyword = (
                 purpose_secondary_keyword.replace(" ", "")
                 if purpose_secondary_keyword
                 else None
             )
+            
             purpose_curricular = purpose_item["curricular"]
             purpose_for_senior_project = purpose_item["for_senior_project"]
             break
