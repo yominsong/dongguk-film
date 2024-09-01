@@ -507,7 +507,7 @@ function handleAjaxCallback(response) {
             id_project_help.hidden = true;
         } else if (response.status === "FAIL") {
             initFoundProjectList();
-            id_project_help.innerHTML = "<a href='/project/' class='underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white'>프로젝트를 새로 등록</a>해보세요.";
+            id_project_help.innerHTML = "<a href='/project/?action=openModal' class='underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white'>프로젝트를 새로 등록</a>해보세요.";
             id_project_help.hidden = false;
         };
     }

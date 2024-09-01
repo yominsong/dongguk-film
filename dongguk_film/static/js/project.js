@@ -259,6 +259,26 @@ function isItOkayToSubmitProjectForm() {
     return areStaffsAdded && areAllRequiredPositionsAdded && isPurposeSelected && isUserProducer && isItOkayToSubmitForm();
 }
 
+function executeWhenUserGoesToCreateProject() {
+    if (urlParams.get("action") === "openModal") {
+        const openModal = document.querySelector(".class-create");
+
+        setTimeout(() => {
+            openModal.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "nearest"
+            });
+        }, 300);
+
+        setTimeout(() => { openModal.classList.add("blink") }, 800);
+        setTimeout(() => { openModal.click() }, 1100);
+        setTimeout(() => { openModal.classList.remove("blink") }, 3800);
+    };
+}
+
+executeWhenUserGoesToCreateProject();
+
 function executeWhenPurposeIsSelected(selectedPurpose = null) {
     displayErrorInPurpose(false);
     displayError(false, id_instructor);
