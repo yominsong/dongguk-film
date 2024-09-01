@@ -337,6 +337,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "CREATE_FACILITY_REQUEST"
     elif msg_type == "CREATE_FACILITY_REQUEST":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         start_datetime = data.get("start_datetime", "Unknown")
@@ -369,14 +370,15 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{status_emoji} 시설예약 신청 {status_in_kor}",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "FACILITY_REQUEST_NOT_PROCESSED"
     elif msg_type == "FACILITY_REQUEST_NOT_PROCESSED":
-        name = data.get("name_of_subject_or_project", "Unknown")
+        record_url = data.get("record_url", "Unknown")
+        name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         start_datetime = data.get("start_datetime", "Unknown")
         end_datetime = data.get("end_datetime", "Unknown")
@@ -404,13 +406,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{warning_emoji} 시설예약 확정 또는 반려 필요",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "APPROVE_FACILITY_REQUEST"
     elif msg_type == "APPROVE_FACILITY_REQUEST":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         approved_time = data.get("approved_time", "Unknown")
@@ -440,13 +443,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{status_emoji} 시설예약 확정 {status_in_kor}",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "FACILITY_USE_START_DELAYED"
     elif msg_type == "FACILITY_USE_START_DELAYED":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         approved_time = data.get("approved_time", "Unknown")
@@ -476,17 +480,19 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{warning_emoji} 시설 사용 시작 확인 필요",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "FACILITY_USE_END_DELAYED"
     elif msg_type == "FACILITY_USE_END_DELAYED":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         approved_time = data.get("approved_time", "Unknown")
         started_time = data.get("started_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
         end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
@@ -501,7 +507,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}\nㆍ시작일시: {started_time}\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}"
+
+        if started_time != "Unknown":
+            description += f"\nㆍ시작일시: {started_time}"
+        else:
+            description += f"\nㆍ예정 시작일시: {start_datetime}"
+
+        description = f"\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -512,13 +525,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{warning_emoji} 시설 사용 종료 확인 필요",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "CANCEL_FACILITY_REQUEST"
     elif msg_type == "CANCEL_FACILITY_REQUEST":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         approved_time = data.get("approved_time", "Unknown")
@@ -554,13 +568,14 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{status_emoji} 시설예약 취소 {status_in_kor}",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }
 
     # msg_type: "REJECT_FACILITY_REQUEST"
     elif msg_type == "REJECT_FACILITY_REQUEST":
+        record_url = data.get("record_url", "Unknown")
         name = data.get("name", "Unknown")
         created_time = data.get("created_time", "Unknown")
         start_datetime = data.get("start_datetime", "Unknown")
@@ -590,7 +605,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             ),
             "author_url": "",
             "title": f"{status_emoji} 시설예약 반려 {status_in_kor}",
-            "url": "https://dongguk.film/equipment",
+            "url": record_url,
             "thumbnail_url": "",
             "description": description,
         }

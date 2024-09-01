@@ -179,7 +179,8 @@ def send_facility_request_status_update(request):
 
         data = {
             "status": "DONE",
-            "name": f'{record["name_of_subject_or_project"]} ({record["category_in_korean"]})',
+            "record_url": f"https://airtable.com/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_ID['facility-request']}/{record_id}",
+            "name": f'{record["name_of_subject_or_project"]} {record["category_in_korean"]}',
             "created_time": record["created_time"],
             "approved_time": record["approved_time"],
             "start_datetime": record["start_datetime"],
@@ -287,7 +288,7 @@ def remind_facility_use_end(request):
 
 
 def warn_facility_request_not_processed(request):
-    formula = "AND(Status = 'Pending', DATETIME_DIFF(NOW(), {Created time}, 'minutes') > 30, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Pending', FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
@@ -297,6 +298,7 @@ def warn_facility_request_not_processed(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        record_id = facility_request["record_id"]
         name = facility_request["name"]
         created_time = facility_request["created_time"]
         start_datetime = facility_request["start_datetime"]
@@ -305,6 +307,7 @@ def warn_facility_request_not_processed(request):
         private_id = facility_request["private_id"]
 
         data = {
+            "record_url": f"https://airtable.com/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_ID['facility-request']}/{record_id}",
             "name": name,
             "created_time": created_time,
             "start_datetime": start_datetime,
@@ -329,6 +332,7 @@ def warn_facility_use_start_delay(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        record_id = facility_request["record_id"]
         name = facility_request["name"]
         created_time = facility_request["created_time"]
         approved_time = facility_request["approved_time"]
@@ -338,6 +342,7 @@ def warn_facility_use_start_delay(request):
         private_id = facility_request["private_id"]
 
         data = {
+            "record_url": f"https://airtable.com/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_ID['facility-request']}/{record_id}",
             "name": name,
             "created_time": created_time,
             "approved_time": approved_time,
@@ -353,7 +358,9 @@ def warn_facility_use_start_delay(request):
 
 
 def warn_facility_use_end_delay(request):
-    formula = "AND(Status = 'In Progress', {Is after end datetime})"
+    formula = (
+        "AND(OR(Status = 'Approved', Status = 'In Progress'), {Is after end datetime})"
+    )
 
     data = {
         "table_name": "facility-request",
@@ -363,19 +370,23 @@ def warn_facility_use_end_delay(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        record_id = facility_request["record_id"]
         name = facility_request["name"]
         created_time = facility_request["created_time"]
         approved_time = facility_request["approved_time"]
         started_time = facility_request["started_time"]
+        start_datetime = facility_request["start_datetime"]
         end_datetime = facility_request["end_datetime"]
         public_id = facility_request["public_id"]
         private_id = facility_request["private_id"]
 
         data = {
+            "record_url": f"https://airtable.com/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_ID['facility-request']}/{record_id}",
             "name": name,
             "created_time": created_time,
             "approved_time": approved_time,
             "started_time": started_time,
+            "start_datetime": start_datetime,
             "end_datetime": end_datetime,
             "public_id": public_id,
             "private_id": private_id,
@@ -433,10 +444,10 @@ def update_subject(request):
 
     # Set Chrome options
     chrome_options = Options()
-    # chrome_options.add_experimental_option("detach", True)
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_experimental_option("detach", True)
+    # chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--no-sandbox")
+    # chrome_options.add_argument("--disable-dev-shm-usage")
 
     # Set Selenium Wire options
     seleniumwire_options = {"disable_encoding": True}
@@ -509,7 +520,7 @@ def update_subject(request):
     except (TimeoutException, NoSuchElementException):
         print("Failed to find the login button.")
 
-    time.sleep(5)
+    time.sleep(3)
 
     # Use JavaScript to delete elements with cl-aside classes
     remove_cl_aside()
@@ -522,23 +533,24 @@ def update_subject(request):
             )
         )
 
-        print(f"Language change button found: {lang_button.text}")
+        lang_button.click()
+        print("Language change button clicked.")
 
-        if lang_button.text == "ENG":
-            lang_button.click()
-
-            kor_option = wait.until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "//div[@class='cl-text' and text()='KOR']")
+        kor_option = wait.until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    "//div[@class='cl-text' and text()='KOR' and contains(@style, 'display:table-cell')]",
                 )
             )
+        )
 
-            kor_option.click()
-            print("Language changed to Korean.")
-            wait.until(EC.staleness_of(lang_button))
-            remove_cl_aside()
+        kor_option.click()
+        print("Language changed to Korean.")
+        wait.until(EC.staleness_of(lang_button))
+        remove_cl_aside()
     except (TimeoutException, NoSuchElementException) as e:
-        print(f"Falied to find the language change button. Error: {e}")
+        print(f"Failed to find the language change button. Error: {e}")
 
     # Click the '수업' button
     try:
@@ -562,7 +574,7 @@ def update_subject(request):
     except (TimeoutException, NoSuchElementException) as e:
         print(f"Failed to find or click the '종합강의시간표조회' button. Error: {e}")
 
-    time.sleep(5)
+    time.sleep(3)
 
     # Set the semester to the current semester
     try:

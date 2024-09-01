@@ -32,6 +32,10 @@ import json, base64
 
 headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
 
+AIRTABLE = getattr(settings, "AIRTABLE", None)
+AIRTABLE_BASE_ID = AIRTABLE["BASE_ID"]
+AIRTABLE_TABLE_ID = AIRTABLE["TABLE_ID"]
+
 GCP_SA = getattr(settings, "GCP_SA", None)
 GCP_SA_CREDS = GCP_SA["CREDS"]
 GCP_SA_SCOPES = GCP_SA["SCOPES"]
@@ -765,11 +769,17 @@ def create_request(request):
                 instructor_name = request.POST.get("instructorName", None)
                 base_date = timezone.now().date()
                 found_subject_list = get_subject(base_date)
-                subject_dict = {subject["code"]: subject["instructor"] for subject in found_subject_list}
+                subject_dict = {
+                    subject["code"]: subject["instructor"]
+                    for subject in found_subject_list
+                }
                 instructor_list = subject_dict.get(subject_code, [])
 
                 for instructor in instructor_list:
-                    if instructor_id.replace("*", "") in instructor["id"] and instructor["name"] == instructor_name:
+                    if (
+                        instructor_id.replace("*", "") in instructor["id"]
+                        and instructor["name"] == instructor_name
+                    ):
                         instructor_id = instructor["id"]
                         break
 
@@ -1133,12 +1143,25 @@ def create_request(request):
             "status": status,
             "reason": reason,
             "msg": msg,
-            "name": f"{name_of_subject_or_project} {facility_category}",
-            "created_time": format_datetime(timezone.now()),
-            "start_datetime": start_datetime,
-            "end_datetime": end_datetime,
-            "public_id": public_id,
-            "private_id": private_id,
+            "record_url": (
+                f"https://airtable.com/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_ID['facility-request']}/{equipment_request['id']}"
+                if status == "DONE"
+                else None
+            ),
+            "name": (
+                f"{name_of_subject_or_project} {facility_category}"
+                if status == "DONE"
+                else None
+            ),
+            "created_time": (
+                format_datetime(convert_datetime(equipment_request["createdTime"]))
+                if status == "DONE"
+                else None
+            ),
+            "start_datetime": start_datetime if status == "DONE" else None,
+            "end_datetime": end_datetime if status == "DONE" else None,
+            "public_id": public_id if status == "DONE" else None,
+            "private_id": private_id if status == "DONE" else None,
             "unavailable_item_list": unavailable_item_list,
         }
 
