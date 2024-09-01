@@ -290,9 +290,15 @@
                                                     <div class="mt-2 text-sm text-flamingo-700">
                                                         <ul role="list" class="list-disc space-y-1 pl-5">
                                                             {% for period in unavailable_period_list %}
-                                                                <li>
-                                                                    <time datetime="{{ period.start_date|date:'Y-m-d' }}">{{ period.start_date|date:'Y-m-d' }}({{ period.start_weekday }})</time> ~ <time datetime="{{ period.end_date|date:'Y-m-d' }}">{{ period.end_date|date:'Y-m-d' }}({{ period.end_weekday }})</time>
-                                                                </li>
+                                                                {% if period.start_date == period.end_date %}
+                                                                    <li>
+                                                                        <time datetime="{{ period.start_date|date:'Y-m-d' }}">{{ period.start_date|date:'Y-m-d' }}({{ period.start_weekday }})</time>
+                                                                    </li>
+                                                                {% else %}
+                                                                    <li>
+                                                                        <time datetime="{{ period.start_date|date:'Y-m-d' }}">{{ period.start_date|date:'Y-m-d' }}({{ period.start_weekday }})</time> ~ <time datetime="{{ period.end_date|date:'Y-m-d' }}">{{ period.end_date|date:'Y-m-d' }}({{ period.end_weekday }})</time>
+                                                                    </li>
+                                                                {% endif %}
                                                             {% endfor %}
                                                         </ul>
                                                     </div>
