@@ -12,6 +12,7 @@ from utility.utils import (
     gpt,
     airtable,
     convert_datetime,
+    format_datetime,
 )
 from utility.msg import send_msg
 from utility.mail import send_mail
@@ -730,6 +731,7 @@ def create_request(request):
         signature = request.FILES.get("signature")
         signature_bs64_encoded_data = process_signature(signature)
         student_name = request.user.metadata.name
+        facility_category = "기자재"
 
         if is_invalid_signature(signature_bs64_encoded_data, student_name):
             status, reason, msg = (
@@ -1112,7 +1114,7 @@ def create_request(request):
                 "content": {
                     "is_for_instructor": is_for_instructor,
                     "name_of_subject_or_project": name_of_subject_or_project,
-                    "facility_category": "기자재",
+                    "facility_category": facility_category,
                     "public_id": public_id,
                 },
             }
@@ -1131,6 +1133,10 @@ def create_request(request):
             "status": status,
             "reason": reason,
             "msg": msg,
+            "name": f"{name_of_subject_or_project} {facility_category}",
+            "created_time": format_datetime(timezone.now()),
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
             "public_id": public_id,
             "private_id": private_id,
             "unavailable_item_list": unavailable_item_list,

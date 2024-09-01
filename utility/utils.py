@@ -119,6 +119,24 @@ def send_facility_request_status_update(request):
             record = {
                 "category_in_korean": facility_request["category_in_korean"],
                 "user": facility_request["user"],
+                "created_time": facility_request["created_time"],
+                "approved_time": (
+                    facility_request["approved_time"]
+                    if status == "Canceled"
+                    else (
+                        format_datetime(timezone.now())
+                        if status == "Approved"
+                        else None
+                    )
+                ),
+                "start_datetime": facility_request["start_datetime"],
+                "end_datetime": facility_request["end_datetime"],
+                "canceled_time": (
+                    format_datetime(timezone.now()) if status == "Canceled" else None
+                ),
+                "rejected_time": (
+                    format_datetime(timezone.now()) if status == "Rejected" else None
+                ),
                 "public_id": facility_request["public_id"],
                 "private_id": facility_request["private_id"],
                 "for_instructor": is_for_instructor,
@@ -159,14 +177,18 @@ def send_facility_request_status_update(request):
         record_id = data["recordId"]
         record = get_record(record_id)
 
-        response = {
+        data = {
             "status": "DONE",
-            "reason": "NOTHING_UNUSUAL",
+            "name": f'{record["name_of_subject_or_project"]} ({record["category_in_korean"]})',
+            "created_time": record["created_time"],
+            "approved_time": record["approved_time"],
+            "start_datetime": record["start_datetime"],
+            "end_datetime": record["end_datetime"],
             "public_id": record["public_id"],
             "private_id": record["private_id"],
         }
 
-        send_msg(request, record["msg_type"], "OPS", response)
+        send_msg(request, record["msg_type"], "OPS", data)
 
         user = User.objects.get(username=record["user"])
 
@@ -275,10 +297,22 @@ def warn_facility_request_not_processed(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        name = facility_request["name"]
+        created_time = facility_request["created_time"]
+        start_datetime = facility_request["start_datetime"]
+        end_datetime = facility_request["end_datetime"]
         public_id = facility_request["public_id"]
         private_id = facility_request["private_id"]
 
-        data = {"public_id": public_id, "private_id": private_id}
+        data = {
+            "name": name,
+            "created_time": created_time,
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
+            "public_id": public_id,
+            "private_id": private_id,
+        }
+
         send_msg(request, "FACILITY_REQUEST_NOT_PROCESSED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
@@ -295,10 +329,24 @@ def warn_facility_use_start_delay(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        name = facility_request["name"]
+        created_time = facility_request["created_time"]
+        approved_time = facility_request["approved_time"]
+        start_datetime = facility_request["start_datetime"]
+        end_datetime = facility_request["end_datetime"]
         public_id = facility_request["public_id"]
         private_id = facility_request["private_id"]
 
-        data = {"public_id": public_id, "private_id": private_id}
+        data = {
+            "name": name,
+            "created_time": created_time,
+            "approved_time": approved_time,
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
+            "public_id": public_id,
+            "private_id": private_id,
+        }
+
         send_msg(request, "FACILITY_USE_START_DELAYED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
@@ -315,10 +363,24 @@ def warn_facility_use_end_delay(request):
     target_facility_request_list = airtable("get_all", "records", data)
 
     for facility_request in target_facility_request_list:
+        name = facility_request["name"]
+        created_time = facility_request["created_time"]
+        approved_time = facility_request["approved_time"]
+        started_time = facility_request["started_time"]
+        end_datetime = facility_request["end_datetime"]
         public_id = facility_request["public_id"]
         private_id = facility_request["private_id"]
 
-        data = {"public_id": public_id, "private_id": private_id}
+        data = {
+            "name": name,
+            "created_time": created_time,
+            "approved_time": approved_time,
+            "started_time": started_time,
+            "end_datetime": end_datetime,
+            "public_id": public_id,
+            "private_id": private_id,
+        }
+
         send_msg(request, "FACILITY_USE_END_DELAYED", "OPS", data)
 
     return HttpResponse(f"{len(target_facility_request_list)}")
@@ -842,7 +904,7 @@ def find_instructor(purpose_priority: str, base_date: str):
                 if purpose_secondary_keyword
                 else None
             )
-            
+
             purpose_curricular = purpose_item["curricular"]
             purpose_for_senior_project = purpose_item["for_senior_project"]
             break
@@ -937,7 +999,9 @@ def reg_test(value: str, type: str):
     if type == "HGL":
         tested_value = "".join(re.findall(reg_hangul, value))
     elif type == "LRN":
-        tested_value = "".join(re.findall(reg_lower_case_roman_and_number_and_hyphen, value))
+        tested_value = "".join(
+            re.findall(reg_lower_case_roman_and_number_and_hyphen, value)
+        )
     elif type == "NUM":
         tested_value = "".join(re.findall(reg_number, value))
     elif type == "DAT":

@@ -337,7 +337,10 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "CREATE_FACILITY_REQUEST"
     elif msg_type == "CREATE_FACILITY_REQUEST":
-        reason = data.get("reason", "Unknown")
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -352,7 +355,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
         unavailable_item_list = data.get("unavailable_item_list", [])
-        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ희망 시작일시: {start_datetime}\nㆍ희망 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         if len(unavailable_item_list) > 0:
             description += f"\nㆍ사용 불가 시설: {unavailable_item_list}"
@@ -373,6 +376,10 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "FACILITY_REQUEST_NOT_PROCESSED"
     elif msg_type == "FACILITY_REQUEST_NOT_PROCESSED":
+        name = data.get("name_of_subject_or_project", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -386,7 +393,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ희망 시작일시: {start_datetime}\nㆍ희망 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -404,7 +411,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "APPROVE_FACILITY_REQUEST"
     elif msg_type == "APPROVE_FACILITY_REQUEST":
-        reason = data.get("reason", "Unknown")
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        approved_time = data.get("approved_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -418,7 +429,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}\nㆍ예정 시작일시: {start_datetime}\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True if status == "FAIL" else False,
@@ -436,6 +447,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "FACILITY_USE_START_DELAYED"
     elif msg_type == "FACILITY_USE_START_DELAYED":
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        approved_time = data.get("approved_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -449,7 +465,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ제안: 시설이 문제없이 사용 시작되었는지 확인하고, Status를 In Progress로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설이 문제없이 사용 시작되었는지 확인하고, Status를 In Progress로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}\nㆍ예정 시작일시: {start_datetime}\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -467,6 +483,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "FACILITY_USE_END_DELAYED"
     elif msg_type == "FACILITY_USE_END_DELAYED":
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        approved_time = data.get("approved_time", "Unknown")
+        started_time = data.get("started_time", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -480,7 +501,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}\nㆍ시작일시: {started_time}\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
@@ -498,7 +519,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "CANCEL_FACILITY_REQUEST"
     elif msg_type == "CANCEL_FACILITY_REQUEST":
-        reason = data.get("reason", "Unknown")
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        approved_time = data.get("approved_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
+        canceled_time = data.get("canceled_time", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -512,7 +538,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ예약명: {name}\nㆍ신청일시: {created_time}"
+
+        if approved_time != "Unknown":
+            description += f"\nㆍ확정일시: {approved_time}"
+
+        description += f"\nㆍ예정 시작일시: {start_datetime}\nㆍ예정 종료일시: {end_datetime}\nㆍ취소일시: {canceled_time}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True if status == "FAIL" else False,
@@ -530,7 +561,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "REJECT_FACILITY_REQUEST"
     elif msg_type == "REJECT_FACILITY_REQUEST":
-        reason = data.get("reason", "Unknown")
+        name = data.get("name", "Unknown")
+        created_time = data.get("created_time", "Unknown")
+        start_datetime = data.get("start_datetime", "Unknown")
+        end_datetime = data.get("end_datetime", "Unknown")
+        rejected_time = data.get("rejected_time", "Unknown")
         public_id = data.get("public_id", "Unknown")
         private_id = data.get("private_id", "Unknown")
         public_url = None
@@ -544,7 +579,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ{status_in_kor} 이유: {reason}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ예정 시작일시: {start_datetime}\nㆍ예정 종료일시: {end_datetime}\nㆍ반려일시: {rejected_time}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True if status == "FAIL" else False,
