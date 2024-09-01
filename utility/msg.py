@@ -514,7 +514,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         else:
             description += f"\nㆍ예정 시작일시: {start_datetime}"
 
-        description = f"\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description += f"\nㆍ예정 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
