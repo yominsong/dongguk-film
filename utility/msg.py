@@ -509,7 +509,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
         description = f"ㆍ제안: 시설이 문제없이 사용 종료되었는지 확인하고, Status를 Completed로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ확정일시: {approved_time}"
 
-        if started_time != "Unknown":
+        if started_time not in [None, "", "Unknown"]:
             description += f"\nㆍ시작일시: {started_time}"
         else:
             description += f"\nㆍ예정 시작일시: {start_datetime}"
@@ -554,7 +554,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
         description = f"ㆍ예약명: {name}\nㆍ신청일시: {created_time}"
 
-        if approved_time != "Unknown":
+        if approved_time not in [None, "", "Unknown"]:
             description += f"\nㆍ확정일시: {approved_time}"
 
         description += f"\nㆍ예정 시작일시: {start_datetime}\nㆍ예정 종료일시: {end_datetime}\nㆍ취소일시: {canceled_time}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
