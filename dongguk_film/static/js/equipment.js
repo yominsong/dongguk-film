@@ -1904,8 +1904,25 @@ function initDetail() {
 
     function updateButtons() {
         const quantity = Number(id_requested_quantity.value);
-        id_decrease_quantity.disabled = quantity <= 1;
-        id_increase_quantity.disabled = quantity >= Number(max);
+
+        if (quantity <= 1) {
+            id_decrease_quantity.disabled = true;
+            id_decrease_quantity.classList.add("cursor-not-allowed");
+        } else {
+            id_decrease_quantity.disabled = false;
+            id_decrease_quantity.classList.remove("cursor-not-allowed");
+        };
+
+        if (quantity >= Number(max)) {
+            id_increase_quantity.disabled = true;
+            id_increase_quantity.classList.add("cursor-not-allowed");
+        } else {
+            id_increase_quantity.disabled = false;
+            id_increase_quantity.classList.remove("cursor-not-allowed");
+        };
+
+        // id_decrease_quantity.disabled = quantity <= 1;
+        // id_increase_quantity.disabled = quantity >= Number(max);
     }
 
     updateButtons();
