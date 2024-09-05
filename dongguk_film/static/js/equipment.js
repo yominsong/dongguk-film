@@ -1920,9 +1920,6 @@ function initDetail() {
             id_increase_quantity.disabled = false;
             id_increase_quantity.classList.remove("cursor-not-allowed");
         };
-
-        // id_decrease_quantity.disabled = quantity <= 1;
-        // id_increase_quantity.disabled = quantity >= Number(max);
     }
 
     updateButtons();

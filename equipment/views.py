@@ -13,7 +13,7 @@ from .utils import (
 )
 from utility.img import get_hero_img
 from utility.utils import convert_datetime, mask_personal_information, airtable
-import random, json
+import random, json, re
 
 #
 # Sub functions
@@ -242,21 +242,21 @@ def equipment(request):
     search_placeholder = random.choice(equipment_collection_list)["name"]
 
     if query:
-        query = query.lower().replace(" ", "")
+        query = re.sub(r"[^\w]", "", query.lower())
         query_result_list = []
 
         for collection in equipment_collection_list:
             if collection not in query_result_list:
                 for k, v in collection.items():
                     if isinstance(v, str):
-                        v = v.lower().replace(" ", "")
+                        v = re.sub(r"[^\w]", "", v.lower())
 
                         if query in v:
                             query_result_list.append(collection)
                             break
                     elif k == "subcategory" and isinstance(v, dict):
                         if "keyword" in v and isinstance(v["keyword"], str):
-                            keyword = v["keyword"].lower().replace(" ", "")
+                            keyword = re.sub(r"[^\w]", "", v["keyword"].lower())
 
                             if query in keyword:
                                 query_result_list.append(collection)
