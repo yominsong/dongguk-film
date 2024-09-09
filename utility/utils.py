@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.urls import reverse
 from requests.sessions import Session
 from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fake_useragent import UserAgent
 from .img import save_hero_img
@@ -735,14 +736,25 @@ def update_holiday(request):
         if settings.DEBUG
         else "dongguk_film/staticfiles/json/holiday.json"
     )
-    
-    # Ensure the directory exists
+
     os.makedirs(os.path.dirname(JSON_PATH), exist_ok=True)
-    
-    url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo"
+    url = (
+        "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo"
+    )
     current_year = timezone.now().year
     years = [current_year - 1, current_year, current_year + 1]
     all_holidays = []
+
+    retry_strategy = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"],
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
 
     try:
         for year in years:
@@ -753,28 +765,35 @@ def update_holiday(request):
                 "_type": "json",
             }
 
-            response = requests.get(url, params=params).json()
-            items = response["response"]["body"]["items"]["item"]
-            
+            response = http.get(url, params=params, timeout=10)
+            response.raise_for_status()  # Raise an exception for 4xx and 5xx errors
+            data = response.json()
+
+            items = data["response"]["body"]["items"].get("item", [])
+            if not isinstance(items, list):
+                items = [items]
+
             for item in items:
                 date = str(item["locdate"])
                 formatted_date = f"{date[:4]}-{date[4:6]}-{date[6:]}"
 
-                holiday = {
-                    "name": item["dateName"],
-                    "date": formatted_date
-                }
+                holiday = {"name": item["dateName"], "date": formatted_date}
 
                 all_holidays.append(holiday)
+
+            time.sleep(1)
 
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(all_holidays, f, ensure_ascii=False, indent=4)
 
         status = "DONE"
         reason = None
+    except requests.exceptions.RequestException as e:
+        status = "FAIL"
+        reason = f"API request failed: {str(e)}"
     except Exception as e:
         status = "FAIL"
-        reason = str(e)
+        reason = f"Unexpected error: {str(e)}"
 
     data = {
         "status": status,
