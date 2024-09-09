@@ -66,6 +66,8 @@ const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
 const currentPurpose = urlParams.get("purposePriority");
 const currentPeriod = urlParams.get("period");
+let lastValueOfCurrentYear;
+let lastValueOfCurrentMonth;
 
 //
 // Sub functions
@@ -586,6 +588,10 @@ function initCalendar() {
         return compareDate >= minDate && compareDate <= maxDate;
     }
 
+    function isFoundationDay(date) {
+        return date.getMonth() === 4 && date.getDate() === 8; // May 8th
+    }
+
     function updateCalendar() {
         const id_period_current_month = code(id_period, "_current_month");
         const year = currentDate.getFullYear();
@@ -610,6 +616,7 @@ function initCalendar() {
             const isStartDate = formatDate(date) === data_period.startDate;
             const isEndDate = formatDate(date) === data_period.endDate;
             const isSameStartEnd = data_period.startDate === data_period.endDate && isStartDate;
+            const isFoundationDayDate = isFoundationDay(date);
             const dayElement = document.createElement("div");
             const buttonElement = document.createElement("button");
             let buttonClasses = "mx-auto flex h-8 w-8 items-center justify-center ";
@@ -650,7 +657,7 @@ function initCalendar() {
                 };
             };
 
-            if (isInRange) {
+            if (isInRange && !isFoundationDayDate) {
                 buttonClasses += isSelected || isToday ? "font-semibold " : "hover:bg-gray-100 ";
             } else {
                 buttonClasses += "opacity-50 cursor-not-allowed ";
@@ -659,12 +666,15 @@ function initCalendar() {
             buttonClasses += "focus:df-focus-ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed";
 
             dayElement.className = "py-2";
+
+            const dayOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][date.getDay()];
+
             buttonElement.type = "button";
             buttonElement.className = buttonClasses;
-            buttonElement.innerHTML = `<time datetime="${formatDate(date)}">${date.getDate()}</time>`;
-            buttonElement.disabled = !isInRange;
+            buttonElement.innerHTML = `<time datetime="${formatDate(date)}" data-day-of-the-week="${dayOfWeek}">${date.getDate()}</time>`;
+            buttonElement.disabled = !isInRange || isFoundationDayDate;
 
-            if (isInRange) {
+            if (isInRange && !isFoundationDayDate) {
                 buttonElement.addEventListener("click", () => {
                     handleDateSelection(date);
                 });
@@ -675,10 +685,11 @@ function initCalendar() {
         };
 
         buttons = document.querySelectorAll("button");
+        requestFindNonWorkingDay();
     }
 
     function handleDateSelection(date) {
-        if (!isDateInRange(date)) return;
+        if (!isDateInRange(date) || isFoundationDay(date)) return;
 
         const formattedDate = formatDate(date);
         const id_period_error = code(id_period, "_error");
@@ -764,6 +775,36 @@ function initCalendar() {
         id_period_help.hidden = false;
         id_period_help.innerText = `대여 기간이 ${durationToDisplay}일(${data_period.startDate} ~ ${data_period.endDate})로 선택되었어요.`;
     };
+}
+
+function disableHolidayInCalendar(foundHolidayArray) {
+    foundHolidayArray.forEach(holiday => {
+        const holidayDate = holiday.date;
+        const timeElement = document.querySelector(`time[datetime="${holidayDate}"]`);
+
+        if (timeElement) {
+            const holidayButton = timeElement.closest("button");
+
+            holidayButton.disabled = true;
+            holidayButton.classList.remove("hover:bg-gray-100");
+            holidayButton.classList.replace("text-gray-900", "text-red-700");
+        };
+    });
+}
+
+function disableNonWorkingDayInCalendar(foundNonWorkingDayOfTheWeekList) {
+    foundNonWorkingDayOfTheWeekList.forEach(nonWorkingDayOfTheWeek => {
+        const nonWorkingDayOfTheWeekElements = document.querySelectorAll(`time[data-day-of-the-week="${nonWorkingDayOfTheWeek}"]`);
+
+        if (nonWorkingDayOfTheWeekElements) {
+            nonWorkingDayOfTheWeekElements.forEach(nonWorkingDayOfTheWeekElement => {
+                const nonWorkingDayOfTheWeekButton = nonWorkingDayOfTheWeekElement.closest("button");
+
+                nonWorkingDayOfTheWeekButton.disabled = true;
+                nonWorkingDayOfTheWeekButton.classList.remove("hover:bg-gray-100");
+            });
+        };
+    });
 }
 
 function initFoundProjectList(response = null) {
@@ -2120,6 +2161,16 @@ function requestFilterEquipment() {
     request.async = true;
     request.headers = null;
     freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestFindNonWorkingDay() {
+    request.url = `${location.origin}/equipment/utils/equipment/`;
+    request.type = "POST";
+    request.data = { id: "find_non_working_day" };
+    request.async = true;
+    request.headers = null;
     makeAjaxCall(request);
     request = {};
 }

@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from utility.hangul import handle_hangul
 from utility.utils import (
     mask_personal_information,
+    get_holiday,
     get_equipment_data,
     get_subject,
     find_instructor,
@@ -1224,6 +1225,48 @@ def equipment(request):
             "next_url": next_url,
         }
 
+    # id: find_non_working_day
+    elif id == "find_non_working_day":
+        try:
+            found_holiday_list = get_holiday()
+            found_non_working_day_of_the_week_list = [
+                "SUN",
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+            ]
+
+            data = {
+                "table_name": "equipment-hour",
+                "params": {
+                    "view": "Grid view",
+                },
+            }
+
+            hour_list = get_equipment_data("hour")
+
+            for hour in hour_list:
+                if hour["day_of_the_week"] in found_non_working_day_of_the_week_list:
+                    found_non_working_day_of_the_week_list.remove(
+                        hour["day_of_the_week"]
+                    )
+
+            status = "DONE"
+        except:
+            status = "FAIL"
+            found_holiday_list = []
+            found_non_working_day_of_the_week_list = []
+
+        response = {
+            "id": id,
+            "status": status,
+            "found_holiday_list": found_holiday_list,
+            "found_non_working_day_of_the_week_list": found_non_working_day_of_the_week_list,
+        }
+
     # id: add_to_cart
     elif id == "add_to_cart":
         requested_quantity = request.POST.get("requestedQuantity")
@@ -1546,183 +1589,3 @@ def equipment(request):
         }
 
     return JsonResponse(response)
-
-
-[
-    {
-        "kor_name": "현대영화감상",
-        "eng_name": "Screening of Modern Film",
-        "code": "FIL2080",
-        "target_university_year": [1],
-        "instructor": [{"id": "NL190481", "name": "이종승"}],
-    },
-    {
-        "kor_name": "영상미학분석",
-        "eng_name": "Aesthetics of Film",
-        "code": "FIL2083",
-        "target_university_year": [1],
-        "instructor": [
-            {"id": "NL190391", "name": "백태현"},
-            {"id": "19960033", "name": "유지나"},
-        ],
-    },
-    {
-        "kor_name": "다큐멘타리분석",
-        "eng_name": "Documentary",
-        "code": "FIL2088",
-        "target_university_year": [2],
-        "instructor": [{"id": "20010743", "name": "박종호"}],
-    },
-    {
-        "kor_name": "고전영화분석",
-        "eng_name": "Classical Cinema",
-        "code": "FIL2092",
-        "target_university_year": [2],
-        "instructor": [{"id": "NL190506", "name": "박우성"}],
-    },
-    {
-        "kor_name": "편집",
-        "eng_name": "Editing Basics",
-        "code": "FIL2093",
-        "target_university_year": [2],
-        "instructor": [{"id": "NP230020", "name": "이승호"}],
-    },
-    {
-        "kor_name": "애니메이션실습",
-        "eng_name": "Introductory Animation Workshop",
-        "code": "FIL2095",
-        "target_university_year": [2],
-        "instructor": [
-            {"id": "NL190471", "name": "김현영"},
-            {"id": "NL190633", "name": "정군"},
-        ],
-    },
-    {
-        "kor_name": "세계영화사2",
-        "eng_name": "World Film History 2",
-        "code": "FIL2100",
-        "target_university_year": [2],
-        "instructor": [
-            {"id": "NL190793", "name": "하정현"},
-            {"id": "NL190481", "name": "이종승"},
-        ],
-    },
-    {
-        "kor_name": "영화제작워크숍2",
-        "eng_name": "Film Production Workshop II",
-        "code": "FIL2102",
-        "target_university_year": [2],
-        "instructor": [
-            {"id": "20131148", "name": "핍초도로프"},
-            {"id": "NL210145", "name": "최윤영"},
-        ],
-    },
-    {
-        "kor_name": "촬영심화",
-        "eng_name": "Cinematography Techniques",
-        "code": "FIL2103",
-        "target_university_year": [2],
-        "instructor": [{"id": "NP180062", "name": "백성빈"}],
-    },
-    {
-        "kor_name": "졸업영화캡스톤디자인",
-        "eng_name": "Thesis Project(Capstone Design)",
-        "code": "FIL4067",
-        "target_university_year": [4],
-        "instructor": [
-            {"id": "20180291", "name": "양윤호"},
-            {"id": "NL190503", "name": "조은희"},
-            {"id": "NP220180", "name": "김윤신"},
-        ],
-    },
-    {
-        "kor_name": "사운드실습심화",
-        "eng_name": "Sound Production Techniques",
-        "code": "FIL4068",
-        "target_university_year": [3],
-        "instructor": [{"id": "NP210028", "name": "한명환"}],
-    },
-    {
-        "kor_name": "다큐멘타리제작캡스톤디자인",
-        "eng_name": "Documentary Production Capstone Design",
-        "code": "FIL4071",
-        "target_university_year": [3],
-        "instructor": [{"id": "20010743", "name": "박종호"}],
-    },
-    {
-        "kor_name": "극영화제작캡스톤디자인",
-        "eng_name": "Film Production Capstone Design",
-        "code": "FIL4072",
-        "target_university_year": [3],
-        "instructor": [{"id": "NP220180", "name": "김윤신"}],
-    },
-    {
-        "kor_name": "예술과젠더",
-        "eng_name": "Arts and Gender",
-        "code": "FIL4073",
-        "target_university_year": [3],
-        "instructor": [{"id": "19960033", "name": "유지나"}],
-    },
-    {
-        "kor_name": "편집심화",
-        "eng_name": "Editing Techniques",
-        "code": "FIL4074",
-        "target_university_year": [3, 4],
-        "instructor": [{"id": "NL190495", "name": "박영삼"}],
-    },
-    {
-        "kor_name": "프로덕션디자인",
-        "eng_name": "Production Design",
-        "code": "FIL4080",
-        "target_university_year": [3, 4],
-        "instructor": [{"id": "NL190538", "name": "조우정"}],
-    },
-    {
-        "kor_name": "지역과영상교육",
-        "eng_name": "Community Media Education Partnership",
-        "code": "FIL4083",
-        "target_university_year": [3, 4],
-        "instructor": [{"id": "NP200315", "name": "문다원"}],
-    },
-    {
-        "kor_name": "실험영화캡스톤디자인",
-        "eng_name": "Experimental Film Capstone Design",
-        "code": "FIL4084",
-        "target_university_year": [3, 4],
-        "instructor": [{"id": "20131148", "name": "핍초도로프"}],
-    },
-    {
-        "kor_name": "감독스타일분석",
-        "eng_name": "Seminar on Major Filmmakers",
-        "code": "FIL4087",
-        "target_university_year": [3, 4],
-        "instructor": [
-            {"id": "NL190639", "name": "이대범"},
-            {"id": "20060217", "name": "정수완"},
-        ],
-    },
-    {
-        "kor_name": "영화홍보마케팅",
-        "eng_name": "Film Publicity & Marketing",
-        "code": "FIL4088",
-        "target_university_year": [3, 4],
-        "instructor": [{"id": "NL190463", "name": "한순호"}],
-    },
-    {
-        "kor_name": "각색시나리오실습",
-        "eng_name": "Novel into Screenplay",
-        "code": "FIL4091",
-        "target_university_year": [3],
-        "instructor": [
-            {"id": "NL190792", "name": "이수진"},
-            {"id": "NL190503", "name": "조은희"},
-        ],
-    },
-    {
-        "kor_name": "융복합매체캡스톤디자인",
-        "eng_name": "Capstone Design of Expanded Media",
-        "code": "FIL4093",
-        "target_university_year": [3],
-        "instructor": [{"id": "NP200315", "name": "문다원"}],
-    },
-]

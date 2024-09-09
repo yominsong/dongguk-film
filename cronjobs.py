@@ -20,7 +20,7 @@ if current_hour % 2 == 0 and current_minute == "00":
 # project
 #
 
-if current_time.strftime("%H:%M") == "22:30":
+if current_time.strftime("%H:%M") == "22:00":
     requests.get("https://dongguk.film/project/utils/update-project-policy/")
 
 #
@@ -52,8 +52,7 @@ requests.get("https://dongguk.film/utility/utils/warn-facility-use-end-delay/")
 if ((current_time.month == 1 and current_time.day == 1) or (current_time.month == 7 and current_time.day == 1)) and current_time.strftime("%H:%M") == "00:00":
     requests.get("https://dongguk.film/utility/utils/update-subject/")
 
-if current_time.strftime("%H:%M") == "23:00":
-    requests.get("https://dongguk.film/utility/utils/update-hero-img/")
-
-if current_time.strftime("%H:%M") == "23:30":
+if current_time.strftime("%H:%M") == "22:30":
     requests.get("https://dongguk.film/utility/utils/update-dnd-cookie/")
+    requests.get("https://dongguk.film/utility/utils/update-hero-img/")
+    requests.get("https://dongguk.film/utility/utils/update-holiday/")

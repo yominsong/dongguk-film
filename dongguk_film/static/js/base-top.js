@@ -486,6 +486,14 @@ function handleAjaxCallback(response) {
         };
     }
 
+    // requestFindNonWorkingDay()
+    else if (response.id === "find_non_working_day") {
+        if (response.status === "DONE") {
+            disableHolidayInCalendar(response.found_holiday_list);
+            disableNonWorkingDayInCalendar(response.found_non_working_day_of_the_week_list);
+        };
+    }
+
     // requestAddToCart()
     else if (response.id === "add_to_cart") {
         freezeForm(false);

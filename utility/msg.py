@@ -84,6 +84,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - UPDATE_SUBJECT
         - UPDATE_DND_COOKIE
         - UPDATE_HERO_IMAGE
+        - UPDATE_HOLIDAY
         - SYNC_EQUIPMENT_DATA
         - UPDATE_PROJECT_POLICY
         - DUPLICATE_SIGNUP_ATTEMPTED
@@ -191,6 +192,23 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "url": "",
             "thumbnail_url": "",
             "description": data_info,
+        }
+
+    # msg_type: "UPDATE_HOLIDAY"
+    elif msg_type == "UPDATE_HOLIDAY":
+        years = data.get("years", [])
+        reason = data.get("reason", "Unknown")
+        description = f"ㆍ실패 이유: {reason}" if status == "FAIL" else ""
+        description += f"\nㆍ대상 연도: {years}"
+
+        content = {
+            "important": True if status == "FAIL" else False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{status_emoji} 공휴일 업데이트 {status_in_kor}",
+            "url": "",
+            "thumbnail_url": "",
+            "description": description,
         }
 
     # msg_type: "SYNC_EQUIPMENT_DATA"

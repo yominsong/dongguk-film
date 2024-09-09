@@ -76,6 +76,9 @@ AWS_S3 = boto3.client(
     region_name="ap-northeast-2",
 )
 
+PUBLIC_DATA = getattr(settings, "PUBLIC_DATA", None)
+PUBLIC_DATA_SERVICE_KEY = PUBLIC_DATA["SERVICE_KEY"]
+
 #
 # Airtable functions
 #
@@ -726,6 +729,62 @@ def update_hero_img(request):
     return HttpResponse(json_data, content_type="application/json")
 
 
+def update_holiday(request):
+    JSON_PATH = (
+        "dongguk_film/static/json/holiday.json"
+        if settings.DEBUG
+        else "dongguk_film/staticfiles/json/holiday.json"
+    )
+    
+    url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo"
+    current_year = timezone.now().year
+    years = [current_year - 1, current_year, current_year + 1]
+    all_holidays = []
+
+    try:
+        for year in years:
+            params = {
+                "serviceKey": PUBLIC_DATA_SERVICE_KEY,
+                "solYear": year,
+                "numOfRows": 100,
+                "_type": "json",
+            }
+
+            response = requests.get(url, params=params).json()
+            items = response["response"]["body"]["items"]["item"]
+            
+            for item in items:
+                date = str(item["locdate"])
+                formatted_date = f"{date[:4]}-{date[4:6]}-{date[6:]}"
+
+                holiday = {
+                    "name": item["dateName"],
+                    "date": formatted_date
+                }
+
+                all_holidays.append(holiday)
+
+        with open(JSON_PATH, "w", encoding="utf-8") as f:
+            json.dump(all_holidays, f, ensure_ascii=False, indent=4)
+
+        status = "DONE"
+        reason = None
+    except Exception as e:
+        status = "FAIL"
+        reason = str(e)
+
+    data = {
+        "status": status,
+        "reason": reason,
+        "years": ", ".join(map(str, years)),
+    }
+
+    send_msg(request, "UPDATE_HOLIDAY", "DEV", data)
+    json_data = json.dumps(data, indent=4)
+
+    return HttpResponse(json_data, content_type="application/json")
+
+
 #
 # Sub functions
 #
@@ -819,6 +878,20 @@ def append_item(item, item_list: list):
         item_list.append(item)
 
     return item_list
+
+
+def get_holiday():
+    JSON_PATH = (
+        "dongguk_film/static/json/holiday.json"
+        if settings.DEBUG
+        else "dongguk_film/staticfiles/json/holiday.json"
+    )
+
+    with open(JSON_PATH, "r") as f:
+        holiday_list = json.load(f)
+        f.close()
+
+    return holiday_list
 
 
 def get_equipment_data(target: str):
@@ -953,11 +1026,6 @@ def find_instructor(purpose_priority: str, base_date: str):
     return found_instructor_list, purpose_curricular
 
 
-#
-# Main functions
-#
-
-
 def set_headers(type: str):
     if type == "RANDOM":
         headers = {"User-Agent": UserAgent(browsers=["edge", "chrome"]).random}
@@ -1026,6 +1094,11 @@ def reg_test(value: str, type: str):
     result = True if value == tested_value else False
 
     return result
+
+
+#
+# Main functions
+#
 
 
 def gpt(model: str, system_message: dict, user_message: dict, true_or_false=False):
@@ -1194,7 +1267,7 @@ def airtable(
         - record
         - records
     - data | `dict`
-        - table_name
+        - table_name | `str`
         - params | `dict`
     - limit | `int`
     - mask | `bool`

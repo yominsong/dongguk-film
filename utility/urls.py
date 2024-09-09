@@ -13,4 +13,5 @@ urlpatterns = [
     path("utils/update-subject/", update_subject, name="update_subject"),
     path("utils/update-dnd-cookie/", update_dnd_cookie, name="update_dnd_cookie"),
     path("utils/update-hero-img/", update_hero_img, name="update_hero_img"),
+    path("utils/update-holiday/", update_holiday, name="update_holiday"),
 ]
