@@ -66,8 +66,7 @@ const data_purpose = id_purpose.dataset;
 const data_period = id_period.dataset;
 const currentPurpose = urlParams.get("purposePriority");
 const currentPeriod = urlParams.get("period");
-let lastValueOfCurrentYear;
-let lastValueOfCurrentMonth;
+let findNonWorkingDayTimer;
 
 //
 // Sub functions
@@ -2166,13 +2165,17 @@ function requestFilterEquipment() {
 }
 
 function requestFindNonWorkingDay() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "find_non_working_day" };
-    request.async = true;
-    request.headers = null;
-    makeAjaxCall(request);
-    request = {};
+    clearTimeout(findNonWorkingDayTimer);
+
+    findNonWorkingDayTimer = setTimeout(() => {
+        request.url = `${location.origin}/equipment/utils/equipment/`;
+        request.type = "POST";
+        request.data = { id: "find_non_working_day" };
+        request.async = true;
+        request.headers = null;
+        makeAjaxCall(request);
+        request = {};
+    }, 1);
 }
 
 function requestAddToCart() {

@@ -768,17 +768,15 @@ def update_holiday(request):
             response = http.get(url, params=params, timeout=10)
             response.raise_for_status()  # Raise an exception for 4xx and 5xx errors
             data = response.json()
-
             items = data["response"]["body"]["items"].get("item", [])
+
             if not isinstance(items, list):
                 items = [items]
 
             for item in items:
                 date = str(item["locdate"])
                 formatted_date = f"{date[:4]}-{date[4:6]}-{date[6:]}"
-
                 holiday = {"name": item["dateName"], "date": formatted_date}
-
                 all_holidays.append(holiday)
 
             time.sleep(1)
