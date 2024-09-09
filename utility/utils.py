@@ -28,7 +28,7 @@ from selenium.common.exceptions import (
     JavascriptException,
 )
 from selenium.webdriver.common.keys import Keys
-import json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
+import os, json, re, requests, pytz, datetime, pyairtable, openai, boto3, random, string, uuid, time, ast
 
 #
 # Global variables
@@ -735,6 +735,9 @@ def update_holiday(request):
         if settings.DEBUG
         else "dongguk_film/staticfiles/json/holiday.json"
     )
+    
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(JSON_PATH), exist_ok=True)
     
     url = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo"
     current_year = timezone.now().year
