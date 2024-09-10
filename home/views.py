@@ -32,17 +32,11 @@ def home(request):
 
     image_list = get_hero_img("home")
 
-    data = {
-        "table_name": "facility-request",
-        "params": {"view": "Grid view"},
-    }
+    data = {"table_name": "facility-request"}
 
     facility_request_list = airtable("get_all", "records", data, 5)
 
-    data = {
-        "table_name": "project-team",
-        "params": {"view": "Grid view"},
-    }
+    data = {"table_name": "project-team"}
 
     project_list = airtable("get_all", "records", data, 5)
     dflink_list = short_io("retrieve", limit=5)

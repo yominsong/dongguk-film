@@ -157,23 +157,23 @@ def is_registered_student(student_id: str, name: str):
     """
 
     data = {
-        '@d1#CAMPUS_CD': 'CM030.10',
-        '@d1#STD_NM': name,
-        '@d1#ENT_YY': student_id[:4],
-        '@d#': '@d1#',
-        '@d1#': 'dmSearch',
-        '@d1#tp': 'dm',
+        "@d1#CAMPUS_CD": "CM030.10",
+        "@d1#STD_NM": name,
+        "@d1#ENT_YY": student_id[:4],
+        "@d#": "@d1#",
+        "@d1#": "dmSearch",
+        "@d1#tp": "dm",
     }
 
     headers = {
-        'accept': '*/*',
-        'accept-encoding': 'gzip, deflate, br, zstd',
-        'accept-language': 'en-US,en;q=0.9,ko;q=0.8',
-        'connection': 'keep-alive',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'cookie': DND_COOKIE,
-        'user-agent': UserAgent(browsers=["edge", "chrome"]).random,
-        'x-requested-with': 'XMLHttpRequest',
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-US,en;q=0.9,ko;q=0.8",
+        "connection": "keep-alive",
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "cookie": DND_COOKIE,
+        "user-agent": UserAgent(browsers=["edge", "chrome"]).random,
+        "x-requested-with": "XMLHttpRequest",
     }
 
     response = requests.post(DND_DIRECTORY_URL, data, headers)
@@ -448,10 +448,7 @@ def account(request):
 
             data = {
                 "table_name": "facility-request",
-                "params": {
-                    "view": "Grid view",
-                    "formula": formula,
-                },
+                "params": {"formula": formula},
             }
 
             item_list = airtable("get_all", "records", data)
@@ -460,10 +457,7 @@ def account(request):
 
             data = {
                 "table_name": "project-team",
-                "params": {
-                    "view": "Grid view",
-                    "formula": formula,
-                },
+                "params": {"formula": formula},
             }
 
             item_list = airtable("get_all", "records", data)
@@ -499,8 +493,7 @@ def account(request):
         data = {
             "table_name": "facility-request",
             "params": {
-                "view": "Grid view",
-                "formula": f"AND(OR(Status = 'Pending', Status = 'Approved', Status = 'In Progress'), OR(User = '{request.user.username}', FIND('{request.user.username}', {{Project team staff}}) = 0))",
+                "formula": f"AND(OR(Status = 'Pending', Status = 'Approved', Status = 'In Progress'), OR(User = '{request.user.username}', FIND('{request.user.username}', {{Project team staff}}) = 0))"
             },
         }
 

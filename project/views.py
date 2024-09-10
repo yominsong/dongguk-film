@@ -26,7 +26,7 @@ def project(request):
 
     data = {
         "table_name": "project-team",
-        "params": {"view": "Grid view", "formula": formula},
+        "params": {"formula": formula},
     }
 
     project_list = airtable("get_all", "records", data)

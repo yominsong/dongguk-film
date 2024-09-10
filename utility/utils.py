@@ -1295,7 +1295,16 @@ def airtable(
 
     if data != None:
         table_name = data.get("table_name", None)
-        params = data.get("params", None)
+        params = data.get("params", {})
+        
+        default_params = {
+            "view": "Grid view"
+        }
+
+        if params.get("view") and params["view"] != "Grid view":
+            default_params["view"] = params["view"]
+        
+        params = {**default_params, **params}
 
     # action: create / target: record
     if action == "create" and target == "record":
@@ -1535,7 +1544,31 @@ def airtable(
 
         record_list = []
 
-        if table_name == "facility-request":
+        if table_name == "facility-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "record_id": record["id"],
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
+                        "secondary_keyword": fields.get("Secondary keyword", None),
+                        "at_least": fields.get("At least", None),
+                        "up_to": fields.get("Up to", None),
+                        "max": fields.get("Max", None),
+                        "in_a_nutshell": fields.get("In a nutshell", None),
+                        "curricular": fields.get("Curricular", False),
+                        "for_senior_project": fields.get("For senior project", False),
+                        "for_instructor": fields.get("For instructor", False),
+                    }
+
+                    record_list.append(purpose)
+            except:
+                pass
+
+        elif table_name == "facility-request":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -1673,30 +1706,6 @@ def airtable(
                     }
 
                     record_list.append(category)
-            except:
-                pass
-
-        elif table_name == "equipment-purpose":
-            try:
-                for record in records:
-                    fields = record["fields"]
-
-                    purpose = {
-                        "record_id": record["id"],
-                        "name": fields.get("Name", None),
-                        "priority": fields.get("Priority", None),
-                        "keyword": fields.get("Keyword", None),
-                        "secondary_keyword": fields.get("Secondary keyword", None),
-                        "at_least": fields.get("At least", None),
-                        "up_to": fields.get("Up to", None),
-                        "max": fields.get("Max", None),
-                        "in_a_nutshell": fields.get("In a nutshell", None),
-                        "curricular": fields.get("Curricular", False),
-                        "for_senior_project": fields.get("For senior project", False),
-                        "for_instructor": fields.get("For instructor", False),
-                    }
-
-                    record_list.append(purpose)
             except:
                 pass
 

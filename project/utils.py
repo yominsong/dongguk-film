@@ -34,7 +34,6 @@ def update_project_policy(request):
                 data = {
                     "table_name": "project-position",
                     "params": {
-                        "view": "Grid view",
                         "fields": [
                             "Function",
                             "Function priority",
@@ -219,10 +218,7 @@ def project(request):
 
         data = {
             "table_name": "project-team",
-            "params": {
-                "view": "Grid view",
-                "fields": fields,
-            },
+            "params": {"fields": fields},
         }
 
         response = airtable("create", "record", data)
@@ -257,7 +253,6 @@ def project(request):
         data = {
             "table_name": "project-team",
             "params": {
-                "view": "Grid view",
                 "record_id": record_id,
                 "fields": {
                     "Film title": title,
@@ -301,10 +296,7 @@ def project(request):
     elif id == "delete_project":
         data = {
             "table_name": "project-team",
-            "params": {
-                "view": "Grid view",
-                "record_id": record_id,
-            },
+            "params": {"record_id": record_id},
         }
 
         response = airtable("delete", "record", data)

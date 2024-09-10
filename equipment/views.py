@@ -311,10 +311,7 @@ def equipment_detail(request, collection_id):
     # Airtable query optimization
     data = {
         "table_name": "equipment-collection",
-        "params": {
-            "view": "Grid view",
-            "formula": f"{{ID}} = '{collection_id}'",
-        },
+        "params": {"formula": f"{{ID}} = '{collection_id}'"},
     }
 
     record_id = airtable("get_all", "records", data)[0]["record_id"]

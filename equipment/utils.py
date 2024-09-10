@@ -74,31 +74,15 @@ def sync_equipment_data(request):
 
         for target in target_list:
             if target == "category":
-                data = {
-                    "table_name": "equipment-category",
-                    "params": {
-                        "view": "Grid view",
-                    },
-                }
+                data = {"table_name": "equipment-category"}
             elif target == "purpose":
-                data = {
-                    "table_name": "equipment-purpose",
-                    "params": {
-                        "view": "Grid view",
-                    },
-                }
+                data = {"table_name": "facility-purpose"}
             elif target == "limit":
-                data = {
-                    "table_name": "equipment-limit",
-                    "params": {
-                        "view": "Grid view",
-                    },
-                }
+                data = {"table_name": "equipment-limit"}
             elif target == "collection":
                 data = {
                     "table_name": "equipment-collection",
                     "params": {
-                        "view": "Grid view",
                         "fields": [
                             "ID",
                             "Thumbnail",
@@ -117,7 +101,6 @@ def sync_equipment_data(request):
                 data = {
                     "table_name": "equipment-hour",
                     "params": {
-                        "view": "Grid view",
                         "fields": [
                             "Name",
                             "Day of the week",
@@ -630,7 +613,6 @@ def create_request(request):
         data = {
             "table_name": "equipment-item",
             "params": {
-                "view": "Grid view",
                 "fields": fields,
                 "formula": formula,
             },
@@ -662,10 +644,7 @@ def create_request(request):
 
             data = {
                 "table_name": "equipment-item",
-                "params": {
-                    "view": "Grid view",
-                    "formula": formula,
-                },
+                "params": {"formula": formula},
             }
 
             alternative_item_list = airtable("get_all", "records", data)
@@ -790,10 +769,7 @@ def create_request(request):
 
                 data = {
                     "table_name": "project-team",
-                    "params": {
-                        "view": "Grid view",
-                        "record_id": project_record_id,
-                    },
+                    "params": {"record_id": project_record_id},
                 }
 
                 project = airtable("get", "record", data)
@@ -1093,10 +1069,7 @@ def create_request(request):
 
             data = {
                 "table_name": "facility-request",
-                "params": {
-                    "view": "Grid view",
-                    "fields": fields,
-                },
+                "params": {"fields": fields},
             }
 
             equipment_request = airtable("create", "record", data)
@@ -1239,12 +1212,7 @@ def equipment(request):
                 "SAT",
             ]
 
-            data = {
-                "table_name": "equipment-hour",
-                "params": {
-                    "view": "Grid view",
-                },
-            }
+            data = {"table_name": "equipment-hour"}
 
             hour_list = get_equipment_data("hour")
 
@@ -1442,12 +1410,7 @@ def equipment(request):
 
     # id: find_project
     elif id == "find_project":
-        data = {
-            "table_name": "project-team",
-            "params": {
-                "view": "Grid view",
-            },
-        }
+        data = {"table_name": "project-team"}
 
         project_list = airtable("get_all", "records", data)
         found_project_list = []
@@ -1488,12 +1451,7 @@ def equipment(request):
         start_day = request.POST.get("startDay")
         end_day = request.POST.get("endDay")
 
-        data = {
-            "table_name": "equipment-hour",
-            "params": {
-                "view": "Grid view",
-            },
-        }
+        data = {"table_name": "equipment-hour"}
 
         hour_list = airtable("get_all", "records", data)
         start_day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][int(start_day)]
@@ -1546,10 +1504,7 @@ def equipment(request):
     elif id == "cancel_request":
         data = {
             "table_name": "facility-request",
-            "params": {
-                "view": "Grid view",
-                "record_id": record_id,
-            },
+            "params": {"record_id": record_id},
         }
 
         equipment_request = airtable("get", "record", data)
