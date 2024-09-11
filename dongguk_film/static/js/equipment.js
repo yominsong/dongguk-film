@@ -2252,7 +2252,7 @@ async function requestCreateRequest() {
     formData.append("startTimeRecordId", id_start_time_record_id.value);
     formData.append("endTimeRecordId", id_end_time_record_id.value);
 
-    const isForInstructor = getCart()[0].purpose.for_instructor;
+    const isForInstructor = getCart()[0].purpose.is_for_instructor;
 
     if (isForInstructor) {
         const id_target_academic_year_and_semester = document.getElementById("id_target_academic_year_and_semester");
@@ -2357,7 +2357,7 @@ function initRequest() {
                     } else if (readyToCheckout) {
                         const readyToStartCheckingOut = id_modal_checkout.hidden;
                         const readyToEndCheckingOut = id_modal_checkout.hidden === false;
-                        const isForInstructor = getCart()[0].purpose.for_instructor;
+                        const isForInstructor = getCart()[0].purpose.is_for_instructor;
 
                         if (!isAuthenticated()) {
                             let params = {};

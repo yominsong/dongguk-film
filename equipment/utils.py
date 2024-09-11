@@ -76,7 +76,7 @@ def sync_equipment_data(request):
             if target == "category":
                 data = {"table_name": "equipment-category"}
             elif target == "purpose":
-                data = {"table_name": "facility-purpose"}
+                data = {"table_name": "equipment-purpose"}
             elif target == "limit":
                 data = {"table_name": "equipment-limit"}
             elif target == "collection":
@@ -736,8 +736,8 @@ def create_request(request):
                 {"id": id, "status": status, "reason": reason, "msg": msg}
             ) + "\n"
 
-            is_for_instructor = cart[0]["purpose"]["for_instructor"]
-            is_curricular = cart[0]["purpose"]["curricular"]
+            is_for_instructor = cart[0]["purpose"]["is_for_instructor"]
+            is_curricular = cart[0]["purpose"]["is_curricular"]
 
             if is_for_instructor:
                 purpose_record_id = cart[0]["purpose"]["record_id"]
@@ -1064,7 +1064,6 @@ def create_request(request):
                 "User": request.user.username,
                 "Public ID": public_id,
                 "Private ID": private_id,
-                "For instructor": True if is_for_instructor else False,
             }
 
             data = {

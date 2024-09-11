@@ -104,7 +104,7 @@ def send_facility_request_status_update(request):
         if "🟢" in validation:
             film_title = facility_request["film_title"]
             subject_name = facility_request.get("subject_name", None)
-            is_for_instructor = facility_request["for_instructor"]
+            is_for_instructor = facility_request["is_for_instructor"]
             name_of_subject_or_project = (
                 subject_name if is_for_instructor else film_title
             )
@@ -139,7 +139,7 @@ def send_facility_request_status_update(request):
                 ),
                 "public_id": facility_request["public_id"],
                 "private_id": facility_request["private_id"],
-                "for_instructor": is_for_instructor,
+                "is_for_instructor": is_for_instructor,
                 "status": status,
                 "name_of_subject_or_project": name_of_subject_or_project,
                 "msg_type": msg_type,
@@ -200,7 +200,7 @@ def send_facility_request_status_update(request):
             "email": user.email,
             "phone": user.metadata.phone,
             "content": {
-                "is_for_instructor": record["for_instructor"],
+                "is_for_instructor": record["is_for_instructor"],
                 "name_of_subject_or_project": record["name_of_subject_or_project"],
                 "facility_category": record["category_in_korean"],
             },
@@ -241,7 +241,7 @@ def remind_facility_use_start(request):
         user = User.objects.get(username=facility_request["user"])
         subject_name = facility_request["subject_name"]
         project_name = facility_request["film_title"]
-        is_for_instructor = facility_request["for_instructor"]
+        is_for_instructor = facility_request["is_for_instructor"]
         name_of_subject_or_project = subject_name if is_for_instructor else project_name
 
         data = {
@@ -272,7 +272,7 @@ def remind_facility_use_end(request):
         user = User.objects.get(username=facility_request["user"])
         subject_name = facility_request["subject_name"]
         project_name = facility_request["film_title"]
-        is_for_instructor = facility_request["for_instructor"]
+        is_for_instructor = facility_request["is_for_instructor"]
         name_of_subject_or_project = subject_name if is_for_instructor else project_name
 
         data = {
@@ -698,26 +698,28 @@ def update_dnd_cookie(request):
 def update_hero_img(request):
     img_list = {}
 
-    try:
-        home_img = save_hero_img("video-camera", "home")
-        equipment_img = save_hero_img("cinema-lens", "equipment")
-        project_img = save_hero_img("film-production", "project")
-        dflink_img = save_hero_img("keyboard", "dflink")
-        notice_img = save_hero_img("office", "notice")
-        account_img = save_hero_img("bookmark", "account")
+    # try:
+    home_img = save_hero_img("video%20camera", "home")
+    equipment_img = save_hero_img("cinema%20lens", "equipment")
+    workspace_img = save_hero_img("adobe%20premiere%20pro", "workspace")
+    project_img = save_hero_img("film%20production", "project")
+    dflink_img = save_hero_img("keyboard", "dflink")
+    notice_img = save_hero_img("office", "notice")
+    account_img = save_hero_img("bookmark", "account")
 
-        img_list = {
-            "home": home_img,
-            "equipment": equipment_img,
-            "project": project_img,
-            "dflink": dflink_img,
-            "notice": notice_img,
-            "account": account_img,
-        }
+    img_list = {
+        "home": home_img,
+        "equipment": equipment_img,
+        "workspace": workspace_img,
+        "project": project_img,
+        "dflink": dflink_img,
+        "notice": notice_img,
+        "account": account_img,
+    }
 
-        status = "DONE"
-    except:
-        status = "FAIL"
+    status = "DONE"
+    # except:
+    #     status = "FAIL"
 
     data = {
         "status": status,
@@ -1008,8 +1010,8 @@ def find_instructor(purpose_priority: str, base_date: str):
                 else None
             )
 
-            purpose_curricular = purpose_item["curricular"]
-            purpose_for_senior_project = purpose_item["for_senior_project"]
+            purpose_curricular = purpose_item["is_curricular"]
+            purpose_for_senior_project = purpose_item["is_for_senior_project"]
             break
 
     found_instructor_list = []
@@ -1361,7 +1363,7 @@ def airtable(
                 "category": fields["Category"],
                 "category_in_korean": fields["Category in Korean"],
                 "project_id": fields.get("Project team", None),
-                "film_title": fields.get("Project team film title", [None])[0],
+                "film_title": fields.get("Film title", [None])[0],
                 "purpose": {
                     "priority": fields.get("Purpose priority", [None])[0],
                     "keyword": fields.get("Purpose keyword", [None])[0],
@@ -1376,7 +1378,7 @@ def airtable(
                 "public_url": fields["Public URL"],
                 "public_id": fields["Public ID"],
                 "private_id": fields["Private ID"],
-                "for_instructor": fields.get("For instructor", False),
+                "is_for_instructor": fields.get("Is for instructor", False),
                 "status": fields["Status"],
                 "created_time": created_time,
                 "approved_time": approved_time,
@@ -1544,7 +1546,7 @@ def airtable(
 
         record_list = []
 
-        if table_name == "facility-purpose":
+        if table_name == "equipment-purpose":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -1552,16 +1554,16 @@ def airtable(
                     purpose = {
                         "record_id": record["id"],
                         "name": fields.get("Name", None),
-                        "priority": fields.get("Priority", None),
-                        "keyword": fields.get("Keyword", None),
-                        "secondary_keyword": fields.get("Secondary keyword", None),
+                        "priority": fields.get("Priority", [None])[0],
+                        "keyword": fields.get("Keyword", [None])[0],
+                        "secondary_keyword": fields.get("Secondary keyword", [None])[0],
                         "at_least": fields.get("At least", None),
                         "up_to": fields.get("Up to", None),
                         "max": fields.get("Max", None),
                         "in_a_nutshell": fields.get("In a nutshell", None),
-                        "curricular": fields.get("Curricular", False),
-                        "for_senior_project": fields.get("For senior project", False),
-                        "for_instructor": fields.get("For instructor", False),
+                        "is_curricular": fields.get("Is curricular", [False])[0],
+                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
+                        "is_for_senior_project": fields.get("Is for senior project", [False])[0],
                     }
 
                     record_list.append(purpose)
@@ -1622,7 +1624,7 @@ def airtable(
                         "category": fields.get("Category", None),
                         "category_in_korean": fields.get("Category in Korean", None),
                         "project_id": fields.get("Project team", None),
-                        "film_title": fields.get("Project team film title", [None])[0],
+                        "film_title": fields.get("Film title", [None])[0],
                         "staff": fields.get("Project team staff", None),
                         "purpose": {
                             "priority": fields.get("Purpose priority", [None])[0],
@@ -1643,7 +1645,7 @@ def airtable(
                         "public_url": fields.get("Public URL", None),
                         "public_id": fields.get("Public ID", None),
                         "private_id": fields.get("Private ID", None),
-                        "for_instructor": fields.get("For instructor", False),
+                        "is_for_instructor": fields.get("Is for instructor", False),
                         "status": fields.get("Status", None),
                         "created_time": created_time,
                         "approved_time": approved_time,

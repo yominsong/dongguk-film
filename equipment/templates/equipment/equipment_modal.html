@@ -125,9 +125,9 @@
                                 <p class="mt-2 text-sm text-flamingo-600" id="id_category_error" hidden></p>
                             </fieldset>
                             <!-- id_purpose -->
-                            <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '대여 목적을 선택하세요.', 'at_least': '', 'up_to': '', 'max': '', 'for_instructor': '' },
+                            <div x-data="Components.listbox({ modelName: 'selected', open: false, selectedIndex: 0, activeIndex: 0, items: [ { 'priority': '', 'keyword': '대여 목적을 선택하세요.', 'at_least': '', 'up_to': '', 'max': '', 'is_for_instructor': '' },
                                 {% for purpose in purpose_list %}
-                                    { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'at_least': '{{ purpose.at_least }}', 'up_to': '{{ purpose.up_to }}', 'max': '{{ purpose.max }}', 'for_instructor': '{{ purpose.for_instructor }}' }
+                                    { 'priority': '{{ purpose.priority }}', 'keyword':'{{ purpose.keyword }}', 'at_least': '{{ purpose.at_least }}', 'up_to': '{{ purpose.up_to }}', 'max': '{{ purpose.max }}', 'is_for_instructor': '{{ purpose.is_for_instructor }}' }
                                     {% if not forloop.last %},&nbsp;{% endif %}
                                 {% endfor %}
                                 ] })" x-init="init()">

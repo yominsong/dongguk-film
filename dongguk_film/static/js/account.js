@@ -473,7 +473,7 @@ function updateList(data) {
                                 data-end-datetime="${item.end_datetime}"
                                 data-is-after-end-datetime="${item.is_after_end_datetime}"
                                 data-public-url="${item.public_url}"
-                                data-for-instructor="${item.for_instructor}"
+                                data-for-instructor="${item.is_for_instructor}"
                                 data-status="${item.status}"
                                 data-created-time="${item.created_time}"
                                 data-approved-time="${item.approved_time}"

@@ -18,7 +18,7 @@ def project(request):
     position_list = get_project_policy("position")
 
     for purpose in purpose_list:
-        if purpose["for_instructor"] == True:
+        if purpose["is_for_instructor"] == True:
             purpose_list.remove(purpose)
 
     # Airtable
