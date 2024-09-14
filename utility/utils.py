@@ -228,7 +228,7 @@ def send_facility_request_status_update(request):
 
 
 def remind_facility_use_start(request):
-    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 20, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 10, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
@@ -236,6 +236,7 @@ def remind_facility_use_start(request):
     }
 
     target_facility_request_list = airtable("get_all", "records", data)
+    print("target_facility_request_list:", target_facility_request_list)
 
     for facility_request in target_facility_request_list:
         user = User.objects.get(username=facility_request["user"])
@@ -1378,7 +1379,7 @@ def airtable(
                 "public_url": fields["Public URL"],
                 "public_id": fields["Public ID"],
                 "private_id": fields["Private ID"],
-                "is_for_instructor": fields.get("Is for instructor", False),
+                "is_for_instructor": fields.get("Is for instructor", [False])[0],
                 "status": fields["Status"],
                 "created_time": created_time,
                 "approved_time": approved_time,
@@ -1546,31 +1547,7 @@ def airtable(
 
         record_list = []
 
-        if table_name == "equipment-purpose":
-            try:
-                for record in records:
-                    fields = record["fields"]
-
-                    purpose = {
-                        "record_id": record["id"],
-                        "name": fields.get("Name", None),
-                        "priority": fields.get("Priority", [None])[0],
-                        "keyword": fields.get("Keyword", [None])[0],
-                        "secondary_keyword": fields.get("Secondary keyword", [None])[0],
-                        "at_least": fields.get("At least", None),
-                        "up_to": fields.get("Up to", None),
-                        "max": fields.get("Max", None),
-                        "in_a_nutshell": fields.get("In a nutshell", None),
-                        "is_curricular": fields.get("Is curricular", [False])[0],
-                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
-                        "is_for_senior_project": fields.get("Is for senior project", [False])[0],
-                    }
-
-                    record_list.append(purpose)
-            except:
-                pass
-
-        elif table_name == "facility-request":
+        if table_name == "facility-request":
             try:
                 for record in records:
                     fields = record["fields"]
@@ -1630,7 +1607,7 @@ def airtable(
                             "priority": fields.get("Purpose priority", [None])[0],
                             "keyword": fields.get("Purpose keyword", [None])[0],
                         },
-                        "subject_name": fields.get("Duration", None),
+                        "subject_name": fields.get("Subject name", None),
                         "duration": fields.get("Duration", None),
                         "start_datetime": start_datetime,
                         "end_datetime": end_datetime,
@@ -1645,7 +1622,7 @@ def airtable(
                         "public_url": fields.get("Public URL", None),
                         "public_id": fields.get("Public ID", None),
                         "private_id": fields.get("Private ID", None),
-                        "is_for_instructor": fields.get("Is for instructor", False),
+                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
                         "status": fields.get("Status", None),
                         "created_time": created_time,
                         "approved_time": approved_time,
@@ -1656,6 +1633,30 @@ def airtable(
                     }
 
                     record_list.append(request)
+            except:
+                pass
+
+        elif table_name == "equipment-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "record_id": record["id"],
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", [None])[0],
+                        "keyword": fields.get("Keyword", [None])[0],
+                        "secondary_keyword": fields.get("Secondary keyword", [None])[0],
+                        "at_least": fields.get("At least", None),
+                        "up_to": fields.get("Up to", None),
+                        "max": fields.get("Max", None),
+                        "in_a_nutshell": fields.get("In a nutshell", None),
+                        "is_curricular": fields.get("Is curricular", [False])[0],
+                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
+                        "is_for_senior_project": fields.get("Is for senior project", [False])[0],
+                    }
+
+                    record_list.append(purpose)
             except:
                 pass
 

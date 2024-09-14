@@ -413,7 +413,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             public_url = f"https://docs.google.com/document/d/{public_id}"
             private_url = f"https://docs.google.com/document/d/{private_id}"
 
-        description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 알맞은 것으로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ희망 시작일시: {start_datetime}\nㆍ희망 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
+        description = f"ㆍ제안: 시설예약 신청 정보를 확인하고, Status를 Approved 또는 Rejected 중 해당하는 값으로 변경하세요.\nㆍ예약명: {name}\nㆍ신청일시: {created_time}\nㆍ희망 시작일시: {start_datetime}\nㆍ희망 종료일시: {end_datetime}\nㆍ공개 신청서 URL: {public_url}\nㆍ비공개 신청서 URL: {private_url}"
 
         content = {
             "important": True,
