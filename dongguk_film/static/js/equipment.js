@@ -99,6 +99,43 @@ function updateUrlParams() {
     window.location.reload();
 }
 
+function handleFilterAndCartScroll() {
+    const navbar = document.getElementById("navbar");
+    const id_hero = document.getElementById("id_hero");
+    const id_filter_and_cart = document.getElementById("id_filter_and_cart");
+    let initialOffset;
+
+    id_filter_and_cart.style.transition = "background-color 0.3s ease, backdrop-filter 0.3s ease, color 0.3s ease, font-weight 0.3s ease, text-shadow 0.3s ease";
+
+    function calculateInitialOffset() {
+        const top3InPixels = 1.5 * 16;
+
+        initialOffset = navbar.offsetHeight + id_hero.offsetHeight + top3InPixels;
+    }
+
+    function handleScroll() {
+        if (window.scrollY > initialOffset) {
+            id_filter_and_cart.classList.remove("bg-white");
+            id_filter_and_cart.classList.add("backdrop-blur-md", "bg-white/50", "text-gray-900", "font-medium", "text-shadow");
+        } else {
+            id_filter_and_cart.classList.remove("backdrop-blur-md", "bg-white/50", "text-gray-900", "font-medium", "text-shadow");
+            id_filter_and_cart.classList.add("bg-white");
+        };
+    }
+
+    calculateInitialOffset();
+    window.addEventListener("scroll", handleScroll);
+    
+    window.addEventListener("resize", () => {
+        calculateInitialOffset();
+        handleScroll();
+    });
+
+    handleScroll();
+}
+
+handleFilterAndCartScroll();
+
 function notifyRentalLimit() {
     if (!urlParams.has("rentalLimited")) return;
 
