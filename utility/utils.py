@@ -228,7 +228,7 @@ def send_facility_request_status_update(request):
 
 
 def remind_facility_use_start(request):
-    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 0, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 20, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
@@ -259,7 +259,7 @@ def remind_facility_use_start(request):
 
 
 def remind_facility_use_end(request):
-    formula = "AND(Status = 'In Progress', DATETIME_DIFF({End datetime}, NOW(), 'minutes') > 0, DATETIME_DIFF({End datetime}, NOW(), 'minutes') <= 30, FIND('🟢', Validation))"
+    formula = "AND(Status = 'In Progress', DATETIME_DIFF({End datetime}, NOW(), 'minutes') > 20, DATETIME_DIFF({End datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
@@ -701,10 +701,10 @@ def update_hero_img(request):
     # try:
     home_img = save_hero_img("video%20camera", "home")
     equipment_img = save_hero_img("cinema%20lens", "equipment")
-    workspace_img = save_hero_img("adobe%20premiere%20pro", "workspace")
-    project_img = save_hero_img("film%20production", "project")
-    dflink_img = save_hero_img("keyboard", "dflink")
-    notice_img = save_hero_img("office", "notice")
+    workspace_img = save_hero_img("video%20editing", "workspace")
+    project_img = save_hero_img("film%20set", "project")
+    dflink_img = save_hero_img("computer%20keyboard", "dflink")
+    notice_img = save_hero_img("empty%20office", "notice")
     account_img = save_hero_img("bookmark", "account")
 
     img_list = {
