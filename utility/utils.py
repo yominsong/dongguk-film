@@ -450,9 +450,9 @@ def update_subject(request):
     chrome_options.add_experimental_option("detach", True)
     chrome_options.add_argument("--no-sandbox") # Security note: The --no-sandbox option can weaken security, use with caution
 
-    if not settings.DEBUG:
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-dev-shm-usage")
+    # if not settings.DEBUG:
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
 
     # Set Selenium Wire options
     seleniumwire_options = {"disable_encoding": True}
