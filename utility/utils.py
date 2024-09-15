@@ -448,11 +448,17 @@ def update_subject(request):
     # Set Chrome options
     chrome_options = Options()
     # chrome_options.add_experimental_option("detach", True)
-    chrome_options.add_argument("--no-sandbox") # Security note: The --no-sandbox option can weaken security, use with caution
-
-    # if not settings.DEBUG:
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-software-rasterizer")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-popup-blocking")
+    chrome_options.add_argument("--disable-notifications")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 
     # Set Selenium Wire options
     seleniumwire_options = {"disable_encoding": True}
