@@ -228,7 +228,7 @@ def send_facility_request_status_update(request):
 
 
 def remind_facility_use_start(request):
-    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 10, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
+    formula = "AND(Status = 'Approved', DATETIME_DIFF({Start datetime}, NOW(), 'minutes') > 20, DATETIME_DIFF({Start datetime}, NOW(), 'minutes') < 40, FIND('🟢', Validation))"
 
     data = {
         "table_name": "facility-request",
@@ -236,7 +236,6 @@ def remind_facility_use_start(request):
     }
 
     target_facility_request_list = airtable("get_all", "records", data)
-    print("target_facility_request_list:", target_facility_request_list)
 
     for facility_request in target_facility_request_list:
         user = User.objects.get(username=facility_request["user"])
@@ -421,6 +420,7 @@ def update_subject(request):
         """
 
         max_attempts = 10
+
         for attempt in range(max_attempts):
             try:
                 result = driver.execute_script(script)
@@ -448,9 +448,11 @@ def update_subject(request):
     # Set Chrome options
     chrome_options = Options()
     chrome_options.add_experimental_option("detach", True)
-    # chrome_options.add_argument("--headless")
-    # chrome_options.add_argument("--no-sandbox")
-    # chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox") # Security note: The --no-sandbox option can weaken security, use with caution
+
+    if not settings.DEBUG:
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
     # Set Selenium Wire options
     seleniumwire_options = {"disable_encoding": True}
@@ -556,15 +558,37 @@ def update_subject(request):
         print(f"Failed to find the language change button. Error: {e}")
 
     # Click the '수업' button
+    def click_menu_item(driver, menu_text):
+        script = """
+        function clickMenuItemByText(text) {
+            var elements = document.getElementsByTagName('*');
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i].textContent.trim() === text) {
+                    elements[i].click();
+                    return true;
+                }
+            }
+            return false;
+        }
+        return clickMenuItemByText(arguments[0]);
+        """
+        return driver.execute_script(script, menu_text)
+    
     try:
-        timetable_button = wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//*[text()='수업']"))
-        )
-
-        timetable_button.click()
-        print("수업 button clicked.")
-    except (TimeoutException, NoSuchElementException) as e:
+        if click_menu_item(driver, "수업"):
+            print("수업 button clicked.")
+        else:
+            raise Exception("수업 button not found")
+    except Exception as e:
         print(f"Failed to find or click the '수업' button. Error: {e}")
+        
+        try:
+            WebDriverWait(driver, 10).until(
+                lambda x: click_menu_item(x, "수업")
+            )
+            print("수업 button clicked after wait.")
+        except Exception as wait_e:
+            print(f"Failed to click '수업' button after wait. Error: {wait_e}")
 
     # Click the '종합강의시간표조회' button
     try:
