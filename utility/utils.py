@@ -447,7 +447,7 @@ def update_subject(request):
 
     # Set Chrome options
     chrome_options = Options()
-    chrome_options.add_experimental_option("detach", True)
+    # chrome_options.add_experimental_option("detach", True)
     chrome_options.add_argument("--no-sandbox") # Security note: The --no-sandbox option can weaken security, use with caution
 
     # if not settings.DEBUG:
