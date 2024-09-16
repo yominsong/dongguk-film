@@ -2364,6 +2364,10 @@ select {
   border-color: rgb(249 250 251 / var(--tw-divide-opacity));
 }
 
+.divide-transparent > :not([hidden]) ~ :not([hidden]) {
+  border-color: transparent;
+}
+
 .self-start {
   align-self: flex-start;
 }
