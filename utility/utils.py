@@ -69,12 +69,14 @@ SHORT_IO_API_KEY = SHORT_IO["API_KEY"]
 AWS = getattr(settings, "AWS", None)
 AWS_ACCESS_KEY_ID = AWS["ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = AWS["SECRET_ACCESS_KEY"]
+AWS_REGION_NAME = AWS["REGION_NAME"]
+AWS_S3_BUCKET_NAME = AWS["S3"]["BUCKET_NAME"]
 
 AWS_S3 = boto3.client(
     "s3",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-    region_name="ap-northeast-2",
+    region_name=AWS_REGION_NAME,
 )
 
 PUBLIC_DATA = getattr(settings, "PUBLIC_DATA", None)
@@ -448,7 +450,7 @@ def update_subject(request):
     # Set Chrome options
     chrome_options = Options()
     # chrome_options.add_experimental_option("detach", True)
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -2303,7 +2305,7 @@ def aws_s3(action: str, target: str, data: dict = None):
     if action == "put" and target == "object":
         response = AWS_S3.put_object(
             Body=bin,
-            Bucket="dongguk-film",
+            Bucket=AWS_S3_BUCKET_NAME,
             ContentDisposition=f'attachment; filename="{name}"',
             Key=key,
             ACL="public-read",
@@ -2314,7 +2316,7 @@ def aws_s3(action: str, target: str, data: dict = None):
     # action: get / target: object
     elif action == "get" and target == "object":
         try:
-            response = AWS_S3.get_object(Bucket="dongguk-film", Key=key)
+            response = AWS_S3.get_object(Bucket=AWS_S3_BUCKET_NAME, Key=key)
         except:
             # response = requests.models.Response()
             # response.status_code = 400
@@ -2324,7 +2326,7 @@ def aws_s3(action: str, target: str, data: dict = None):
 
     # action: delete / target: object
     elif action == "delete" and target == "object":
-        response = AWS_S3.delete_object(Bucket="dongguk-film", Key=key)
+        response = AWS_S3.delete_object(Bucket=AWS_S3_BUCKET_NAME, Key=key)
 
         result = response
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from utility.msg import send_msg
@@ -13,6 +14,14 @@ from konlpy.tag import Okt
 from collections import Counter
 from bs4 import BeautifulSoup
 import base64, ast, re
+
+#
+# Global variables
+#
+
+AWS = getattr(settings, "AWS", None)
+AWS_REGION_NAME = AWS["REGION_NAME"]
+AWS_S3_BUCKET_NAME = AWS["S3"]["BUCKET_NAME"]
 
 #
 # Sub functions
@@ -254,7 +263,7 @@ def replace_img_src_from_b64_to_bin(content, img_key_list):
 
     for old_src, img_key in zip(img_src_list, img_key_list):
         img_key = encode_hangul_to_url(img_key)
-        new_src = f"https://dongguk-film.s3.ap-northeast-2.amazonaws.com/{img_key}"
+        new_src = f"https://{AWS_S3_BUCKET_NAME}.s3.{AWS_REGION_NAME}.amazonaws.com/{img_key}"
         for img in soup.find_all("img", src=old_src):
             img["src"] = new_src
 
@@ -358,9 +367,9 @@ def update_content_and_get_img_key_list(request):
 
     if len(bin_img_list) != 0:
         for img in bin_img_list:
-            if "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/" in img["src"]:
+            if f"https://{AWS_S3_BUCKET_NAME}.s3.{AWS_REGION_NAME}.amazonaws.com/" in img["src"]:
                 img_key = img["src"].replace(
-                    "https://dongguk-film.s3.ap-northeast-2.amazonaws.com/", ""
+                    f"https://{AWS_S3_BUCKET_NAME}.s3.{AWS_REGION_NAME}.amazonaws.com/", ""
                 )
                 img_key_list.append(decode_url_to_hangul(img_key))
 

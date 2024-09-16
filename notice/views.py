@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.http import Http404
@@ -6,6 +7,14 @@ from utility.img import get_hero_img
 from utility.utils import notion, convert_datetime
 from bs4 import BeautifulSoup
 import re, ast, random
+
+#
+# Global variables
+#
+
+AWS = getattr(settings, "AWS", None)
+AWS_REGION_NAME = AWS["REGION_NAME"]
+AWS_S3_BUCKET_NAME = AWS["S3"]["BUCKET_NAME"]
 
 #
 # Sub functions
@@ -201,5 +210,5 @@ def notice_detail(request, notice_id):
     return render(
         request,
         "notice/notice_detail.html",
-        {"image_list": image_list, "notice": notice},
+        {"image_list": image_list, "notice": notice, "AWS_S3_BUCKET_NAME": AWS_S3_BUCKET_NAME, "AWS_REGION_NAME": AWS_REGION_NAME},
     )
