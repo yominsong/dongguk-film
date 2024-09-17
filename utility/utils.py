@@ -88,7 +88,7 @@ PUBLIC_DATA_SERVICE_KEY = PUBLIC_DATA["SERVICE_KEY"]
 
 
 @csrf_exempt
-def forward_aws_sns_alert(request):
+def forward_amazon_sns_alert(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
