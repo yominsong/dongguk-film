@@ -14,7 +14,14 @@ current_minute = current_time.strftime("%M")
 #
 
 if current_hour % 2 == 0 and current_minute == "00":
-    requests.get("https://dongguk.film/equipment/utils/sync-equipment-data/")
+    requests.get("https://dongguk.film/equipment/utils/update-equipment-data/")
+
+#
+# workspace
+#
+
+if current_hour % 2 == 0 and current_minute == "00":
+    requests.get("https://dongguk.film/workspace/utils/update-workspace-data/")
 
 #
 # project

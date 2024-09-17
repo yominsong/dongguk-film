@@ -581,7 +581,7 @@ def update_subject(request):
         return clickMenuItemByText(arguments[0]);
         """
         return driver.execute_script(script, menu_text)
-    
+
     try:
         if click_menu_item(driver, "수업"):
             print("수업 button clicked.")
@@ -589,11 +589,9 @@ def update_subject(request):
             raise Exception("수업 button not found")
     except Exception as e:
         print(f"Failed to find or click the '수업' button. Error: {e}")
-        
+
         try:
-            WebDriverWait(driver, 10).until(
-                lambda x: click_menu_item(x, "수업")
-            )
+            WebDriverWait(driver, 10).until(lambda x: click_menu_item(x, "수업"))
             print("수업 button clicked after wait.")
         except Exception as wait_e:
             print(f"Failed to click '수업' button after wait. Error: {wait_e}")
@@ -731,28 +729,28 @@ def update_dnd_cookie(request):
 def update_hero_img(request):
     img_list = {}
 
-    # try:
-    home_img = save_hero_img("video%20camera", "home")
-    equipment_img = save_hero_img("cinema%20lens", "equipment")
-    workspace_img = save_hero_img("video%20editing", "workspace")
-    project_img = save_hero_img("film%20set", "project")
-    dflink_img = save_hero_img("computer%20keyboard", "dflink")
-    notice_img = save_hero_img("empty%20office", "notice")
-    account_img = save_hero_img("bookmark", "account")
+    try:
+        home_img = save_hero_img("video%20camera", "home")
+        equipment_img = save_hero_img("cinema%20lens", "equipment")
+        workspace_img = save_hero_img("video%20editing", "workspace")
+        project_img = save_hero_img("film%20set", "project")
+        dflink_img = save_hero_img("computer%20keyboard", "dflink")
+        notice_img = save_hero_img("empty%20office", "notice")
+        account_img = save_hero_img("bookmark", "account")
 
-    img_list = {
-        "home": home_img,
-        "equipment": equipment_img,
-        "workspace": workspace_img,
-        "project": project_img,
-        "dflink": dflink_img,
-        "notice": notice_img,
-        "account": account_img,
-    }
+        img_list = {
+            "home": home_img,
+            "equipment": equipment_img,
+            "workspace": workspace_img,
+            "project": project_img,
+            "dflink": dflink_img,
+            "notice": notice_img,
+            "account": account_img,
+        }
 
-    status = "DONE"
-    # except:
-    #     status = "FAIL"
+        status = "DONE"
+    except:
+        status = "FAIL"
 
     data = {
         "status": status,
@@ -954,6 +952,20 @@ def get_equipment_data(target: str):
         "dongguk_film/static/json/equipment.json"
         if settings.DEBUG
         else "dongguk_film/staticfiles/json/equipment.json"
+    )
+
+    with open(JSON_PATH, "r") as f:
+        item_list = json.load(f)[target]
+        f.close()
+
+    return item_list
+
+
+def get_workspace_data(target: str):
+    JSON_PATH = (
+        "dongguk_film/static/json/workspace.json"
+        if settings.DEBUG
+        else "dongguk_film/staticfiles/json/workspace.json"
     )
 
     with open(JSON_PATH, "r") as f:
@@ -1331,14 +1343,12 @@ def airtable(
     if data != None:
         table_name = data.get("table_name", None)
         params = data.get("params", {})
-        
-        default_params = {
-            "view": "Grid view"
-        }
+
+        default_params = {"view": "Grid view"}
 
         if params.get("view") and params["view"] != "Grid view":
             default_params["view"] = params["view"]
-        
+
         params = {**default_params, **params}
 
     # action: create / target: record
@@ -1423,11 +1433,6 @@ def airtable(
             }
 
         elif table_name == "equipment-hour":
-            project_and_date = fields.get("Project and date", [])
-
-            if project_and_date:
-                project_and_date = json.loads(project_and_date.replace("'", '"'))
-
             record = {
                 "record_id": record["id"],
                 "name": fields["Name"],
@@ -1449,7 +1454,6 @@ def airtable(
             record = {
                 "record_id": record["id"],
                 "collection_id": fields["ID"],
-                # "thumbnail": fields["Thumbnail"][0]["url"],
                 "name": fields["Name"],
                 "category": {
                     "priority": fields.get("Category priority", [None])[0],
@@ -1654,7 +1658,9 @@ def airtable(
                         "public_url": fields.get("Public URL", None),
                         "public_id": fields.get("Public ID", None),
                         "private_id": fields.get("Private ID", None),
-                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
+                        "is_for_instructor": fields.get("Is for instructor", [False])[
+                            0
+                        ],
                         "status": fields.get("Status", None),
                         "created_time": created_time,
                         "approved_time": approved_time,
@@ -1684,8 +1690,12 @@ def airtable(
                         "max": fields.get("Max", None),
                         "in_a_nutshell": fields.get("In a nutshell", None),
                         "is_curricular": fields.get("Is curricular", [False])[0],
-                        "is_for_instructor": fields.get("Is for instructor", [False])[0],
-                        "is_for_senior_project": fields.get("Is for senior project", [False])[0],
+                        "is_for_instructor": fields.get("Is for instructor", [False])[
+                            0
+                        ],
+                        "is_for_senior_project": fields.get(
+                            "Is for senior project", [False]
+                        )[0],
                     }
 
                     record_list.append(purpose)
@@ -1696,12 +1706,6 @@ def airtable(
             try:
                 for record in records:
                     fields = record["fields"]
-                    project_and_date = fields.get("Project and date", [])
-
-                    if project_and_date:
-                        project_and_date = json.loads(
-                            project_and_date.replace("'", '"')
-                        )
 
                     hour = {
                         "record_id": record["id"],
@@ -1712,7 +1716,6 @@ def airtable(
                         ),
                         "time": fields.get("Time", None),
                         "max_capacity": fields.get("Max capacity", None),
-                        "project_and_date": project_and_date,
                         "start_facility_request": fields.get(
                             "Start facility request", []
                         ),
@@ -1815,110 +1818,212 @@ def airtable(
             except:
                 pass
 
-        elif table_name == "project-team":
+        elif table_name == "workspace-hour":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    hour = {
+                        "record_id": record["id"],
+                        "name": fields.get("Name", None),
+                        "day_of_the_week": fields.get("Day of the week", None),
+                        "day_of_the_week_in_korean": fields.get(
+                            "Day of the week in Korean", None
+                        ),
+                        "time": fields.get("Time", None),
+                        "max_capacity": fields.get("Max capacity", None),
+                        "start_facility_request": fields.get(
+                            "Start facility request", []
+                        ),
+                        "end_facility_request": fields.get("End facility request", []),
+                        "start_facility_request_date": fields.get(
+                            "Start facility request date", []
+                        ),
+                        "end_facility_request_date": fields.get(
+                            "End facility request date", []
+                        ),
+                    }
+
+                    record_list.append(hour)
+            except:
+                pass
+
+        elif table_name == "workspace-category":
             # try:
             for record in records:
                 fields = record["fields"]
-                instructor = fields.get("Instructor", None)
 
-                instructor = (
-                    mask_personal_information("instructor_id", instructor)
-                    if instructor and mask
-                    else instructor
-                )
-
-                user = fields.get("User", None)
-
-                user = (
-                    mask_personal_information("student_id", user)
-                    if user and mask
-                    else user
-                )
-
-                created_time = fields.get("Created time", None)
-                created_time = convert_datetime(created_time) if created_time else None
-
-                created_date = (
-                    created_time.strftime("%Y-%m-%d") if created_time else None
-                )
-
-                team = {
-                    "record_id": record["id"],
-                    "project_id": fields.get("ID", None),
+                category = {
                     "name": fields.get("Name", None),
-                    "film_title": fields.get("Film title", None),
-                    "purpose": {
-                        "priority": fields.get("Equipment purpose priority", [None])[0],
-                        "keyword": fields.get("Equipment purpose keyword", [None])[0],
-                    },
-                    "production_end_date": fields.get("Production end date", None),
-                    "instructor": instructor,
-                    "subject_code": fields.get("Subject code", None),
-                    "subject_name": fields.get("Subject name", None),
-                    "user": user,
-                    "facility_request": fields.get("Facility request", None),
-                    "facility_request_status": fields.get(
-                        "Facility request status", []
+                    "priority": fields.get("Priority", None),
+                    "keyword": fields.get("Keyword", None),
+                    "room_code": fields.get("Room code", None),
+                    "unit_keyword": fields.get("Unit keyword", [None])[0],
+                    "is_exclusive_space": fields.get("Is exclusive space", False),
+                    "thumbnail": (
+                        fields.get("Thumbnail", [None])[0].get("url")
+                        if fields.get("Thumbnail", [None])[0]
+                        else None
                     ),
-                    "created_date": created_date,
                 }
 
-                staff = fields.get("Staff", None)
-                staff_list = ast.literal_eval(staff) if staff else None
-                director_list = []
-                director_name_list = []
-                producer_list = []
-                producer_name_list = []
-                producer_student_id_list = []
-
-                for staff in staff_list:
-                    student_id = staff["student_id"]
-                    try:
-                        user = User.objects.get(username=student_id)
-                        staff["pk"] = str(user.pk)
-
-                        staff["name"] = (
-                            mask_personal_information("name", user.metadata.name)
-                            if mask
-                            else user.metadata.name
-                        )
-
-                        staff["student_id"] = (
-                            mask_personal_information("student_id", student_id)
-                            if mask
-                            else student_id
-                        )
-
-                        staff["avatar_url"] = user.socialaccount_set.all()[
-                            0
-                        ].get_avatar_url()
-                    except:
-                        staff["pk"] = ""
-                        staff["name"] = "사용자"
-                        staff["student_id"] = "**********"
-                        staff["avatar_url"] = (
-                            "https://dongguk.film/static/images/d_dot_f_logo.jpg"
-                        )
-
-                    for priority in staff["position_priority"]:
-                        if priority == "A01":  # A01: 연출
-                            director_list.append(staff)
-                            director_name_list.append(staff["name"])
-
-                        if priority == "B01":  # B01: 제작
-                            producer_list.append(staff)
-                            producer_name_list.append(staff["name"])
-                            producer_student_id_list.append(staff["student_id"])
-
-                team["staff"] = staff_list
-                team["director"] = director_list
-                team["director_name"] = director_name_list
-                team["producer"] = producer_list
-                team["producer_name"] = producer_name_list
-                team["producer_student_id"] = producer_student_id_list
-                record_list.append(team)
+                record_list.append(category)
             # except:
             #     pass
+
+        elif table_name == "workspace-purpose":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    purpose = {
+                        "record_id": record["id"],
+                        "name": fields.get("Name", None),
+                        "category_priority": fields.get("Category priority", [None])[0],
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
+                        "at_least": fields.get("At least", None),
+                        "at_least_unit": fields.get("At least unit", None),
+                        "up_to": fields.get("Up to", None),
+                        "up_to_unit": fields.get("Up to unit", None),
+                        "max": fields.get("Max", None),
+                        "max_unit": fields.get("Max unit", None),
+                        "in_a_nutshell": fields.get("In a nutshell", None),
+                        "has_no_min_notice": fields.get("Has no min notice", False),
+                        "has_no_max_notice": fields.get("Has no max notice", False),
+                        "has_no_max_limit": fields.get("Has no max limit", False),
+                    }
+
+                    record_list.append(purpose)
+            except:
+                pass
+
+        elif table_name == "workspace-area":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    area = {
+                        "name": fields.get("Name", None),
+                        "purpose": fields.get("Purpose", None),
+                        "status": fields.get("Status", None),
+                        "area_id": fields.get("ID", None),
+                    }
+
+                    record_list.append(area)
+            except:
+                pass
+
+        elif table_name == "project-team":
+            try:
+                for record in records:
+                    fields = record["fields"]
+                    instructor = fields.get("Instructor", None)
+
+                    instructor = (
+                        mask_personal_information("instructor_id", instructor)
+                        if instructor and mask
+                        else instructor
+                    )
+
+                    user = fields.get("User", None)
+
+                    user = (
+                        mask_personal_information("student_id", user)
+                        if user and mask
+                        else user
+                    )
+
+                    created_time = fields.get("Created time", None)
+                    created_time = (
+                        convert_datetime(created_time) if created_time else None
+                    )
+
+                    created_date = (
+                        created_time.strftime("%Y-%m-%d") if created_time else None
+                    )
+
+                    team = {
+                        "record_id": record["id"],
+                        "project_id": fields.get("ID", None),
+                        "name": fields.get("Name", None),
+                        "film_title": fields.get("Film title", None),
+                        "purpose": {
+                            "priority": fields.get(
+                                "Equipment purpose priority", [None]
+                            )[0],
+                            "keyword": fields.get("Equipment purpose keyword", [None])[
+                                0
+                            ],
+                        },
+                        "production_end_date": fields.get("Production end date", None),
+                        "instructor": instructor,
+                        "subject_code": fields.get("Subject code", None),
+                        "subject_name": fields.get("Subject name", None),
+                        "user": user,
+                        "facility_request": fields.get("Facility request", None),
+                        "facility_request_status": fields.get(
+                            "Facility request status", []
+                        ),
+                        "created_date": created_date,
+                    }
+
+                    staff = fields.get("Staff", None)
+                    staff_list = ast.literal_eval(staff) if staff else None
+                    director_list = []
+                    director_name_list = []
+                    producer_list = []
+                    producer_name_list = []
+                    producer_student_id_list = []
+
+                    for staff in staff_list:
+                        student_id = staff["student_id"]
+                        try:
+                            user = User.objects.get(username=student_id)
+                            staff["pk"] = str(user.pk)
+
+                            staff["name"] = (
+                                mask_personal_information("name", user.metadata.name)
+                                if mask
+                                else user.metadata.name
+                            )
+
+                            staff["student_id"] = (
+                                mask_personal_information("student_id", student_id)
+                                if mask
+                                else student_id
+                            )
+
+                            staff["avatar_url"] = user.socialaccount_set.all()[
+                                0
+                            ].get_avatar_url()
+                        except:
+                            staff["pk"] = ""
+                            staff["name"] = "사용자"
+                            staff["student_id"] = "**********"
+                            staff["avatar_url"] = (
+                                "https://dongguk.film/static/images/d_dot_f_logo.jpg"
+                            )
+
+                        for priority in staff["position_priority"]:
+                            if priority == "A01":  # A01: 연출
+                                director_list.append(staff)
+                                director_name_list.append(staff["name"])
+
+                            if priority == "B01":  # B01: 제작
+                                producer_list.append(staff)
+                                producer_name_list.append(staff["name"])
+                                producer_student_id_list.append(staff["student_id"])
+
+                    team["staff"] = staff_list
+                    team["director"] = director_list
+                    team["director_name"] = director_name_list
+                    team["producer"] = producer_list
+                    team["producer_name"] = producer_name_list
+                    team["producer_student_id"] = producer_student_id_list
+                    record_list.append(team)
+            except:
+                pass
 
         elif table_name == "project-position":
             try:

@@ -85,7 +85,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         - UPDATE_DND_COOKIE
         - UPDATE_HERO_IMAGE
         - UPDATE_HOLIDAY
-        - SYNC_EQUIPMENT_DATA
+        - UPDATE_EQUIPMENT_DATA
+        - UPDATE_WORKSPACE_DATA
         - UPDATE_PROJECT_POLICY
         - DUPLICATE_SIGNUP_ATTEMPTED
         - IDENTIFY_VERIFICATION_BYPASS_ATTEMPTED
@@ -211,28 +212,56 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "description": description,
         }
 
-    # msg_type: "SYNC_EQUIPMENT_DATA"
-    elif msg_type == "SYNC_EQUIPMENT_DATA":
+    # msg_type: "UPDATE_EQUIPMENT_DATA"
+    elif msg_type == "UPDATE_EQUIPMENT_DATA":
         data_list = data.get("data_list", [])
-        data_info = ""
+        data_info = f"ㆍ[HOUR] {len(data_list[0]['hour'])}개"
 
-        for i, item in enumerate(data_list[0]["category"]):
-            new_line = f"\nㆍ[범주] {item['priority']} {item['keyword']}"
+        for i, item in enumerate(data_list[1]["category"]):
+            new_line = f"\nㆍ[CATEGORY] {item['priority']} {item['keyword']}"
             new_line.replace("\n", "") if i == 0 else None
             data_info += new_line
 
-        for i, item in enumerate(data_list[1]["purpose"]):
-            new_line = f"\nㆍ[목적] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
+        for i, item in enumerate(data_list[2]["purpose"]):
+            new_line = f"\nㆍ[PURPOSE] {item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
             data_info += new_line
 
-        data_info += f"\nㆍ[한도] {len(data_list[2]['limit'])}개"
-        data_info += f"\nㆍ[시간] {len(data_list[4]['hour'])}개"
+        data_info += f"\nㆍ[LIMIT] {len(data_list[3]['limit'])}개"
+        data_info += f"\nㆍ[COLLECTION] {len(data_list[4]['collection'])}개"
 
         content = {
             "important": False,
             "picture_url": default_picture_url,
             "author_url": "",
-            "title": f"{status_emoji} 기자재 데이터 동기화 {status_in_kor}",
+            "title": f"{status_emoji} 기자재 데이터 업데이트 {status_in_kor}",
+            "url": "",
+            "thumbnail_url": "",
+            "description": data_info,
+        }
+
+    # msg_type: "UPDATE_WORKSPACE_DATA"
+    elif msg_type == "UPDATE_WORKSPACE_DATA":
+        data_list = data.get("data_list", [])
+        data_info =  f"ㆍ[HOUR] {len(data_list[0]['hour'])}개"
+
+        for i, item in enumerate(data_list[1]["category"]):
+            new_line = f"\nㆍ[CATEGORY] {item['priority']} {item['keyword']}"
+            new_line.replace("\n", "") if i == 0 else None
+            data_info += new_line
+
+        for i, item in enumerate(data_list[2]["purpose"]):
+            new_line = f"\nㆍ[PURPOSE] {item['category_priority']}{item['priority']} {item['keyword']}: {item['in_a_nutshell']}"
+            data_info += new_line
+
+        for i, item in enumerate(data_list[3]["area"]):
+            new_line = f"\nㆍ[AREA] {item['name']}"
+            data_info += new_line
+
+        content = {
+            "important": False,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{status_emoji} 공간 데이터 업데이트 {status_in_kor}",
             "url": "",
             "thumbnail_url": "",
             "description": data_info,
@@ -244,7 +273,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         data_info = ""
 
         for i, item in enumerate(data_list[0]["position"]):
-            new_line = f"\nㆍ[담당] {item['function']} | {item['keyword']}{'(' + item['note'] + ')' if item['note'] is not None else ''} {item['in_english']}"
+            new_line = f"\nㆍ[POSITION] {item['function']} | {item['keyword']}{'(' + item['note'] + ')' if item['note'] is not None else ''} {item['in_english']}"
             new_line.replace("\n", "") if i == 0 else None
             data_info += new_line
 

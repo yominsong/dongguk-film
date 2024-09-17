@@ -111,7 +111,7 @@
                                             <div class="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
                                                 <div>
                                                     <p class="text-base font-medium text-gray-900">기자재</p>
-                                                    <p class="mt-1 text-sm text-gray-500">카메라, 오디오 레코더 등 기자재 대여</p>
+                                                    <p class="mt-1 text-sm text-gray-500">카메라, 오디오 레코더 등 기자재 예약</p>
                                                 </div>
                                                 <!-- <p class="mt-2 text-sm font-medium text-flamingo-600 lg:mt-4">
                                                     예약하기
@@ -120,8 +120,8 @@
                                             </div>
                                         </div>
                                     </a>
-                                    <a href="#"
-                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                    <a href="{% url 'workspace:workspace' %}"
+                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
                                         <div class="flex md:h-full lg:flex-col">
                                             <div class="flex-shrink-0">
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
@@ -139,7 +139,7 @@
                                             <div class="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
                                                 <div>
                                                     <p class="text-base font-medium text-gray-900">실습공간</p>
-                                                    <p class="mt-1 text-sm text-gray-500">후반작업실, 스튜디오 등 실습공간 사용 및 대관</p>
+                                                    <p class="mt-1 text-sm text-gray-500">후반작업실, 스튜디오 등 실습공간 예약</p>
                                                 </div>
                                                 <!-- <p class="mt-2 text-sm font-medium text-flamingo-600 lg:mt-4">
                                                     예약하기
@@ -167,7 +167,7 @@
                                             <div class="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
                                                 <div>
                                                     <p class="text-base font-medium text-gray-900">보관공간</p>
-                                                    <p class="mt-1 text-sm text-gray-500">기재보관함, 사물함 등 보관공간 대여</p>
+                                                    <p class="mt-1 text-sm text-gray-500">기재보관함, 사물함 등 보관공간 예약</p>
                                                 </div>
                                                 <!-- <p class="mt-2 text-sm font-medium text-flamingo-600 lg:mt-4">
                                                     예약하기
@@ -195,7 +195,7 @@
                                             <div class="ml-4 md:flex md:flex-1 md:flex-col md:justify-between lg:ml-0 lg:mt-4">
                                                 <div>
                                                     <p class="text-base font-medium text-gray-900">기타 소모품</p>
-                                                    <p class="mt-1 text-sm text-gray-500">우산, 서적 등 기타 소모품 대여</p>
+                                                    <p class="mt-1 text-sm text-gray-500">우산, 서적 등 기타 소모품 예약</p>
                                                 </div>
                                                 <!-- <p class="mt-2 text-sm font-medium text-flamingo-600 lg:mt-4">
                                                     예약하기
@@ -392,8 +392,8 @@
                                     </div>
                                     <div class="ml-4 text-base font-medium text-gray-900">기자재</div>
                                 </a>
-                                <a href="#"
-                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                <a href="{% url 'workspace:workspace' %}"
+                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
                                     <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
                                         <svg class="h-6 w-6"
                                              xmlns="http://www.w3.org/2000/svg"

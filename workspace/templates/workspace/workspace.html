@@ -2,16 +2,16 @@
 {% load static %}
 {% load tags %}
 {% block meta %}
-    <meta property="og:title" content="기자재 - 디닷에프 | D-dot-f">
-    <meta property="og:url" content="{% url 'equipment:equipment' %}">
+    <meta property="og:title" content="실습공간 - 디닷에프 | D-dot-f">
+    <meta property="og:url" content="{% url 'workspace:workspace' %}">
     <meta name="robots" content="index,follow">
 {% endblock meta %}
 {% block title %}
-    기자재 - 디닷에프
+    실습공간 - 디닷에프
 {% endblock title %}
 {% block body %}
     <!-- Hero -->
-    <div id="id_hero" class="relative sm:pt-6 lg:pt-8">
+    <div class="relative sm:pt-6 lg:pt-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="relative shadow-xl sm:rounded-xl overflow-hidden">
                 <div class="absolute inset-0" aria-hidden="true">
@@ -34,76 +34,10 @@
                     <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
                 </div>
                 <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
-                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">기자재</h1>
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">실습공간</h1>
                     <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
-                        카메라, 오디오 레코더 등 기자재 예약
+                        후반작업실, 스튜디오 등 실습공간 예약
                     </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Filter and Cart -->
-    <div class="sticky top-3 z-20">
-        <div class="mt-6 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div id="id_filter_and_cart" class="flex flex-col sm:flex-row bg-white shadow rounded-md divide-y sm:divide-x sm:divide-y-0 divide-gray-100">
-                <div class="class-filter flex sm:flex-1 relative justify-between px-4 py-4 text-sm rounded-tl-md rounded-tr-md sm:rounded-tr-none sm:rounded-bl-md hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                    tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            class="w-5 h-5">
-                            <path d="M9 6a.75.75 0 01.75.75v1.5h1.5a.75.75 0 010 1.5h-1.5v1.5a.75.75 0 01-1.5 0v-1.5h-1.5a.75.75 0 010-1.5h1.5v-1.5A.75.75 0 019 6z" />
-                            <path fill-rule="evenodd" d="M2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9zm7-5.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" clip-rule="evenodd" />
-                        </svg>
-                        검색 필터
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        {% if category.keyword != None %}
-                            <span class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                <span class="sr-only">범주:</span>
-                                {{ category.keyword }}
-                            </span>
-                        {% endif %}
-                        {% if purpose.keyword != None %}
-                            <span id="id_purpose_badge"
-                                class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                <span class="sr-only">대여 목적:</span>
-                                {{ purpose.keyword }}
-                            </span>
-                        {% endif %}
-                        {% if period.duration != None %}
-                            <span class="class-badge rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                                <span class="sr-only">대여 기간:</span>
-                                {% if period.duration == 0 %}
-                                    당일
-                                {% else %}
-                                    {{ period.duration }}일
-                                {% endif %}
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="class-view-cart flex sm:flex-1 relative justify-between px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset {% if not has_equipment_room_permission %}rounded-bl-md rounded-br-md sm:rounded-bl-none sm:rounded-tr-md{% endif %}"
-                    tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <div class="flex justify-start items-center gap-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.7"
-                            stroke="currentColor"
-                            class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                        </svg>
-                        장바구니
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <span class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset text-slate-700 bg-slate-50 ring-slate-600/20">
-                            <span class="class-total-quantity">0</span>개
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -115,7 +49,7 @@
                 <div class="flex justify-between items-center">
                     <label for="id_query"
                            class="flex text-sm font-medium leading-6 text-gray-500">
-                        총&nbsp<span class="font-semibold">{{ equipment_collection_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 {{ category.keyword }} 검색됨
+                        총&nbsp<span class="font-semibold">{{ category_list_count }}개</span>&nbsp중&nbsp<span class="font-semibold">{{ search_result_count|default_if_none:'0' }}개</span>의 실습공간 검색됨
                     </label>
                     <div id="id_init_query"
                          class="flex text-gray-500 cursor-pointer rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
@@ -134,7 +68,7 @@
                 </div>
             {% else %}
                 <label for="id_query" class="text-sm font-medium leading-6 text-gray-500">
-                    총&nbsp<span class="font-semibold">{{ equipment_collection_count }}개</span>의 {{ category.keyword }} 검색
+                    총&nbsp<span class="font-semibold">{{ category_list_count }}개</span>의 실습공간 검색
                 </label>
             {% endif %}
             <div class="mt-2 flex rounded-md shadow-sm">
@@ -177,14 +111,14 @@
             <div id="id_grid" class="overflow-hidden px-4 py-5 sm:p-6">
                 <div aria-labelledby="products-heading"
                      class="mx-auto max-w-2xl lg:max-w-7xl">
-                    <h2 id="products-heading" class="sr-only">기자재 목록</h2>
+                    <h2 id="products-heading" class="sr-only">실습공간 목록</h2>
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                        {% for collection in page_value %}
-                            <a href="{% url 'equipment:equipment_detail' collection.collection_id %}"
-                               class="class-detail rounded-md group focus:df-focus-ring-offset-white-2"
+                        {% for category in page_value %}
+                            <a href="#"
+                               class="class-detail under-construction rounded-md group focus:df-focus-ring-offset-white-2"
                                alt="">
                                 <div class="class-bg aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
-                                    <img src="{{ collection.thumbnail }}"
+                                    <img src="{{ category.thumbnail }}"
                                          width=""
                                          height=""
                                          alt=""
@@ -198,12 +132,12 @@
                                         </path>
                                     </svg>
                                 </div>
-                                <h3 class="mt-4 text-sm text-gray-500">{{ collection.brand }}</h3>
-                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ collection.model }}</p>
+                                <h3 class="mt-4 text-sm text-gray-500">{{ category.room_code }}</h3>
+                                <p class="mt-0.5 text-sm font-semibold text-gray-900">{{ category.keyword }}</p>
                                 <div class="inline-flex mt-2 gap-2">
-                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.collection_id }}</span>
-                                    {% if collection.subcategory.keyword != None %}
-                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ collection.subcategory.keyword }}</span>
+                                    <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ category.is_exclusive_space|yesno:"단독 공간, 공유 공간" }}</span>
+                                    {% if category.unit_keyword != None %}
+                                        <span class="rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-0 text-gray-700 bg-gray-100">{{ category.unit_keyword }} 단위 예약</span>
                                     {% endif %}
                                 </div>
                             </a>
@@ -211,9 +145,9 @@
                             <div class="col-span-4 flex justify-between">
                                 <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
                                     {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
-                                        검색된 기자재가 없어요.
+                                        검색된 실습공간이 없어요.
                                     {% else %}
-                                        등록된 기자재가 없어요.
+                                        등록된 실습공간이 없어요.
                                     {% endif %}
                                 </div>
                             </div>
@@ -292,9 +226,5 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    {% include "equipment/equipment_modal.html" %}
-    <script src="{% static 'js/forms.js' %}"></script>
-    <script src="{% static 'js/equipment.js' %}"></script>
     <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

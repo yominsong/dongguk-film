@@ -66,14 +66,27 @@ JSON_PATH = (
 #
 
 
-def sync_equipment_data(request):
+def update_equipment_data(request):
     data_list = []
 
     try:
-        target_list = ["category", "purpose", "limit", "collection", "hour"]
+        target_list = ["hour", "category", "purpose", "limit", "collection"]
 
         for target in target_list:
-            if target == "category":
+            if target == "hour":
+                data = {
+                    "table_name": "equipment-hour",
+                    "params": {
+                        "fields": [
+                            "Name",
+                            "Day of the week",
+                            "Day of the week in Korean",
+                            "Time",
+                            "Max capacity",
+                        ],
+                    },
+                }
+            elif target == "category":
                 data = {"table_name": "equipment-category"}
             elif target == "purpose":
                 data = {"table_name": "equipment-purpose"}
@@ -97,19 +110,6 @@ def sync_equipment_data(request):
                         ],
                     },
                 }
-            elif target == "hour":
-                data = {
-                    "table_name": "equipment-hour",
-                    "params": {
-                        "fields": [
-                            "Name",
-                            "Day of the week",
-                            "Day of the week in Korean",
-                            "Time",
-                            "Max capacity",
-                        ],
-                    },
-                }
 
             record_list = airtable("get_all", "records", data)
             data_list.append({target: record_list})
@@ -130,7 +130,7 @@ def sync_equipment_data(request):
         "data_list": data_list,
     }
 
-    send_msg(request, "SYNC_EQUIPMENT_DATA", "DEV", data)
+    send_msg(request, "UPDATE_EQUIPMENT_DATA", "DEV", data)
     json_data = json.dumps(data, indent=4)
 
     return HttpResponse(json_data, content_type="application/json")
