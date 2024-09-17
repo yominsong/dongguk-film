@@ -90,12 +90,28 @@ PUBLIC_DATA_SERVICE_KEY = PUBLIC_DATA["SERVICE_KEY"]
 @csrf_exempt
 def forward_aws_sns_alert(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        msg = data.get("message", "No message provided")
-        data = {"message": msg}
-        send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", data)
+        try:
+            data = json.loads(request.body)
+            
+            if data.get("Type") == "SubscriptionConfirmation":
+                confirmation_url = data.get("SubscribeURL")
 
-        return JsonResponse({"message": "Message sent successfully"}, status=200)
+                if confirmation_url:
+                    requests.get(confirmation_url)
+                    
+                    return JsonResponse({"message": "Subscription confirmed"}, status=200)
+                else:
+                    return JsonResponse({"error": "SubscribeURL not provided"}, status=400)
+            
+            msg = data.get("message", "No message provided")
+            send_data = {"message": msg}
+            send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", send_data)
+
+            return JsonResponse({"message": "Message processed successfully"}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
