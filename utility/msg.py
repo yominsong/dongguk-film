@@ -139,13 +139,9 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "AMAZON_SNS_ALERT_RECEIVED"
     if msg_type == "AMAZON_SNS_ALERT_RECEIVED":
-        msg = data.get("message", "Unknown")
-
-        try:
-            msg_obj = json.loads(msg)
-            formatted_msg = json.dumps(msg_obj, indent=4, ensure_ascii=False)
-        except:
-            formatted_msg = msg
+        raw_data = data.get("raw_data", {})
+        formatted_msg = json.dumps(raw_data, indent=4, ensure_ascii=False)
+        code_block = f"```json\n{formatted_msg}\n```"
 
         content = {
             "important": True,
@@ -154,7 +150,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{warning_emoji} Amazon SNS 알림 수신",
             "url": "",
             "thumbnail_url": "",
-            "description": f"```json\n{formatted_msg}\n```",
+            "description": code_block,
         }
 
     # msg_type: "UPDATE_SUBJECT"
