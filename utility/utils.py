@@ -106,9 +106,8 @@ def forward_amazon_sns_alert(request):
                     
                     return JsonResponse({"error": "SubscribeURL not provided"}, status=400)
             
-            msg = data.get("message", "No message provided")
-            send_data = {"message": msg}
-            send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", send_data)
+            data = {"message": data}
+            send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", data)
 
             return JsonResponse({"message": "Message processed successfully"}, status=200)
         except json.JSONDecodeError:
