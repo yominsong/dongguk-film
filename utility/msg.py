@@ -911,6 +911,8 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
     # msg_type: "TEST"
     elif msg_type == "TEST":
+        message = data.get("message", "Test message")
+
         content = {
             "important": False,
             "picture_url": default_picture_url,
@@ -918,7 +920,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{success_emoji} 테스트 메시지 전송 완료",
             "url": "",
             "thumbnail_url": "",
-            "description": "테스트 메시지입니다.",
+            "description": message,
         }
 
     if not settings.IS_PRODUCTION:

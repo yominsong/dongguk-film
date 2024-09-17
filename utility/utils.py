@@ -98,9 +98,12 @@ def forward_amazon_sns_alert(request):
 
                 if confirmation_url:
                     requests.get(confirmation_url)
+                    send_msg(request, "TEST", "DEV", {"message": "Subscription confirmed"})
                     
                     return JsonResponse({"message": "Subscription confirmed"}, status=200)
                 else:
+                    send_msg(request, "TEST", "DEV", {"message": "SubscribeURL not provided"})
+                    
                     return JsonResponse({"error": "SubscribeURL not provided"}, status=400)
             
             msg = data.get("message", "No message provided")
