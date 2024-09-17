@@ -140,7 +140,13 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     # msg_type: "AMAZON_SNS_ALERT_RECEIVED"
     if msg_type == "AMAZON_SNS_ALERT_RECEIVED":
         raw_data = data.get("raw_data", {})
-        formatted_msg = json.dumps(raw_data, indent=4, ensure_ascii=False)
+
+        try:
+            message = raw_data["Message"]
+            formatted_msg = json.dumps(message, indent=4, ensure_ascii=False)
+        except:
+            formatted_msg = raw_data
+            
         code_block = f"```json\n{formatted_msg}\n```"
 
         content = {
