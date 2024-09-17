@@ -143,10 +143,11 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
 
         try:
             message = raw_data["Message"]
-            formatted_msg = json.dumps(message, indent=4, ensure_ascii=False)
+            parsed_message = json.loads(message)
+            formatted_msg = json.dumps(parsed_message, indent=4, ensure_ascii=False)
         except:
-            formatted_msg = raw_data
-            
+            formatted_msg = json.dumps(raw_data, indent=4, ensure_ascii=False)
+
         code_block = f"```json\n{formatted_msg}\n```"
 
         content = {
