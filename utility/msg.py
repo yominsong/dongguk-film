@@ -142,12 +142,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         raw_data = data.get("raw_data", {})
 
         try:
-            message = raw_data["Message"]
-            parsed_message = json.loads(message)
-            formatted_msg = json.dumps(parsed_message, indent=4, ensure_ascii=False)
-        except:
-            formatted_msg = json.dumps(raw_data, indent=4, ensure_ascii=False)
+            message = raw_data.get("Message", raw_data)
+            parsed_message = json.loads(message) if isinstance(message, str) else message
+        except json.JSONDecodeError:
+            parsed_message = message
 
+        formatted_msg = json.dumps(parsed_message, indent=4, ensure_ascii=False)
         code_block = f"```json\n{formatted_msg}\n```"
 
         content = {
@@ -933,7 +933,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         }
 
     if not settings.IS_PRODUCTION:
-        content["title"] += f" (LOCAL)"
+        content["title"] += f" (LOCAL or GLOBAL)"
 
     # channel: "OPS"
     if channel == "OPS":
