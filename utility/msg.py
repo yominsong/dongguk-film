@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
-import discord
+import discord, json
 from discord import SyncWebhook
 
 
@@ -141,6 +141,12 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     if msg_type == "AMAZON_SNS_ALERT_RECEIVED":
         msg = data.get("message", "Unknown")
 
+        try:
+            msg_obj = json.loads(msg)
+            formatted_msg = json.dumps(msg_obj, indent=4, ensure_ascii=False)
+        except json.JSONDecodeError:
+            formatted_msg = msg
+
         content = {
             "important": True,
             "picture_url": default_picture_url,
@@ -148,7 +154,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{warning_emoji} Amazon SNS 알림 수신",
             "url": "",
             "thumbnail_url": "",
-            "description": msg,
+            "description": formatted_msg,
         }
 
     # msg_type: "UPDATE_SUBJECT"
