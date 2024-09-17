@@ -60,7 +60,7 @@ def format_msg(content: dict):
     return embed
 
 
-def get_webhook(channel: str):
+def get_webhook_url(channel: str):
     """
     - channel | `str`:
         - OPS: Operations
@@ -81,6 +81,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     """
     - request | `HttpRequest`
     - msg_type | `str`:
+        - AMAZON_SNS_ALERT_RECEIVED
         - UPDATE_SUBJECT
         - UPDATE_DND_COOKIE
         - UPDATE_HERO_IMAGE
@@ -124,19 +125,34 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
     failure_emoji = "❌"
     warning_emoji = "⚠️"
     status_emoji = "❓"
-    status_in_kor = "알 수 없음"
+    status_in_kor = "결과 알 수 없음"
 
     if data is not None:
         status = data.get("status", None)
+
         if status is not None:
             status_emoji = success_emoji if status == "DONE" else failure_emoji
             status_in_kor = "완료" if status == "DONE" else "실패"
 
-    webhook = get_webhook(channel)
+    webhook = get_webhook_url(channel)
     default_picture_url = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
+    # msg_type: "AMAZON_SNS_ALERT_RECEIVED"
+    if msg_type == "AMAZON_SNS_ALERT_RECEIVED":
+        msg = data.get("message", "Unknown")
+
+        content = {
+            "important": True,
+            "picture_url": default_picture_url,
+            "author_url": "",
+            "title": f"{warning_emoji} Amazon SNS 알림 수신",
+            "url": "",
+            "thumbnail_url": "",
+            "description": msg,
+        }
+
     # msg_type: "UPDATE_SUBJECT"
-    if msg_type == "UPDATE_SUBJECT":
+    elif msg_type == "UPDATE_SUBJECT":
         year = data.get("year", None)
         semester = data.get("semester", None)
 

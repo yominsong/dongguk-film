@@ -83,6 +83,24 @@ PUBLIC_DATA = getattr(settings, "PUBLIC_DATA", None)
 PUBLIC_DATA_SERVICE_KEY = PUBLIC_DATA["SERVICE_KEY"]
 
 #
+# AWS functions
+#
+
+
+@csrf_exempt
+def forward_aws_sns_alert(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        msg = data.get("message", "No message provided")
+        data = {"message": msg}
+        send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", data)
+
+        return JsonResponse({"message": "Message sent successfully"}, status=200)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+#
 # Airtable functions
 #
 

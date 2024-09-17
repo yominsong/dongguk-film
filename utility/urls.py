@@ -3,7 +3,7 @@ from .utils import *
 
 app_name = "utility"
 urlpatterns = [
-    # utils.py
+    path("utils/forward-aws-sns-alert/", forward_aws_sns_alert, name="forward_aws_sns_alert"),
     path("utils/send-facility-request-status-update/", send_facility_request_status_update, name="send_facility_request_status_update"),
     path("utils/remind-facility-use-start/", remind_facility_use_start, name="remind_facility_use_start"),
     path("utils/remind-facility-use-end/", remind_facility_use_end, name="remind_facility_use_end"),
