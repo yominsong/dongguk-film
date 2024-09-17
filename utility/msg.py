@@ -144,7 +144,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
         try:
             msg_obj = json.loads(msg)
             formatted_msg = json.dumps(msg_obj, indent=4, ensure_ascii=False)
-        except json.JSONDecodeError:
+        except:
             formatted_msg = msg
 
         content = {
