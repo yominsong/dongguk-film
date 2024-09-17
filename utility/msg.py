@@ -154,7 +154,7 @@ def send_msg(request, msg_type: str, channel: str, data: dict = None):
             "title": f"{warning_emoji} Amazon SNS 알림 수신",
             "url": "",
             "thumbnail_url": "",
-            "description": formatted_msg,
+            "description": f"```json\n{formatted_msg}\n```",
         }
 
     # msg_type: "UPDATE_SUBJECT"
