@@ -766,6 +766,7 @@ def update_hero_img(request):
 
     try:
         home_img = save_hero_img("video%20camera", "home")
+        facility = save_hero_img("desk%20calendar", "facility")
         equipment_img = save_hero_img("cinema%20lens", "equipment")
         workspace_img = save_hero_img("video%20editing", "workspace")
         project_img = save_hero_img("film%20set", "project")
@@ -775,6 +776,7 @@ def update_hero_img(request):
 
         img_list = {
             "home": home_img,
+            "facility": facility,
             "equipment": equipment_img,
             "workspace": workspace_img,
             "project": project_img,

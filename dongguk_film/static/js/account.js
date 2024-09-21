@@ -366,7 +366,7 @@ function updateList(data) {
         let msg;
 
         if (data.target === "facility") {
-            msg = "내가 예약 신청한 시설이";
+            msg = "내가 신청한 예약이";
         } else if (data.target === "project") {
             msg = "내가 참여한 프로젝트가";
         } else if (data.target === "dflink") {

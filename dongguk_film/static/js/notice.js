@@ -236,8 +236,8 @@ function attachFile(event = null, sudo = false) {
         };
     });
 
-    if (isDuplicate) { displayNoti(true, "LDF", duplicateFiles.join(", ")) };
-    if (failureCount !== 0) { displayNoti(true, "LFS", failureCount) };
+    if (isDuplicate) { displayNoti(true, "FILE_ALREADY_ATTACHED", duplicateFiles.join(", ")) };
+    if (failureCount !== 0) { displayNoti(true, "FILE_SIZE_LIMIT_EXCEEDED", failureCount) };
     id_file.value = "";
     id_file.tabIndex = "-1";
     failureCount = 0;
@@ -946,8 +946,8 @@ function initRequest() {
                             displayNoti(false, "NO_IMAGES_FOUND");
                             displayNoti(false, "EXTRACTING_TEXT_FAILED");
                             displayNoti(false, "IMAGE_ALT_TEXT_REQUIRED");
-                            displayNoti(false, "LDF");
-                            displayNoti(false, "LFS");
+                            displayNoti(false, "FILE_ALREADY_ATTACHED");
+                            displayNoti(false, "FILE_SIZE_LIMIT_EXCEEDED");
                         } else {
                             inputs.forEach((input) => {
                                 controlError(input);
@@ -989,8 +989,8 @@ function initRequest() {
                             displayNoti(false, "NO_IMAGES_FOUND");
                             displayNoti(false, "EXTRACTING_TEXT_FAILED");
                             displayNoti(false, "IMAGE_ALT_TEXT_REQUIRED");
-                            displayNoti(false, "LDF");
-                            displayNoti(false, "LFS");
+                            displayNoti(false, "FILE_ALREADY_ATTACHED");
+                            displayNoti(false, "FILE_SIZE_LIMIT_EXCEEDED");
                             isDoubleChecked = false;
                         };
                     };

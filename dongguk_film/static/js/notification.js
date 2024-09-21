@@ -2,7 +2,7 @@
 // Sub functions
 //
 
-function editXDate(notiType, bool) {
+function editXData(notiType, bool) {
     let xData = JSON.parse(id_noti_head.getAttribute("x-data").replace(/(\b\w+\b):/g, '"$1":'));
 
     xData[String(notiType)] = bool;
@@ -18,12 +18,13 @@ function editXDate(notiType, bool) {
  * @param {boolean} bool Show/hide the notification
  * @param {string} notiType Notification type
  * - WORK_IN_PROGRESS
- * - `RLP`: Request Location Permission
- * - `RRL`: Request to Reload Location
- * - `CWF`: Complete Weather Fetch
- * - `RNP`: Request Notification Permission
- * - `WNU`: Welcome New User
- * - `RBG`: Recommend Web Browser for Google Login
+ * - UNDER_CONSTRUCTION
+ * - MODAL_CLOSE_ATTEMPTED
+ * - UNABLE_TO_LOGIN_WITH_GOOGLE
+ * - LOCATION_PERMISSION_REQUIRED
+ * - LOCATION_DATA_RELOAD_REQUIRED
+ * - LOCATION_DATA_RELOAD_REQUIRED
+ * - WELCOME_NEW_USER
  * - RENTAL_RESTRICTED
  * - RENTAL_PURPOSE_CHANGED
  * - RENTAL_PERIOD_CHANGED
@@ -33,21 +34,19 @@ function editXDate(notiType, bool) {
  * - EQUIPMENT_PARTIALLY_ADDED
  * - UNABLE_TO_ADJUST_PROJECT
  * - DFLINK_DOES_NOT_EXIST
- * - `NPN`: No Permission to create Notice
  * - YOUTUBE_SHARE_LINK_REQUESTED
  * - IMAGE_ALT_TEXT_REQUIRED
  * - IMAGE_DESCRIPTION_TEXT_REQUIRED
  * - EXTRACTING_TEXT_SUCCEEDED
  * - NO_IMAGES_FOUND
  * - EXTRACTING_TEXT_FAILED
- * - `LDF`: Limit Duplicate Files
- * - `LFS`: Limit File Size
- * - `NUC`: Notify Under Construction
+ * - FILE_ALREADY_ATTACHED
+ * - FILE_SIZE_LIMIT_EXCEEDED
  * @param {null} param Additional information to add to the notification
  */
 function displayNoti(bool, notiType, param = null) {
     if (bool === true) {
-        editXDate(notiType, false);
+        editXData(notiType, false);
 
         let notiIcon, notiTitle, notiContent, notiFormat;
         let notiAction = "";
@@ -192,47 +191,48 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
         }
 
-        else if (notiType === "NUC") {
+        else if (notiType === "UNDER_CONSTRUCTION") {
             notiIcon = infoIcon;
             notiTitle = "아직 준비 중인 기능이에요.";
             notiContent = `언젠가 출시될 거예요! ${param}`;
         }
 
+        else if (notiType === "MODAL_CLOSE_ATTEMPTED") {
+            notiIcon = exclamationIcon;
+            notiTitle = `${param.target} ${param.keyword}${param.josa} 취소하시겠어요?`;
+            notiContent = `${param.keyword}${param.josa} 취소하려면 양식 닫기를 다시 시도하거나 아래 '${param.keyword} 취소하기'를 눌러주세요.`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="setTimeout (() => { id_close_modal.click() }, 1)" onkeydown="if (event.key === 'Enter') { this.click() }">${param.keyword} 취소하기<span aria-hidden="true"> →</span></span></div>`;
+        }
+
         // login
-        else if (notiType === "RBG") {
+        else if (notiType === "UNABLE_TO_LOGIN_WITH_GOOGLE") {
             notiIcon = exclamationIcon;
             notiTitle = "Google로 로그인할 수 없어요.";
             notiContent = `${param} 인앱 브라우저에서는 Google로 로그인할 수 없어요. Chrome, Edge, Safari를 이용해주세요.`;
         }
 
         // home
-        else if (notiType === "RLP") {
+        else if (notiType === "LOCATION_PERMISSION_REQUIRED") {
             notiIcon = locationIcon;
             notiTitle = "지금 계신 지역의 날씨를 확인해보세요.";
             notiContent = "사용 중인 브라우저에서 위치 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
         }
         
-        else if (notiType === "RRL") {
+        else if (notiType === "LOCATION_DATA_RELOAD_REQUIRED") {
             notiIcon = locationIcon;
             notiTitle = "혹시 위치 정보가 부정확한가요?";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 위치 정보를 다시 불러올 수 있어요.`;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'RRL'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'LOCATION_DATA_RELOAD_REQUIRED'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">다시 불러오기<span aria-hidden="true"> →</span></span></div>`;
         }
         
-        else if (notiType === "CWF") {
+        else if (notiType === "LOCATION_DATA_RELOAD_REQUIRED") {
             notiIcon = locationIcon;
             notiTitle = "기상 정보를 마저 불러올 수 있어요.";
             notiContent = `날씨 새로고침 버튼(${refreshIconInline})을 눌러 기상 정보를 계속 불러올 수 있어요.`;
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'CWF'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="displayNoti(false, 'LOCATION_DATA_RELOAD_REQUIRED'); id_get_weather.click()" onkeydown="if (event.key === 'Enter') { this.click() }">계속 불러오기<span aria-hidden="true"> →</span></span></div>`;
         }
         
-        else if (notiType === "RNP") {
-            notiIcon = bellIcon;
-            notiTitle = "디닷에프 푸시 알림을 받아보세요.";
-            notiContent = "사용 중인 브라우저에서 알림 권한을 허용해주세요. 새로고침도 꼭 부탁드려요!";
-        }
-        
-        else if (notiType === "WNU") {
+        else if (notiType === "WELCOME_NEW_USER") {
             notiIcon = smileIcon;
             notiTitle = `반가워요, ${param}님! 🖐️`;
             notiContent = `디닷에프가 ${param}님의 학과 생활에 도움이 되어드릴게요!`;
@@ -308,12 +308,6 @@ function displayNoti(bool, notiType, param = null) {
         }
 
         // notice
-        else if (notiType == "NPN") {
-            notiIcon = exclamationIcon;
-            notiTitle = "공지사항 작성 권한이 없어요.";
-            notiContent = "공지사항은 운영진만 작성할 수 있어요.";
-        }
-
         else if (notiType === "YOUTUBE_SHARE_LINK_REQUESTED") {
             notiIcon = infoIcon;
             notiTitle = "YouTube 공유 링크를 붙여넣어 보세요.";
@@ -352,13 +346,13 @@ function displayNoti(bool, notiType, param = null) {
             notiContent = "이미지를 직접 내려받아 삽입하거나 여러 이미지로 분할하여 다시 시도해주세요.";
         }
         
-        else if (notiType === "LDF") {
+        else if (notiType === "FILE_ALREADY_ATTACHED") {
             notiIcon = infoIcon;
             notiTitle = "이미 첨부된 파일이 있어요.";
             notiContent = `'${param}' 파일이 이미 첨부되어 있어요. 첨부 파일 목록을 확인해주세요.`;
         }
         
-        else if (notiType === "LFS") {
+        else if (notiType === "FILE_SIZE_LIMIT_EXCEEDED") {
             notiIcon = exclamationIcon;
             notiTitle = "파일은 총합 5MB까지 첨부할 수 있어요.";
             notiContent = `${param}개의 파일이 용량 제한으로 첨부되지 않았어요.`;
@@ -407,14 +401,34 @@ function displayNoti(bool, notiType, param = null) {
             id_noti_body.innerHTML = `${id_noti_body.innerHTML}\n${notiFormat}\n`;
         };
 
-        setTimeout(() => { editXDate(notiType, true) }, 100);
+        setTimeout(() => {
+            editXData(notiType, true);
+
+            setTimeout(() => {
+                const notification = document.querySelector(`#id_${notiType}`);
+                
+                const handleTabKey = (event) => {
+                    if (event.key === "Tab") {
+                        const firstFocusableElement = notification.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+                        
+                        if (firstFocusableElement) {
+                            event.preventDefault();
+                            firstFocusableElement.focus();
+                            document.removeEventListener("keydown", handleTabKey);
+                        };
+                    };
+                };
+
+                document.addEventListener("keydown", handleTabKey);
+            }, 100);
+        }, 100);
     }
 
     else if (bool === false) {
         let body = document.querySelector(`#id_${notiType}`);
 
         if (body != null) {
-            editXDate(notiType, false);
+            editXData(notiType, false);
             setTimeout(() => { body.remove() }, 150);
         };
     };

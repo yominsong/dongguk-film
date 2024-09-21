@@ -13,32 +13,63 @@ let isModalOpen = false;
 let isLastSelectedAnchorHash = false;
 
 // miscellaneous
+let modalCloseAttempts = 0;
 let currentHistoryLength = history.length;
 
 //
 // Sub functions
 //
 
-function isItOkayToCloseModal() {
-    let bool = false;
+function canCloseModal() {
+    const shouldConfirmModalClose = (appName == "project" || appName == "dflink" || appName == "notice") && isModalOpen && !id_modal_title.textContent.includes("공유");
+
+    if (shouldConfirmModalClose && modalCloseAttempts === 0) {
+        modalCloseAttempts++;
+
+        let title = id_modal_title.textContent.trim();
+        let keyword = id_modal_title.querySelector(".class-keyword").textContent.trim();
+        let target = title.replace(keyword, "").trim();
+
+        if (keyword.endsWith("하기")) {
+            keyword = keyword.slice(0, -2);
+        };
+
+        let param = {
+            "target": target,
+            "keyword": keyword,
+            "josa": matchJosa(keyword, "을를", "OJS")
+        };
+
+        displayNoti(true, "MODAL_CLOSE_ATTEMPTED", param);
+
+        return false;
+    };
+
+    let isModalClosable = false;
 
     if (appName == "equipment") {
         const id_filter_or_checkout_descr = code(id_filter_or_checkout, "_descr");
 
-        bool = id_filter_or_checkout_descr.hidden;
+        isModalClosable = id_filter_or_checkout_descr.hidden;
     } else if (appName == "account") {
         const id_cancel_or_delete_descr = code(id_cancel_or_delete, "_descr");
 
-        bool = id_cancel_or_delete_descr.hidden;
+        isModalClosable = id_cancel_or_delete_descr.hidden;
     } else {
         const id_create_or_update_descr = code(id_create_or_update, "_descr");
         const id_delete_descr = code(id_delete, "_descr");
         const id_delete_error = code(id_delete, "_error");
 
-        bool = id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
+        isModalClosable = id_create_or_update_descr.hidden && id_delete_descr.hidden && id_delete_error.hidden;
     };
 
-    return bool;
+    if (shouldConfirmModalClose) {
+        isModalClosable = modalCloseAttempts > 0 && isModalClosable;
+    };
+
+    modalCloseAttempts = 0;
+
+    return isModalClosable;
 }
 
 function preventGoBack() {
@@ -58,7 +89,7 @@ function preventGoBack() {
         if (isModalOpen) {
             history.pushState(null, null, location.href);
 
-            if (isItOkayToCloseModal()) {
+            if (canCloseModal()) {
                 const id_close_modal = code("id_close_", id_modal);
 
                 id_close_modal.click();
@@ -76,6 +107,7 @@ preventGoBack();
 function executeWhenModalIsClosed() {
     isModalOpen = false;
     handleFocusForModal(false);
+    displayNoti(false, "MODAL_CLOSE_ATTEMPTED");
 }
 
 //

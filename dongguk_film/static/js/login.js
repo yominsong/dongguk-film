@@ -27,7 +27,7 @@ function blockInAppBrowser() {
     if (boolean == true) {
         login_google.href = "#";
         login_google.addEventListener("mousedown", () => {
-            displayNoti(true, "RBG", app);
+            displayNoti(true, "UNABLE_TO_LOGIN_WITH_GOOGLE", app);
         });
     };
 }

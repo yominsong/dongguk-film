@@ -98,8 +98,8 @@ function announceConstruction() {
                             message = "제 몸을 갈아서라도...";
                             break;
                     };
-                    displayNoti(true, "NUC", message);
-                    timer = setTimeout(() => { displayNoti(false, "NUC") }, 3000);
+                    displayNoti(true, "UNDER_CONSTRUCTION", message);
+                    timer = setTimeout(() => { displayNoti(false, "UNDER_CONSTRUCTION") }, 3000);
                 };
             });
         });

@@ -1,6 +1,6 @@
 <div id="id_modal"
      x-data="{ open: false }"
-     @keydown.window.escape="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+     @keydown.window.escape="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
      x-show="open"
      class="relative z-20"
      aria-labelledby="id_modal_title"
@@ -30,9 +30,9 @@
                     <button id="id_close_modal"
                             type="button"
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
-                            @click="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keydown.enter.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (isItOkayToCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
                         <span class="sr-only">동영링크 <span class="class-keyword">만들기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"

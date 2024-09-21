@@ -99,8 +99,8 @@
 //         id_get_weather.addEventListener(type, (event) => {
 //             if ((type == "click" || event.key == "Enter") &&
 //                 id_get_weather.classList.contains("cursor-pointer")) {
-//                 displayNoti(false, "RRL");
-//                 displayNoti(false, "CWF");
+//                 displayNoti(false, "LOCATION_DATA_RELOAD_REQUIRED");
+//                 displayNoti(false, "LOCATION_DATA_RELOAD_REQUIRED");
 //                 getWeather(sudo = true);
 //             };
 //         });
@@ -110,11 +110,11 @@
 // refreshWeather();
 
 function alertWelcomeNewUser(name) {
-    displayNoti(true, "WNU", name);
+    displayNoti(true, "WELCOME_NEW_USER", name);
 };
 
 // function alertRefreshWeather() {
-//     displayNoti(true, "CWF");
+//     displayNoti(true, "LOCATION_DATA_RELOAD_REQUIRED");
 // };
 
 // //
@@ -144,9 +144,9 @@ function alertWelcomeNewUser(name) {
 
 //     const defaultCoords = { coords: { longitude: 127.00306709659004, latitude: 37.557852166850196, accuracy: null } };
 //     if (error.code == 1) {
-//         displayNoti(true, "RLP");
+//         displayNoti(true, "LOCATION_PERMISSION_REQUIRED");
 //     } else {
-//         displayNoti(true, "RRL");
+//         displayNoti(true, "LOCATION_DATA_RELOAD_REQUIRED");
 //     };
 //     requestWeather(defaultCoords);
 // }
