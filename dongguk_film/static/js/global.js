@@ -21,13 +21,13 @@ let currentHistoryLength = history.length;
 //
 
 function canCloseModal() {
-    const shouldConfirmModalClose = (appName == "project" || appName == "dflink" || appName == "notice") && isModalOpen && !id_modal_title.textContent.includes("공유");
+    const shouldConfirmModalClose = ["등록하기", "만들기", "작성하기", "수정하기"].some(text => id_modal_title.textContent.includes(text)) && isModalOpen;
 
     if (shouldConfirmModalClose && modalCloseAttempts === 0) {
         modalCloseAttempts++;
 
         let title = id_modal_title.textContent.trim();
-        let keyword = id_modal_title.querySelector(".class-keyword").textContent.trim();
+        let keyword = title.split(" ").pop().trim();
         let target = title.replace(keyword, "").trim();
 
         if (keyword.endsWith("하기")) {
