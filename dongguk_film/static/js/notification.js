@@ -1,4 +1,10 @@
 //
+// Global variables
+//
+
+const notiTimers = {};
+
+//
 // Sub functions
 //
 
@@ -44,8 +50,12 @@ function editXData(notiType, bool) {
  * - FILE_SIZE_LIMIT_EXCEEDED
  * @param {null} param Additional information to add to the notification
  */
-function displayNoti(bool, notiType, param = null) {
-    if (bool === true) {
+function displayNoti(isVisible, notiType, param = null) {
+    if (isVisible === true) {
+        if (notiTimers[notiType]) {
+            clearTimeout(notiTimers[notiType]);
+        };
+        
         editXData(notiType, false);
 
         let notiIcon, notiTitle, notiContent, notiFormat;
@@ -380,7 +390,7 @@ function displayNoti(bool, notiType, param = null) {
                         </div>
                         <div class="ml-4 flex flex-shrink-0">
                             <button type="button"
-                                    @click="${notiType} = false; setTimeout(() => { let body = document.querySelector('#id_${notiType}'); if (body != null) {body.remove()} }, 150)"
+                                    @click="${notiType} = false; displayNoti(false, '${notiType}')"
                                     class="inline-flex rounded-md text-white hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white">
                                 <span class="sr-only">알림 닫기</span>
                                 <svg class="h-5 w-5"
@@ -420,16 +430,29 @@ function displayNoti(bool, notiType, param = null) {
                 };
 
                 document.addEventListener("keydown", handleTabKey);
-            }, 100);
-        }, 100);
+            }, 1);
+
+            notiTimers[notiType] = setTimeout(() => {
+                displayNoti(false, notiType);
+            }, 5000);
+        }, 1);
     }
 
-    else if (bool === false) {
+    else if (isVisible === false) {
+        if (notiTimers[notiType]) {
+            clearTimeout(notiTimers[notiType]);
+            delete notiTimers[notiType];
+        };
+
         let body = document.querySelector(`#id_${notiType}`);
 
         if (body != null) {
             editXData(notiType, false);
             setTimeout(() => { body.remove() }, 150);
+
+            if (notiType === "MODAL_CLOSE_ATTEMPTED") {
+                modalCloseAttempts = 0;
+            };
         };
     };
 

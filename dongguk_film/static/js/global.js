@@ -67,8 +67,6 @@ function canCloseModal() {
         isModalClosable = modalCloseAttempts > 0 && isModalClosable;
     };
 
-    modalCloseAttempts = 0;
-
     return isModalClosable;
 }
 
@@ -108,6 +106,7 @@ function executeWhenModalIsClosed() {
     isModalOpen = false;
     handleFocusForModal(false);
     displayNoti(false, "MODAL_CLOSE_ATTEMPTED");
+    modalCloseAttempts = 0;
 }
 
 //
