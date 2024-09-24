@@ -47,11 +47,13 @@ function canCloseModal() {
 
     let isModalClosable = false;
 
-    if (appName == "equipment") {
+    if (appName == "facility") {
+        isModalClosable = true;
+    } else if (appName == "equipment") {
         const id_filter_or_checkout_descr = code(id_filter_or_checkout, "_descr");
 
         isModalClosable = id_filter_or_checkout_descr.hidden;
-    } else if (appName == "facility" || appName == "account") {
+    } else if (appName == "account") {
         const id_cancel_or_delete_descr = code(id_cancel_or_delete, "_descr");
 
         isModalClosable = id_cancel_or_delete_descr.hidden;

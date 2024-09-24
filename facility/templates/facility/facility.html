@@ -106,9 +106,7 @@
         </div>
     </div>
     <!-- Modal -->
-    {% if user.is_authenticated %}
-        {% include "facility/facility_modal.html" %}
-    {% endif %}
+    {% include "facility/facility_modal.html" %}
     <script src="{% static 'js/forms.js' %}"></script>
     <script src="{% static 'js/facility.js' %}"></script>
     <script src="{% static 'js/global.js' %}"></script>

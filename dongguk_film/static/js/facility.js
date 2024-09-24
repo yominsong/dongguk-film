@@ -41,9 +41,6 @@ function initForm() {
 
 function updateForm(action, datasetObj = null) {
     const class_headings = document.querySelectorAll(".class-heading");
-    const class_keywords = document.querySelectorAll(".class-keyword");
-    const id_modal_facility = code(id_modal, "_facility");
-    const class_request_details = document.querySelectorAll(".class-request-detail");
 
     // action: all
     isModalOpen = true;
@@ -58,10 +55,6 @@ function updateForm(action, datasetObj = null) {
     if (action === "read_request") {
         class_headings.forEach(heading => {
             heading.innerText = "시설예약 상세 보기";
-        });
-
-        class_keywords.forEach(keyword => {
-            keyword.innerText = "취소하기";
         });
 
         const data = datasetObj.dataset;
@@ -113,16 +106,6 @@ function updateForm(action, datasetObj = null) {
             badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
             status = "반려됨";
             statusDescr = "예약이 반려되었어요.";
-        };
-
-        if (data.status === "Pending" || data.status === "Approved") {
-            class_request_details.forEach(detail => {
-                detail.hidden = false;
-            });
-        } else {
-            class_request_details.forEach(detail => {
-                detail.hidden = true;
-            });
         };
 
         if (Number(duration) > 0) {
@@ -186,8 +169,6 @@ function updateForm(action, datasetObj = null) {
         innerTextArray.forEach(element => {
             element.className = "flex font-semibold text-right";
         });
-
-        displayButtonMsg(false, id_cancel_or_delete, "error");
     };
 }
 
@@ -294,6 +275,8 @@ function initCalendar() {
 
     updateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 }
+
+initCalendar();
 
 function addSchedulesToCalendar() {
     if (!window.foundFacilityRequestList) return;
@@ -420,17 +403,6 @@ function addSchedulesToCalendar() {
     initModal();
 }
 
-function requestCancelRequest() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
-    request.type = "POST";
-    request.data = { id: "cancel_request", recordId: id_record_id.value };
-    request.async = true;
-    request.headers = null;
-    freezeForm(true);
-    makeAjaxCall(request);
-    request = {};
-}
-
 function requestFindFacilityRequest(year, month) {
     request.url = `${location.origin}/facility/utils/facility/`;
     request.type = "POST";
@@ -450,41 +422,3 @@ function requestFindHoliday() {
     makeAjaxCall(request);
     request = {};
 }
-
-function initRequest() {
-    window.addEventListener("pageshow", () => {
-        requestVerifyAuthentication();
-        initCalendar();
-        
-        if (id_modal !== null) {
-            ["click", "keyup"].forEach(type => {
-                id_cancel_or_delete.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
-
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (!isItDoubleChecked) {
-                            class_double_checks.forEach(double_check => { double_check.hidden = false });
-                            isItDoubleChecked = true;
-
-                            doubleCheckTimer = setTimeout(() => {
-                                class_double_checks.forEach(double_check => { double_check.hidden = true });
-                                isItDoubleChecked = false;
-                            }, 5000);
-                        } else if (isItDoubleChecked) {
-                            const id_cancel_or_delete_spin = code(id_cancel_or_delete, "_spin");
-
-                            clearTimeout(doubleCheckTimer);
-                            requestCancelRequest();
-                            displayButtonMsg(true, id_cancel_or_delete, "descr", "잠시만 기다려주세요.");
-                            id_cancel_or_delete_spin.classList.remove("hidden");
-                            isItDoubleChecked = false;
-                        };
-                    };
-                });
-            });
-        };
-    });
-}
-
-initRequest();
