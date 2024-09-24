@@ -4,8 +4,8 @@
     <meta property="og:title" content="디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'home:home' %}">
     <meta name="robots" content="noindex,nofollow">
-{% endblock %}
-{% block title %}디닷에프{% endblock %}
+{% endblock meta %}
+{% block title %}디닷에프{% endblock title %}
 {% block body %}
     <div class="absolute inset-0">
         <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -41,4 +41,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock body %}
