@@ -1621,95 +1621,95 @@ def airtable(
         record_list = []
 
         if table_name == "facility-request":
-            try:
-                for record in records:
-                    fields = record["fields"]
+            # try:
+            for record in records:
+                fields = record["fields"]
 
-                    start_datetime = format_datetime(
-                        convert_datetime(fields["Start datetime"])
+                start_datetime = format_datetime(
+                    convert_datetime(fields["Start datetime"])
+                )
+
+                end_datetime = format_datetime(
+                    convert_datetime(fields["End datetime"])
+                )
+
+                created_time = format_datetime(
+                    convert_datetime(fields["Created time"])
+                )
+
+                approved_time = fields.get("Approved time", None)
+                started_time = fields.get("Started time", None)
+                completed_time = fields.get("Completed time", None)
+                canceled_time = fields.get("Canceled time", None)
+                rejected_time = fields.get("Rejected time", None)
+
+                if approved_time:
+                    approved_time = format_datetime(convert_datetime(approved_time))
+
+                if started_time:
+                    started_time = format_datetime(convert_datetime(started_time))
+
+                if completed_time:
+                    completed_time = format_datetime(
+                        convert_datetime(completed_time)
                     )
 
-                    end_datetime = format_datetime(
-                        convert_datetime(fields["End datetime"])
-                    )
+                if canceled_time:
+                    canceled_time = format_datetime(convert_datetime(canceled_time))
 
-                    created_time = format_datetime(
-                        convert_datetime(fields["Created time"])
-                    )
+                if rejected_time:
+                    rejected_time = format_datetime(convert_datetime(rejected_time))
 
-                    approved_time = fields.get("Approved time", None)
-                    started_time = fields.get("Started time", None)
-                    completed_time = fields.get("Completed time", None)
-                    canceled_time = fields.get("Canceled time", None)
-                    rejected_time = fields.get("Rejected time", None)
+                user = fields["User"]
 
-                    if approved_time:
-                        approved_time = format_datetime(convert_datetime(approved_time))
+                user = (
+                    mask_personal_information("student_id", user)
+                    if user and mask
+                    else user
+                )
 
-                    if started_time:
-                        started_time = format_datetime(convert_datetime(started_time))
+                request = {
+                    "record_id": record["id"],
+                    "name": fields.get("Name", None),
+                    "category": fields.get("Category", None),
+                    "category_in_korean": fields.get("Category in Korean", None),
+                    "project_id": fields.get("Project team", None),
+                    "film_title": fields.get("Film title", [None])[0],
+                    "staff": fields.get("Project team staff", None),
+                    "purpose": {
+                        "priority": fields.get("Purpose priority", [None])[0],
+                        "keyword": fields.get("Purpose keyword", [None])[0],
+                    },
+                    "subject_name": fields.get("Subject name", None),
+                    "duration": fields.get("Duration", None),
+                    "start_datetime": start_datetime,
+                    "end_datetime": end_datetime,
+                    "start_equipment_hour": fields.get(
+                        "Start equipment hour", None
+                    ),
+                    "end_equipment_hour": fields.get("End equipment hour", None),
+                    "is_after_end_datetime": fields.get(
+                        "Is after end datetime", False
+                    ),
+                    "user": user,
+                    "public_url": fields.get("Public URL", None),
+                    "public_id": fields.get("Public ID", None),
+                    "private_id": fields.get("Private ID", None),
+                    "is_for_instructor": fields.get("Is for instructor", [False])[
+                        0
+                    ],
+                    "status": fields.get("Status", None),
+                    "created_time": created_time,
+                    "approved_time": approved_time,
+                    "started_time": started_time,
+                    "completed_time": completed_time,
+                    "canceled_time": canceled_time,
+                    "rejected_time": rejected_time,
+                }
 
-                    if completed_time:
-                        completed_time = format_datetime(
-                            convert_datetime(completed_time)
-                        )
-
-                    if canceled_time:
-                        canceled_time = format_datetime(convert_datetime(canceled_time))
-
-                    if rejected_time:
-                        rejected_time = format_datetime(convert_datetime(rejected_time))
-
-                    user = fields["User"]
-
-                    user = (
-                        mask_personal_information("student_id", user)
-                        if user and mask
-                        else user
-                    )
-
-                    request = {
-                        "record_id": record["id"],
-                        "name": fields.get("Name", None),
-                        "category": fields.get("Category", None),
-                        "category_in_korean": fields.get("Category in Korean", None),
-                        "project_id": fields.get("Project team", None),
-                        "film_title": fields.get("Film title", [None])[0],
-                        "staff": fields.get("Project team staff", None),
-                        "purpose": {
-                            "priority": fields.get("Purpose priority", [None])[0],
-                            "keyword": fields.get("Purpose keyword", [None])[0],
-                        },
-                        "subject_name": fields.get("Subject name", None),
-                        "duration": fields.get("Duration", None),
-                        "start_datetime": start_datetime,
-                        "end_datetime": end_datetime,
-                        "start_equipment_hour": fields.get(
-                            "Start equipment hour", None
-                        ),
-                        "end_equipment_hour": fields.get("End equipment hour", None),
-                        "is_after_end_datetime": fields.get(
-                            "Is after end datetime", False
-                        ),
-                        "user": user,
-                        "public_url": fields.get("Public URL", None),
-                        "public_id": fields.get("Public ID", None),
-                        "private_id": fields.get("Private ID", None),
-                        "is_for_instructor": fields.get("Is for instructor", [False])[
-                            0
-                        ],
-                        "status": fields.get("Status", None),
-                        "created_time": created_time,
-                        "approved_time": approved_time,
-                        "started_time": started_time,
-                        "completed_time": completed_time,
-                        "canceled_time": canceled_time,
-                        "rejected_time": rejected_time,
-                    }
-
-                    record_list.append(request)
-            except:
-                pass
+                record_list.append(request)
+            # except:
+            #     pass
 
         elif table_name == "equipment-purpose":
             try:
@@ -1886,27 +1886,27 @@ def airtable(
                 pass
 
         elif table_name == "workspace-category":
-            # try:
-            for record in records:
-                fields = record["fields"]
+            try:
+                for record in records:
+                    fields = record["fields"]
 
-                category = {
-                    "name": fields.get("Name", None),
-                    "priority": fields.get("Priority", None),
-                    "keyword": fields.get("Keyword", None),
-                    "room_code": fields.get("Room code", None),
-                    "unit_keyword": fields.get("Unit keyword", [None])[0],
-                    "is_exclusive_space": fields.get("Is exclusive space", False),
-                    "thumbnail": (
-                        fields.get("Thumbnail", [None])[0].get("url")
-                        if fields.get("Thumbnail", [None])[0]
-                        else None
-                    ),
-                }
+                    category = {
+                        "name": fields.get("Name", None),
+                        "priority": fields.get("Priority", None),
+                        "keyword": fields.get("Keyword", None),
+                        "room_code": fields.get("Room code", None),
+                        "unit_keyword": fields.get("Unit keyword", [None])[0],
+                        "is_exclusive_space": fields.get("Is exclusive space", False),
+                        "thumbnail": (
+                            fields.get("Thumbnail", [None])[0].get("url")
+                            if fields.get("Thumbnail", [None])[0]
+                            else None
+                        ),
+                    }
 
-                record_list.append(category)
-            # except:
-            #     pass
+                    record_list.append(category)
+            except:
+                pass
 
         elif table_name == "workspace-purpose":
             try:

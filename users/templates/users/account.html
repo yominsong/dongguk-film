@@ -43,7 +43,7 @@
         </div>
     </div>
     <!-- Information -->
-    <div class="mt-8 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mt-6 relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between gap-1">
             <div class="flex gap-2 text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -98,15 +98,15 @@
                 </dd>
             </div>
         </dl>
-        <p class="pulse-off mt-3 text-sm text-right text-gray-400">{{ date_joined }} 가입</p>
+        <p class="pulse-off mt-2 text-sm text-right text-gray-400">{{ date_joined }} 가입</p>
     </div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-8 lg:gap-5 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6 lg:gap-5 lg:grid-cols-2">
             <!-- Facility -->
-            <div>
+            <div class="lg:mt-1">
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
-                       href="{% url 'equipment:equipment' %}"
+                       href="{% url 'facility:facility' %}"
                        target="_self">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
@@ -154,7 +154,7 @@
                 </ul>
             </div>
             <!-- Project -->
-            <div>
+            <div class="lg:mt-1">
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'project:project' %}"
@@ -206,7 +206,7 @@
                 </ul>
             </div>
             <!-- DF link -->
-            <div class="lg:mt-3">
+            <div class="lg:mt-2">
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
@@ -260,7 +260,7 @@
                 </ul>
             </div>
             <!-- Notice -->
-            <div class="lg:mt-3">
+            <div class="lg:mt-2">
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'notice:notice' %}"

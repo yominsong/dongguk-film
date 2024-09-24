@@ -479,6 +479,21 @@ function handleAjaxCallback(response) {
         });
     }
 
+    // requestFindFacilityRequest()
+    else if (response.id === "find_facility_request") {
+        if (response.status === "DONE") {
+            window.foundFacilityRequestList = response.found_facility_request_list;
+            addSchedulesToCalendar();
+        };
+    }
+
+    // requestFindHoliday()
+    else if (response.id === "find_holiday") {
+        if (response.status === "DONE") {
+            disableHolidayInCalendar(response.found_holiday_list);
+        };
+    }
+
     // requestFilterEquipment()
     else if (response.id === "filter_equipment") {
         if (response.status === "DONE") {

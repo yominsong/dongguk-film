@@ -51,7 +51,7 @@ function canCloseModal() {
         const id_filter_or_checkout_descr = code(id_filter_or_checkout, "_descr");
 
         isModalClosable = id_filter_or_checkout_descr.hidden;
-    } else if (appName == "account") {
+    } else if (appName == "facility" || appName == "account") {
         const id_cancel_or_delete_descr = code(id_cancel_or_delete, "_descr");
 
         isModalClosable = id_cancel_or_delete_descr.hidden;
