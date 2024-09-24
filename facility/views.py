@@ -1,13 +1,13 @@
 from django.shortcuts import render
-from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
 from utility.img import get_hero_img
-from utility.utils import airtable
 
 #
 # Main functions
 #
 
 
+@ensure_csrf_cookie
 def facility(request):
     image_list = get_hero_img("facility")
 

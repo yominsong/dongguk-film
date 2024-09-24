@@ -317,7 +317,7 @@ function addSchedulesToCalendar() {
             for (let i = startIndex; i <= endIndex; i++) {
                 const dayElement = calendarGrid.children[i];
                 const scheduleElement = document.createElement('div');
-                scheduleElement.className = 'class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y';
+                scheduleElement.className = 'class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y focus:z-50 focus:df-focus-ring-inset';
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -336,6 +336,7 @@ function addSchedulesToCalendar() {
                 scheduleElement.dataset.completedTime = schedule.completed_time;
                 scheduleElement.dataset.canceledTime = schedule.canceled_time;
                 scheduleElement.dataset.rejectedTime = schedule.rejected_time;
+                scheduleElement.tabIndex = 0;
 
                 if (schedule.status === "Pending") {
                     scheduleElement.classList.add("text-slate-700", "bg-slate-50", "border-slate-600/20");
