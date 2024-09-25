@@ -316,51 +316,34 @@ function addSchedulesToCalendar() {
 
     // Remove existing schedule elements
     id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
-    console.log("All schedules removed");
 
     window.foundFacilityRequestList.forEach(schedule => {
         const startDate = new Date(schedule.start_datetime.split(" ")[0].split("(")[0]);
         const endDate = new Date(schedule.end_datetime.split(" ")[0].split("(")[0]);
-        console.log("Start date:", startDate);
-        console.log("End date:", endDate);
 
         // Adjust dates to fit the current month view
         const visibleStartDate = new Date(Math.max(startDate, monthStart));
         const visibleEndDate = new Date(Math.min(endDate, monthEnd));
-        console.log("Visible start date:", visibleStartDate);
-        console.log("Visible end date:", visibleEndDate);
 
         // Format dates based on local time zone
         const startYear = visibleStartDate.getFullYear();
         const startMonth = String(visibleStartDate.getMonth() + 1).padStart(2, "0");
         const startDay = String(visibleStartDate.getDate()).padStart(2, "0");
-        console.log("Start year:", startYear);
-        console.log("Start month:", startMonth);
-        console.log("Start day:", startDay);
 
         const endYear = visibleEndDate.getFullYear();
         const endMonth = String(visibleEndDate.getMonth() + 1).padStart(2, "0");
         const endDay = String(visibleEndDate.getDate()).padStart(2, "0");
-        console.log("End year:", endYear);
-        console.log("End month:", endMonth);
-        console.log("End day:", endDay);
 
         const startElement = id_calendar_grid.querySelector(`time[datetime="${startYear}-${startMonth}-${startDay}"]`);
         const endElement = id_calendar_grid.querySelector(`time[datetime="${endYear}-${endMonth}-${endDay}"]`);
-        console.log("Start element:", startElement);
-        console.log("End element:", endElement);
 
         if (startElement && endElement) {
             const startIndex = Array.from(id_calendar_grid.children).indexOf(startElement.parentElement);
             const endIndex = Array.from(id_calendar_grid.children).indexOf(endElement.parentElement);
             const isOneDay = startIndex === endIndex;
-            console.log("Start index:", startIndex);
-            console.log("End index:", endIndex);
-            console.log("Is one day:", isOneDay);
 
             for (let i = startIndex; i <= endIndex; i++) {
                 const dayElement = id_calendar_grid.children[i];
-                console.log("Day element:", dayElement);
                 const scheduleElement = document.createElement("div");
 
                 scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y focus:outline-none focus:z-50";
@@ -585,7 +568,6 @@ function addSchedulesToCalendar() {
                 });
 
                 dayElement.appendChild(scheduleElement);
-                console.log("Schedule added");
             };
         };
     });
