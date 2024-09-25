@@ -2661,6 +2661,11 @@ select {
   border-bottom-width: 1px;
 }
 
+.border-y-2 {
+  border-top-width: 2px;
+  border-bottom-width: 2px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -2679,6 +2684,14 @@ select {
 
 .border-t-2 {
   border-top-width: 2px;
+}
+
+.border-l-2 {
+  border-left-width: 2px;
+}
+
+.border-r-2 {
+  border-right-width: 2px;
 }
 
 .border-none {
@@ -2732,6 +2745,20 @@ select {
 
 .border-yellow-600\/20 {
   border-color: rgb(202 138 4 / 0.2);
+}
+
+.border-flamingo-600\/20 {
+  border-color: rgb(206 64 13 / 0.2);
+}
+
+.border-flamingo-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(206 64 13 / var(--tw-border-opacity));
+}
+
+.border-flamingo {
+  --tw-border-opacity: 1;
+  border-color: rgb(241 89 34 / var(--tw-border-opacity));
 }
 
 .border-t-gray-100 {
@@ -3922,6 +3949,15 @@ select {
 .focus\:rounded-b-md:focus {
   border-bottom-right-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
+}
+
+.focus\:border-2:focus {
+  border-width: 2px;
+}
+
+.focus\:border-flamingo:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(241 89 34 / var(--tw-border-opacity));
 }
 
 .focus\:bg-flamingo-600:focus {

@@ -2,6 +2,9 @@
 // Global variables
 //
 
+// calendar
+const id_calendar_grid = document.getElementById("id_calendar_grid");
+
 // modal
 const id_modal = document.getElementById("id_modal");
 const id_cancel_or_delete = document.getElementById("id_cancel_or_delete");
@@ -11,15 +14,19 @@ const class_double_checks = document.querySelectorAll(".class-double-check");
 // Sub functions
 //
 
-function disableHolidayInCalendar(holidayList) {
-    const calendarGrid = document.getElementById("id_calendar_grid");
-    holidayList.forEach(holiday => {
-        const holidayElement = calendarGrid.querySelector(`time[datetime="${holiday.date}"]`);
+function disableHolidayInCalendar(holidayArray) {
+    holidayArray.forEach(holiday => {
+        const holidayElement = id_calendar_grid.querySelector(`time[datetime="${holiday.date}"]`);
+
         if (holidayElement) {
             holidayElement.classList.replace("text-gray-900", "text-red-600");
+
             const dayElement = holidayElement.parentElement;
+
             dayElement.classList.add("flex", "justify-start", "space-x-2");
+
             const spanElement = document.createElement("span");
+
             spanElement.textContent = holiday.name;
             spanElement.className = "hidden sm:flex justify-center items-center text-red-600 h-6 my-1 truncate";
             dayElement.appendChild(spanElement);
@@ -27,15 +34,34 @@ function disableHolidayInCalendar(holidayList) {
     });
 }
 
+// Find the next focusable schedule element
+function findNextFocusableSchedule(elements, currentIndex) {
+    for (let i = currentIndex + 1; i < elements.length; i++) {
+        if (elements[i].tabIndex === 0 && elements[i].dataset.recordId !== elements[currentIndex].dataset.recordId) {
+            return elements[i];
+        };
+    };
+
+    return null; // Return null if no next focusable schedule is found
+}
+
+// Find the previous focusable schedule element
+function findPreviousFocusableSchedule(elements, currentIndex) {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        if (elements[i].tabIndex === 0 && elements[i].dataset.recordId !== elements[currentIndex].dataset.recordId) {
+            return elements[i];
+        };
+    };
+    
+    return null; // Return null if no previous focusable schedule is found
+}
+
 //
 // Main functions
 //
 
 function initForm() {
-    inputs.forEach((input) => {
-        displayError(false, input);
-    });
-
+    inputs.forEach((input) => { displayError(false, input) });
     displayButtonMsg(false, id_cancel_or_delete, "error");
 }
 
@@ -206,30 +232,32 @@ function initCalendar() {
         const daysInMonth = lastDay.getDate();
         const startingDay = firstDay.getDay();
 
-        // 이전 달의 날짜 추가
-        const prevMonth = month === 0 ? 11 : month - 1;  // 이전 달 계산
-        const prevYear = month === 0 ? year - 1 : year;  // 이전 달의 연도 계산
-        const prevMonthLastDay = new Date(prevYear, prevMonth + 1, 0).getDate(); // 이전 달의 마지막 날
+        // Add dates from the previous month
+        const prevMonth = month === 0 ? 11 : month - 1;  // Calculate previous month
+        const prevYear = month === 0 ? year - 1 : year;  // Calculate year of previous month
+        const prevMonthLastDay = new Date(prevYear, prevMonth + 1, 0).getDate(); // Last day of previous month
+
         for (let i = startingDay - 1; i >= 0; i--) {
             const prevMonthDay = new Date(prevYear, prevMonth, prevMonthLastDay - i);
             addDayToCalendar(prevMonthDay, true);
-        }
+        };
 
-        // 현재 달의 날짜 추가
+        // Add dates for the current month
         for (let i = 1; i <= daysInMonth; i++) {
             const currentDay = new Date(year, month, i);
             addDayToCalendar(currentDay, false);
-        }
+        };
 
-        // 총 42개의 셀을 채우기 위해 다음 달의 날짜 추가
+        // Add dates from the next month to fill up to 42 cells
         const totalDaysDisplayed = startingDay + daysInMonth;
-        const remainingDays = 42 - totalDaysDisplayed; // 42일을 채우기 위한 나머지 날짜 계산
-        const nextMonth = month === 11 ? 0 : month + 1;  // 다음 달 계산
-        const nextYear = month === 11 ? year + 1 : year;  // 다음 달의 연도 계산
+        const remainingDays = 42 - totalDaysDisplayed; // Calculate remaining days to fill 42 days
+        const nextMonth = month === 11 ? 0 : month + 1;  // Calculate next month
+        const nextYear = month === 11 ? year + 1 : year;  // Calculate year of next month
+
         for (let i = 1; i <= remainingDays; i++) {
             const nextMonthDay = new Date(nextYear, nextMonth, i);
             addDayToCalendar(nextMonthDay, true);
-        }
+        };
 
         requestFindFacilityRequest(year, month + 1);
         requestFindHoliday();
@@ -237,16 +265,17 @@ function initCalendar() {
 
     function addDayToCalendar(date, isOtherMonth) {
         const dayElement = document.createElement("div");
+
         dayElement.className = `relative min-h-[152px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"}`;
 
         const timeElement = document.createElement("time");
 
-        // UTC가 아닌 로컬 시간대를 기준으로 YYYY-MM-DD 형식으로 설정
+        // Set YYYY-MM-DD format based on local time zone, not UTC
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');  // 월은 0부터 시작하므로 +1
-        const day = String(date.getDate()).padStart(2, '0');
-        timeElement.dateTime = `${year}-${month}-${day}`;
+        const month = String(date.getMonth() + 1).padStart(2, "0");  // Month starts from 0, so add 1
+        const day = String(date.getDate()).padStart(2, "0");
 
+        timeElement.dateTime = `${year}-${month}-${day}`;
         timeElement.textContent = date.getDate();
 
         const isToday = date.toDateString() === new Date().toDateString();
@@ -255,7 +284,7 @@ function initCalendar() {
             timeElement.className = "relative ml-1 my-1 flex h-6 w-6 items-center justify-center rounded-full df-ring-inset-flamingo text-flamingo-600";
         } else {
             timeElement.className = "relative ml-1 my-1 flex h-6 w-6 items-center justify-center rounded-full text-gray-900";
-        }
+        };
 
         dayElement.appendChild(timeElement);
         id_calendar_grid.appendChild(dayElement);
@@ -268,6 +297,7 @@ function initCalendar() {
 
     id_prev_month.addEventListener("click", () => updateMonth(-1));
     id_next_month.addEventListener("click", () => updateMonth(1));
+
     id_current_month.addEventListener("click", () => {
         currentDate = new Date();
         updateCalendar(currentDate.getFullYear(), currentDate.getMonth());
@@ -281,43 +311,42 @@ initCalendar();
 function addSchedulesToCalendar() {
     if (!window.foundFacilityRequestList) return;
 
-    const calendarGrid = document.getElementById("id_calendar_grid");
-    const monthStart = new Date(calendarGrid.querySelector("time").dateTime);
-    const monthEnd = new Date(calendarGrid.querySelectorAll("time")[calendarGrid.querySelectorAll("time").length - 1].dateTime);
+    const monthStart = new Date(id_calendar_grid.querySelector("time").dateTime);
+    const monthEnd = new Date(id_calendar_grid.querySelectorAll("time")[id_calendar_grid.querySelectorAll("time").length - 1].dateTime);
 
-    // 기존 일정 요소 제거
-    calendarGrid.querySelectorAll('.schedule-element').forEach(el => el.remove());
+    // Remove existing schedule elements
+    id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
 
     window.foundFacilityRequestList.forEach(schedule => {
-        const startDate = new Date(schedule.start_datetime.split(' ')[0]);
-        const endDate = new Date(schedule.end_datetime.split(' ')[0]);
+        const startDate = new Date(schedule.start_datetime.split(" ")[0]);
+        const endDate = new Date(schedule.end_datetime.split(" ")[0]);
 
-        // 현재 월 뷰에 맞게 날짜 조정
+        // Adjust dates to fit the current month view
         const visibleStartDate = new Date(Math.max(startDate, monthStart));
         const visibleEndDate = new Date(Math.min(endDate, monthEnd));
 
-        // 날짜를 로컬 시간대 기준으로 포맷
+        // Format dates based on local time zone
         const startYear = visibleStartDate.getFullYear();
-        const startMonth = String(visibleStartDate.getMonth() + 1).padStart(2, '0');
-        const startDay = String(visibleStartDate.getDate()).padStart(2, '0');
+        const startMonth = String(visibleStartDate.getMonth() + 1).padStart(2, "0");
+        const startDay = String(visibleStartDate.getDate()).padStart(2, "0");
 
         const endYear = visibleEndDate.getFullYear();
-        const endMonth = String(visibleEndDate.getMonth() + 1).padStart(2, '0');
-        const endDay = String(visibleEndDate.getDate()).padStart(2, '0');
+        const endMonth = String(visibleEndDate.getMonth() + 1).padStart(2, "0");
+        const endDay = String(visibleEndDate.getDate()).padStart(2, "0");
 
-        const startElement = calendarGrid.querySelector(`time[datetime="${startYear}-${startMonth}-${startDay}"]`);
-        const endElement = calendarGrid.querySelector(`time[datetime="${endYear}-${endMonth}-${endDay}"]`);
+        const startElement = id_calendar_grid.querySelector(`time[datetime="${startYear}-${startMonth}-${startDay}"]`);
+        const endElement = id_calendar_grid.querySelector(`time[datetime="${endYear}-${endMonth}-${endDay}"]`);
 
         if (startElement && endElement) {
-            const startIndex = Array.from(calendarGrid.children).indexOf(startElement.parentElement);
-            const endIndex = Array.from(calendarGrid.children).indexOf(endElement.parentElement);
-
+            const startIndex = Array.from(id_calendar_grid.children).indexOf(startElement.parentElement);
+            const endIndex = Array.from(id_calendar_grid.children).indexOf(endElement.parentElement);
             const isOneDay = startIndex === endIndex;
 
             for (let i = startIndex; i <= endIndex; i++) {
-                const dayElement = calendarGrid.children[i];
-                const scheduleElement = document.createElement('div');
-                scheduleElement.className = 'class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y focus:z-50 focus:df-focus-ring-inset';
+                const dayElement = id_calendar_grid.children[i];
+                const scheduleElement = document.createElement("div");
+
+                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y focus:outline-none focus:z-50";
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -338,63 +367,205 @@ function addSchedulesToCalendar() {
                 scheduleElement.dataset.rejectedTime = schedule.rejected_time;
                 scheduleElement.tabIndex = 0;
 
-                if (schedule.status === "Pending") {
-                    scheduleElement.classList.add("text-slate-700", "bg-slate-50", "border-slate-600/20");
-                } else if (schedule.status === "Approved") {
-                    scheduleElement.classList.add("text-green-700", "bg-green-50", "border-green-600/20");
-                } else if (schedule.status === "In Progress" && schedule.is_after_end_datetime === false) {
-                    scheduleElement.classList.add("text-yellow-700", "bg-yellow-50", "border-yellow-600/20");
-                } else if (schedule.status === "In Progress" && schedule.is_after_end_datetime === true) {
-                    scheduleElement.classList.add("text-red-700", "bg-red-50", "border-red-600/10");
-                } else if (schedule.status === "Completed") {
-                    scheduleElement.classList.add("text-slate-700", "bg-slate-50", "border-slate-600/20");
-                } else if (schedule.status === "Canceled") {
-                    scheduleElement.classList.add("text-pink-700", "bg-pink-50", "border-pink-700/10");
-                } else if (schedule.status === "Rejected") {
-                    scheduleElement.classList.add("text-red-700", "bg-red-50", "border-red-600/10");
+                const backgroundColorByStatus = {
+                    "Pending": "text-slate-700 bg-slate-50",
+                    "Approved": "text-green-700 bg-green-50",
+                    "In Progress": "text-yellow-700 bg-yellow-50",
+                    "In Progress After End Datetime": "text-red-700 bg-red-50",
+                    "Completed": "text-slate-700 bg-slate-50",
+                    "Canceled": "text-pink-700 bg-pink-50",
+                    "Rejected": "text-red-700 bg-red-50"
                 };
 
-                // 시작과 끝에 따라 모서리 둥글게 처리
+                const borderColorByStatus = {
+                    "Pending": "border-slate-600/20",
+                    "Approved": "border-green-600/20",
+                    "In Progress": "border-yellow-600/20",
+                    "In Progress After End Datetime": "border-red-600/10",
+                    "Completed": "border-slate-600/20",
+                    "Canceled": "border-pink-700/10",
+                    "Rejected": "border-red-600/10"
+                };
+
+                let statusKey = schedule.status;
+
+                if (schedule.status === "In Progress" && schedule.is_after_end_datetime === true) {
+                    statusKey = "In Progress After End Datetime";
+                };
+
+                const backgroundColorClass = backgroundColorByStatus[statusKey];
+
+                if (backgroundColorClass) {
+                    scheduleElement.classList.add(...backgroundColorClass.split(" "));
+                };
+
+                const borderColorClass = borderColorByStatus[statusKey];
+
+                if (borderColorClass) {
+                    scheduleElement.classList.add(borderColorClass);
+                };
+
+                // Round corners based on start and end
                 if (i === startIndex || isOneDay) {
                     scheduleElement.classList.add("rounded-l-md", "border-l");
-                    scheduleElement.classList.remove('-ml-px');
-                }
+                    scheduleElement.classList.remove("-ml-px");
+                };
+
                 if (i === endIndex || isOneDay) {
                     scheduleElement.classList.add("rounded-r-md", "border-r");
-                    scheduleElement.classList.remove('-mr-px');
-                }
+                    scheduleElement.classList.remove("-mr-px");
+                };
 
-                // 첫 번째 요소에만 텍스트 추가
+                // Add text only to the first element
                 if (i === startIndex) {
-                    const textElement = document.createElement('span');
-                    textElement.textContent = schedule.name;
-                    if (isOneDay) {
-                        textElement.className = 'px-1 sm:px-2 whitespace-nowrap overflow-hidden';
-                    } else {
-                        textElement.className = 'px-1 sm:px-2 whitespace-nowrap';
-                    };
-                    scheduleElement.appendChild(textElement);
-                    scheduleElement.classList.add("z-10");
-                }
+                    const textElement = document.createElement("span");
 
-                // 캘린더의 왼쪽 또는 오른쪽 가장자리에 있는지 확인하여 마진 조정
-                if (i % 7 === 0) {
-                    scheduleElement.classList.remove('-ml-px');
-                    scheduleElement.classList.add('ml-0');
-                    const textElement = document.createElement('span');
                     textElement.textContent = schedule.name;
+
                     if (isOneDay) {
-                        textElement.className = 'px-1 sm:px-2 whitespace-nowrap overflow-hidden';
+                        textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";
                     } else {
-                        textElement.className = 'px-1 sm:px-2 whitespace-nowrap';
+                        textElement.className = "px-1 sm:px-2 whitespace-nowrap";
                     };
+
                     scheduleElement.appendChild(textElement);
                     scheduleElement.classList.add("z-10");
-                }
+                };
+
+                // Set tabIndex only for the first element
+                if (i === startIndex) {
+                    scheduleElement.tabIndex = 0;
+                } else {
+                    scheduleElement.tabIndex = -1;
+                };
+
+                // Adjust margins for elements at the left or right edge of the calendar
+                if (i % 7 === 0) {
+                    scheduleElement.classList.remove("-ml-px");
+                    scheduleElement.classList.add("ml-0");
+
+                    const textElement = document.createElement("span");
+
+                    textElement.textContent = schedule.name;
+
+                    if (isOneDay) {
+                        textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";
+                    } else {
+                        textElement.className = "px-1 sm:px-2 whitespace-nowrap";
+                    };
+
+                    scheduleElement.appendChild(textElement);
+                    scheduleElement.classList.add("z-10");
+                };
+
                 if (i % 7 === 6) {
-                    scheduleElement.classList.remove('-mr-px');
-                    scheduleElement.classList.add('mr-0');
-                }
+                    scheduleElement.classList.remove("-mr-px");
+                    scheduleElement.classList.add("mr-0");
+                };
+
+                // Add focus event listener
+                scheduleElement.addEventListener("focus", function() {
+                    const recordId = schedule.record_id;
+                    const allScheduleElements = document.querySelectorAll(".class-read-request");
+                    const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
+
+                    allScheduleElements.forEach(el => {
+                        const elStatus = el.dataset.status;
+                        let statusKey = elStatus;
+
+                        if (elStatus === "In Progress" && el.dataset.isAfterEndDatetime === "true") {
+                            statusKey = "In Progress After End Datetime";
+                        };
+
+                        const borderClass = borderColorByStatus[statusKey];
+
+                        if (Array.from(relatedElements).includes(el)) {
+                            el.classList.remove(...Object.values(borderColorByStatus).flat());
+                            el.classList.add("border-flamingo");
+
+                            if (el.classList.contains("border-l")) {
+                                el.classList.replace("border-l", "border-l-2");
+                            };
+
+                            if (el.classList.contains("border-r")) {
+                                el.classList.replace("border-r", "border-r-2");
+                            };
+
+                            if (el.classList.contains("border-y")) {
+                                el.classList.replace("border-y", "border-y-2");
+                            };
+                        } else {
+                            el.classList.remove("border-flamingo", ...Object.values(borderColorByStatus).flat());
+                            el.classList.add(borderClass);
+
+                            if (el.classList.contains("border-l-2")) {
+                                el.classList.replace("border-l-2", "border-l");
+                            };
+
+                            if (el.classList.contains("border-r-2")) {
+                                el.classList.replace("border-r-2", "border-r");
+                            };
+
+                            if (el.classList.contains("border-y-2")) {
+                                el.classList.replace("border-y-2", "border-y");
+                            };
+                        };
+                    });
+                });
+
+                // Add blur event listener
+                scheduleElement.addEventListener("blur", function() {
+                    const allScheduleElements = document.querySelectorAll(".class-read-request");
+
+                    allScheduleElements.forEach(el => {
+                        const elStatus = el.dataset.status;
+                        let statusKey = elStatus;
+
+                        if (elStatus === "In Progress" && el.dataset.isAfterEndDatetime === "true") {
+                            statusKey = "In Progress After End Datetime";
+                        };
+
+                        const borderClass = borderColorByStatus[statusKey];
+
+                        el.classList.remove("border-flamingo", ...Object.values(borderColorByStatus).flat());
+                        el.classList.add(borderClass);
+
+                        if (el.classList.contains("border-l-2")) {
+                            el.classList.replace("border-l-2", "border-l");
+                        };
+
+                        if (el.classList.contains("border-r-2")) {
+                            el.classList.replace("border-r-2", "border-r");
+                        };
+
+                        if (el.classList.contains("border-y-2")) {
+                            el.classList.replace("border-y-2", "border-y");
+                        };
+                    });
+                });
+
+                // Modify keyboard event listener
+                scheduleElement.addEventListener("keydown", function(event) {
+                    if (event.key === "Tab") {
+                        const scheduleElements = id_calendar_grid.querySelectorAll(".class-read-request");
+                        const currentIndex = Array.from(scheduleElements).indexOf(this);
+                        let nextElement;
+
+                        if (event.shiftKey) {
+                            // Shift + Tab: Move to previous element
+                            nextElement = findPreviousFocusableSchedule(scheduleElements, currentIndex);
+                        } else {
+                            // Tab: Move to next element
+                            nextElement = findNextFocusableSchedule(scheduleElements, currentIndex);
+                        };
+
+                        if (nextElement) {
+                            event.preventDefault();
+                            nextElement.focus();
+                        };
+                        // If nextElement is null, perform default tab behavior (move out of the grid)
+                    };
+                });
 
                 dayElement.appendChild(scheduleElement);
             }
