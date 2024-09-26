@@ -15,6 +15,10 @@ const class_double_checks = document.querySelectorAll(".class-double-check");
 //
 
 function disableHolidayInCalendar(holidayArray) {
+    const isHolidayAlreadyApplied = id_calendar_grid.querySelector(".text-red-600");
+
+    if (isHolidayAlreadyApplied) return;
+
     holidayArray.forEach(holiday => {
         const holidayElement = id_calendar_grid.querySelector(`time[datetime="${holiday.date}"]`);
 
@@ -317,7 +321,7 @@ function addSchedulesToCalendar() {
     // Remove existing schedule elements
     id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
 
-    window.foundFacilityRequestList.forEach(schedule => {
+    window.foundFacilityRequestList.forEach((schedule, index) => {
         const startDate = new Date(schedule.start_datetime.split(" ")[0].split("(")[0]);
         const endDate = new Date(schedule.end_datetime.split(" ")[0].split("(")[0]);
 
@@ -346,7 +350,7 @@ function addSchedulesToCalendar() {
                 const dayElement = id_calendar_grid.children[i];
                 const scheduleElement = document.createElement("div");
 
-                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y focus:outline-none focus:z-50";
+                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-500 ease-in-out focus:outline-none focus:z-50";
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -463,6 +467,18 @@ function addSchedulesToCalendar() {
                     scheduleElement.classList.add("mr-0");
                 };
 
+                // Add click event listener
+                scheduleElement.addEventListener("click", function() {
+                    const recordId = schedule.record_id;
+                    const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
+
+                    relatedElements.forEach(el => {
+                        if (el !== relatedElements[0]) {
+                            relatedElements[0].click();
+                        };
+                    });
+                });
+
                 // Add focus event listener
                 scheduleElement.addEventListener("focus", function() {
                     const recordId = schedule.record_id;
@@ -478,6 +494,7 @@ function addSchedulesToCalendar() {
                         };
 
                         const borderClass = borderColorByStatus[statusKey];
+                        const spanElement = el.querySelector("span");
 
                         if (Array.from(relatedElements).includes(el)) {
                             el.classList.remove(...Object.values(borderColorByStatus).flat());
@@ -485,6 +502,10 @@ function addSchedulesToCalendar() {
 
                             if (el.classList.contains("border-l")) {
                                 el.classList.replace("border-l", "border-l-2");
+
+                                if (spanElement) {
+                                    spanElement.style.marginLeft = "-1px";
+                                };
                             };
 
                             if (el.classList.contains("border-r")) {
@@ -500,6 +521,10 @@ function addSchedulesToCalendar() {
 
                             if (el.classList.contains("border-l-2")) {
                                 el.classList.replace("border-l-2", "border-l");
+
+                                if (spanElement) {
+                                    spanElement.style.marginLeft = "0";
+                                };
                             };
 
                             if (el.classList.contains("border-r-2")) {
@@ -526,12 +551,17 @@ function addSchedulesToCalendar() {
                         };
 
                         const borderClass = borderColorByStatus[statusKey];
+                        const spanElement = el.querySelector("span");
 
                         el.classList.remove("border-flamingo", ...Object.values(borderColorByStatus).flat());
                         el.classList.add(borderClass);
 
                         if (el.classList.contains("border-l-2")) {
                             el.classList.replace("border-l-2", "border-l");
+
+                            if (spanElement) {
+                                spanElement.style.marginLeft = "0";
+                            };
                         };
 
                         if (el.classList.contains("border-r-2")) {
@@ -568,6 +598,11 @@ function addSchedulesToCalendar() {
                 });
 
                 dayElement.appendChild(scheduleElement);
+
+                setTimeout(() => {
+                    scheduleElement.classList.remove('opacity-0');
+                    scheduleElement.classList.add('opacity-100');
+                }, 50 * index);
             };
         };
     });
