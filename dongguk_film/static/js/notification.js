@@ -24,6 +24,7 @@ function editXData(notiType, bool) {
  * @param {boolean} bool Show/hide the notification
  * @param {string} notiType Notification type
  * - WORK_IN_PROGRESS
+ * - NO_PERMISSION
  * - UNDER_CONSTRUCTION
  * - MODAL_CLOSE_ATTEMPTED
  * - UNABLE_TO_LOGIN_WITH_GOOGLE
@@ -199,6 +200,12 @@ function displayNoti(isVisible, notiType, param = null) {
             notiIcon = spinnerIcon;
             notiTitle = "잠시만 기다려주세요.";
             notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
+        }
+
+        else if (notiType === "NO_PERMISSION") {
+            notiIcon = exclamationIcon;
+            notiTitle = `${param.target} ${param.keyword} 권한이 없어요.`;
+            notiContent = `${param.target}${param.targetJosa} 운영진만 ${param.transformedKeyword} 수 있어요.`;
         }
 
         else if (notiType === "UNDER_CONSTRUCTION") {

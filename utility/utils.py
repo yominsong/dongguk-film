@@ -2199,57 +2199,15 @@ def notion(
             items = response["results"]
             item_list = []
 
-            {
-                "Is permanent": {"id": "Gihm", "type": "checkbox", "checkbox": False},
-                "Validation": {
-                    "id": "Hh%3F%7B",
-                    "type": "formula",
-                    "formula": {"type": "string", "string": "🟢 유효"},
-                },
-                "Permission": {
-                    "id": "Si%3FX",
-                    "type": "multi_select",
-                    "multi_select": [
-                        {"id": "gs{w", "name": "EQUIPMENT", "color": "default"},
-                        {"id": "Vsg[", "name": "NOTICE", "color": "default"},
-                    ],
-                },
-                "Expiration date": {
-                    "id": "f%7C%5Ca",
-                    "type": "date",
-                    "date": {"start": "2024-09-26", "end": None, "time_zone": None},
-                },
-                "Student ID": {
-                    "id": "title",
-                    "type": "title",
-                    "title": [
-                        {
-                            "type": "text",
-                            "text": {"content": "2015113035", "link": None},
-                            "annotations": {
-                                "bold": False,
-                                "italic": False,
-                                "strikethrough": False,
-                                "underline": False,
-                                "code": False,
-                                "color": "default",
-                            },
-                            "plain_text": "2015113035",
-                            "href": None,
-                        }
-                    ],
-                },
-            }
-
             try:
                 for item in items:
                     properties = item["properties"]
                     student_id = properties["Student ID"]["title"][0]["plain_text"]
-                    permission = [p["name"] for p in properties["Permission"]["multi_select"]]
+                    type_list = [p["name"] for p in properties["Type"]["multi_select"]]
 
                     permission = {
                         "student_id": student_id,
-                        "permission": permission,
+                        "type_list": type_list,
                     }
 
                     item_list.append(permission)

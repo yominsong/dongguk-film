@@ -130,7 +130,22 @@ function executeWhenUserHasNoPermission() {
         ["click", "keyup"].forEach(type => {
             noPermission.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    displayNoti(true, "NPN");
+                    const target = "공지사항";
+                    let keyword = noPermission.textContent.trim().split(" ").pop();
+                    let transformedKeyword = transformVerb(keyword);
+
+                    if (keyword.endsWith("하기")) {
+                        keyword = keyword.slice(0, -2);
+                    };
+
+                    const param = {
+                        "target": target,
+                        "keyword": keyword,
+                        "targetJosa": matchJosa(target, "은는", "OJS"),
+                        "transformedKeyword": transformedKeyword
+                    };
+
+                    displayNoti(true, "NO_PERMISSION", param);
                 };
             });
         });

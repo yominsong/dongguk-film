@@ -25,18 +25,16 @@ NOTION_DB_ID = NOTION["DB_ID"]
 #
 
 
-def has_permission(request):
-    result = False
+def get_permission_type_list(request):
     permission_list = notion("query", "db", data={"db_name": "PERMISSION"})
+    permission_type_list = []
 
     for permission in permission_list:
-        if (
-            permission["student_id"] == request.user.username
-            and "NOTICE" in permission["permission"]
-        ):
-            result = True
+        if permission["student_id"] == request.user.username:
+            permission_type_list = permission["type_list"]
+            break
 
-    return result
+    return permission_type_list
 
 
 def remove_html_tags(html_string: str) -> str:
@@ -149,7 +147,7 @@ def notice(request):
             "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
-            "has_permission": has_permission(request),
+            "permission_type_list": get_permission_type_list(request),
         },
     )
 
@@ -232,6 +230,6 @@ def notice_detail(request, notice_id):
             "notice": notice,
             "AWS_S3_BUCKET_NAME": AWS_S3_BUCKET_NAME,
             "AWS_REGION_NAME": AWS_REGION_NAME,
-            "has_permission": has_permission(request),
+            "permission_type_list": get_permission_type_list(request),
         },
     )

@@ -81,6 +81,23 @@ function matchJosa(word, josaType, resultType) {
     return result;
 }
 
+/**
+ * @param {string} verb - The verb to transform (e.g. "등록하기")
+ * @return {string} The transformed verb (e.g. "등록할")
+ */
+function transformVerb(verb) {
+    // If the verb ends with "하기"
+    if (verb.endsWith("하기")) {
+        return verb.slice(0, -2) + "할";
+    }
+    // For other cases (e.g. "만들기")
+    else if (verb.endsWith("기")) {
+        return verb.slice(0, -1);
+    };
+    
+    return verb;
+}
+
 function findLabel(input) {
     let foundLabel;
     labels.forEach(label => {

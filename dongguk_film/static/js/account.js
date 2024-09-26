@@ -185,7 +185,7 @@ function updateForm(action, datasetObj = null) {
         let duration = data.duration;
 
         if (data.status === "Pending") {
-            badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+            badgeColor = "text-blue-700 bg-blue-50 ring-blue-700/10";
             status = "대기 중";
             statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
         } else if (data.status === "Approved") {
@@ -409,7 +409,7 @@ function updateList(data) {
             let status;
 
             if (item.status === "Pending") {
-                badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+                badgeColor = "text-blue-700 bg-blue-50 ring-blue-700/10";
                 status = "대기 중";
             } else if (item.status === "Approved") {
                 badgeColor = "text-green-700 bg-green-50 ring-green-600/20";

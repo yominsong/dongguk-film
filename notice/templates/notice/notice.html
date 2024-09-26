@@ -160,7 +160,7 @@
                             <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                         </p>
                     </div>
-                    {% if has_permission and user.pk == notice.user %}
+                    {% if "NOTICE" in permission_type_list and user.pk == notice.user %}
                         <div class="flex justify-between items-center gap-x-2">
                             <!-- notice.listed_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
@@ -199,7 +199,7 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                {% if has_permission %}
+                {% if "NOTICE" in permission_type_list %}
                     <li class="class-create relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
                         tabindex="0">
                         <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
@@ -310,11 +310,11 @@
         </ul>
     </div>
     <!-- Modal -->
-    {% if has_permission %}
+    {% if "NOTICE" in permission_type_list %}
         {% include "notice/notice_modal.html" %}
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
-    {% if has_permission %}
+    {% if "NOTICE" in permission_type_list %}
         <script type="importmap">
             {
                 "imports": {

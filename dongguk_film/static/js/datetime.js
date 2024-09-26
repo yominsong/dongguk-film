@@ -45,6 +45,14 @@ function formatDateInFewDays(date, daysToAdd) {
     return formatDate(date);
 }
 
+function parseDate(date) {
+    if (date.includes("(")) {
+        date = date.split("(")[0] + date.split(")")[1];
+    };
+
+    return new Date(date);
+}
+
 function calculateDateDifference(date1, date2) {
     date1 = new Date(date1 + "T00:00:00");
     date2 = new Date(date2 + "T00:00:00");

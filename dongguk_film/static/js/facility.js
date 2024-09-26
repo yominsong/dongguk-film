@@ -32,7 +32,7 @@ function findPreviousFocusableSchedule(elements, currentIndex) {
             return elements[i];
         };
     };
-    
+
     return null; // Return null if no previous focusable schedule is found
 }
 
@@ -85,7 +85,7 @@ function updateForm(action, datasetObj = null) {
         let duration = data.duration;
 
         if (data.status === "Pending") {
-            badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+            badgeColor = "text-blue-700 bg-blue-50 ring-blue-700/10";
             status = "대기 중";
             statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
         } else if (data.status === "Approved") {
@@ -219,12 +219,14 @@ function initCalendar() {
 
         for (let i = startingDay - 1; i >= 0; i--) {
             const prevMonthDay = new Date(prevYear, prevMonth, prevMonthLastDay - i);
+
             addDayToCalendar(prevMonthDay, true);
         };
 
         // Add dates for the current month
         for (let i = 1; i <= daysInMonth; i++) {
             const currentDay = new Date(year, month, i);
+
             addDayToCalendar(currentDay, false);
         };
 
@@ -236,18 +238,25 @@ function initCalendar() {
 
         for (let i = 1; i <= remainingDays; i++) {
             const nextMonthDay = new Date(nextYear, nextMonth, i);
+
             addDayToCalendar(nextMonthDay, true);
         };
 
         displayNoti(true, "WORK_IN_PROGRESS", "불러오기");
-        requestFindFacilityRequest(year, month + 1);
+
+        const data = {
+            firstDay: formatDate(firstDay),
+            lastDay: formatDate(lastDay)
+        };
+
+        requestFindFacilityRequest(data);
         requestFindHoliday();
     }
 
     function addDayToCalendar(date, isOtherMonth) {
         const dayElement = document.createElement("div");
 
-        dayElement.className = `relative min-h-[152px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"} flex flex-col`;
+        dayElement.className = `relative min-h-[149px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"} flex flex-col`;
 
         const timeElement = document.createElement("time");
 
@@ -322,6 +331,37 @@ function addHolidayInCalendar(holidayArray) {
     });
 }
 
+function adjustCalendarHeight() {
+    const weekRows = [];
+    const daysInCalendar = id_calendar_grid.children.length;
+    
+    // Group days into weeks
+    for (let i = 0; i < daysInCalendar; i += 7) {
+        weekRows.push(Array.from(id_calendar_grid.children).slice(i, i + 7));
+    };
+
+    weekRows.forEach(week => {
+        let maxSchedulesInWeek = 0;
+
+        week.forEach(day => {
+            const scheduleElements = day.querySelectorAll('.class-read-request');
+            const scheduleCount = new Set(Array.from(scheduleElements).map(el => el.dataset.recordId)).size;
+            
+            maxSchedulesInWeek = Math.max(maxSchedulesInWeek, scheduleCount);
+        });
+
+        if (maxSchedulesInWeek > 5) {
+            const extraHeight = (maxSchedulesInWeek - 5) * 24; // 24px for each extra schedule
+            const newMinHeight = 152 + extraHeight; // 152px is the original minHeight
+
+            week.forEach(day => {
+                day.style.minHeight = `${newMinHeight}px`;
+                day.classList.add('transition-all', 'duration-300', 'ease-in-out');
+            });
+        };
+    });
+}
+
 function addScheduleToCalendar() {
     if (!window.foundFacilityRequestList) return;
 
@@ -331,6 +371,15 @@ function addScheduleToCalendar() {
     // Remove existing schedule elements
     id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
 
+    let dateRowMap = {};
+
+    window.foundFacilityRequestList.sort((a, b) => {
+        const timeA = parseDate(a.start_datetime).getTime();
+        const timeB = parseDate(b.start_datetime).getTime();
+        
+        return timeA - timeB;
+    });
+
     window.foundFacilityRequestList.forEach(schedule => {
         const startDate = new Date(schedule.start_datetime.split(" ")[0].split("(")[0]);
         const endDate = new Date(schedule.end_datetime.split(" ")[0].split("(")[0]);
@@ -338,30 +387,64 @@ function addScheduleToCalendar() {
         // Adjust dates to fit the current month view
         const visibleStartDate = new Date(Math.max(startDate, monthStart));
         const visibleEndDate = new Date(Math.min(endDate, monthEnd));
-
-        // Format dates based on local time zone
-        const startYear = visibleStartDate.getFullYear();
-        const startMonth = String(visibleStartDate.getMonth() + 1).padStart(2, "0");
-        const startDay = String(visibleStartDate.getDate()).padStart(2, "0");
-
-        const endYear = visibleEndDate.getFullYear();
-        const endMonth = String(visibleEndDate.getMonth() + 1).padStart(2, "0");
-        const endDay = String(visibleEndDate.getDate()).padStart(2, "0");
-
-        const startElement = id_calendar_grid.querySelector(`time[datetime="${startYear}-${startMonth}-${startDay}"]`);
-        const endElement = id_calendar_grid.querySelector(`time[datetime="${endYear}-${endMonth}-${endDay}"]`);
+        const startElement = id_calendar_grid.querySelector(`time[datetime="${formatDate(visibleStartDate)}"]`);
+        const endElement = id_calendar_grid.querySelector(`time[datetime="${formatDate(visibleEndDate)}"]`);
 
         if (startElement && endElement) {
             const startIndex = Array.from(id_calendar_grid.children).indexOf(startElement.parentElement.parentElement);
             const endIndex = Array.from(id_calendar_grid.children).indexOf(endElement.parentElement.parentElement);
             const isOneDay = startIndex === endIndex;
 
+            let eventDates = [];
+            let currentDate = new Date(visibleStartDate);
+
+            while (currentDate <= visibleEndDate) {
+                eventDates.push(formatDate(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            };
+
+            let assignedRow = 0;
+            let foundRow = false;
+
+            while (!foundRow) {
+                // Check if the row is empty for all dates
+                let rowIsFree = eventDates.every(date => {
+                    if (!dateRowMap[date]) {
+                        dateRowMap[date] = [];
+                    };
+
+                    return !dateRowMap[date][assignedRow];
+                });
+
+                if (rowIsFree) {
+                    // Assign the row number to the schedule and mark the row as used for these dates
+                    foundRow = true;
+
+                    eventDates.forEach(date => {
+                        dateRowMap[date][assignedRow] = true;
+                    });
+
+                    schedule.assignedRow = assignedRow;
+                } else {
+                    // Try the next row number
+                    assignedRow++;
+                };
+            };
+
+            const firstRowHeight = 32;
+            const rowHeight = 24; // Height of each row (adjust as needed)
+
             for (let i = startIndex; i <= endIndex; i++) {
                 const dayElement = id_calendar_grid.children[i];
-                const wrapperElement = dayElement.querySelector("div");
                 const scheduleElement = document.createElement("div");
 
-                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-300 ease-in-out focus:outline-none";
+                scheduleElement.style.position = "absolute";
+                scheduleElement.style.top = `${schedule.assignedRow * rowHeight + firstRowHeight}px`;
+                scheduleElement.style.left = "0";
+                scheduleElement.style.right = "0";
+                scheduleElement.style.height = `${rowHeight - 2}px`; // Slightly reduced for spacing
+
+                scheduleElement.className = "class-read-request cursor-pointer text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-300 ease-in-out focus:outline-none";
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -382,8 +465,8 @@ function addScheduleToCalendar() {
                 scheduleElement.dataset.rejectedTime = schedule.rejected_time;
                 scheduleElement.tabIndex = 0;
 
-                const backgroundColorByStatus = {
-                    "Pending": "text-slate-700 bg-slate-50",
+                const colorByStatus = {
+                    "Pending": "text-blue-700 bg-blue-50",
                     "Approved": "text-green-700 bg-green-50",
                     "In Progress": "text-yellow-700 bg-yellow-50",
                     "In Progress After End Datetime": "text-red-700 bg-red-50",
@@ -393,7 +476,7 @@ function addScheduleToCalendar() {
                 };
 
                 const borderColorByStatus = {
-                    "Pending": "border-slate-600/20",
+                    "Pending": "border-blue-700/10",
                     "Approved": "border-green-600/20",
                     "In Progress": "border-yellow-600/20",
                     "In Progress After End Datetime": "border-red-600/10",
@@ -402,16 +485,34 @@ function addScheduleToCalendar() {
                     "Rejected": "border-red-600/10"
                 };
 
+                const hoverColorByStatus = {
+                    "Pending": "text-blue-800 bg-blue-100",
+                    "Approved": "text-green-800 bg-green-100",
+                    "In Progress": "text-yellow-800 bg-yellow-100",
+                    "In Progress After End Datetime": "text-red-800 bg-red-100",
+                    "Completed": "text-slate-800 bg-slate-200",
+                    "Canceled": "text-pink-800 bg-pink-100",
+                    "Rejected": "text-red-800 bg-red-100"
+                };
+
                 let statusKey = schedule.status;
 
                 if (schedule.status === "In Progress" && schedule.is_after_end_datetime === true) {
                     statusKey = "In Progress After End Datetime";
                 };
 
-                const backgroundColorClass = backgroundColorByStatus[statusKey];
+                const colorClasses = colorByStatus[statusKey];
+                const hoverColorClasses = hoverColorByStatus[statusKey];
 
-                if (backgroundColorClass) {
-                    scheduleElement.classList.add(...backgroundColorClass.split(" "));
+                if (colorClasses) {
+                    const colorClassList = colorClasses.split(" ");
+
+                    scheduleElement.classList.add(...colorClassList);
+                    scheduleElement.dataset.originalColorClasses = colorClasses;
+                };
+
+                if (hoverColorClasses) {
+                    scheduleElement.dataset.hoverColorClasses = hoverColorClasses;
                 };
 
                 const borderColorClass = borderColorByStatus[statusKey];
@@ -478,8 +579,43 @@ function addScheduleToCalendar() {
                     scheduleElement.classList.add("mr-0");
                 };
 
+                // Add mouseover event listener
+                scheduleElement.addEventListener("mouseover", function () {
+                    const recordId = schedule.record_id;
+                    const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
+            
+                    relatedElements.forEach(el => {
+                        const originalColorClasses = el.dataset.originalColorClasses.split(" ");
+                        const hoverColorClasses = el.dataset.hoverColorClasses.split(" ");
+            
+                        // Remove original text color and background color classes
+                        el.classList.remove(...originalColorClasses);
+            
+                        // Add hover text color and background color classes
+                        el.classList.add(...hoverColorClasses);
+                    });
+                });
+            
+                // Add mouseout event listener
+                scheduleElement.addEventListener("mouseout", function () {
+                    const recordId = schedule.record_id;
+                    const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
+            
+                    relatedElements.forEach(el => {
+                        const originalColorClasses = el.dataset.originalColorClasses.split(" ");
+                        const hoverColorClasses = el.dataset.hoverColorClasses.split(" ");
+            
+                        // Remove hover text color and background color classes
+                        el.classList.remove(...hoverColorClasses);
+            
+                        // Add original text color and background color classes
+                        el.classList.add(...originalColorClasses);
+                    });
+                });
+
+
                 // Add focus event listener
-                scheduleElement.addEventListener("focus", function() {
+                scheduleElement.addEventListener("focus", function () {
                     const recordId = schedule.record_id;
                     const allScheduleElements = document.querySelectorAll(".class-read-request");
                     const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
@@ -538,7 +674,7 @@ function addScheduleToCalendar() {
                 });
 
                 // Add blur event listener
-                scheduleElement.addEventListener("blur", function() {
+                scheduleElement.addEventListener("blur", function () {
                     const allScheduleElements = document.querySelectorAll(".class-read-request");
 
                     allScheduleElements.forEach(el => {
@@ -574,7 +710,7 @@ function addScheduleToCalendar() {
                 });
 
                 // Modify keyboard event listener
-                scheduleElement.addEventListener("keydown", function(event) {
+                scheduleElement.addEventListener("keydown", function (event) {
                     if (event.key === "Tab") {
                         const scheduleElements = id_calendar_grid.querySelectorAll(".class-read-request");
                         const currentIndex = Array.from(scheduleElements).indexOf(this);
@@ -606,13 +742,14 @@ function addScheduleToCalendar() {
         };
     });
 
+    adjustCalendarHeight();
     initModal();
 }
 
-function requestFindFacilityRequest(year, month) {
+function requestFindFacilityRequest(data) {
     request.url = `${location.origin}/facility/utils/facility/`;
     request.type = "POST";
-    request.data = { id: "find_facility_request", year: year, month: month };
+    request.data = { id: "find_facility_request", ...data };
     request.async = true;
     request.headers = null;
     makeAjaxCall(request);

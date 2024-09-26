@@ -140,7 +140,7 @@
                                 @mousemove="onMouseMove($event, 0)"
                                 @mouseleave="onMouseLeave($event); activeIndex = -1"
                                 @click="open = false">공유하기</div>
-                            {% if has_permission and user.pk == notice.user.pk %}
+                            {% if "NOTICE" in permission_type_list and user.pk == notice.user.pk %}
                                 <div class="class-adjust block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                                     :class="{ 'bg-gray-100': activeIndex === 1 }"
                                     role="menuitem"
@@ -207,7 +207,7 @@
         </div>
         <div class="flex flex-col-reverse mt-5 justify-end sm:items-center sm:flex sm:flex-row">
             <div class="sm:flex sm:flex-row-reverse">
-                {% if has_permission and user.pk == notice.user.pk %}
+                {% if "NOTICE" in permission_type_list and user.pk == notice.user.pk %}
                     <button data-page-id="{{ notice.page_id }}"
                             data-title="{{ notice.title }}"
                             data-category="{{ notice.category }}"

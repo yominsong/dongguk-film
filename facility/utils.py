@@ -11,9 +11,9 @@ def facility(request):
     id = request.POST.get("id")
 
     if id == "find_facility_request":
-        year = request.POST.get("year")
-        month = request.POST.get("month")
-        formula = f"OR(AND(YEAR({{Start datetime}}) = {year}, MONTH({{Start datetime}}) = {month}), AND(YEAR({{End datetime}}) = {year}, MONTH({{End datetime}}) = {month}))"
+        first_day = request.POST.get("firstDay")
+        last_day = request.POST.get("lastDay")
+        formula = f"AND({{Start datetime}} <= DATETIME_PARSE('{last_day} 23:59:59', 'YYYY-MM-DD HH:mm:ss'),{{End datetime}} >= DATETIME_PARSE('{first_day}', 'YYYY-MM-DD'))"
 
         data = {
             "table_name": "facility-request",
@@ -21,7 +21,7 @@ def facility(request):
         }
 
         found_facility_request_list = airtable("get_all", "records", data, mask=True)
-
+            
         if len(found_facility_request_list) > 0:
             status = "DONE"
             reason = None
