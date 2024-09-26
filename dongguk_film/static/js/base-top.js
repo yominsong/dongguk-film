@@ -483,14 +483,16 @@ function handleAjaxCallback(response) {
     else if (response.id === "find_facility_request") {
         if (response.status === "DONE") {
             window.foundFacilityRequestList = response.found_facility_request_list;
-            addSchedulesToCalendar();
+            addScheduleToCalendar();
         };
+
+        displayNoti(false, "WORK_IN_PROGRESS");
     }
 
     // requestFindHoliday()
     else if (response.id === "find_holiday") {
         if (response.status === "DONE") {
-            disableHolidayInCalendar(response.found_holiday_list);
+            addHolidayInCalendar(response.found_holiday_list);
         };
     }
 

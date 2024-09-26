@@ -13,7 +13,7 @@ def facility(request):
     if id == "find_facility_request":
         year = request.POST.get("year")
         month = request.POST.get("month")
-        formula = f"AND(YEAR({{Start datetime}}) = {year}, MONTH({{End datetime}}) = {month})"
+        formula = f"OR(AND(YEAR({{Start datetime}}) = {year}, MONTH({{Start datetime}}) = {month}), AND(YEAR({{End datetime}}) = {year}, MONTH({{End datetime}}) = {month}))"
 
         data = {
             "table_name": "facility-request",

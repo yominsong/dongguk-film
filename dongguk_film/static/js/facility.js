@@ -14,30 +14,6 @@ const class_double_checks = document.querySelectorAll(".class-double-check");
 // Sub functions
 //
 
-function disableHolidayInCalendar(holidayArray) {
-    const isHolidayAlreadyApplied = id_calendar_grid.querySelector(".text-red-600");
-
-    if (isHolidayAlreadyApplied) return;
-
-    holidayArray.forEach(holiday => {
-        const holidayElement = id_calendar_grid.querySelector(`time[datetime="${holiday.date}"]`);
-
-        if (holidayElement) {
-            holidayElement.classList.replace("text-gray-900", "text-red-600");
-
-            const dayElement = holidayElement.parentElement;
-
-            dayElement.classList.add("flex", "justify-start", "space-x-2");
-
-            const spanElement = document.createElement("span");
-
-            spanElement.textContent = holiday.name;
-            spanElement.className = "hidden sm:flex justify-center items-center text-red-600 h-6 my-1 truncate";
-            dayElement.appendChild(spanElement);
-        };
-    });
-}
-
 // Find the next focusable schedule element
 function findNextFocusableSchedule(elements, currentIndex) {
     for (let i = currentIndex + 1; i < elements.length; i++) {
@@ -263,6 +239,7 @@ function initCalendar() {
             addDayToCalendar(nextMonthDay, true);
         };
 
+        displayNoti(true, "WORK_IN_PROGRESS", "불러오기");
         requestFindFacilityRequest(year, month + 1);
         requestFindHoliday();
     }
@@ -270,7 +247,7 @@ function initCalendar() {
     function addDayToCalendar(date, isOtherMonth) {
         const dayElement = document.createElement("div");
 
-        dayElement.className = `relative min-h-[152px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"}`;
+        dayElement.className = `relative min-h-[152px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"} flex flex-col`;
 
         const timeElement = document.createElement("time");
 
@@ -290,7 +267,11 @@ function initCalendar() {
             timeElement.className = "relative ml-1 my-1 flex h-6 w-6 items-center justify-center rounded-full text-gray-900";
         };
 
-        dayElement.appendChild(timeElement);
+        const wrapperElement = document.createElement("div");
+
+        wrapperElement.className = "flex justify-start space-x-2";
+        wrapperElement.appendChild(timeElement);
+        dayElement.appendChild(wrapperElement);
         id_calendar_grid.appendChild(dayElement);
     }
 
@@ -312,7 +293,36 @@ function initCalendar() {
 
 initCalendar();
 
-function addSchedulesToCalendar() {
+function addHolidayInCalendar(holidayArray) {
+    const isHolidayAlreadyApplied = id_calendar_grid.querySelector(".text-red-700");
+
+    if (isHolidayAlreadyApplied) return;
+
+    holidayArray.forEach(holiday => {
+        const holidayElement = id_calendar_grid.querySelector(`time[datetime="${holiday.date}"]`);
+
+        if (holidayElement) {
+            holidayElement.classList.replace("text-gray-900", "text-red-700");
+
+            const wrapperElement = holidayElement.parentElement;
+
+            wrapperElement.classList.add("flex", "justify-start", "space-x-2");
+
+            const spanElement = document.createElement("span");
+
+            spanElement.textContent = holiday.name;
+            spanElement.className = "hidden sm:flex justify-center items-center text-red-700 h-6 my-1 truncate opacity-0 transition-opacity duration-300 ease-in-out";
+            wrapperElement.appendChild(spanElement);
+
+            setTimeout(() => {
+                spanElement.classList.remove("opacity-0");
+                spanElement.classList.add("opacity-100");
+            }, 30);
+        };
+    });
+}
+
+function addScheduleToCalendar() {
     if (!window.foundFacilityRequestList) return;
 
     const monthStart = new Date(id_calendar_grid.querySelector("time").dateTime);
@@ -321,7 +331,7 @@ function addSchedulesToCalendar() {
     // Remove existing schedule elements
     id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
 
-    window.foundFacilityRequestList.forEach((schedule, index) => {
+    window.foundFacilityRequestList.forEach(schedule => {
         const startDate = new Date(schedule.start_datetime.split(" ")[0].split("(")[0]);
         const endDate = new Date(schedule.end_datetime.split(" ")[0].split("(")[0]);
 
@@ -342,15 +352,16 @@ function addSchedulesToCalendar() {
         const endElement = id_calendar_grid.querySelector(`time[datetime="${endYear}-${endMonth}-${endDay}"]`);
 
         if (startElement && endElement) {
-            const startIndex = Array.from(id_calendar_grid.children).indexOf(startElement.parentElement);
-            const endIndex = Array.from(id_calendar_grid.children).indexOf(endElement.parentElement);
+            const startIndex = Array.from(id_calendar_grid.children).indexOf(startElement.parentElement.parentElement);
+            const endIndex = Array.from(id_calendar_grid.children).indexOf(endElement.parentElement.parentElement);
             const isOneDay = startIndex === endIndex;
 
             for (let i = startIndex; i <= endIndex; i++) {
                 const dayElement = id_calendar_grid.children[i];
+                const wrapperElement = dayElement.querySelector("div");
                 const scheduleElement = document.createElement("div");
 
-                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-500 ease-in-out focus:outline-none focus:z-50";
+                scheduleElement.className = "class-read-request cursor-pointer relative h-6 text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-300 ease-in-out focus:outline-none";
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -466,18 +477,6 @@ function addSchedulesToCalendar() {
                     scheduleElement.classList.remove("-mr-px");
                     scheduleElement.classList.add("mr-0");
                 };
-
-                // Add click event listener
-                scheduleElement.addEventListener("click", function() {
-                    const recordId = schedule.record_id;
-                    const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
-
-                    relatedElements.forEach(el => {
-                        if (el !== relatedElements[0]) {
-                            relatedElements[0].click();
-                        };
-                    });
-                });
 
                 // Add focus event listener
                 scheduleElement.addEventListener("focus", function() {
@@ -600,9 +599,9 @@ function addSchedulesToCalendar() {
                 dayElement.appendChild(scheduleElement);
 
                 setTimeout(() => {
-                    scheduleElement.classList.remove('opacity-0');
-                    scheduleElement.classList.add('opacity-100');
-                }, 50 * index);
+                    scheduleElement.classList.remove("opacity-0");
+                    scheduleElement.classList.add("opacity-100");
+                }, 30);
             };
         };
     });

@@ -433,7 +433,9 @@ function displayNoti(isVisible, notiType, param = null) {
             }, 1);
 
             notiTimers[notiType] = setTimeout(() => {
-                displayNoti(false, notiType);
+                if (notiType !== "WORK_IN_PROGRESS") {
+                    displayNoti(false, notiType);
+                };
             }, 5000);
         }, 1);
     }
