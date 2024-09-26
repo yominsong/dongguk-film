@@ -92,23 +92,33 @@ def forward_amazon_sns_alert(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            
+
             if data.get("Type") == "SubscriptionConfirmation":
                 confirmation_url = data.get("SubscribeURL")
 
                 if confirmation_url:
                     requests.get(confirmation_url)
-                    send_msg(request, "TEST", "DEV", {"message": "Subscription confirmed"})
-                    
-                    return JsonResponse({"message": "Subscription confirmed"}, status=200)
+                    send_msg(
+                        request, "TEST", "DEV", {"message": "Subscription confirmed"}
+                    )
+
+                    return JsonResponse(
+                        {"message": "Subscription confirmed"}, status=200
+                    )
                 else:
-                    send_msg(request, "TEST", "DEV", {"message": "SubscribeURL not provided"})
-                    
-                    return JsonResponse({"error": "SubscribeURL not provided"}, status=400)
-            
+                    send_msg(
+                        request, "TEST", "DEV", {"message": "SubscribeURL not provided"}
+                    )
+
+                    return JsonResponse(
+                        {"error": "SubscribeURL not provided"}, status=400
+                    )
+
             send_msg(request, "AMAZON_SNS_ALERT_RECEIVED", "DEV", {"raw_data": data})
 
-            return JsonResponse({"message": "Message processed successfully"}, status=200)
+            return JsonResponse(
+                {"message": "Message processed successfully"}, status=200
+            )
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         except Exception as e:
@@ -1629,13 +1639,9 @@ def airtable(
                     convert_datetime(fields["Start datetime"])
                 )
 
-                end_datetime = format_datetime(
-                    convert_datetime(fields["End datetime"])
-                )
+                end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
 
-                created_time = format_datetime(
-                    convert_datetime(fields["Created time"])
-                )
+                created_time = format_datetime(convert_datetime(fields["Created time"]))
 
                 approved_time = fields.get("Approved time", None)
                 started_time = fields.get("Started time", None)
@@ -1650,9 +1656,7 @@ def airtable(
                     started_time = format_datetime(convert_datetime(started_time))
 
                 if completed_time:
-                    completed_time = format_datetime(
-                        convert_datetime(completed_time)
-                    )
+                    completed_time = format_datetime(convert_datetime(completed_time))
 
                 if canceled_time:
                     canceled_time = format_datetime(convert_datetime(canceled_time))
@@ -1684,20 +1688,14 @@ def airtable(
                     "duration": fields.get("Duration", None),
                     "start_datetime": start_datetime,
                     "end_datetime": end_datetime,
-                    "start_equipment_hour": fields.get(
-                        "Start equipment hour", None
-                    ),
+                    "start_equipment_hour": fields.get("Start equipment hour", None),
                     "end_equipment_hour": fields.get("End equipment hour", None),
-                    "is_after_end_datetime": fields.get(
-                        "Is after end datetime", False
-                    ),
+                    "is_after_end_datetime": fields.get("Is after end datetime", False),
                     "user": user,
                     "public_url": fields.get("Public URL", None),
                     "public_id": fields.get("Public ID", None),
                     "private_id": fields.get("Private ID", None),
-                    "is_for_instructor": fields.get("Is for instructor", [False])[
-                        0
-                    ],
+                    "is_for_instructor": fields.get("Is for instructor", [False])[0],
                     "status": fields.get("Status", None),
                     "created_time": created_time,
                     "approved_time": approved_time,
@@ -2194,29 +2192,71 @@ def notion(
         if limit:
             payload["page_size"] = limit
 
-        if db_name == "operator":
+        if db_name == "PERMISSION":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
             items = response["results"]
             item_list = []
 
+            {
+                "Is permanent": {"id": "Gihm", "type": "checkbox", "checkbox": False},
+                "Validation": {
+                    "id": "Hh%3F%7B",
+                    "type": "formula",
+                    "formula": {"type": "string", "string": "🟢 유효"},
+                },
+                "Permission": {
+                    "id": "Si%3FX",
+                    "type": "multi_select",
+                    "multi_select": [
+                        {"id": "gs{w", "name": "EQUIPMENT", "color": "default"},
+                        {"id": "Vsg[", "name": "NOTICE", "color": "default"},
+                    ],
+                },
+                "Expiration date": {
+                    "id": "f%7C%5Ca",
+                    "type": "date",
+                    "date": {"start": "2024-09-26", "end": None, "time_zone": None},
+                },
+                "Student ID": {
+                    "id": "title",
+                    "type": "title",
+                    "title": [
+                        {
+                            "type": "text",
+                            "text": {"content": "2015113035", "link": None},
+                            "annotations": {
+                                "bold": False,
+                                "italic": False,
+                                "strikethrough": False,
+                                "underline": False,
+                                "code": False,
+                                "color": "default",
+                            },
+                            "plain_text": "2015113035",
+                            "href": None,
+                        }
+                    ],
+                },
+            }
+
             try:
                 for item in items:
                     properties = item["properties"]
-                    student_id = properties["Title"]["title"][0]["plain_text"]
-                    permission = properties["Permission"]["select"]["name"]
+                    student_id = properties["Student ID"]["title"][0]["plain_text"]
+                    permission = [p["name"] for p in properties["Permission"]["multi_select"]]
 
-                    operator = {
+                    permission = {
                         "student_id": student_id,
                         "permission": permission,
                     }
 
-                    item_list.append(operator)
+                    item_list.append(permission)
             except:
                 pass
 
-        elif db_name == "dflink-allowlist":
+        elif db_name == "DFLINK_ALLOWLIST":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -2231,7 +2271,7 @@ def notion(
             except:
                 pass
 
-        elif db_name == "notice":
+        elif db_name == "NOTICE":
             response = requests.post(
                 url, json=payload, headers=set_headers("NOTION")
             ).json()
@@ -2285,7 +2325,7 @@ def notion(
     elif action == "create" and target == "page":
         url = "https://api.notion.com/v1/pages"
 
-        if db_name == "notice":
+        if db_name == "NOTICE":
             content_chunks = [
                 content[i : i + 2000] for i in range(0, len(content), 2000)
             ]
@@ -2367,7 +2407,7 @@ def notion(
     elif action == "update" and target == "page_properties":
         url = f"https://api.notion.com/v1/pages/{page_id}"
 
-        if db_name == "notice":
+        if db_name == "NOTICE":
             payload = {
                 "properties": {
                     "Category": {

@@ -16,9 +16,27 @@ AWS = getattr(settings, "AWS", None)
 AWS_REGION_NAME = AWS["REGION_NAME"]
 AWS_S3_BUCKET_NAME = AWS["S3"]["BUCKET_NAME"]
 
+NOTION = getattr(settings, "NOTION", None)
+NOTION_SECRET = NOTION["SECRET"]
+NOTION_DB_ID = NOTION["DB_ID"]
+
 #
 # Sub functions
 #
+
+
+def has_permission(request):
+    result = False
+    permission_list = notion("query", "db", data={"db_name": "PERMISSION"})
+
+    for permission in permission_list:
+        if (
+            permission["student_id"] == request.user.username
+            and "NOTICE" in permission["permission"]
+        ):
+            result = True
+
+    return result
 
 
 def remove_html_tags(html_string: str) -> str:
@@ -37,7 +55,7 @@ def notice(request):
     image_list = get_hero_img("notice")
 
     # Notion
-    notice_list = notion("query", "db", data={"db_name": "notice"})
+    notice_list = notion("query", "db", data={"db_name": "NOTICE"})
     notice_count = len(notice_list)
 
     # Search box
@@ -86,9 +104,7 @@ def notice(request):
 
             data = {"page_id": notice["page_id"]}
 
-            content = (
-                notion("retrieve", "block_children", data)[1]
-            )
+            content = notion("retrieve", "block_children", data)[1]
 
             content_search = remove_html_tags(content).lower().replace(" ", "")
 
@@ -133,6 +149,7 @@ def notice(request):
             "search_placeholder": search_placeholder,
             "page_value": page_value,
             "page_range": page_range,
+            "has_permission": has_permission(request),
         },
     )
 
@@ -149,7 +166,7 @@ def notice_detail(request, notice_id):
     page_id = notion(
         "query",
         "db",
-        data={"db_name": "notice", "filter": filter},
+        data={"db_name": "NOTICE", "filter": filter},
     )[
         0
     ]["page_id"]
@@ -210,5 +227,11 @@ def notice_detail(request, notice_id):
     return render(
         request,
         "notice/notice_detail.html",
-        {"image_list": image_list, "notice": notice, "AWS_S3_BUCKET_NAME": AWS_S3_BUCKET_NAME, "AWS_REGION_NAME": AWS_REGION_NAME},
+        {
+            "image_list": image_list,
+            "notice": notice,
+            "AWS_S3_BUCKET_NAME": AWS_S3_BUCKET_NAME,
+            "AWS_REGION_NAME": AWS_REGION_NAME,
+            "has_permission": has_permission(request),
+        },
     )

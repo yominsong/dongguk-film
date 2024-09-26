@@ -471,7 +471,7 @@ def account(request):
             }
 
             item_list = notion(
-                "query", "db", data={"db_name": "notice", "filter": filter}, mask=True
+                "query", "db", data={"db_name": "NOTICE", "filter": filter}, mask=True
             )
 
         paginator = Paginator(item_list, items_per_page)

@@ -160,7 +160,7 @@
                             <time datetime="{{ notice.listed_date }}">{{ notice.listed_date }}</time>
                         </p>
                     </div>
-                    {% if user.pk == notice.user %}
+                    {% if has_permission and user.pk == notice.user %}
                         <div class="flex justify-between items-center gap-x-2">
                             <!-- notice.listed_date(<=sm ) -->
                             <p class="mt-1 flex text-sm leading-5 text-gray-500 sm:invisible">
@@ -199,17 +199,31 @@
                 </li>
             {% endfor %}
             {% if user.is_authenticated %}
-                <li class="class-create relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
-                    tabindex="0">
-                    <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 20 20"
-                         fill="currentColor"
-                         class="w-5 h-5">
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                    새로 작성하기
-                </li>
+                {% if has_permission %}
+                    <li class="class-create relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                        tabindex="0">
+                        <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             class="w-5 h-5">
+                            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                        새로 작성하기
+                    </li>
+                {% else %}
+                    <li class="class-no-permission relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6 focus:df-focus-ring-inset"
+                        tabindex="0">
+                        <span class="absolute inset-x-0 -top-px bottom-0 cursor-pointer"></span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             class="w-5 h-5">
+                            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                        새로 작성하기
+                    </li>
+                {% endif %}
             {% else %}
                 <li class="relative flex justify-start items-center gap-x-2 px-4 py-4 text-sm hover:bg-gray-50 sm:px-6">
                     <a href="{% url 'account_login' %}"
@@ -296,19 +310,21 @@
         </ul>
     </div>
     <!-- Modal -->
-    {% if user.is_authenticated %}
+    {% if has_permission %}
         {% include "notice/notice_modal.html" %}
     {% endif %}
     <script src="{% static 'js/forms.js' %}"></script>
-    <script type="importmap">
-		{
-			"imports": {
-				"ckeditor5-resource": "{% static 'js/ckeditor5-resource.js' %}",
-				"ckeditor5-ko": "{% static 'js/ckeditor5-ko.js' %}"
-			}
-		}
-    </script>
-    <script type="module" src="{% static 'js/ckeditor5.js' %}"></script>
+    {% if has_permission %}
+        <script type="importmap">
+            {
+                "imports": {
+                    "ckeditor5-resource": "{% static 'js/ckeditor5-resource.js' %}",
+                    "ckeditor5-ko": "{% static 'js/ckeditor5-ko.js' %}"
+                }
+            }
+        </script>
+        <script type="module" src="{% static 'js/ckeditor5.js' %}"></script>
+    {% endif %}
     <script src="{% static 'js/notice.js' %}"></script>
     <script src="{% static 'js/global.js' %}"></script>
 {% endblock body %}

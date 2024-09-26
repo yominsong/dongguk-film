@@ -160,7 +160,7 @@ def is_listed(target_url: str):
         target_url = target_url[4:]
 
     data = {
-        "db_name": "dflink-allowlist",
+        "DB_NAME": "DFLINK_ALLOWLIST",
         "filter": {
             "and": [
                 {"property": "URL", "rich_text": {"contains": target_url}},

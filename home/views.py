@@ -40,7 +40,7 @@ def home(request):
 
     project_list = airtable("get_all", "records", data, 5)
     dflink_list = short_io("retrieve", limit=5)
-    notice_list = notion("query", "db", data={"db_name": "notice"}, limit=5)
+    notice_list = notion("query", "db", data={"db_name": "NOTICE"}, limit=5)
 
     return render(
         request,
