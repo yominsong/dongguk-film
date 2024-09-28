@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
-                        <div id="id_modal_facility" class="space-y-5">
+                        <div class="space-y-5">
                             <div class="class-link-list-item text-sm flex relative justify-between gap-x-4 py-5 hover:bg-gray-50 px-4 sm:px-6 -mx-4 sm:-mx-6">
                                 <a id="id_public_url_from_request"
                                    href="#"
@@ -147,11 +147,83 @@
                             <input type="hidden" id="id_record_id" value="">
                             <input type="hidden" id="id_category" value="">
                             <input type="hidden" id="id_project_id" value="">
-                            <input type="hidden" id="id_start_equipment_hour" value="">
-                            <input type="hidden" id="id_end_equipment_hour" value="">
                         </div>
                     </div>
                 </div>
+                {% if "EQUIPMENT" in permission_type_list or "WORKSPACE" in permission_type_list %}
+                    <div id="id_review_button_container"
+                         class="flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex-row"
+                         data-permission-type-list="{{ permission_type_list }}">
+                        <div class="flex mt-2 text-sm sm:mt-0">
+                            <p class="text-gray-500 sm:mt-0" id="id_approve_descr" hidden>잠시만 기다려주세요.</p>
+                            <p class="text-gray-500 sm:mt-0" id="id_reject_descr" hidden></p>
+                            <p class="text-gray-500 sm:mt-0" id="id_in_progress_descr" hidden></p>
+                            <p class="text-gray-500 sm:mt-0" id="id_complete_descr" hidden></p>
+                            <p class="text-flamingo-600 sm:mt-0" id="id_approve_error" hidden></p>
+                            <p class="text-flamingo-600 sm:mt-0" id="id_reject_error" hidden></p>
+                            <p class="text-flamingo-600 sm:mt-0" id="id_in_progress_error" hidden></p>
+                            <p class="text-flamingo-600 sm:mt-0" id="id_complete_error" hidden></p>
+                        </div>
+                        <div class="sm:flex sm:flex-row-reverse">
+                            <button type="button"
+                                    id="id_approve"
+                                    class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        id="id_approve_spin">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                확정하기
+                            </button>
+                            <button type="button"
+                                    id="id_reject"
+                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                <svg class="animate-spin mr-2 h-5 w-5 hidden"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        id="id_reject_spin">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                <span class="class-double-check" hidden>정말&nbsp;</span>반려하기
+                            </button>
+                            <button type="button"
+                                    id="id_in_progress"
+                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        id="id_in_progress_spin">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                사용 시작 처리하기
+                            </button>
+                            <button type="button"
+                                    id="id_complete"
+                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        id="id_complete_spin">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                사용 종료 처리하기
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

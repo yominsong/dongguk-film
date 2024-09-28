@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.contrib.auth.models import User
 from utility.img import get_hero_img
-from utility.utils import notion, convert_datetime
+from utility.utils import get_permission_type_list, notion, parse_datetime
 from bs4 import BeautifulSoup
 import re, ast, random
 
@@ -23,18 +23,6 @@ NOTION_DB_ID = NOTION["DB_ID"]
 #
 # Sub functions
 #
-
-
-def get_permission_type_list(request):
-    permission_list = notion("query", "db", data={"db_name": "PERMISSION"})
-    permission_type_list = []
-
-    for permission in permission_list:
-        if permission["student_id"] == request.user.username:
-            permission_type_list = permission["type_list"]
-            break
-
-    return permission_type_list
 
 
 def remove_html_tags(html_string: str) -> str:
@@ -201,7 +189,7 @@ def notice_detail(request, notice_id):
             file_dict = None
 
         listed_time = notice["properties"]["Listed time"]["created_time"]
-        listed_time = convert_datetime(listed_time).strftime("%Y-%m-%d")
+        listed_time = parse_datetime(listed_time).strftime("%Y-%m-%d")
 
         notice = {
             "page_id": page_id,

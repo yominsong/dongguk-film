@@ -264,17 +264,16 @@ def validation(data: dict):
 def verify_authentication(request):
     if request.GET["id"] == "verify_authentication":
         id = request.GET["id"]
+        status = "FAIL"
+        pk = None
+        name = None
+        student_id = None
 
         if request.user.is_authenticated:
             status = "DONE"
             pk = request.user.pk
             name = request.user.metadata.name
             student_id = request.user.username
-        else:
-            status = "FAIL"
-            pk = None
-            name = None
-            student_id = None
 
     response = {
         "id": id,

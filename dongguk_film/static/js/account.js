@@ -15,7 +15,7 @@ let class_seconds = document.querySelectorAll(".class-second");
 const class_double_checks = document.querySelectorAll(".class-double-check");
 
 // boolean
-let isItDoubleChecked = false;
+let isDoubleChecked = false;
 
 // miscellaneous
 let doubleCheckTimer;
@@ -129,7 +129,7 @@ function updateForm(action, datasetObj = null) {
     handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
     class_double_checks.forEach(double_check => { double_check.hidden = true });
-    isItDoubleChecked = false;
+    isDoubleChecked = false;
 
     // action: "adjust_info"
     if (action === "adjust_info") {
@@ -687,16 +687,6 @@ function updatePaginationControl(data) {
     sessionStorage.setItem(`${data.target}_page`, data.page_number);
 }
 
-function requestVerifyAuthentication() {
-    request.url = `${location.origin}/account/utils/verify-authentication/`;
-    request.type = "GET";
-    request.data = { id: "verify_authentication" };
-    request.async = true;
-    request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-}
-
 function requestGetPaginatedData(target, page) {
     request.url = `${location.origin}/account/utils/account/`;
     request.type = "GET";
@@ -812,22 +802,22 @@ function initRequest() {
             const id_delete_user = document.getElementById("id_delete_user");
 
             id_delete_user.addEventListener("click", () => {
-                if (!isItDoubleChecked) {
+                if (!isDoubleChecked) {
                     class_double_checks.forEach(double_check => { double_check.hidden = false });
-                    isItDoubleChecked = true;
+                    isDoubleChecked = true;
 
                     doubleCheckTimer = setTimeout(() => {
                         class_double_checks.forEach(double_check => { double_check.hidden = true });
-                        isItDoubleChecked = false;
+                        isDoubleChecked = false;
                     }, 5000);
-                } else if (isItDoubleChecked) {
+                } else if (isDoubleChecked) {
                     const id_delete_user_spin = code(id_delete_user, "_spin");
 
                     clearTimeout(doubleCheckTimer);
                     requestDeleteUser();
                     displayButtonMsg(true, id_delete_user, "descr", "잠시만 기다려주세요.");
                     id_delete_user_spin.classList.remove("hidden");
-                    isItDoubleChecked = false;
+                    isDoubleChecked = false;
                 };
             });
 
@@ -837,22 +827,22 @@ function initRequest() {
 
                     if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
                         (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        if (!isItDoubleChecked) {
+                        if (!isDoubleChecked) {
                             class_double_checks.forEach(double_check => { double_check.hidden = false });
-                            isItDoubleChecked = true;
+                            isDoubleChecked = true;
 
                             doubleCheckTimer = setTimeout(() => {
                                 class_double_checks.forEach(double_check => { double_check.hidden = true });
-                                isItDoubleChecked = false;
+                                isDoubleChecked = false;
                             }, 5000);
-                        } else if (isItDoubleChecked) {
+                        } else if (isDoubleChecked) {
                             const id_cancel_or_delete_spin = code(id_cancel_or_delete, "_spin");
 
                             clearTimeout(doubleCheckTimer);
                             requestCancelRequest();
                             displayButtonMsg(true, id_cancel_or_delete, "descr", "잠시만 기다려주세요.");
                             id_cancel_or_delete_spin.classList.remove("hidden");
-                            isItDoubleChecked = false;
+                            isDoubleChecked = false;
                         };
                     };
                 });

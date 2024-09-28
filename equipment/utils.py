@@ -12,7 +12,7 @@ from utility.utils import (
     find_instructor,
     gpt,
     airtable,
-    convert_datetime,
+    parse_datetime,
     format_datetime,
 )
 from utility.msg import send_msg
@@ -1127,7 +1127,7 @@ def create_request(request):
                 else None
             ),
             "created_time": (
-                format_datetime(convert_datetime(equipment_request["createdTime"]))
+                format_datetime(parse_datetime(equipment_request["createdTime"]))
                 if status == "DONE"
                 else None
             ),
@@ -1418,7 +1418,7 @@ def equipment(request):
         for project in project_list:
             if (
                 project["purpose"]["priority"] == cart[0]["purpose"]["priority"]
-                and convert_datetime(project["production_end_date"]).date()
+                and parse_datetime(project["production_end_date"]).date()
                 >= cart_end_date
                 and not "Pending" in project["facility_request_status"]
                 and not "Approved" in project["facility_request_status"]

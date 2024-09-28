@@ -890,7 +890,7 @@ def update_holiday(request):
 #
 
 
-def convert_datetime(datetime_str: str) -> datetime.datetime:
+def parse_datetime(datetime_str: str) -> datetime.datetime:
     """
     - datetime_str | `str`: DateTime string
     """
@@ -992,6 +992,18 @@ def get_holiday():
         f.close()
 
     return holiday_list
+
+
+def get_permission_type_list(request):
+    permission_list = notion("query", "db", data={"db_name": "PERMISSION"})
+    permission_type_list = []
+
+    for permission in permission_list:
+        if permission["student_id"] == request.user.username:
+            permission_type_list = permission["type_list"]
+            break
+
+    return permission_type_list
 
 
 def get_equipment_data(target: str):
@@ -1417,9 +1429,9 @@ def airtable(
         fields = record["fields"]
 
         if table_name == "facility-request":
-            start_datetime = format_datetime(convert_datetime(fields["Start datetime"]))
-            end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
-            created_time = format_datetime(convert_datetime(fields["Created time"]))
+            start_datetime = format_datetime(parse_datetime(fields["Start datetime"]))
+            end_datetime = format_datetime(parse_datetime(fields["End datetime"]))
+            created_time = format_datetime(parse_datetime(fields["Created time"]))
             approved_time = fields.get("Approved time", None)
             started_time = fields.get("Started time", None)
             completed_time = fields.get("Completed time", None)
@@ -1427,19 +1439,19 @@ def airtable(
             rejected_time = fields.get("Rejected time", None)
 
             if approved_time:
-                approved_time = format_datetime(convert_datetime(approved_time))
+                approved_time = format_datetime(parse_datetime(approved_time))
 
             if started_time:
-                started_time = format_datetime(convert_datetime(started_time))
+                started_time = format_datetime(parse_datetime(started_time))
 
             if completed_time:
-                completed_time = format_datetime(convert_datetime(completed_time))
+                completed_time = format_datetime(parse_datetime(completed_time))
 
             if canceled_time:
-                canceled_time = format_datetime(convert_datetime(canceled_time))
+                canceled_time = format_datetime(parse_datetime(canceled_time))
 
             if rejected_time:
-                rejected_time = format_datetime(convert_datetime(rejected_time))
+                rejected_time = format_datetime(parse_datetime(rejected_time))
 
             user = fields["User"]
 
@@ -1636,12 +1648,12 @@ def airtable(
                 fields = record["fields"]
 
                 start_datetime = format_datetime(
-                    convert_datetime(fields["Start datetime"])
+                    parse_datetime(fields["Start datetime"])
                 )
 
-                end_datetime = format_datetime(convert_datetime(fields["End datetime"]))
+                end_datetime = format_datetime(parse_datetime(fields["End datetime"]))
 
-                created_time = format_datetime(convert_datetime(fields["Created time"]))
+                created_time = format_datetime(parse_datetime(fields["Created time"]))
 
                 approved_time = fields.get("Approved time", None)
                 started_time = fields.get("Started time", None)
@@ -1650,19 +1662,19 @@ def airtable(
                 rejected_time = fields.get("Rejected time", None)
 
                 if approved_time:
-                    approved_time = format_datetime(convert_datetime(approved_time))
+                    approved_time = format_datetime(parse_datetime(approved_time))
 
                 if started_time:
-                    started_time = format_datetime(convert_datetime(started_time))
+                    started_time = format_datetime(parse_datetime(started_time))
 
                 if completed_time:
-                    completed_time = format_datetime(convert_datetime(completed_time))
+                    completed_time = format_datetime(parse_datetime(completed_time))
 
                 if canceled_time:
-                    canceled_time = format_datetime(convert_datetime(canceled_time))
+                    canceled_time = format_datetime(parse_datetime(canceled_time))
 
                 if rejected_time:
-                    rejected_time = format_datetime(convert_datetime(rejected_time))
+                    rejected_time = format_datetime(parse_datetime(rejected_time))
 
                 user = fields["User"]
 
@@ -1690,6 +1702,7 @@ def airtable(
                     "end_datetime": end_datetime,
                     "start_equipment_hour": fields.get("Start equipment hour", None),
                     "end_equipment_hour": fields.get("End equipment hour", None),
+                    "is_after_start_datetime": fields.get("Is after start datetime", False),
                     "is_after_end_datetime": fields.get("Is after end datetime", False),
                     "user": user,
                     "public_url": fields.get("Public URL", None),
@@ -1971,7 +1984,7 @@ def airtable(
 
                     created_time = fields.get("Created time", None)
                     created_time = (
-                        convert_datetime(created_time) if created_time else None
+                        parse_datetime(created_time) if created_time else None
                     )
 
                     created_date = (
@@ -2240,7 +2253,7 @@ def notion(
                 for item in items:
                     properties = item["properties"]
                     listed_time = properties["Listed time"]["created_time"]
-                    listed_time = convert_datetime(listed_time)
+                    listed_time = parse_datetime(listed_time)
                     notice_id = properties["ID"]["formula"]["string"]
                     title = properties["Title"]["title"][0]["plain_text"]
                     category = properties["Category"]["select"]["name"]

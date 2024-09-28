@@ -4,7 +4,7 @@
 
 let urlParams = new URLSearchParams(location.search);
 let request = {}; // for `makeAjaxCall()` function
-let userPk, userName, userStudentId; // User authentication verification results
+let userPk, userName, userStudentId, userPermissionTypeList; // User authentication verification results
 let userPinpointed = false; // User pinpointing results
 
 //
@@ -500,6 +500,42 @@ function handleAjaxCallback(response) {
     else if (response.id === "filter_equipment") {
         if (response.status === "DONE") {
             location.href = `${location.origin}${response.next_url}`;
+        };
+    }
+
+    // requestUpdateStatusToApproved()
+    else if (response.id === "update_status_to_approved") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_approve, "descr", response.msg);
+            displayButtonMsg(false, id_approve, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        };
+    }
+
+    // requestUpdateStatusToRejected()
+    else if (response.id === "update_status_to_rejected") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_reject, "descr", response.msg);
+            displayButtonMsg(false, id_reject, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        };
+    }
+
+    // requestUpdateStatusToInProgress()
+    else if (response.id === "update_status_to_in_progress") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_in_progress, "descr", response.msg);
+            displayButtonMsg(false, id_in_progress, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        };
+    }
+
+    // requestUpdateStatusToCompleted()
+    else if (response.id === "update_status_to_completed") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_complete, "descr", response.msg);
+            displayButtonMsg(false, id_complete, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
         };
     }
 

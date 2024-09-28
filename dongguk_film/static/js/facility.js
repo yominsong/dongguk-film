@@ -7,7 +7,29 @@ const id_calendar_grid = document.getElementById("id_calendar_grid");
 
 // modal
 const id_modal = document.getElementById("id_modal");
-const id_cancel_or_delete = document.getElementById("id_cancel_or_delete");
+const id_status = document.getElementById("id_status");
+const id_record_id = document.getElementById("id_record_id");
+const id_category = document.getElementById("id_category");
+const id_project_id = document.getElementById("id_project_id");
+const id_name_from_request = document.getElementById("id_name_from_request");
+const id_public_url_from_request = document.getElementById("id_public_url_from_request");
+const id_status_descr = code(id_status, "_descr");
+const id_status_from_request = document.getElementById("id_status_from_request");
+const id_created_time_from_request = document.getElementById("id_created_time_from_request");
+const id_approved_time_from_request = document.getElementById("id_approved_time_from_request");
+const id_started_time_from_request = document.getElementById("id_started_time_from_request");
+const id_completed_time_from_request = document.getElementById("id_completed_time_from_request");
+const id_canceled_time_from_request = document.getElementById("id_canceled_time_from_request");
+const id_rejected_time_from_request = document.getElementById("id_rejected_time_from_request");
+const id_purpose_from_request = document.getElementById("id_purpose_from_request");
+const id_duration_from_request = document.getElementById("id_duration_from_request");
+const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
+const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
+const id_review_button_container = document.getElementById("id_review_button_container");
+const id_approve = document.getElementById("id_approve");
+const id_reject = document.getElementById("id_reject");
+const id_in_progress = document.getElementById("id_in_progress");
+const id_complete = document.getElementById("id_complete");
 const class_double_checks = document.querySelectorAll(".class-double-check");
 
 //
@@ -36,13 +58,34 @@ function findPreviousFocusableSchedule(elements, currentIndex) {
     return null; // Return null if no previous focusable schedule is found
 }
 
+function displayReviewButtonContainer(bool) {
+    if (bool) {
+        id_review_button_container.className = "flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex-row";
+        id_review_button_container.hidden = false;
+    } else {
+        id_review_button_container.className = "";
+        id_review_button_container.hidden = true;
+    };
+}
+
 //
 // Main functions
 //
 
 function initForm() {
-    inputs.forEach((input) => { displayError(false, input) });
-    displayButtonMsg(false, id_cancel_or_delete, "error");
+    const buttons = [
+        id_approve,
+        id_reject,
+        id_in_progress,
+        id_complete
+    ];
+
+    displayReviewButtonContainer(false);
+
+    buttons.forEach(button => {
+        button.classList.replace("inline-flex", "hidden");
+        displayButtonMsg(false, button, "error");
+    });
 }
 
 function updateForm(action, datasetObj = null) {
@@ -57,135 +100,165 @@ function updateForm(action, datasetObj = null) {
     class_double_checks.forEach(double_check => { double_check.hidden = true });
     isItDoubleChecked = false;
 
-    // action: "read_request"
-    if (action === "read_request") {
+    const data = datasetObj.dataset;
+    let badgeColor, status, statusDescr;
+    let duration = data.duration;
+
+    if (data.status === "Pending") {
+        badgeColor = "text-blue-700 bg-blue-50 ring-blue-700/10";
+        status = "대기 중";
+        statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
+    } else if (data.status === "Approved") {
+        badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
+        status = "확정됨";
+        statusDescr = "예약이 확정되었어요.";
+    } else if (data.status === "In Progress" && data.isAfterEndDatetime === "false") {
+        badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
+        status = "사용 중";
+        statusDescr = "현재 이 시설을 사용하고 있어요.";
+    } else if (data.status === "In Progress" && data.isAfterEndDatetime === "true") {
+        badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
+        status = "종료 지연됨";
+        statusDescr = "시설 사용 종료가 늦춰지고 있어요.";
+    } else if (data.status === "Completed") {
+        badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
+        status = "종료됨";
+        statusDescr = "시설 사용이 종료되었어요.";
+    } else if (data.status === "Canceled") {
+        badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
+        status = "취소됨";
+        statusDescr = "예약이 취소되었어요.";
+    } else if (data.status === "Rejected") {
+        badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
+        status = "반려됨";
+        statusDescr = "예약이 반려되었어요.";
+    };
+
+    if (Number(duration) > 0) {
+        duration = `${duration}일`;
+    } else if (Number(duration) === 0) {
+        duration = "당일";
+    };
+
+    id_status.value = data.status;
+    id_record_id.value = data.recordId;
+    id_category.value = data.category;
+    id_project_id.value = data.projectId;
+    id_name_from_request.innerText = data.name;
+    id_public_url_from_request.href = data.publicUrl;
+    id_status_descr.innerText = statusDescr;
+    id_status_from_request.className = `rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}`;
+    id_status_from_request.innerText = status;
+    id_created_time_from_request.innerText = data.createdTime;
+    id_purpose_from_request.innerText = data.purposeKeyword;
+    id_duration_from_request.innerText = duration;
+    id_start_datetime_from_request.innerText = data.startDatetime;
+    id_end_datetime_from_request.innerText = data.endDatetime;
+
+    [id_approved_time_from_request, id_started_time_from_request, id_completed_time_from_request, id_canceled_time_from_request, id_rejected_time_from_request].forEach(element => {
+        element.innerText = "";
+        element.parentElement.classList.replace("flex", "hidden");
+    });
+
+    let innerTextArray = [id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request];
+
+    if (data.approvedTime !== "null") {
+        id_approved_time_from_request.innerText = data.approvedTime;
+        id_approved_time_from_request.parentElement.classList.replace("hidden", "flex");
+        innerTextArray.push(id_approved_time_from_request);
+    };
+
+    if (data.startedTime !== "null") {
+        id_started_time_from_request.innerText = data.startedTime;
+        id_started_time_from_request.parentElement.classList.replace("hidden", "flex");
+        innerTextArray.push(id_started_time_from_request);
+    };
+
+    if (data.completedTime !== "null") {
+        id_completed_time_from_request.innerText = data.completedTime;
+        id_completed_time_from_request.parentElement.classList.replace("hidden", "flex");
+        innerTextArray.push(id_completed_time_from_request);
+    };
+
+    if (data.canceledTime !== "null") {
+        id_canceled_time_from_request.innerText = data.canceledTime;
+        id_canceled_time_from_request.parentElement.classList.replace("hidden", "flex");
+        innerTextArray.push(id_canceled_time_from_request);
+    };
+
+    if (data.rejectedTime !== "null") {
+        id_rejected_time_from_request.innerText = data.rejectedTime;
+        id_rejected_time_from_request.parentElement.classList.replace("hidden", "flex");
+        innerTextArray.push(id_rejected_time_from_request);
+    };
+
+    innerTextArray.forEach(element => {
+        element.className = "flex font-semibold text-right";
+    });
+
+    initForm();
+
+    const default_keyword = "상세 보기";
+
+    // action: "read"
+    if (action === "read") {
+        displayReviewButtonContainer(false);
+
         class_headings.forEach(heading => {
-            heading.innerText = "시설예약 상세 보기";
+            heading.innerText = `시설예약 ${default_keyword}`;
         });
+    }
 
-        const data = datasetObj.dataset;
-        const id_status = document.getElementById("id_status");
-        const id_category = document.getElementById("id_category");
-        const id_project_id = document.getElementById("id_project_id");
-        const id_name_from_request = document.getElementById("id_name_from_request");
-        const id_public_url_from_request = document.getElementById("id_public_url_from_request");
-        const id_status_descr = code(id_status, "_descr");
-        const id_status_from_request = document.getElementById("id_status_from_request");
-        const id_created_time_from_request = document.getElementById("id_created_time_from_request");
-        const id_approved_time_from_request = document.getElementById("id_approved_time_from_request");
-        const id_started_time_from_request = document.getElementById("id_started_time_from_request");
-        const id_completed_time_from_request = document.getElementById("id_completed_time_from_request");
-        const id_canceled_time_from_request = document.getElementById("id_canceled_time_from_request");
-        const id_rejected_time_from_request = document.getElementById("id_rejected_time_from_request");
-        const id_purpose_from_request = document.getElementById("id_purpose_from_request");
-        const id_duration_from_request = document.getElementById("id_duration_from_request");
-        const id_start_datetime_from_request = document.getElementById("id_start_datetime_from_request");
-        const id_end_datetime_from_request = document.getElementById("id_end_datetime_from_request");
-        let badgeColor, status, statusDescr;
-        let duration = data.duration;
+    // action: "review"
+    else if (action === "review") {
+        let headingText = "시설예약 처리하기";
 
-        if (data.status === "Pending") {
-            badgeColor = "text-blue-700 bg-blue-50 ring-blue-700/10";
-            status = "대기 중";
-            statusDescr = "운영진이 예약 신청 정보를 확인하고 있어요.";
-        } else if (data.status === "Approved") {
-            badgeColor = "text-green-700 bg-green-50 ring-green-600/20";
-            status = "확정됨";
-            statusDescr = "예약이 확정되었어요.";
-        } else if (data.status === "In Progress" && data.isAfterEndDatetime === "false") {
-            badgeColor = "text-yellow-700 bg-yellow-50 ring-yellow-600/20";
-            status = "사용 중";
-            statusDescr = "현재 이 시설을 사용하고 있어요.";
-        } else if (data.status === "In Progress" && data.isAfterEndDatetime === "true") {
-            badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
-            status = "종료 지연됨";
-            statusDescr = "시설 사용 종료가 늦춰지고 있어요.";
-        } else if (data.status === "Completed") {
-            badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
-            status = "종료됨";
-            statusDescr = "시설 사용이 종료되었어요.";
-        } else if (data.status === "Canceled") {
-            badgeColor = "text-pink-700 bg-pink-50 ring-pink-700/10";
-            status = "취소됨";
-            statusDescr = "예약이 취소되었어요.";
-        } else if (data.status === "Rejected") {
-            badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
-            status = "반려됨";
-            statusDescr = "예약이 반려되었어요.";
+        if (data.status === "Completed" || data.status === "Canceled" || data.status === "Rejected") {
+            displayReviewButtonContainer(false);
+            headingText = `시설예약 ${default_keyword}`;
+        } else {
+            if (data.status === "Pending") {
+                displayReviewButtonContainer(true);
+                id_approve.classList.replace("hidden", "inline-flex");
+                id_reject.classList.replace("hidden", "inline-flex");
+            } else if (data.status === "Approved") {
+                if (data.isAfterStartDatetime === "true") {
+                    displayReviewButtonContainer(true);
+                    id_in_progress.classList.replace("hidden", "inline-flex");
+                } else {
+                    headingText = `시설예약 ${default_keyword}`;
+                };
+            } else if (data.status === "In Progress") {
+                displayReviewButtonContainer(true);
+                id_complete.classList.replace("hidden", "inline-flex");
+            };
         };
 
-        if (Number(duration) > 0) {
-            duration = `${duration}일`;
-        } else if (Number(duration) === 0) {
-            duration = "당일";
-        };
-
-        id_status.value = data.status;
-        id_record_id.value = data.recordId;
-        id_category.value = data.category;
-        id_project_id.value = data.projectId;
-        id_name_from_request.innerText = data.name;
-        id_public_url_from_request.href = data.publicUrl;
-        id_status_descr.innerText = statusDescr;
-        id_status_from_request.className = `rounded-md whitespace-nowrap px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${badgeColor}`;
-        id_status_from_request.innerText = status;
-        id_created_time_from_request.innerText = data.createdTime;
-        id_purpose_from_request.innerText = data.purposeKeyword;
-        id_duration_from_request.innerText = duration;
-        id_start_datetime_from_request.innerText = data.startDatetime;
-        id_end_datetime_from_request.innerText = data.endDatetime;
-
-        [id_approved_time_from_request, id_started_time_from_request, id_completed_time_from_request, id_canceled_time_from_request, id_rejected_time_from_request].forEach(element => {
-            element.innerText = "";
-            element.parentElement.classList.replace("flex", "hidden");
-        });
-
-        let innerTextArray = [id_created_time_from_request, id_purpose_from_request, id_duration_from_request, id_start_datetime_from_request, id_end_datetime_from_request];
-
-        if (data.approvedTime !== "null") {
-            id_approved_time_from_request.innerText = data.approvedTime;
-            id_approved_time_from_request.parentElement.classList.replace("hidden", "flex");
-            innerTextArray.push(id_approved_time_from_request);
-        };
-
-        if (data.startedTime !== "null") {
-            id_started_time_from_request.innerText = data.startedTime;
-            id_started_time_from_request.parentElement.classList.replace("hidden", "flex");
-            innerTextArray.push(id_started_time_from_request);
-        };
-
-        if (data.completedTime !== "null") {
-            id_completed_time_from_request.innerText = data.completedTime;
-            id_completed_time_from_request.parentElement.classList.replace("hidden", "flex");
-            innerTextArray.push(id_completed_time_from_request);
-        };
-
-        if (data.canceledTime !== "null") {
-            id_canceled_time_from_request.innerText = data.canceledTime;
-            id_canceled_time_from_request.parentElement.classList.replace("hidden", "flex");
-            innerTextArray.push(id_canceled_time_from_request);
-        };
-
-        if (data.rejectedTime !== "null") {
-            id_rejected_time_from_request.innerText = data.rejectedTime;
-            id_rejected_time_from_request.parentElement.classList.replace("hidden", "flex");
-            innerTextArray.push(id_rejected_time_from_request);
-        };
-
-        innerTextArray.forEach(element => {
-            element.className = "flex font-semibold text-right";
+        class_headings.forEach(heading => {
+            heading.innerText = headingText;
         });
     };
 }
 
 function initModal() {
-    const class_read_requests = document.querySelectorAll(".class-read-request");
+    const class_reads = document.querySelectorAll(".class-read");
+    const class_reviews = document.querySelectorAll(".class-review");
 
-    class_read_requests.forEach(read => {
+    class_reads.forEach(read => {
         ["click", "keyup"].forEach(type => {
             read.addEventListener(type, event => {
                 if (type === "click" || event.key === "Enter" || event.key === " ") {
-                    updateForm("read_request", read);
+                    updateForm("read", read);
+                };
+            });
+        });
+    });
+
+    class_reviews.forEach(review => {
+        ["click", "keyup"].forEach(type => {
+            review.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    updateForm("review", review);
                 };
             });
         });
@@ -201,6 +274,8 @@ function initCalendar() {
     let currentDate = new Date();
 
     function updateCalendar(year, month) {
+        let earliestDate, latestDate;
+
         id_calendar_grid.innerHTML = "";
 
         const koreanMonths = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
@@ -221,6 +296,10 @@ function initCalendar() {
             const prevMonthDay = new Date(prevYear, prevMonth, prevMonthLastDay - i);
 
             addDayToCalendar(prevMonthDay, true);
+
+            if (i === startingDay - 1) {
+                earliestDate = prevMonthDay;
+            };
         };
 
         // Add dates for the current month
@@ -228,6 +307,10 @@ function initCalendar() {
             const currentDay = new Date(year, month, i);
 
             addDayToCalendar(currentDay, false);
+
+            if (earliestDate === undefined) {
+                earliestDate = currentDay;
+            };
         };
 
         // Add dates from the next month to fill up to 42 cells
@@ -240,13 +323,17 @@ function initCalendar() {
             const nextMonthDay = new Date(nextYear, nextMonth, i);
 
             addDayToCalendar(nextMonthDay, true);
+
+            if (i === remainingDays) {
+                latestDate = nextMonthDay;
+            };
         };
 
         displayNoti(true, "WORK_IN_PROGRESS", "불러오기");
 
         const data = {
-            firstDay: formatDate(firstDay),
-            lastDay: formatDate(lastDay)
+            earliestDate: formatDate(earliestDate),
+            latestDate: formatDate(latestDate)
         };
 
         requestFindFacilityRequest(data);
@@ -256,7 +343,7 @@ function initCalendar() {
     function addDayToCalendar(date, isOtherMonth) {
         const dayElement = document.createElement("div");
 
-        dayElement.className = `relative min-h-[149px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"} flex flex-col`;
+        dayElement.className = `relative min-h-[150px] ${isOtherMonth ? "bg-gray-50 text-gray-500" : "bg-white"} flex flex-col`;
 
         const timeElement = document.createElement("time");
 
@@ -300,8 +387,6 @@ function initCalendar() {
     updateCalendar(currentDate.getFullYear(), currentDate.getMonth());
 }
 
-initCalendar();
-
 function addHolidayInCalendar(holidayArray) {
     const isHolidayAlreadyApplied = id_calendar_grid.querySelector(".text-red-700");
 
@@ -334,7 +419,7 @@ function addHolidayInCalendar(holidayArray) {
 function adjustCalendarHeight() {
     const weekRows = [];
     const daysInCalendar = id_calendar_grid.children.length;
-    
+
     // Group days into weeks
     for (let i = 0; i < daysInCalendar; i += 7) {
         weekRows.push(Array.from(id_calendar_grid.children).slice(i, i + 7));
@@ -344,19 +429,19 @@ function adjustCalendarHeight() {
         let maxSchedulesInWeek = 0;
 
         week.forEach(day => {
-            const scheduleElements = day.querySelectorAll('.class-read-request');
+            const scheduleElements = day.querySelectorAll(".class-request");
             const scheduleCount = new Set(Array.from(scheduleElements).map(el => el.dataset.recordId)).size;
-            
+
             maxSchedulesInWeek = Math.max(maxSchedulesInWeek, scheduleCount);
         });
 
         if (maxSchedulesInWeek > 5) {
             const extraHeight = (maxSchedulesInWeek - 5) * 24; // 24px for each extra schedule
-            const newMinHeight = 152 + extraHeight; // 152px is the original minHeight
+            const newMinHeight = 150 + extraHeight; // 150px is the original minHeight
 
             week.forEach(day => {
                 day.style.minHeight = `${newMinHeight}px`;
-                day.classList.add('transition-all', 'duration-300', 'ease-in-out');
+                day.classList.add("transition-all", "duration-300", "ease-in-out");
             });
         };
     });
@@ -369,14 +454,14 @@ function addScheduleToCalendar() {
     const monthEnd = new Date(id_calendar_grid.querySelectorAll("time")[id_calendar_grid.querySelectorAll("time").length - 1].dateTime);
 
     // Remove existing schedule elements
-    id_calendar_grid.querySelectorAll(".class-read-request").forEach(el => el.remove());
+    id_calendar_grid.querySelectorAll(".class-request").forEach(el => el.remove());
 
     let dateRowMap = {};
 
     window.foundFacilityRequestList.sort((a, b) => {
         const timeA = parseDate(a.start_datetime).getTime();
         const timeB = parseDate(b.start_datetime).getTime();
-        
+
         return timeA - timeB;
     });
 
@@ -443,8 +528,6 @@ function addScheduleToCalendar() {
                 scheduleElement.style.left = "0";
                 scheduleElement.style.right = "0";
                 scheduleElement.style.height = `${rowHeight - 2}px`; // Slightly reduced for spacing
-
-                scheduleElement.className = "class-read-request cursor-pointer text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-300 ease-in-out focus:outline-none";
                 scheduleElement.dataset.recordId = schedule.record_id;
                 scheduleElement.dataset.name = schedule.name;
                 scheduleElement.dataset.category = schedule.category;
@@ -453,6 +536,7 @@ function addScheduleToCalendar() {
                 scheduleElement.dataset.duration = schedule.duration;
                 scheduleElement.dataset.startDatetime = schedule.start_datetime;
                 scheduleElement.dataset.endDatetime = schedule.end_datetime;
+                scheduleElement.dataset.isAfterStartDatetime = schedule.is_after_start_datetime;
                 scheduleElement.dataset.isAfterEndDatetime = schedule.is_after_end_datetime;
                 scheduleElement.dataset.publicUrl = schedule.public_url;
                 scheduleElement.dataset.forInstructor = schedule.is_for_instructor;
@@ -464,6 +548,19 @@ function addScheduleToCalendar() {
                 scheduleElement.dataset.canceledTime = schedule.canceled_time;
                 scheduleElement.dataset.rejectedTime = schedule.rejected_time;
                 scheduleElement.tabIndex = 0;
+
+                let permissionClass = "class-read";
+
+                if (id_review_button_container !== null) {
+                    const data = id_review_button_container.dataset;
+                    const permissionTypeList = data.permissionTypeList;
+
+                    if (permissionTypeList.length > 0) {
+                        permissionClass = "class-review";
+                    };
+                };
+
+                scheduleElement.className = `class-request ${permissionClass} cursor-pointer text-xs flex items-center -ml-px -mr-px border-y opacity-0 transition-opacity duration-300 ease-in-out focus:outline-none`;
 
                 const colorByStatus = {
                     "Pending": "text-blue-700 bg-blue-50",
@@ -486,13 +583,13 @@ function addScheduleToCalendar() {
                 };
 
                 const hoverColorByStatus = {
-                    "Pending": "text-blue-800 bg-blue-100",
-                    "Approved": "text-green-800 bg-green-100",
-                    "In Progress": "text-yellow-800 bg-yellow-100",
-                    "In Progress After End Datetime": "text-red-800 bg-red-100",
+                    "Pending": "text-blue-800 bg-blue-200",
+                    "Approved": "text-green-800 bg-green-200",
+                    "In Progress": "text-yellow-800 bg-yellow-200",
+                    "In Progress After End Datetime": "text-red-800 bg-red-200",
                     "Completed": "text-slate-800 bg-slate-200",
-                    "Canceled": "text-pink-800 bg-pink-100",
-                    "Rejected": "text-red-800 bg-red-100"
+                    "Canceled": "text-pink-800 bg-pink-200",
+                    "Rejected": "text-red-800 bg-red-200"
                 };
 
                 let statusKey = schedule.status;
@@ -560,17 +657,20 @@ function addScheduleToCalendar() {
                     scheduleElement.classList.remove("-ml-px");
                     scheduleElement.classList.add("ml-0");
 
-                    const textElement = document.createElement("span");
+                    if (!scheduleElement.hasChildNodes()) {
+                        const textElement = document.createElement("span");
 
-                    textElement.textContent = schedule.name;
+                        textElement.textContent = schedule.name;
 
-                    if (isOneDay) {
-                        textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";
-                    } else {
-                        textElement.className = "px-1 sm:px-2 whitespace-nowrap";
+                        if (isOneDay) {
+                            textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";
+                        } else {
+                            textElement.className = "px-1 sm:px-2 whitespace-nowrap";
+                        };
+
+                        scheduleElement.appendChild(textElement);
                     };
 
-                    scheduleElement.appendChild(textElement);
                     scheduleElement.classList.add("z-10");
                 };
 
@@ -583,31 +683,31 @@ function addScheduleToCalendar() {
                 scheduleElement.addEventListener("mouseover", function () {
                     const recordId = schedule.record_id;
                     const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
-            
+
                     relatedElements.forEach(el => {
                         const originalColorClasses = el.dataset.originalColorClasses.split(" ");
                         const hoverColorClasses = el.dataset.hoverColorClasses.split(" ");
-            
+
                         // Remove original text color and background color classes
                         el.classList.remove(...originalColorClasses);
-            
+
                         // Add hover text color and background color classes
                         el.classList.add(...hoverColorClasses);
                     });
                 });
-            
+
                 // Add mouseout event listener
                 scheduleElement.addEventListener("mouseout", function () {
                     const recordId = schedule.record_id;
                     const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
-            
+
                     relatedElements.forEach(el => {
                         const originalColorClasses = el.dataset.originalColorClasses.split(" ");
                         const hoverColorClasses = el.dataset.hoverColorClasses.split(" ");
-            
+
                         // Remove hover text color and background color classes
                         el.classList.remove(...hoverColorClasses);
-            
+
                         // Add original text color and background color classes
                         el.classList.add(...originalColorClasses);
                     });
@@ -617,7 +717,7 @@ function addScheduleToCalendar() {
                 // Add focus event listener
                 scheduleElement.addEventListener("focus", function () {
                     const recordId = schedule.record_id;
-                    const allScheduleElements = document.querySelectorAll(".class-read-request");
+                    const allScheduleElements = document.querySelectorAll(".class-request");
                     const relatedElements = document.querySelectorAll(`[data-record-id="${recordId}"]`);
 
                     allScheduleElements.forEach(el => {
@@ -675,7 +775,7 @@ function addScheduleToCalendar() {
 
                 // Add blur event listener
                 scheduleElement.addEventListener("blur", function () {
-                    const allScheduleElements = document.querySelectorAll(".class-read-request");
+                    const allScheduleElements = document.querySelectorAll(".class-request");
 
                     allScheduleElements.forEach(el => {
                         const elStatus = el.dataset.status;
@@ -712,7 +812,7 @@ function addScheduleToCalendar() {
                 // Modify keyboard event listener
                 scheduleElement.addEventListener("keydown", function (event) {
                     if (event.key === "Tab") {
-                        const scheduleElements = id_calendar_grid.querySelectorAll(".class-read-request");
+                        const scheduleElements = id_calendar_grid.querySelectorAll(".class-request");
                         const currentIndex = Array.from(scheduleElements).indexOf(this);
                         let nextElement;
 
@@ -765,3 +865,116 @@ function requestFindHoliday() {
     makeAjaxCall(request);
     request = {};
 }
+
+function requestUpdateStatusToApproved() {
+    request.url = `${location.origin}/facility/utils/facility/`;
+    request.type = "POST";
+    request.data = { id: "update_status_to_approved", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestUpdateStatusToRejected() {
+    request.url = `${location.origin}/facility/utils/facility/`;
+    request.type = "POST";
+    request.data = { id: "update_status_to_rejected", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestUpdateStatusToInProgress() {
+    request.url = `${location.origin}/facility/utils/facility/`;
+    request.type = "POST";
+    request.data = { id: "update_status_to_in_progress", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestUpdateStatusToCompleted() {
+    request.url = `${location.origin}/facility/utils/facility/`;
+    request.type = "POST";
+    request.data = { id: "update_status_to_completed", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    makeAjaxCall(request);
+    request = {};
+}
+
+function initRequest() {
+    window.addEventListener("pageshow", () => {
+        requestVerifyAuthentication();
+        initCalendar();
+
+        if (id_review_button_container !== null) {
+            ["click", "keyup"].forEach(type => {
+                id_approve.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        requestApproveRequest();
+                        displayButtonMsg(true, id_approve, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_approve, "error");
+
+                        const id_approve_spin = code(id_approve, "_spin");
+
+                        id_approve_spin.classList.remove("hidden");
+                    };
+                });
+
+                id_reject.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        requestRejectRequest();
+                        displayButtonMsg(true, id_reject, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_reject, "error");
+
+                        const id_reject_spin = code(id_reject, "_spin");
+
+                        id_reject_spin.classList.remove("hidden");
+                    };
+                });
+
+                id_in_progress.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        requestUpdateStatusToInProgress();
+                        displayButtonMsg(true, id_in_progress, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_in_progress, "error");
+
+                        const id_in_progress_spin = code(id_in_progress, "_spin");
+
+                        id_in_progress_spin.classList.remove("hidden");
+                    };
+                });
+
+                id_complete.addEventListener(type, event => {
+                    const targetTagName = event.target.tagName;
+
+                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
+                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
+                        requestUpdateStatusToCompleted();
+                        displayButtonMsg(true, id_complete, "descr", "잠시만 기다려주세요.");
+                        displayButtonMsg(false, id_complete, "error");
+
+                        const id_complete_spin = code(id_complete, "_spin");
+
+                        id_complete_spin.classList.remove("hidden");
+                    };
+                });
+            });
+        };
+    });
+}
+
+initRequest();

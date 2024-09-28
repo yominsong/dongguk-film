@@ -12,7 +12,7 @@ from .utils import (
     get_weekday,
 )
 from utility.img import get_hero_img
-from utility.utils import convert_datetime, mask_personal_information, airtable
+from utility.utils import parse_datetime, mask_personal_information, airtable
 import random, json, re
 
 #
@@ -99,8 +99,8 @@ def get_unavailable_date_list(scheduled_period_list, length_of_items):
     date_count_dict = {}
 
     for start, end in scheduled_period_list:
-        start = convert_datetime(start).date()
-        end = convert_datetime(end).date()
+        start = parse_datetime(start).date()
+        end = parse_datetime(end).date()
         current = start
 
         while current <= end:
@@ -435,8 +435,8 @@ def equipment_detail(request, collection_id):
                 ):
                     item_unavailable_periods = [
                         {
-                            "start_date": convert_datetime(start).date(),
-                            "end_date": convert_datetime(end).date(),
+                            "start_date": parse_datetime(start).date(),
+                            "end_date": parse_datetime(end).date(),
                         }
                         for start, end in zip(
                             item["start_datetime"], item["end_datetime"]
