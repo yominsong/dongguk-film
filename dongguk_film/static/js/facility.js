@@ -59,6 +59,8 @@ function findPreviousFocusableSchedule(elements, currentIndex) {
 }
 
 function displayReviewButtonContainer(bool) {
+    if (id_review_button_container === null) return;
+
     if (bool) {
         id_review_button_container.className = "flex flex-col-reverse mt-5 justify-between sm:items-center sm:flex-row";
         id_review_button_container.hidden = false;
@@ -68,19 +70,37 @@ function displayReviewButtonContainer(bool) {
     };
 }
 
+function shouldShowNextMonth(date) {
+    const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+    const firstDayOfWeek = firstDayOfMonth.getDay();
+    
+    // Calculate the number of days from the previous month shown in the calendar
+    const daysFromPrevMonth = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    
+    // Calculate the number of days from the current month shown in the calendar
+    const daysFromCurrentMonth = Math.min(daysInMonth, 42 - daysFromPrevMonth);
+    
+    // If the current date is in the last week shown in the calendar, show next month
+    return date.getDate() > daysFromCurrentMonth - 7;
+}
+
 //
 // Main functions
 //
 
 function initForm() {
+    displayReviewButtonContainer(false);
+
+    if (id_review_button_container === null) return;
+
     const buttons = [
         id_approve,
         id_reject,
         id_in_progress,
         id_complete
     ];
-
-    displayReviewButtonContainer(false);
 
     buttons.forEach(button => {
         button.classList.replace("inline-flex", "hidden");
@@ -119,7 +139,7 @@ function updateForm(action, datasetObj = null) {
     } else if (data.status === "In Progress" && data.isAfterEndDatetime === "true") {
         badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
         status = "종료 지연됨";
-        statusDescr = "시설 사용 종료가 늦춰지고 있어요.";
+        statusDescr = "시설 사용 종료가 늦어지고 있어요.";
     } else if (data.status === "Completed") {
         badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
         status = "종료됨";
@@ -198,14 +218,14 @@ function updateForm(action, datasetObj = null) {
 
     initForm();
 
-    const default_keyword = "상세 보기";
+    const defaultHeadingText = "예약내역 상세 보기";
 
     // action: "read"
     if (action === "read") {
         displayReviewButtonContainer(false);
 
         class_headings.forEach(heading => {
-            heading.innerText = `시설예약 ${default_keyword}`;
+            heading.innerText = `예약내역 ${default_keyword}`;
         });
     }
 
@@ -215,7 +235,7 @@ function updateForm(action, datasetObj = null) {
 
         if (data.status === "Completed" || data.status === "Canceled" || data.status === "Rejected") {
             displayReviewButtonContainer(false);
-            headingText = `시설예약 ${default_keyword}`;
+            headingText = defaultHeadingText;
         } else {
             if (data.status === "Pending") {
                 displayReviewButtonContainer(true);
@@ -226,7 +246,7 @@ function updateForm(action, datasetObj = null) {
                     displayReviewButtonContainer(true);
                     id_in_progress.classList.replace("hidden", "inline-flex");
                 } else {
-                    headingText = `시설예약 ${default_keyword}`;
+                    headingText = defaultHeadingText;
                 };
             } else if (data.status === "In Progress") {
                 displayReviewButtonContainer(true);
@@ -272,6 +292,11 @@ function initCalendar() {
     const id_next_month = document.getElementById("id_next_month");
     const id_current_month = document.getElementById("id_current_month");
     let currentDate = new Date();
+
+    // Check if we should show next month
+    if (shouldShowNextMonth(currentDate)) {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+    };
 
     function updateCalendar(year, month) {
         let earliestDate, latestDate;
@@ -634,6 +659,22 @@ function addScheduleToCalendar() {
                     const textElement = document.createElement("span");
 
                     textElement.textContent = schedule.name;
+
+                    const srOnlyTextElement = document.createElement("span");
+
+                    const statusInKorean = {
+                        "Pending": "대기 중",
+                        "Approved": "확정됨",
+                        "In Progress": "사용 중",
+                        "In Progress After End Datetime": "종료 지연됨",
+                        "Completed": "종료됨",
+                        "Canceled": "취소됨",
+                        "Rejected": "반려됨"
+                    };
+
+                    srOnlyTextElement.textContent = `${schedule.start_datetime}, ${statusInKorean[statusKey]}, `;
+                    srOnlyTextElement.className = "sr-only";
+                    textElement.prepend(srOnlyTextElement);
 
                     if (isOneDay) {
                         textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";

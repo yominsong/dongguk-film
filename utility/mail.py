@@ -96,7 +96,7 @@ def send_mail(data):
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
                 "button": {
-                    "text": "내 시설예약 보기",
+                    "text": "내 예약내역 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },
@@ -118,7 +118,7 @@ def send_mail(data):
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
                 "button": {
-                    "text": "내 시설예약 보기",
+                    "text": "내 예약내역 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },
@@ -140,7 +140,7 @@ def send_mail(data):
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
                 "button": {
-                    "text": "내 시설예약 보기",
+                    "text": "내 예약내역 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },
@@ -162,7 +162,7 @@ def send_mail(data):
                 "highlighted": name_of_subject_or_project,
                 "conclusion": "아래 버튼을 눌러 세부 사항을 확인해보세요.",
                 "button": {
-                    "text": "내 시설예약 보기",
+                    "text": "내 예약내역 보기",
                     "url": f"https://dongguk.film/account",
                 },
             },

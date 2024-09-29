@@ -156,7 +156,7 @@ function updateForm(action, datasetObj = null) {
         id_modal_facility.hidden = false;
 
         class_headings.forEach(heading => {
-            heading.innerText = "시설예약 상세 보기";
+            heading.innerText = "예약내역 상세 보기";
         });
 
         class_keywords.forEach(keyword => {
@@ -199,7 +199,7 @@ function updateForm(action, datasetObj = null) {
         } else if (data.status === "In Progress" && data.isAfterEndDatetime === "true") {
             badgeColor = "text-red-700 bg-red-50 ring-red-600/10";
             status = "종료 지연됨";
-            statusDescr = "시설 사용 종료가 늦춰지고 있어요.";
+            statusDescr = "시설 사용 종료가 늦어지고 있어요.";
         } else if (data.status === "Completed") {
             badgeColor = "text-slate-700 bg-slate-50 ring-slate-600/20";
             status = "종료됨";
@@ -387,7 +387,7 @@ function updateList(data) {
     let targetInKorean;
 
     if (data.target === "facility") {
-        targetInKorean = "시설예약";
+        targetInKorean = "예약내역";
     } else if (data.target === "project") {
         targetInKorean = "프로젝트";
     } else if (data.target === "dflink") {

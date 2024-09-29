@@ -307,7 +307,7 @@ function displayNoti(isVisible, notiType, param = null) {
             notiIcon = checkIcon;
             notiTitle = "기자재 예약 신청이 완료되었어요.";
             notiContent = "예약이 확정되면 문자 메시지와 이메일로 안내해드릴게요.";
-            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('${location.origin}/account/', '_self')">신청 내역 보기<span aria-hidden="true"> →</span></span></div>`;
+            notiAction = `<div class="mt-1"><span role="button" class="rounded-md text-sm font-bold text-flamingo-50 cursor-pointer hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#826F67] focus:ring-white" tabindex="0" onclick="window.open('${location.origin}/account/', '_self')">예약내역 보기<span aria-hidden="true"> →</span></span></div>`;
         }
 
         // project

@@ -2,12 +2,12 @@
 {% load static %}
 {% load tags %}
 {% block meta %}
-    <meta property="og:title" content="시설예약 - 디닷에프 | D-dot-f">
+    <meta property="og:title" content="예약내역 - 디닷에프 | D-dot-f">
     <meta property="og:url" content="{% url 'facility:facility' %}">
     <meta name="robots" content="index,follow">
 {% endblock meta %}
 {% block title %}
-    시설예약 - 디닷에프
+    예약내역 - 디닷에프
 {% endblock title %}
 {% block body %}
     <!-- Hero -->
@@ -34,9 +34,9 @@
                     <div class="absolute inset-0 bg-flamingo-700 mix-blend-multiply"></div>
                 </div>
                 <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
-                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">시설예약</h1>
+                    <h1 class="text-center text-white text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">예약내역</h1>
                     <p class="mt-4 sm:mt-6 max-w-lg mx-auto text-center text-base sm:text-lg lg:text-xl text-flamingo-100 sm:max-w-3xl">
-                        기자재, 공간, 소모품 등 시설예약
+                        기자재, 공간, 소모품 등 예약내역
                     </p>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                     </button>
                     <button type="button"
                             id="id_current_month"
-                            class="hidden text-lg font-medium leading-6 h-6 rounded-md text-gray-500 hover:text-gray-900 focus:relative focus:text-gray-900 focus:df-focus-ring-offset-gray md:block">
+                            class="text-lg font-medium leading-6 h-6 rounded-md text-gray-500 hover:text-gray-900 focus:relative focus:text-gray-900 focus:df-focus-ring-offset-gray">
                         오늘
                     </button>
                     <button type="button"
