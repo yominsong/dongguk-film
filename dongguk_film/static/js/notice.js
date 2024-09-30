@@ -816,7 +816,7 @@ function requestOcrNotice() {
     request.headers = null;
     displayButtonMsg(true, id_create_or_update, "descr", "잠시만 기다려주세요.");
     displayButtonMsg(false, id_create_or_update, "error");
-    displayNoti(true, "WORK_IN_PROGRESS", "텍스트 추출");
+    displayNoti(true, "WORK_IN_PROGRESS", "이미지 속 텍스트를 추출하고 있어요.");
     freezeForm(true);
     freezeExtractionButton(true);
     id_editor.enableReadOnlyMode("id_content");

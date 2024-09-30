@@ -354,7 +354,7 @@ function initCalendar() {
             };
         };
 
-        displayNoti(true, "WORK_IN_PROGRESS", "불러오기");
+        displayNoti(true, "WORK_IN_PROGRESS", "예약내역을 불러오고 있어요.");
 
         const data = {
             earliestDate: formatDate(earliestDate),

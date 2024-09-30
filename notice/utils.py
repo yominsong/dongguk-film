@@ -331,7 +331,7 @@ def extract_text_from_img(type, img_src):
                     <h3 style="text-align:center;"><span style="color:hsl(0, 0%, 100%);"><span class="s1">⚠️</span><span class="s2"> </span>유의<span class="s2"> </span>사항</span></h3>
                 </td></tr>
                 <tr><td>
-                    <p class="p1"><span style="color:hsl(0, 0%, 30%);"><strong>다음은 디닷에프가 이미지에서 텍스트를 추출하고 재구성한 결과이며, 일부 내용이 부정확할 수 있습니다.</strong></span></p>
+                    <p class="p1"><span style="color:hsl(0, 0%, 30%);"><strong>다음은 디닷에프가 이미지 속 텍스트를 추출하고 재구성한 결과이며, 일부 내용이 부정확할 수 있습니다.</strong></span></p>
                     <p class="p1"><span style="color:hsl(0, 0%, 30%);"><strong>디닷에프는 작업 결과의 정확성을 보장하지 않으며, 이에 대한 책임을 지지 않습니다.</strong></span></p>
                     <p class="p2"><span style="color:hsl(0, 0%, 30%);"><strong>표 내용, 목록 순서, 들여쓰기 위치, 화살표 방향, 링크 URL 등이 올바른지 작성자의 검토가 필요합니다.</strong></span></span></p>
                 </td></tr>

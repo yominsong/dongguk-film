@@ -199,7 +199,7 @@ function displayNoti(isVisible, notiType, param = null) {
         if (notiType === "WORK_IN_PROGRESS") {
             notiIcon = spinnerIcon;
             notiTitle = "잠시만 기다려주세요.";
-            notiContent = `${param} 작업이 완료될 때까지 잠시 기다려주세요.`;
+            notiContent = `${param}`;
         }
 
         else if (notiType === "NO_PERMISSION") {
