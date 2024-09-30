@@ -913,16 +913,7 @@ function requestUpdateStatusToApproved() {
     request.data = { id: "update_status_to_approved", recordId: id_record_id.value };
     request.async = true;
     request.headers = null;
-    makeAjaxCall(request);
-    request = {};
-}
-
-function requestUpdateStatusToRejected() {
-    request.url = `${location.origin}/facility/utils/facility/`;
-    request.type = "POST";
-    request.data = { id: "update_status_to_rejected", recordId: id_record_id.value };
-    request.async = true;
-    request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -933,6 +924,7 @@ function requestUpdateStatusToInProgress() {
     request.data = { id: "update_status_to_in_progress", recordId: id_record_id.value };
     request.async = true;
     request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }
@@ -943,6 +935,18 @@ function requestUpdateStatusToCompleted() {
     request.data = { id: "update_status_to_completed", recordId: id_record_id.value };
     request.async = true;
     request.headers = null;
+    freezeForm(true);
+    makeAjaxCall(request);
+    request = {};
+}
+
+function requestUpdateStatusToRejected() {
+    request.url = `${location.origin}/facility/utils/facility/`;
+    request.type = "POST";
+    request.data = { id: "update_status_to_rejected", recordId: id_record_id.value };
+    request.async = true;
+    request.headers = null;
+    freezeForm(true);
     makeAjaxCall(request);
     request = {};
 }

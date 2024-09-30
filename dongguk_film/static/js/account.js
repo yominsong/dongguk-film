@@ -730,10 +730,10 @@ function requestDeleteUser() {
     request = {};
 }
 
-function requestCancelRequest() {
-    request.url = `${location.origin}/equipment/utils/equipment/`;
+function requestUpdateStatusToCanceled() {
+    request.url = `${location.origin}/facility/utils/facility/`;
     request.type = "POST";
-    request.data = { id: "cancel_request", recordId: id_record_id.value };
+    request.data = { id: "update_status_to_canceled", recordId: id_record_id.value };
     request.async = true;
     request.headers = null;
     freezeForm(true);
@@ -839,7 +839,7 @@ function initRequest() {
                             const id_cancel_or_delete_spin = code(id_cancel_or_delete, "_spin");
 
                             clearTimeout(doubleCheckTimer);
-                            requestCancelRequest();
+                            requestUpdateStatusToCanceled();
                             displayButtonMsg(true, id_cancel_or_delete, "descr", "잠시만 기다려주세요.");
                             id_cancel_or_delete_spin.classList.remove("hidden");
                             isDoubleChecked = false;

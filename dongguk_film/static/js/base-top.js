@@ -509,16 +509,20 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_approve, "descr", response.msg);
             displayButtonMsg(false, id_approve, "error");
             location.href = location.href.replace("#id_main_content", "").replace("#", "");
-        };
-    }
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
 
-    // requestUpdateStatusToRejected()
-    else if (response.id === "update_status_to_rejected") {
-        if (response.status === "DONE") {
-            displayButtonMsg(true, id_reject, "descr", response.msg);
-            displayButtonMsg(false, id_reject, "error");
-            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_approve, "descr");
+            displayButtonMsg(true, id_approve, "error", response.msg);
         };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     }
 
     // requestUpdateStatusToInProgress()
@@ -527,7 +531,20 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_in_progress, "descr", response.msg);
             displayButtonMsg(false, id_in_progress, "error");
             location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_in_progress, "descr");
+            displayButtonMsg(true, id_in_progress, "error", response.msg);
         };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     }
 
     // requestUpdateStatusToCompleted()
@@ -536,7 +553,64 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_complete, "descr", response.msg);
             displayButtonMsg(false, id_complete, "error");
             location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_complete, "descr");
+            displayButtonMsg(true, id_complete, "error", response.msg);
         };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
+    // requestUpdateStatusToCanceled()
+    else if (response.id === "update_status_to_canceled") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_cancel_or_delete, "descr", response.msg);
+            displayButtonMsg(false, id_cancel_or_delete, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_cancel_or_delete, "descr");
+            displayButtonMsg(true, id_cancel_or_delete, "error", response.msg);
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
+    }
+
+    // requestUpdateStatusToRejected()
+    else if (response.id === "update_status_to_rejected") {
+        if (response.status === "DONE") {
+            displayButtonMsg(true, id_reject, "descr", response.msg);
+            displayButtonMsg(false, id_reject, "error");
+            location.href = location.href.replace("#id_main_content", "").replace("#", "");
+        } else if (response.status === "FAIL") {
+            freezeForm(false);
+
+            buttons.forEach((button) => {
+                button.disabled = false;
+            });
+
+            displayButtonMsg(false, id_reject, "descr");
+            displayButtonMsg(true, id_reject, "error", response.msg);
+        };
+
+        spins.forEach((spin) => {
+            spin.classList.add("hidden");
+        });
     }
 
     // requestFindNonWorkingDay()
@@ -636,28 +710,6 @@ function handleAjaxCallback(response) {
                 spin.classList.add("hidden");
             });
         };
-    }
-
-    else if (response.id === "cancel_request") {
-        if (response.status === "DONE") {
-            displayButtonMsg(true, id_cancel_or_delete, "descr", response.msg);
-            displayButtonMsg(false, id_cancel_or_delete, "error");
-            location.href = location.href.replace("#id_main_content", "").replace("#", "");
-        } else if (response.status === "FAIL") {
-            freezeFileForm(false);
-            freezeForm(false);
-
-            buttons.forEach((button) => {
-                button.disabled = false;
-            });
-
-            displayButtonMsg(false, id_cancel_or_delete, "descr");
-            displayButtonMsg(true, id_cancel_or_delete, "error", response.msg);
-        };
-
-        spins.forEach((spin) => {
-            spin.classList.add("hidden");
-        });
     }
 
     // requestFindInstructor()
