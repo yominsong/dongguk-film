@@ -2374,6 +2374,12 @@ function initRequest() {
 
         if (id_modal === null) return;
 
+        if (id_detail !== null) {
+            const id_main_content = document.getElementById("id_main_content");
+
+            smoothScrollToElement(id_main_content, 13);
+        };
+
         class_firsts = document.querySelectorAll(".class-first");
         initValidation(class_firsts, id_filter_or_checkout);
 

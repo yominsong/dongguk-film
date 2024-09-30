@@ -225,7 +225,7 @@ function updateForm(action, datasetObj = null) {
         displayReviewButtonContainer(false);
 
         class_headings.forEach(heading => {
-            heading.innerText = `예약내역 ${default_keyword}`;
+            heading.innerText = defaultHeadingText;
         });
     }
 
