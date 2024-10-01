@@ -34,7 +34,8 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            tabindex="0">
                         <span class="sr-only">공지사항 <span class="class-keyword">작성하기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -83,7 +84,8 @@
                                                    value="서비스"
                                                    class="sr-only class-first class-radio class-category"
                                                    aria-labelledby="id_category_serv_label"
-                                                   aria-describedby="id_category_serv_descr">
+                                                   aria-describedby="id_category_serv_descr"
+                                                   tabindex="0">
                                             <div class="flex flex-1">
                                                 <span class="flex flex-col">
                                                     <span id="id_category_serv_label"
@@ -109,7 +111,8 @@
                                                    value="학과"
                                                    class="sr-only class-first class-radio class-category"
                                                    aria-labelledby="id_category_dept_label"
-                                                   aria-describedby="id_category_dept_descr">
+                                                   aria-describedby="id_category_dept_descr"
+                                                   tabindex="0">
                                             <div class="flex flex-1">
                                                 <span class="flex flex-col">
                                                     <span id="id_category_dept_label"
@@ -236,7 +239,8 @@
                                 </div>
                                 <button type="button"
                                         id="id_copy_url"
-                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset">
+                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset"
+                                        tabindex="0">
                                     <svg id="id_copy_url_ready"
                                          fill="none"
                                          viewBox="0 0 24 24"
@@ -263,7 +267,8 @@
                                 class="mt-5 sm:mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_kakaotalk"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#FEE500] rounded-l-md text-sm font-medium text-black group-hover:bg-[#F0D800]">
                                             <svg class="h-5"
                                                  fill="currentColor"
@@ -284,7 +289,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_x"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-black rounded-l-md text-sm font-medium text-white">
                                             <svg class="h-5"
                                                  fill="currentColor"
@@ -302,7 +308,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_facebook"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#1877F2] rounded-l-md text-sm font-medium text-white group-hover:bg-[#1567d3]">
                                             <svg class="h-5"
                                                  x="0px"
@@ -330,7 +337,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_line"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#06C755] rounded-l-md text-sm font-medium text-white group-hover:bg-[#05b34d]">
                                             <svg class="h-5"
                                                  x="0px"
@@ -369,7 +377,8 @@
                     <div class="sm:flex sm:flex-row-reverse">
                         <button type="button"
                                 id="id_create_or_update"
-                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                tabindex="0">
                             <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
@@ -383,7 +392,8 @@
                         </button>
                         <button type="button"
                                 id="id_delete"
-                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed"
+                                tabindex="0">
                             <svg class="animate-spin mr-2 h-5 w-5 hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"

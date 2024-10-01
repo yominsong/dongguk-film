@@ -587,6 +587,8 @@ function updateForm(action, datasetObj = null) {
         id_create_or_update.classList.replace("inline-flex", "hidden");
         id_delete.classList.replace("inline-flex", "hidden");
     };
+
+    initTabIndex(id_modal_container);
 }
 
 function initModal() {

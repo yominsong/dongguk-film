@@ -100,7 +100,8 @@
                                 aria-haspopup="true"
                                 x-bind:aria-expanded="open.toString()"
                                 @keydown.arrow-up.prevent="onArrowUp()"
-                                @keydown.arrow-down.prevent="onArrowDown()">
+                                @keydown.arrow-down.prevent="onArrowDown()"
+                                tabindex="0">
                             <span class="sr-only">옵션 열기</span>
                             <svg class="h-5 w-5"
                                 viewBox="0 0 20 20"
@@ -176,7 +177,8 @@
                         <li class="class-download class-link-list-item relative flex items-center justify-between pl-4 py-4 pr-5 text-sm leading-6 sm:px-6 hover:bg-gray-50">
                             <a href="https://{{ AWS_S3_BUCKET_NAME }}.s3.{{ AWS_REGION_NAME }}.amazonaws.com/{{ file.key }}"
                                class="absolute inset-0 cursor-pointer focus:df-focus-ring-inset"
-                               title="{{ file.name }} 내려받기"></a>
+                               title="{{ file.name }} 내려받기"
+                               tabindex="0"></a>
                             <div class="flex w-0 flex-1 items-center">
                                 <svg class="h-5 w-5 flex-shrink-0 text-gray-400"
                                      viewBox="0 0 20 20"
@@ -217,13 +219,15 @@
                             data-file="{{ notice.file.string }}"
                             data-listed-date="{{ notice.listed_date }}"
                             type="button"
-                            class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                            class="class-adjust z-20 inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-gray disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                            tabindex="0">
                         수정하기
                     </button>
                 {% endif %}
                 <button type="button"
                         id="id_back_to_list"
-                        class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed">
+                        class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        tabindex="0">
                     목록 보기
                 </button>
             </div>
