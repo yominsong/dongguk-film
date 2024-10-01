@@ -574,7 +574,8 @@ function initFoundInstructorList(response) {
                     value="${data_instructor.id}"
                     class="sr-only class-first class-radio class-instuctor"
                     aria-labelledby="id_instructor_${data_instructor.id}_label"
-                    aria-describedby="id_instructor_${data_instructor.id}_descr">
+                    aria-describedby="id_instructor_${data_instructor.id}_descr"
+                    tabindex="0">
             <div class="flex flex-1">
                 <span class="flex flex-col">
                     <span id="id_instructor_${data_instructor.id}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${data_instructor.name}</span>
@@ -920,6 +921,8 @@ function updateForm(action, datasetObj = null) {
         isItDoubleChecked = false;
         clearTimeout(doubleCheckTimer);
     };
+
+    initTabIndex(id_modal);
 }
 
 function initModal() {

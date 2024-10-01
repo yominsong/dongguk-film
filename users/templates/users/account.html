@@ -58,7 +58,8 @@
                 <h2 class="text-lg font-medium leading-6">내 회원정보</h2>
             </div>
             <button class="class-adjust-info cursor-pointer ml-2 flex-shrink-0 rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray"
-                    aria-label="내 회원정보 수정하기">
+                    aria-label="내 회원정보 수정하기"
+                    tabindex="0">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      viewBox="0 0 24 24"
                      fill="currentColor"
@@ -76,9 +77,10 @@
                 <dd class="mt-1 text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 truncate">
                     <span id="id_user_student_id"
                           data-original="{{ user.username }}"
-                          aria-label="학번">{{ masked_student_id }}</span>, <span id="id_user_name"
-       data-original="{{ user.metadata.name }}"
-       aria-label="성명">{{ masked_name }}</span>
+                          aria-label="학번">{{ masked_student_id }}</span>,
+                    <span id="id_user_name"
+                          data-original="{{ user.metadata.name }}"
+                          aria-label="성명">{{ masked_name }}</span>
                 </dd>
             </div>
             <div class="overflow-hidden rounded-md bg-white px-4 py-5 shadow sm:p-6 focus:df-focus-ring-inset"
@@ -109,7 +111,8 @@
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'facility:facility' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -124,6 +127,7 @@
                          hidden>
                         <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -134,6 +138,7 @@
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -157,7 +162,8 @@
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'project:project' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -172,6 +178,7 @@
                          hidden>
                         <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -182,6 +189,7 @@
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -205,7 +213,8 @@
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -222,6 +231,7 @@
                          hidden>
                         <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -233,6 +243,7 @@
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -256,7 +267,8 @@
                 <div class="flex items-center justify-between">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'notice:notice' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -271,6 +283,7 @@
                          class="hidden items-center justify-end gap-6">
                         <button class="class-prev rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
@@ -282,6 +295,7 @@
                         </button>
                         <button class="class-next rounded-md text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:df-focus-ring-offset-gray disabled:hover:text-gray-400 disabled:cursor-not-allowed"
                                 type="button"
+                                tabindex="0"
                                 disabled>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"

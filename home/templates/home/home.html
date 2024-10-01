@@ -114,7 +114,8 @@
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'facility:facility' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -134,7 +135,8 @@
                                 <p class="text-sm font-semibold leading-6 text-gray-900">
                                     <a href="https://docs.google.com/document/d/{{ facility_request.public_id }}"
                                        target="_blank"
-                                       class="rounded-md focus:df-focus-ring-offset-gray">
+                                       class="rounded-md focus:df-focus-ring-offset-gray"
+                                       tabindex="0">
                                         <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                         {{ facility_request.name }}
                                     </a>
@@ -187,7 +189,8 @@
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'project:project' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -260,7 +263,8 @@
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'dflink:dflink' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -282,7 +286,8 @@
                                 <p class="text-sm font-semibold leading-6 text-gray-900">
                                     <a href="https://dgufilm.link/{{ dflink.slug }}"
                                        target="_blank"
-                                       class="rounded-md focus:df-focus-ring-offset-gray">
+                                       class="rounded-md focus:df-focus-ring-offset-gray"
+                                       tabindex="0">
                                         <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                         {{ dflink.title }}
                                     </a>
@@ -332,7 +337,8 @@
                 <div class="flex">
                     <a class="group flex gap-2 text-gray-600 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-gray"
                        href="{% url 'notice:notice' %}"
-                       target="_self">
+                       target="_self"
+                       tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="currentColor"
@@ -352,7 +358,8 @@
                                     <!-- notice.title -->
                                     <p class="text-sm font-semibold leading-6 text-gray-900">
                                         <a href="{% url 'notice:notice_detail' notice.notice_id %}"
-                                           class="rounded-md focus:df-focus-ring-offset-gray">
+                                           class="rounded-md focus:df-focus-ring-offset-gray"
+                                           tabindex="0">
                                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                             {{ notice.title }}
                                         </a>

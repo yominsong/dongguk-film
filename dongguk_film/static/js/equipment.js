@@ -115,7 +115,7 @@ function handleFilterAndCartScroll() {
 
     function calculateInitialOffset() {
         const top3InPixels = 1.5 * 16;
-        
+
         initialOffset = navbar.offsetHeight + id_hero.offsetHeight + top3InPixels;
     }
 
@@ -139,7 +139,7 @@ function handleFilterAndCartScroll() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    
+
     window.addEventListener("resize", () => {
         calculateInitialOffset();
         handleScroll();
@@ -474,6 +474,7 @@ function executeWhenPurposeIsSelected(selectedPurpose = null) {
     initCalendar();
     class_firsts = document.querySelectorAll(".class-first");
     initValidation(class_firsts, id_filter_or_checkout);
+    initTabIndex(id_modal_base);
 }
 
 function executeWhenPurposeHasChanged() {
@@ -667,6 +668,8 @@ function initCalendar() {
             const isFoundationDayDate = isFoundationDay(date);
             const dayElement = document.createElement("div");
             const buttonElement = document.createElement("button");
+            const dayOfTheWeek = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"][date.getDay()];
+            const fullDateString = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${dayOfTheWeek}`;
             let buttonClasses = "mx-auto flex h-8 w-8 items-center justify-center ";
 
             if (isSameStartEnd) {
@@ -712,7 +715,6 @@ function initCalendar() {
             };
 
             buttonClasses += "focus:df-focus-ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed";
-
             dayElement.className = "py-2";
 
             const dayOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][date.getDay()];
@@ -720,6 +722,7 @@ function initCalendar() {
             buttonElement.type = "button";
             buttonElement.className = buttonClasses;
             buttonElement.innerHTML = `<time datetime="${formatDate(date)}" data-day-of-the-week="${dayOfWeek}">${date.getDate()}</time>`;
+            buttonElement.ariaLabel = fullDateString;
             buttonElement.disabled = !isInRange || isFoundationDayDate;
 
             if (isInRange && !isFoundationDayDate) {
@@ -793,9 +796,61 @@ function initCalendar() {
             };
         };
 
-        setTimeout(() => { id_filter_or_checkout.scrollIntoView({ behavior: "smooth" }) }, 100);
+        setTimeout(() => {
+            const timeElement = document.querySelector(`time[datetime="${formatDate(date)}"]`);
+
+            if (timeElement === null || timeElement === undefined) return;
+
+            const dateButton = timeElement.parentElement;
+
+            if (dateButton !== null && dateButton !== undefined) {
+                if (dateButton.disabled === false) {
+                    dateButton.focus();
+                } else {
+                    const allDateButtons = document.querySelectorAll('#id_period_calendar button');
+                    const buttonArray = Array.from(allDateButtons);
+                    const currentIndex = buttonArray.indexOf(dateButton);
+                    let nearestEnabledButton = null;
+                    let leftIndex = currentIndex - 1;
+                    let rightIndex = currentIndex + 1;
+
+                    while (leftIndex >= 0 || rightIndex < buttonArray.length) {
+                        if (leftIndex >= 0 && !buttonArray[leftIndex].disabled) {
+                            nearestEnabledButton = buttonArray[leftIndex];
+                            break;
+                        };
+
+                        if (rightIndex < buttonArray.length && !buttonArray[rightIndex].disabled) {
+                            nearestEnabledButton = buttonArray[rightIndex];
+                            break;
+                        };
+
+                        leftIndex--;
+                        rightIndex++;
+                    };
+
+                    if (nearestEnabledButton !== null && nearestEnabledButton !== undefined) {
+                        nearestEnabledButton.focus();
+
+                        const a11yMsg = document.createElement("span");
+
+                        a11yMsg.setAttribute("aria-live", "polite");
+                        a11yMsg.className = "sr-only";
+                        a11yMsg.textContent = "선택 가능한 가장 가까운 날짜로 포커스가 이동했습니다.";
+                        nearestEnabledButton.appendChild(a11yMsg);
+                        setTimeout(() => nearestEnabledButton.removeChild(a11yMsg), 3000);
+                    };
+                };
+            };
+        }, 0);
+
+        setTimeout(() => {
+            id_filter_or_checkout.scrollIntoView({ behavior: "smooth" });
+        }, 20);
+
         updateCalendar();
         performMicroScroll();
+        initTabIndex(id_period_calendar);
     }
 
     id_period_prev_month.addEventListener("click", () => {
@@ -914,7 +969,8 @@ function initFoundProjectList(response = null) {
                     value="${data_project.recordId}"
                     class="sr-only class-second class-radio class-project"
                     aria-labelledby="id_project_${data_project.recordId}_label"
-                    aria-describedby="id_project_${data_project.recordId}_descr">
+                    aria-describedby="id_project_${data_project.recordId}_descr"
+                    tabindex="0">
             <div class="flex flex-1">
                 <span class="flex flex-col">
                     <span id="id_project_${data_project.recordId}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_project.name)}</span>
@@ -1031,7 +1087,8 @@ function initFoundInstructorList(foundInstructors) {
                     type="radio"
                     class="sr-only class-second class-radio class-instructor"
                     aria-labelledby="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_label"
-                    aria-describedby="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_descr">
+                    aria-describedby="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_descr"
+                    tabindex="0">
             <div class="flex flex-1">
                 <span class="flex flex-col">
                     <span id="id_instructor_${data_instructor.id.replace(/\*/g, "-")}_label" class="block whitespace-pre-line text-sm font-medium text-gray-900">${escapeHtml(data_instructor.name)}</span>
@@ -1180,7 +1237,8 @@ function initFoundHourList(response) {
                             data-record-id="${record_id}"
                             class="sr-only class-second class-radio ${targetClass}"
                             aria-labelledby="${targetId.id}_${timeWithoutColon}_label"
-                            ${currentTime === timeWithoutColon ? 'checked' : ''}>
+                            ${currentTime === timeWithoutColon ? 'checked' : ''}
+                            tabindex="0">
                     <span class="flex flex-1">
                         <span id="${targetId.id}_${timeWithoutColon}_label"
                                 class="block whitespace-pre-line text-sm font-medium text-gray-900">${time}</span>
@@ -1535,6 +1593,7 @@ function freezeSignatureCanvas(bool) {
 function initForm() {
     const id_purpose_placeholder = code(id_purpose, "_placeholder");
     const firstPurpose = id_purpose_placeholder.nextElementSibling;
+    let currentCategory = code("id_category_", urlParams.get("categoryPriority"));
 
     id_category.value = null;
 
@@ -1555,11 +1614,31 @@ function initForm() {
             if (category.id.indexOf("category") !== -1) {
                 id_category.value = category.value;
             };
+
+            currentCategory = category;
+        });
+
+        category.addEventListener("keyup", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                category.click();
+            };
         });
 
         category.addEventListener("focus", () => {
             label.classList.add("df-focus-ring-inset");
             svg.classList.remove("invisible");
+
+            const otherInputs = [...class_categories].filter(i => i !== category);
+
+            otherInputs.forEach(i => {
+                const otherLabel = i.closest("label");
+                const otherSvg = otherLabel.querySelector("svg");
+
+                otherLabel.classList.remove("df-ring-inset-flamingo");
+                otherLabel.classList.add("df-ring-inset-gray");
+                otherSvg.classList.add("invisible");
+            });
         });
 
         category.addEventListener("blur", () => {
@@ -1570,17 +1649,32 @@ function initForm() {
             };
 
             label.classList.remove("df-focus-ring-inset");
+
+            class_categories.forEach(category => {
+                const label = category.closest("label");
+                const svg = label.querySelector("svg");
+
+                if (category.checked || category === currentCategory) {
+                    label.classList.add("df-ring-inset-flamingo");
+                    label.classList.remove("df-ring-inset-gray");
+                    svg.classList.remove("invisible");
+                } else {
+                    label.classList.remove("df-ring-inset-flamingo");
+                    label.classList.add("df-ring-inset-gray");
+                    svg.classList.add("invisible");
+                };
+            });
         });
 
         category.addEventListener("change", () => {
-            const otherInputs = [...class_categories].filter(i => i !== category);
-
             if (category.checked) {
                 label.classList.replace("df-ring-inset-gray", "df-ring-inset-flamingo");
                 svg.classList.remove("invisible");
             } else {
                 svg.classList.add("invisible");
             };
+
+            const otherInputs = [...class_categories].filter(i => i !== category);
 
             otherInputs.forEach(i => {
                 const otherLabel = i.closest("label");
@@ -1591,6 +1685,8 @@ function initForm() {
                     otherSvg.classList.add("invisible");
                 };
             });
+
+            currentCategory = category;
         });
 
         if (!category.checked) {
@@ -1673,8 +1769,18 @@ function updateForm(action, datasetObj = null) {
         });
 
         initForm();
-
         id_filter_or_checkout.classList.replace("hidden", "inline-flex");
+
+        const modalInputs = id_modal_base.querySelectorAll("input");
+        const modalButtons = id_modal_base.querySelectorAll("button");
+
+        modalInputs.forEach(input => {
+            input.tabIndex = 0;
+        });
+
+        modalButtons.forEach(button => {
+            button.tabIndex = 0;
+        });
     }
 
     // Middle action: view_cart
@@ -1867,6 +1973,7 @@ function updateForm(action, datasetObj = null) {
 
     // Last action: all
     resizeWidthOfModalAndForm();
+    initTabIndex(id_modal_base);
 }
 
 function initModal() {

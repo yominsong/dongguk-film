@@ -92,7 +92,8 @@
                 </div>
                 <button type="button"
                         id="id_submit_query"
-                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed">
+                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        tabindex="0">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          fill="none"
                          viewBox="0 0 24 24"
@@ -118,7 +119,8 @@
                         {% for category in page_value %}
                             <a href="#"
                                class="class-detail under-construction rounded-md group focus:df-focus-ring-offset-white-2"
-                               alt="">
+                               alt=""
+                               tabindex="0">
                                 <div class="class-bg aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-50">
                                     <img src="{{ category.thumbnail }}"
                                          width=""
@@ -163,7 +165,8 @@
                     <div class="flex w-0 flex-1">
                         {% if page_value.has_previous %}
                             <a href="?{{ query_string|default_if_none:'' }}page={{ page_value.previous_page_number }}"
-                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-bl-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
+                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-bl-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset"
+                               tabindex="0">
                                 <svg class="h-5 w-5 text-gray-400"
                                      viewBox="0 0 20 20"
                                      fill="currentColor"
@@ -191,17 +194,20 @@
                             {% if num == page_value.number %}
                                 <a href="?{{ query_string|default_if_none:'' }}page={{ num }}"
                                    class="inline-flex items-center border-t-2 border-flamingo-500 px-4 py-4 text-sm font-medium text-flamingo-600 focus:df-focus-ring-inset"
-                                   aria-current="page">{{ num }}</a>
+                                   aria-current="page"
+                                   tabindex="0">{{ num }}</a>
                             {% else %}
                                 <a href="?{{ query_string|default_if_none:'' }}page={{ num }}"
-                                   class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:df-focus-ring-inset">{{ num }}</a>
+                                   class="inline-flex items-center border-t-2 border-transparent px-4 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:df-focus-ring-inset"
+                                   tabindex="0">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>
                     <div class="flex w-0 flex-1 justify-end">
                         {% if page_value.has_next %}
                             <a href="?{{ query_string|default_if_none:'' }}page={{ page_value.next_page_number }}"
-                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-br-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset">
+                               class="inline-flex items-center border-t-2 border-transparent px-4 py-4 rounded-br-md text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 sm:px-6 focus:df-focus-ring-inset"
+                               tabindex="0">
                                 <span class="sr-only">다음 페이지</span>
                                 <svg class="h-5 w-5 text-gray-400"
                                      viewBox="0 0 20 20"

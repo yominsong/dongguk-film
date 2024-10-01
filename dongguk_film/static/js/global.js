@@ -173,6 +173,20 @@ function initSearchBar() {
 
 initSearchBar();
 
+function initTabIndex(targetElement) {
+    if (targetElement === null) return;
+
+    const targetButtonArray = targetElement.querySelectorAll("button");
+    const targetAnchorArray = targetElement.querySelectorAll("a");
+    const targetInputArray = targetElement.querySelectorAll("input");
+
+    [targetButtonArray, targetAnchorArray, targetInputArray].forEach(array => {
+        array.forEach(item => {
+            item.tabIndex = 0;
+        });
+    });
+}
+
 function adjustHrefTarget() {
     if (appName !== "equipment" && appName !== "notice") return;
 

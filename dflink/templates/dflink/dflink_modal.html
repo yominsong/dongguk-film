@@ -32,7 +32,8 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            tabindex="0">
                         <span class="sr-only">동영링크 <span class="class-keyword">만들기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -114,7 +115,8 @@
                                                        value="작품"
                                                        aria-describedby="id_category_work_descr"
                                                        type="radio"
-                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 hover:bg-gray-50 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
+                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 hover:bg-gray-50 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed"
+                                                       tabindex="0">
                                             </div>
                                             <div class="pl-7 text-sm leading-6">
                                                 <label for="id_category_work" class="font-medium text-gray-900">작품 관련</label>
@@ -129,7 +131,8 @@
                                                        value="학과"
                                                        aria-describedby="id_category_dept_descr"
                                                        type="radio"
-                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 hover:bg-gray-50 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed">
+                                                       class="class-first class-radio class-category h-4 w-4 border-gray-300 text-flamingo-500 hover:bg-gray-50 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:cursor-not-allowed"
+                                                       tabindex="0">
                                             </div>
                                             <div class="pl-7 text-sm leading-6">
                                                 <label for="id_category_dept" class="font-medium text-gray-900">학과 관련</label>
@@ -188,7 +191,8 @@
                     <div class="sm:flex sm:flex-row-reverse">
                         <button type="button"
                                 id="id_create_or_update"
-                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                tabindex="0">
                             <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"
@@ -202,7 +206,8 @@
                         </button>
                         <button type="button"
                                 id="id_delete"
-                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                class="mt-3 hidden w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed"
+                                tabindex="0">
                             <svg class="animate-spin mr-2 h-5 w-5 hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"

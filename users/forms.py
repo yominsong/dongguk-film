@@ -40,6 +40,7 @@ class SocialSignupForm(SignupForm):
             attrs={
                 "class": f"{checkbox_input_class} {agree_class} {first_class} {checkbox_input_focus_state_class} {checkbox_input_disabled_state_class}",
                 "required": "",
+                "tabindex": "0",
             }
         ),
     )

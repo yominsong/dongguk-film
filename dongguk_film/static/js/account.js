@@ -288,6 +288,8 @@ function updateForm(action, datasetObj = null) {
 
         displayButtonMsg(false, id_cancel_or_delete, "error");
     };
+
+    initTabIndex(id_modal);
 }
 
 function initModal() {
@@ -359,6 +361,32 @@ function updateList(data) {
             }[tag] || tag)
         );
     }
+
+    const lastClickedPageButton = sessionStorage.getItem(`last_clicked_${data.target}_page_button`);
+
+    if (lastClickedPageButton !== null || lastClickedPageButton !== undefined) {
+        const controlElement = document.getElementById(`id_${data.target}_pagination`);
+        const prev = controlElement.querySelector(".class-prev");
+        const next = controlElement.querySelector(".class-next");
+
+        if (lastClickedPageButton === "prev") {
+            if (!prev.disabled) {
+                prev.focus();
+            } else {
+                next.focus();
+            };
+
+            sessionStorage.removeItem(`last_clicked_${data.target}_page_button`);
+        } else if (lastClickedPageButton === "next") {
+            if (!next.disabled) {
+                next.focus();
+            } else {
+                prev.focus();
+            };
+
+            sessionStorage.removeItem(`last_clicked_${data.target}_page_button`);
+        };
+    };
 
     const list = document.getElementById(`id_${data.target}_list`);
 
@@ -437,7 +465,8 @@ function updateList(data) {
                     <p class="text-sm font-semibold leading-6 text-gray-900">
                         <a href="${item.public_url}"
                             target="_blank"
-                            class="rounded-md focus:df-focus-ring-offset-gray">
+                            class="rounded-md focus:df-focus-ring-offset-gray"
+                            tabindex="0">
                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
                             ${escapeHTML(item.name)}
                         </a>
@@ -544,7 +573,8 @@ function updateList(data) {
                     <p class="text-sm font-semibold leading-6 text-gray-900">
                         <a href="https://dgufilm.link/${item.slug}"
                             target="_blank"
-                            class="rounded-md focus:df-focus-ring-offset-gray">
+                            class="rounded-md focus:df-focus-ring-offset-gray"
+                            tabindex="0">
                             <span class="absolute inset-x-0 -top-px bottom-0"></span>
                             ${item.title}
                         </a>
@@ -610,7 +640,8 @@ function updateList(data) {
                         <!-- notice.title -->
                         <p class="text-sm font-semibold leading-6 text-gray-900">
                             <a href="${location.origin}/notice/${item.notice_id}/"
-                                class="rounded-md focus:df-focus-ring-offset-gray">
+                                class="rounded-md focus:df-focus-ring-offset-gray"
+                                tabindex="0">
                                 <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                 ${item.title}
                             </a>
@@ -670,7 +701,11 @@ function updatePaginationControl(data) {
 
     if (data.has_previous) {
         prev.disabled = false;
-        prev.onclick = () => requestGetPaginatedData(data.target, data.page_number - 1);
+        
+        prev.onclick = () => {
+            requestGetPaginatedData(data.target, data.page_number - 1);
+            sessionStorage.setItem(`last_clicked_${data.target}_page_button`, "prev");
+        };
     } else {
         prev.disabled = true;
         prev.onclick = null;
@@ -678,7 +713,11 @@ function updatePaginationControl(data) {
 
     if (data.has_next) {
         next.disabled = false;
-        next.onclick = () => requestGetPaginatedData(data.target, data.page_number + 1);
+
+        next.onclick = () => {
+            requestGetPaginatedData(data.target, data.page_number + 1);
+            sessionStorage.setItem(`last_clicked_${data.target}_page_button`, "next");
+        };
     } else {
         next.disabled = true;
         next.onclick = null;

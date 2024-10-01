@@ -380,24 +380,41 @@ function handleAjaxCallback(response) {
         if (response.status === "DONE") {
             displayButtonMsg(true, id_create, "descr", response.msg);
             displayButtonMsg(false, id_create, "error");
+
             class_firsts.forEach((input) => {
                 input.type === "checkbox" ? input.disabled = true : input.readOnly = true;
             });
+
             class_seconds.forEach((input) => {
                 input.disabled = false;
             });
+
             id_confirm.disabled = false;
             initValidation(class_seconds, id_confirm);
+            id_email_vcode.focus();
         } else if (response.status === "FAIL") {
             freezeForm(false);
             displayButtonMsg(true, id_create, "error", response.msg);
             displayButtonMsg(false, id_create, "descr");
             id_create.disabled = false;
             id_confirm.disabled = true;
+            id_create.focus();
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });
+
+        // Initialize tab index
+        const id_signup = document.getElementById("id_signup");
+        const id_go_home = document.getElementById("id_go_home");
+        const id_go_back = document.getElementById("id_go_back");
+
+        id_go_home.removeEventListener("click", preventDefaultHandler);
+        id_go_back.removeEventListener("click", preventDefaultHandler);
+        id_go_home.className = "rounded-md mx-auto focus:df-focus-ring-offset-gray";
+        id_go_back.className = "rounded-md text-gray-400 hover:text-gray-800 focus:df-focus-ring-offset-white";
+        initTabIndex(id_signup);
     }
 
     // requestConfirmVcodeForSNP()
@@ -406,17 +423,27 @@ function handleAjaxCallback(response) {
             displayButtonMsg(true, id_confirm, "descr", response.msg);
             displayButtonMsg(false, id_confirm, "error");
             inputs = document.querySelectorAll("input");
+
             inputs.forEach((input) => {
                 input.disabled = false;
                 input.readOnly = true;
             });
+            
             id_confirm.disabled = true;
             document.querySelector("form").submit();
         } else if (response.status === "FAIL") {
             freezeForm(false);
             displayButtonMsg(true, id_confirm, "error", response.msg);
+            id_create.disabled = true;
             id_confirm.disabled = false;
+            id_confirm.focus();
+            
+            // Initialize tab index
+            const id_signup = document.getElementById("id_signup");
+
+            initTabIndex(id_signup);
         };
+
         spins.forEach((spin) => {
             spin.classList.add("hidden");
         });

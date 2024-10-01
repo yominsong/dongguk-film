@@ -32,7 +32,8 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            tabindex="0">
                         <span class="sr-only"><span class="class-heading">예약내역 상세 보기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -59,7 +60,8 @@
                                 <a id="id_public_url_from_request"
                                    href="#"
                                    target="_blank"
-                                   class="absolute inset-x-0 -top-px bottom-0 cursor-pointer focus:df-focus-ring-inset"></a>
+                                   class="absolute inset-x-0 -top-px bottom-0 cursor-pointer focus:df-focus-ring-inset"
+                                   tabindex="0"></a>
                                 <div class="flex min-w-0 items-center">
                                     <div class="min-w-0 flex-auto">
                                         <p class="font-semibold leading-6 text-gray-900">
@@ -167,7 +169,8 @@
                         <div class="sm:flex sm:flex-row-reverse">
                             <button type="button"
                                     id="id_approve"
-                                    class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                    class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    tabindex="0">
                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -181,7 +184,8 @@
                             </button>
                             <button type="button"
                                     id="id_reject"
-                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed"
+                                    tabindex="0">
                                 <svg class="animate-spin mr-2 h-5 w-5 hidden"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -195,7 +199,8 @@
                             </button>
                             <button type="button"
                                     id="id_in_progress"
-                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    tabindex="0">
                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -209,7 +214,8 @@
                             </button>
                             <button type="button"
                                     id="id_complete"
-                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                    class="hidden w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    tabindex="0">
                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"

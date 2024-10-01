@@ -33,7 +33,8 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            tabindex="0">
                         <span class="sr-only">프로젝트 <span class="class-keyword">등록하기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"

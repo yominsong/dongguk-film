@@ -38,6 +38,17 @@ function displaySocialAccount() {
 
 displaySocialAccount();
 
+function addEventListenerToCheckbox() {
+    id_agree.addEventListener("keyup", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            id_agree.click();
+        };
+    });
+}
+
+addEventListenerToCheckbox();
+
 //
 // Main functions
 //

@@ -150,7 +150,8 @@
                                 aria-haspopup="true"
                                 x-bind:aria-expanded="open.toString()"
                                 @keydown.arrow-up.prevent="onArrowUp()"
-                                @keydown.arrow-down.prevent="onArrowDown()">
+                                @keydown.arrow-down.prevent="onArrowDown()"
+                                tabindex="0"    >
                             <span class="sr-only">옵션 열기</span>
                             <svg class="h-5 w-5"
                                  viewBox="0 0 20 20"
@@ -228,7 +229,8 @@
                                         aria-controls="id_detail_purpose_content"
                                         @click="open = !open"
                                         aria-expanded="false"
-                                        x-bind:aria-expanded="open.toString()">
+                                        x-bind:aria-expanded="open.toString()"
+                                        tabindex="0">
                                     <span class="text-sm font-medium text-gray-900"
                                           x-state:on="Open"
                                           x-state:off="Closed"
@@ -386,7 +388,8 @@
                                         aria-controls="id_detail_limit_content"
                                         @click="open = !open"
                                         aria-expanded="false"
-                                        x-bind:aria-expanded="open.toString()">
+                                        x-bind:aria-expanded="open.toString()"
+                                        tabindex="0">
                                     <span class="text-sm font-medium text-gray-900"
                                           x-state:on="Open"
                                           x-state:off="Closed"
@@ -442,7 +445,8 @@
                                         aria-controls="id_detail_precaution_content"
                                         @click="open = !open"
                                         aria-expanded="false"
-                                        x-bind:aria-expanded="open.toString()">
+                                        x-bind:aria-expanded="open.toString()"
+                                        tabindex="0">
                                     <span class="text-gray-900 text-sm font-medium"
                                           x-state:on="Open"
                                           x-state:off="Closed"
@@ -531,13 +535,15 @@
                             </div>
                             <button id="id_add_to_cart"
                                     class="flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    tabindex="0"
                                     disabled>장바구니 담기</button>
                         {% else %}
                             <div class="mr-4">
                                 <div class="isolate inline-flex rounded-md shadow-sm h-11">
                                     <button id="id_decrease_quantity"
                                             type="button"
-                                            class="relative -mr-px inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100">
+                                            class="relative -mr-px inline-flex items-center rounded-l-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
+                                            tabindex="0">
                                         <span class="sr-only">수량 1개 줄이기</span>
                                         <svg class="h-5 w-5"
                                              viewBox="0 0 20 20"
@@ -557,7 +563,8 @@
                                     </div>
                                     <button id="id_increase_quantity"
                                             type="button"
-                                            class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100">
+                                            class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-2 py-2 text-gray-400 df-ring-inset-gray focus:df-focus-ring-inset focus:z-10 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
+                                            tabindex="0">
                                         <span class="sr-only">수량 1개 늘리기</span>
                                         <svg class="h-5 w-5"
                                              viewBox="0 0 20 20"
@@ -569,7 +576,8 @@
                                 </div>
                             </div>
                             <button id="id_add_to_cart"
-                                    class="class-add-to-cart flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                    class="class-add-to-cart flex w-full items-center justify-center rounded-md bg-flamingo-600 px-3 py-3 text-sm font-semibold shadow-sm text-white hover:bg-flamingo-700 focus:df-focus-ring-offset-white disabled:opacity-75 disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                    tabindex="0">
                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                      xmlns="http://www.w3.org/2000/svg"
                                      fill="none"
@@ -590,7 +598,8 @@
             <div class="sm:flex sm:flex-row-reverse">
                 <button type="button"
                         id="id_back_to_list"
-                        class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed">
+                        class="z-20 mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm sm:mt-0 sm:w-auto hover:bg-gray-50 focus:df-focus-ring-offset-gray disabled:bg-gray-50 disabled:cursor-not-allowed"
+                        tabindex="0">
                     목록 보기
                 </button>
             </div>

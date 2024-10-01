@@ -4,7 +4,8 @@
         <p class="text-sm leading-6 text-white">
             <a id="id_skip_navbar"
                class="rounded-md focus:df-focus-ring-offset-flamingo-2"
-               href="#id_main_content">
+               href="#id_main_content"
+               tabindex="0">
                 <strong class="font-semibold">주요 콘텐츠로 이동</strong>
             </a>
         </p>
@@ -18,7 +19,8 @@
         <div class="relative z-20">
             <div class="mx-auto flex max-w-7xl items-center justify-between py-5 px-6 sm:py-4 md:justify-start md:space-x-10 lg:px-8">
                 <a href="{% url 'home:home' %}"
-                   class="rounded-md focus:df-focus-ring-offset-white">
+                   class="rounded-md focus:df-focus-ring-offset-white"
+                   tabindex="0">
                     <span class="sr-only">홈페이지로 이동</span>
                     <svg class="h-8 w-auto sm:h-9"
                          xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +41,8 @@
                             @click="toggle"
                             @mousedown="if (open) $event.preventDefault()"
                             aria-expanded="false"
-                            :aria-expanded="open.toString()">
+                            :aria-expanded="open.toString()"
+                            tabindex="0">
                         <span class="sr-only">메뉴 열기</span>
                         <svg class="h-6 w-6"
                              xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +68,8 @@
                                     @click="toggle"
                                     @mousedown="if (open) $event.preventDefault()"
                                     aria-expanded="false"
-                                    :aria-expanded="open.toString()">
+                                    :aria-expanded="open.toString()"
+                                    tabindex="0">
                                 <span>시설예약</span>
                                 <svg x-state:on="Item active"
                                      x-state:off="Item inactive"
@@ -92,7 +96,8 @@
                                  @click.away="open = false">
                                 <div class="mx-auto grid max-w-7xl gap-y-6 px-4 py-6 sm:grid-cols-2 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-4 lg:px-8 lg:py-12">
                                     <a href="{% url 'equipment:equipment' %}"
-                                       class="class-equipment-app-link -m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
+                                       class="class-equipment-app-link -m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset"
+                                       tabindex="0">
                                         <div class="flex md:h-full lg:flex-col">
                                             <div class="flex-shrink-0">
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
@@ -121,7 +126,8 @@
                                         </div>
                                     </a>
                                     <a href="{% url 'workspace:workspace' %}"
-                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
+                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset"
+                                       tabindex="0">
                                         <div class="flex md:h-full lg:flex-col">
                                             <div class="flex-shrink-0">
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
@@ -149,7 +155,8 @@
                                         </div>
                                     </a>
                                     <a href="#"
-                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction"
+                                       tabindex="0">
                                         <div class="flex md:h-full lg:flex-col">
                                             <div class="flex-shrink-0">
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
@@ -177,7 +184,8 @@
                                         </div>
                                     </a>
                                     <a href="#"
-                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                       class="-m-3 flex flex-col justify-between rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction"
+                                       tabindex="0">
                                         <div class="flex md:h-full lg:flex-col">
                                             <div class="flex-shrink-0">
                                                 <span class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
@@ -209,7 +217,8 @@
                                     <div class="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:flex sm:space-y-0 sm:space-x-10 sm:px-6 lg:px-8">
                                         <div class="flow-root">
                                             <a href="{% url 'facility:facility' %}"
-                                               class="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100 focus:df-focus-ring-inset">
+                                               class="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100 focus:df-focus-ring-inset"
+                                               tabindex="0">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                      fill="none"
                                                      viewBox="0 0 24 24"
@@ -225,7 +234,8 @@
                                         <div class="flow-root">
                                             <a href="https://donggukfilm.notion.site/"
                                                target="_blank"
-                                               class="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100 focus:df-focus-ring-inset">
+                                               class="-m-3 flex items-center rounded-md p-3 text-base font-medium text-gray-900 hover:bg-gray-100 focus:df-focus-ring-inset"
+                                               tabindex="0">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                      fill="none"
                                                      viewBox="0 0 24 24"
@@ -243,11 +253,14 @@
                             </div>
                         </div>
                         <a href="{% url 'project:project' %}"
-                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white">프로젝트</a>
+                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                           tabindex="0">프로젝트</a>
                         <a href="{% url 'dflink:dflink' %}"
-                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white">동영링크</a>
+                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                           tabindex="0">동영링크</a>
                         <a href="{% url 'notice:notice' %}"
-                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white">공지사항</a>
+                           class="text-base font-medium text-gray-500 rounded-md hover:text-gray-900 focus:df-focus-ring-offset-white"
+                           tabindex="0">공지사항</a>
                     </nav>
                     {% if user.is_authenticated %}
                         <div x-data="Components.menu({ open: false })"
@@ -267,7 +280,8 @@
                                         aria-haspopup="true"
                                         x-bind:aria-expanded="open.toString()"
                                         @keydown.arrow-up.prevent="onArrowUp()"
-                                        @keydown.arrow-down.prevent="onArrowDown()">
+                                        @keydown.arrow-down.prevent="onArrowDown()"
+                                        tabindex="0">
                                     <span class="sr-only">회원 메뉴 열기</span>
                                     <img class="h-10 w-10 rounded-full hover:opacity-75"
                                          height=""
@@ -321,7 +335,8 @@
                     {% else %}
                         <div class="flex items-center md:ml-12">
                             <a href="{% url 'account_login' %}"
-                               class="login-button inline-flex items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 h-10 text-base font-medium text-white shadow-sm hover:bg-flamingo-700 focus:df-focus-ring-offset-white">로그인</a>
+                               class="login-button inline-flex items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 h-10 text-base font-medium text-white shadow-sm hover:bg-flamingo-700 focus:df-focus-ring-offset-white"
+                               tabindex="0">로그인</a>
                         </div>
                     {% endif %}
                 </div>
@@ -342,7 +357,8 @@
                 <div class="px-5 pt-5 pb-6 sm:pb-8">
                     <div class="flex items-center justify-between">
                         <a href="{% url 'home:home' %}"
-                           class="rounded-md focus:df-focus-ring-offset-white">
+                           class="rounded-md focus:df-focus-ring-offset-white"
+                           tabindex="0">
                             <span class="sr-only">홈페이지로 이동</span>
                             <svg class="h-8 w-auto"
                                  xmlns="http://www.w3.org/2000/svg"
@@ -360,7 +376,8 @@
                         <div class="-mr-2">
                             <button type="button"
                                     class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:df-focus-ring-inset"
-                                    @click="toggle">
+                                    @click="toggle"
+                                    tabindex="0">
                                 <span class="sr-only">메뉴 닫기</span>
                                 <svg class="h-6 w-6"
                                      xmlns="http://www.w3.org/2000/svg"
@@ -378,7 +395,8 @@
                         <nav>
                             <div class="grid gap-7 sm:grid-cols-2 sm:gap-y-8 sm:gap-x-4">
                                 <a href="{% url 'equipment:equipment' %}"
-                                   class="class-equipment-app-link -m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
+                                   class="class-equipment-app-link -m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset"
+                                   tabindex="0">
                                     <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
                                         <svg class="w-6 h-6"
                                              xmlns="http://www.w3.org/2000/svg"
@@ -394,7 +412,8 @@
                                     <div class="ml-4 text-base font-medium text-gray-900">기자재</div>
                                 </a>
                                 <a href="{% url 'workspace:workspace' %}"
-                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset">
+                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset"
+                                   tabindex="0">
                                     <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
                                         <svg class="h-6 w-6"
                                              xmlns="http://www.w3.org/2000/svg"
@@ -409,7 +428,8 @@
                                     <div class="ml-4 text-base font-medium text-gray-900">실습공간</div>
                                 </a>
                                 <a href="#"
-                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction"
+                                   tabindex="0">
                                     <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
                                         <svg class="w-6 h-6"
                                              xmlns="http://www.w3.org/2000/svg"
@@ -424,7 +444,8 @@
                                     <div class="ml-4 text-base font-medium text-gray-900">보관공간</div>
                                 </a>
                                 <a href="#"
-                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction">
+                                   class="-m-3 flex items-center rounded-md p-3 hover:bg-gray-50 focus:df-focus-ring-inset under-construction"
+                                   tabindex="0">
                                     <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-flamingo-500 text-white sm:h-12 sm:w-12">
                                         <svg class="w-6 h-6"
                                              xmlns="http://www.w3.org/2000/svg"
@@ -445,7 +466,8 @@
                 <div class="py-6 px-5">
                     <div class="grid grid-cols-2 gap-5">
                         <a href="{% url 'facility:facility' %}"
-                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white">
+                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white"
+                           tabindex="0">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
                                  fill="currentColor"
@@ -456,7 +478,8 @@
                             <p class="rounded-md text-base text-gray-900 font-medium">예약내역</p>
                         </a>
                         <a href="{% url 'project:project' %}"
-                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white">
+                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white"
+                           tabindex="0">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
                                  fill="currentColor"
@@ -467,7 +490,8 @@
                             <p class="rounded-md text-base text-gray-900 font-medium">프로젝트</p>
                         </a>
                         <a href="{% url 'dflink:dflink' %}"
-                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white">
+                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white"
+                           tabindex="0">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
                                  fill="currentColor"
@@ -478,7 +502,8 @@
                             <p class="rounded-md text-base text-gray-900 font-medium">동영링크</p>
                         </a>
                         <a href="{% url 'notice:notice' %}"
-                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white">
+                           class="flex items-center gap-2 rounded-md hover:text-gray-700 focus:df-focus-ring-offset-white"
+                           tabindex="0">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 24 24"
                                  fill="currentColor"
@@ -492,7 +517,8 @@
                     {% if user.is_anonymous %}
                         <div class="mt-6">
                             <a href="{% url 'account_login' %}"
-                               class="login-button flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-flamingo-700 focus:df-focus-ring-offset-white">로그인</a>
+                               class="login-button flex w-full items-center justify-center rounded-md border border-transparent bg-flamingo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-flamingo-700 focus:df-focus-ring-offset-white"
+                               tabindex="0">로그인</a>
                         </div>
                     {% endif %}
                 </div>
@@ -513,7 +539,8 @@
                             <div class="ml-auto">
                                 <button id="id_go_to_account"
                                         type="button"
-                                        class="flex-shrink-0 bg-white text-gray-500 rounded-full focus:df-focus-ring-offset-white">
+                                        class="flex-shrink-0 bg-white text-gray-500 rounded-full focus:df-focus-ring-offset-white"
+                                        tabindex="0">
                                     <span class="sr-only">내 계정</span>
                                     <svg class="h-6 w-6"
                                          fill="none"
@@ -528,7 +555,8 @@
                         </div>
                         <a href="{% url 'account_logout' %}"
                            class="logout-button w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-flamingo-600 hover:bg-flamingo-700 focus:df-focus-ring-offset-white"
-                           id="id_mobile_logout_btn">로그아웃</a>
+                           id="id_mobile_logout_btn"
+                           tabindex="0">로그아웃</a>
                     </div>
                 {% endif %}
             </div>

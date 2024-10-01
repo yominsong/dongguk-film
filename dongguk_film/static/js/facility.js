@@ -32,6 +32,12 @@ const id_in_progress = document.getElementById("id_in_progress");
 const id_complete = document.getElementById("id_complete");
 const class_double_checks = document.querySelectorAll(".class-double-check");
 
+// boolean
+let isDoubleChecked = false;
+
+// miscellaneous
+let doubleCheckTimer;
+
 //
 // Sub functions
 //
@@ -118,7 +124,7 @@ function updateForm(action, datasetObj = null) {
     handleFocusForModal(true, id_modal);  // The action when the modal is closed is being controlled by Alpine.js
     sessionStorage.setItem("scrollPosition", window.scrollY);
     class_double_checks.forEach(double_check => { double_check.hidden = true });
-    isItDoubleChecked = false;
+    isDoubleChecked = false;
 
     const data = datasetObj.dataset;
     let badgeColor, status, statusDescr;
@@ -258,6 +264,8 @@ function updateForm(action, datasetObj = null) {
             heading.innerText = headingText;
         });
     };
+
+    initTabIndex(id_modal);
 }
 
 function initModal() {
@@ -661,6 +669,9 @@ function addScheduleToCalendar() {
                     textElement.textContent = schedule.name;
 
                     const srOnlyTextElement = document.createElement("span");
+                    const formattedDateTime = new Date(schedule.start_datetime.replace(/\(.\)/, ""));
+                    const options = { month: "long", day: "numeric", weekday: "long" };
+                    const formattedString = formattedDateTime.toLocaleString("ko-KR", options);
 
                     const statusInKorean = {
                         "Pending": "대기 중",
@@ -672,9 +683,9 @@ function addScheduleToCalendar() {
                         "Rejected": "반려됨"
                     };
 
-                    srOnlyTextElement.textContent = `${schedule.start_datetime}, ${statusInKorean[statusKey]}, `;
+                    srOnlyTextElement.textContent = `, ${formattedString}, ${statusInKorean[statusKey]}`;
                     srOnlyTextElement.className = "sr-only";
-                    textElement.prepend(srOnlyTextElement);
+                    textElement.append(srOnlyTextElement);
 
                     if (isOneDay) {
                         textElement.className = "px-1 sm:px-2 whitespace-nowrap overflow-hidden";
@@ -957,66 +968,56 @@ function initRequest() {
         initCalendar();
 
         if (id_review_button_container !== null) {
-            ["click", "keyup"].forEach(type => {
-                id_approve.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
+            id_approve.addEventListener("click", () => {
+                requestUpdateStatusToApproved();
+                displayButtonMsg(true, id_approve, "descr", "잠시만 기다려주세요.");
+                displayButtonMsg(false, id_approve, "error");
 
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        requestApproveRequest();
-                        displayButtonMsg(true, id_approve, "descr", "잠시만 기다려주세요.");
-                        displayButtonMsg(false, id_approve, "error");
+                const id_approve_spin = code(id_approve, "_spin");
 
-                        const id_approve_spin = code(id_approve, "_spin");
+                id_approve_spin.classList.remove("hidden");
+            });
 
-                        id_approve_spin.classList.remove("hidden");
-                    };
-                });
+            id_reject.addEventListener("click", () => {
+                if (!isDoubleChecked) {
+                    class_double_checks.forEach(double_check => { double_check.hidden = false });
+                    isDoubleChecked = true;
 
-                id_reject.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
+                    doubleCheckTimer = setTimeout(() => {
+                        class_double_checks.forEach(double_check => { double_check.hidden = true });
+                        isDoubleChecked = false;
+                    }, 5000);
+                } else if (isDoubleChecked) {
+                    clearTimeout(doubleCheckTimer);
+                    requestUpdateStatusToRejected();
+                    displayButtonMsg(true, id_reject, "descr", "잠시만 기다려주세요.");
+                    displayButtonMsg(false, id_reject, "error");
 
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        requestRejectRequest();
-                        displayButtonMsg(true, id_reject, "descr", "잠시만 기다려주세요.");
-                        displayButtonMsg(false, id_reject, "error");
+                    const id_reject_spin = code(id_reject, "_spin");
 
-                        const id_reject_spin = code(id_reject, "_spin");
+                    id_reject_spin.classList.remove("hidden");
+                    isDoubleChecked = false;
+                };
+            });
 
-                        id_reject_spin.classList.remove("hidden");
-                    };
-                });
+            id_in_progress.addEventListener("click", () => {
+                requestUpdateStatusToInProgress();
+                displayButtonMsg(true, id_in_progress, "descr", "잠시만 기다려주세요.");
+                displayButtonMsg(false, id_in_progress, "error");
 
-                id_in_progress.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
+                const id_in_progress_spin = code(id_in_progress, "_spin");
 
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        requestUpdateStatusToInProgress();
-                        displayButtonMsg(true, id_in_progress, "descr", "잠시만 기다려주세요.");
-                        displayButtonMsg(false, id_in_progress, "error");
+                id_in_progress_spin.classList.remove("hidden");
+            });
 
-                        const id_in_progress_spin = code(id_in_progress, "_spin");
+            id_complete.addEventListener("click", () => {
+                requestUpdateStatusToCompleted();
+                displayButtonMsg(true, id_complete, "descr", "잠시만 기다려주세요.");
+                displayButtonMsg(false, id_complete, "error");
 
-                        id_in_progress_spin.classList.remove("hidden");
-                    };
-                });
+                const id_complete_spin = code(id_complete, "_spin");
 
-                id_complete.addEventListener(type, event => {
-                    const targetTagName = event.target.tagName;
-
-                    if ((type === "click" && (targetTagName === "SPAN" || targetTagName === "BUTTON")) ||
-                        (type === "keyup" && (event.key === "Enter" || event.key === " ") && targetTagName !== "BUTTON")) {
-                        requestUpdateStatusToCompleted();
-                        displayButtonMsg(true, id_complete, "descr", "잠시만 기다려주세요.");
-                        displayButtonMsg(false, id_complete, "error");
-
-                        const id_complete_spin = code(id_complete, "_spin");
-
-                        id_complete_spin.classList.remove("hidden");
-                    };
-                });
+                id_complete_spin.classList.remove("hidden");
             });
         };
     });

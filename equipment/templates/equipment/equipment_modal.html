@@ -35,7 +35,8 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }">
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); closeNoti() }"
+                            tabindex="0">
                         <span class="sr-only">기자재 <span class="class-heading">검색 필터</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
@@ -74,7 +75,8 @@
                                                 :class="{ 'bg-flamingo group-hover:bg-flamingo-600': on, 'bg-gray-200 group-hover:bg-gray-300': !(on) }"
                                                 aria-labelledby="id_toggle_quick_filter"
                                                 :aria-checked="on.toString()"
-                                                @click="on = !on; toggleQuickFilter()">
+                                                @click="on = !on; toggleQuickFilter()"
+                                                tabindex="0">
                                             <span aria-hidden="true"
                                                   class="pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"
                                                   x-state:on="Enabled"
@@ -88,7 +90,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
+                                <div id="id_category_base" class="mt-2 grid gap-4 max-[508px]:grid-cols-2 min-[508px]:grid-cols-3">
                                     {% for category in category_list %}
                                         <label class="relative flex items-center cursor-pointer h-[72px] sm:w-[144px] p-4 shadow-sm rounded-md df-ring-inset-gray hover:bg-gray-50">
                                             <input id="id_category_{{ category.priority }}"
@@ -96,7 +98,8 @@
                                                    type="radio"
                                                    value="{{ category.priority }}"
                                                    class="sr-only class-first class-radio class-category"
-                                                   aria-labelledby="id_category_{{ category.priority }}_label">
+                                                   aria-labelledby="id_category_{{ category.priority }}_label"
+                                                   tabindex="0">
                                             <span class="flex flex-1">
                                                 <span id="id_category_{{ category.priority }}_label"
                                                       class="block whitespace-pre-line text-sm font-medium text-gray-900">{{ category.keyword|replace_space_with_newline:8 }}</span>
@@ -143,6 +146,7 @@
                                          @keydown.enter.prevent="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
                                          @keydown.space.prevent="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
                                          @click="choose(0); executeWhenPurposeIsSelected(); executeWhenPurposeHasChanged()"
+                                         tabindex="0"
                                          hidden>
                                         <svg xmlns="http://www.w3.org/2000/svg"
                                              fill="none"
@@ -167,7 +171,8 @@
                                             aria-haspopup="listbox"
                                             :aria-expanded="open"
                                             aria-labelledby="id_purpose_label"
-                                            aria-expanded="true">
+                                            aria-expanded="true"
+                                            tabindex="0">
                                         <span x-text="selected.keyword" class="block truncate"></span>
                                         <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                             <svg class="h-5 w-5 text-gray-400"
@@ -266,7 +271,8 @@
                                         <div class="flex">
                                             <button id="id_period_prev_month"
                                                     type="button"
-                                                    class="-my-1.5 flex flex-none items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed">
+                                                    class="-my-1.5 flex flex-none items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed"
+                                                    tabindex="0">
                                                 <span class="sr-only">지난달</span>
                                                 <svg class="h-5 w-5"
                                                      viewBox="0 0 20 20"
@@ -278,7 +284,8 @@
                                             </button>
                                             <button id="id_period_next_month"
                                                     type="button"
-                                                    class="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center rounded-md p-1.5 text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed">
+                                                    class="-my-1.5 -mr-1.5 ml-2 flex flex-none items-center justify-center rounded-md p-1.5 text-gray-400 hover:text-gray-500 focus:df-focus-ring-inset disabled:cursor-not-allowed"
+                                                    tabindex="0">
                                                 <span class="sr-only">다음달</span>
                                                 <svg class="h-5 w-5"
                                                      viewBox="0 0 20 20"
@@ -430,7 +437,8 @@
                                                     aria-haspopup="listbox"
                                                     :aria-expanded="open"
                                                     aria-labelledby="id_subject_label"
-                                                    aria-expanded="true">
+                                                    aria-expanded="true"
+                                                    tabindex="0">
                                                 <span x-text="selected.kor_name" class="block truncate"></span>
                                                 <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                                     <svg class="h-5 w-5 text-gray-400"
@@ -678,7 +686,8 @@
                                 </div>
                                 <button type="button"
                                         id="id_copy_url"
-                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset">
+                                        class="relative -ml-px rounded-r-md px-3 py-2 text-sm text-gray-400 df-ring-inset-gray hover:bg-gray-50 focus:df-focus-ring-inset"
+                                        tabindex="0">
                                     <svg id="id_copy_url_ready"
                                          fill="none"
                                          viewBox="0 0 24 24"
@@ -705,7 +714,8 @@
                                 class="mt-5 sm:mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_kakaotalk"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#FEE500] rounded-l-md text-sm font-medium text-black group-hover:bg-[#F0D800]">
                                             <svg class="h-5"
                                                  fill="currentColor"
@@ -726,7 +736,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_x"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-black rounded-l-md text-sm font-medium text-white">
                                             <svg class="h-5"
                                                  fill="currentColor"
@@ -744,7 +755,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_facebook"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#1877F2] rounded-l-md text-sm font-medium text-white group-hover:bg-[#1567d3]">
                                             <svg class="h-5"
                                                  x="0px"
@@ -772,7 +784,8 @@
                                 </li>
                                 <li class="group col-span-1 flex rounded-md shadow-sm">
                                     <button id="id_line"
-                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white">
+                                            class="flex flex-1 rounded-md focus:df-focus-ring-offset-white"
+                                            tabindex="0">
                                         <div class="flex w-16 h-full flex-shrink-0 items-center justify-center bg-[#06C755] rounded-l-md text-sm font-medium text-white group-hover:bg-[#05b34d]">
                                             <svg class="h-5"
                                                  x="0px"
@@ -809,7 +822,8 @@
                     <div class="sm:flex sm:flex-row-reverse">
                         <button type="button"
                                 id="id_filter_or_checkout"
-                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed">
+                                class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
+                                tabindex="0">
                             <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                  xmlns="http://www.w3.org/2000/svg"
                                  fill="none"

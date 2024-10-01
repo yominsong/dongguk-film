@@ -32,8 +32,9 @@
                             class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:df-focus-ring-offset-white disabled:cursor-not-allowed"
                             @click="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
                             @keydown.enter.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
-                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }">
-                        <span class="sr-only"><span class="class-heading">시설예약 상세 보기</span> 화면 닫기</span>
+                            @keyup.space.prevent="if (canCloseModal()) { open = false; executeWhenModalIsClosed(); }"
+                            tabindex="0">
+                        <span class="sr-only"><span class="class-heading">예약내역 상세 보기</span> 화면 닫기</span>
                         <svg class="h-6 w-6"
                              fill="none"
                              viewBox="0 0 24 24"
@@ -49,7 +50,7 @@
                         <div class="mt-0 text-left">
                             <h3 id="id_modal_title"
                                 class="text-base font-semibold leading-6 text-gray-900">
-                                <span class="class-heading">시설예약 상세 보기</span>
+                                <span class="class-heading">예약내역 상세 보기</span>
                             </h3>
                         </div>
                     </div>
@@ -104,7 +105,8 @@
                                         <div class="sm:flex sm:flex-row-reverse">
                                             <button type="button"
                                                     class="inline-flex w-full justify-center rounded-md bg-stone-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-700sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-stone-600 disabled:cursor-not-allowed"
-                                                    id="id_send_vcode">
+                                                    id="id_send_vcode"
+                                                    tabindex="0">
                                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                                      xmlns="http://www.w3.org/2000/svg"
                                                      fill="none"
@@ -170,6 +172,7 @@
                                             <button type="button"
                                                     class="inline-flex w-full justify-center rounded-md bg-flamingo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-flamingo-700 sm:ml-3 sm:w-auto disabled:opacity-75 focus:df-focus-ring-offset-white disabled:hover:bg-flamingo-600 disabled:cursor-not-allowed"
                                                     id="id_confirm_vcode"
+                                                    tabindex="0"
                                                     disabled="">
                                                 <svg class="animate-spin mr-2 h-5 w-5 text-white hidden"
                                                      xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +232,8 @@
                                         <div class="sm:flex sm:flex-row-reverse">
                                             <button type="button"
                                                     id="id_delete_user"
-                                                    class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed">
+                                                    class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 hover:text-red-700 hover:bg-red-50 sm:mt-0 sm:w-auto disabled:opacity-75 focus:text-red-700 focus:bg-red-50 focus:df-focus-ring-offset-white disabled:text-gray-900 disabled:bg-white disabled:hover:bg-white disabled:cursor-not-allowed"
+                                                    tabindex="0">
                                                 <svg class="animate-spin mr-2 h-5 w-5 hidden"
                                                      xmlns="http://www.w3.org/2000/svg"
                                                      fill="none"

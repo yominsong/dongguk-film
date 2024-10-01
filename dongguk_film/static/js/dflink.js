@@ -134,6 +134,8 @@ function updateForm(action, datasetObj = null) {
         isItDoubleChecked = false;
         clearTimeout(doubleCheckTimer);
     };
+
+    initTabIndex(id_modal);
 }
 
 function initModal() {
