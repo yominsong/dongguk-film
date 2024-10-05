@@ -160,7 +160,7 @@ def is_listed(target_url: str):
         target_url = target_url[4:]
 
     data = {
-        "DB_NAME": "DFLINK_ALLOWLIST",
+        "db_name": "DFLINK_ALLOWLIST",
         "filter": {
             "and": [
                 {"property": "URL", "rich_text": {"contains": target_url}},
@@ -383,12 +383,9 @@ def moderate_input_data(request):
             - create_dflink
             - update_dflink
             - delete_dflink
-        - link_id
         - target_url
         - slug
         - title
-        - category
-        - expiration_date
     """
 
     target_url = request.GET["target_url"]
@@ -526,13 +523,13 @@ def dflink(request):
                 element = None
 
         if status == None:
-            try:
-                status, reason, msg, element = moderate_input_data(request)
-            except:
-                status = "FAIL"
-                reason = "유해성 검사 실패"
-                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-                element = None
+            # try:
+            status, reason, msg, element = moderate_input_data(request)
+            # except:
+            #     status = "FAIL"
+            #     reason = "유해성 검사 실패"
+            #     msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+            #     element = None
 
         if status == None:
             if need_www:
