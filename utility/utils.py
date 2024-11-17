@@ -1312,7 +1312,13 @@ def short_io(
 
         try:
             for i in range(dflink_count):
-                user = dflinks[i]["tags"][1]
+                tags = dflinks[i].get("tags", [])
+
+                if len(tags) < 3:
+                    continue
+
+                category = tags[0]
+                user = tags[1]
 
                 try:
                     if user != filter["user"]:
@@ -1321,6 +1327,7 @@ def short_io(
                     pass
 
                 user = mask_personal_information("student_id", user) if mask else user
+                expiration_date = tags[2]
 
                 dflink = {
                     "link_id": dflinks[i]["idString"],
@@ -1328,9 +1335,9 @@ def short_io(
                     "dflink_url": f"https://dgufilm.link/{dflinks[i]['path']}",
                     "slug": dflinks[i]["path"],
                     "title": dflinks[i]["title"],
-                    "category": dflinks[i]["tags"][0],
+                    "category": category,
                     "user": user,
-                    "expiration_date": dflinks[i]["tags"][2],
+                    "expiration_date": expiration_date,
                 }
 
                 dflink_list.append(dflink)
