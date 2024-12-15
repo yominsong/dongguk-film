@@ -471,6 +471,7 @@ def update_subject(request):
         for attempt in range(max_attempts):
             try:
                 result = driver.execute_script(script)
+                
                 if result["removed"] > 0:
                     print(
                         f"{result['removed']} elements with class cl-aside have been successfully removed."
@@ -491,6 +492,33 @@ def update_subject(request):
             except JavascriptException as e:
                 print(f"Error executing JavaScript: {e}")
                 break
+    
+    # Check if there is a popup window after login and close it
+    def close_popup_window():
+        try:
+            popup_window_after_login = WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//div[@class='cl-text' and contains(text(), '이미')]")
+                )
+            )
+
+            if popup_window_after_login:
+                print("Found popup window with '이미' text")
+
+                confirm_button = wait.until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH, "//a[@class='cl-text-wrapper']//div[@class='cl-text' and text()='확인']")
+                    )
+                )
+
+                confirm_button.click()
+                print("Confirm button clicked.")
+                time.sleep(5)
+                remove_cl_aside()
+            else:
+                print("No popup window found with '이미' text")
+        except TimeoutException:
+            print("No popup window found with '이미' text")
 
     # Set Chrome options
     chrome_options = Options()
@@ -532,6 +560,23 @@ def update_subject(request):
 
     # Use JavaScript to delete elements with cl-aside classes
     remove_cl_aside()
+
+    # Change the language to Korean if it is set to English
+    try:
+        lang_button = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//div[contains(@class, 'lang')]//div[@role='combobox']")
+            )
+        )
+
+        if lang_button.text.strip() == "EN":
+            lang_button.click()
+            print("Language change button clicked.")
+            lang_button.send_keys(Keys.ARROW_UP)
+            lang_button.send_keys(Keys.RETURN)
+            print("Language changed to Korean.")
+    except (TimeoutException, NoSuchElementException) as e:
+        print(f"Failed to find the language change button. Error: {e}")
 
     # Enter student ID
     try:
@@ -578,10 +623,8 @@ def update_subject(request):
     except (TimeoutException, NoSuchElementException):
         print("Failed to find the login button.")
 
-    time.sleep(3)
-
-    # Use JavaScript to delete elements with cl-aside classes
-    remove_cl_aside()
+    # Check if there is a popup window after login and close it
+    close_popup_window()
 
     # Change the language to Korean if it is set to English
     try:
@@ -606,25 +649,34 @@ def update_subject(request):
         kor_option.click()
         print("Language changed to Korean.")
         wait.until(EC.staleness_of(lang_button))
-        remove_cl_aside()
     except (TimeoutException, NoSuchElementException) as e:
         print(f"Failed to find the language change button. Error: {e}")
+    
+    # Check if there is a popup window after login and close it
+    close_popup_window()
 
     # Click the '수업' button
     def click_menu_item(driver, menu_text):
         script = """
         function clickMenuItemByText(text) {
-            var elements = document.getElementsByTagName('*');
+            // 특정 클래스를 가진 요소들 중에서 찾기
+            let elements = document.querySelectorAll('div.cl-text.cl-ellipsis');
+            
             for (var i = 0; i < elements.length; i++) {
-                if (elements[i].textContent.trim() === text) {
-                    elements[i].click();
+                let element = elements[i];
+
+                if (element.textContent.trim().includes(text)) {
+                    element.click();
                     return true;
-                }
-            }
+                };
+            };
+
             return false;
         }
+
         return clickMenuItemByText(arguments[0]);
         """
+        
         return driver.execute_script(script, menu_text)
 
     try:
