@@ -1092,9 +1092,8 @@ def get_subject(base_date: str):
     except:
         base_date = timezone.datetime.fromisoformat(str(base_date)).date()
 
-    base_year = base_date.year
-    base_month = base_date.month
-    semester_num = "01" if base_month < 7 else "02"
+    semester_num = "01" if 2 <= base_date.month <= 8 else "02"
+    base_year = base_date.year - 1 if base_date.month == 1 else base_date.year
     subject_path = f"subject/{base_year}{semester_num}.json"
 
     with open(subject_path) as f:
