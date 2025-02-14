@@ -2402,6 +2402,7 @@ def notion(
     elif action == "retrieve" and target == "block_children":
         url = f"https://api.notion.com/v1/blocks/{page_id}/children"
         response = requests.get(url, headers=set_headers("NOTION")).json()
+        print("response\n", response)
 
         blocks = response["results"]
         block_id_list = []
@@ -2410,9 +2411,14 @@ def notion(
         for i, block in enumerate(blocks):
             block_id = blocks[i]["id"]
             type = blocks[i]["type"]
-            block = {
-                "content_chunk": blocks[i][type]["rich_text"][0]["plain_text"],
-            }
+            try:
+                block = {
+                    "content_chunk": blocks[i][type]["rich_text"][0]["plain_text"],
+                }
+            except:
+                block = {
+                    "content_chunk": "",
+                }
             block_id_list.append(block_id)
             content += block["content_chunk"]
 

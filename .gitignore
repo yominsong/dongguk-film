@@ -191,6 +191,8 @@ cython_debug/
 #.idea/
 
 ### Python ###
+.python-version
+
 # Byte-compiled / optimized / DLL files
 
 # C extensions
