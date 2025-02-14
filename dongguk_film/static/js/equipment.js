@@ -198,9 +198,10 @@ function resizeWidthOfModalAndForm() {
 }
 
 function adjustDetailHeight() {
-    if (id_detail !== null) {
-        const id_detail_title = code(id_detail, "_title");
-        const id_detail_title_text = id_detail_title.querySelector("h2");
+    window.addEventListener("load", () => {
+        if (id_detail !== null) {
+            const id_detail_title = code(id_detail, "_title");
+            const id_detail_title_text = id_detail_title.querySelector("h2");
         const id_detail_title_text_line_height = parseFloat(window.getComputedStyle(id_detail_title_text).lineHeight);
         const id_detail_title_text_computed_lines = id_detail_title_text.offsetHeight / id_detail_title_text_line_height;
         const id_detail_content = code(id_detail, "_content");
@@ -210,9 +211,10 @@ function adjustDetailHeight() {
         if (this.window.innerWidth >= 640 &&
             id_detail_title_text_computed_lines > 1) {
             id_detail_title.style.setProperty("height", "158px", "important");
-            id_detail_content_padding_top.style.setProperty("padding-top", "114px", "important");
+                id_detail_content_padding_top.style.setProperty("padding-top", "114px", "important");
+            };
         };
-    };
+    });
 }
 
 adjustDetailHeight();
