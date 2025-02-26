@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from urllib.parse import urlparse
 from utility.msg import send_msg
 from utility.utils import reg_test, set_headers, gpt, short_io, notion
-from googlesearch import search
 import requests, json
 
 #
@@ -14,6 +13,12 @@ import requests, json
 
 SCRAPEOPS = getattr(settings, "SCRAPEOPS", None)
 SCRAPEOPS_API_KEY = SCRAPEOPS["API_KEY"]
+
+GCP_SA = getattr(settings, "GCP_SA", None)
+GCP_SA_CREDS = GCP_SA["CREDS"]
+
+GOOGLE_SAFE_BROWSING = getattr(settings, "GOOGLE_SAFE_BROWSING", None)
+GOOGLE_SAFE_BROWSING_API_KEY = GOOGLE_SAFE_BROWSING["API_KEY"]
 
 global need_www
 need_www = False
@@ -65,19 +70,6 @@ def has_www(target_url: str):
         result = False
 
     return result
-
-
-def search_website_content(url):
-    search_result_list = list(search(url, num_results=5))
-    content_list = []
-
-    for result_url in search_result_list:
-        response = requests.get(result_url)
-
-        if response.status_code == 200:
-            content_list.append(response.text[:1000])
-
-    return content_list
 
 
 def check_harmful_content(content_list: list):
@@ -179,53 +171,50 @@ def is_listed(target_url: str):
     return result
 
 
-# def is_well_known(target_url: str):
-#     if "://" in target_url:
-#         target_url = urlparse(target_url).netloc
-
-#     prompt = [
-#         {
-#             "type": "text",
-#             "text": f"{target_url}\n알고 있는 사이트인지 'True' 또는 'False'로만 답해줘.",
-#         }
-#     ]
-
-#     openai_response = chat_gpt("4o-mini", prompt)
-
-#     if "True" in openai_response:
-#         result = True
-#     elif "False" in openai_response:
-#         if not has_www(target_url):
-#             target_url = f"www.{target_url}"
-#             result = is_well_known(target_url)
-#         else:
-#             result = False
-#     else:
-#         result = False
-
-#     return result
-
-
 def is_harmless(request, target_url: str):
     try:
-        if "://" in target_url:
-            target_url = urlparse(target_url).netloc
-        
-        search_result_list = list(search(target_url, num_results=5))
-        analysis_result_list = check_harmful_content(search_result_list)
+        payload = {
+            "client": {"clientId": GCP_SA_CREDS["client_id"], "clientVersion": "1.0.0"},
+            "threatInfo": {
+                "threatTypes": [
+                    "MALWARE",
+                    "SOCIAL_ENGINEERING",
+                    "UNWANTED_SOFTWARE",
+                    "POTENTIALLY_HARMFUL_APPLICATION",
+                ],
+                "platformTypes": ["ANY_PLATFORM"],
+                "threatEntryTypes": ["URL"],
+                "threatEntries": [{"url": target_url}],
+            },
+        }
 
-        for result in analysis_result_list:
-            if "true" in result.lower():
-                result = False
-                break
-            elif "false" in result.lower():
-                result = True
-                break
+        response = requests.post(
+            f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={GOOGLE_SAFE_BROWSING_API_KEY}",
+            json=payload,
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+
+            if "matches" not in result or len(result["matches"]) == 0:
+                return True
+            else:
+                return False
+        else:
+            result = True
+
+            data = {
+                "reason": f"API error: {response.status_code}",
+                "function_name": "is_harmless",
+            }
+
+            send_msg(request, "PROCESSING_SKIPPED", "OPS", data)
+
     except Exception as e:
         result = True
-        
+
         data = {
-            "reason": e,
+            "reason": str(e),
             "function_name": "is_harmless",
         }
 
@@ -392,12 +381,6 @@ def moderate_input_data(request):
     slug = request.GET["slug"]
     title = request.GET["title"]
 
-    # if not is_listed(target_url) and not is_well_known(target_url):
-    #     status = "FAIL"
-    #     reason = "Allowlist 등재 필요"
-    #     msg = "이 대상 URL은 현재 사용할 수 없어요."
-    #     element = "id_target_url"
-
     if not is_listed(target_url) and not is_harmless(request, target_url):
         status = "FAIL"
         reason = "유해 사이트"
@@ -523,13 +506,13 @@ def dflink(request):
                 element = None
 
         if status == None:
-            # try:
-            status, reason, msg, element = moderate_input_data(request)
-            # except:
-            #     status = "FAIL"
-            #     reason = "유해성 검사 실패"
-            #     msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
-            #     element = None
+            try:
+                status, reason, msg, element = moderate_input_data(request)
+            except:
+                status = "FAIL"
+                reason = "유해성 검사 실패"
+                msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
+                element = None
 
         if status == None:
             if need_www:
@@ -571,6 +554,7 @@ def dflink(request):
     # id: delete_dflink
     elif id == "delete_dflink":
         response = short_io("delete", request)
+        print(response.json())
 
         if response.status_code == 200:
             status = "DONE"

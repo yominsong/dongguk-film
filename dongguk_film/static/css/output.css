@@ -1637,11 +1637,6 @@ select {
   margin-bottom: 0.5rem;
 }
 
-.my-4 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
 .-mb-5 {
   margin-bottom: -1.25rem;
 }
@@ -1670,16 +1665,8 @@ select {
   margin-top: -1px;
 }
 
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
 .mb-2\.5 {
   margin-bottom: 0.625rem;
-}
-
-.mb-3 {
-  margin-bottom: 0.75rem;
 }
 
 .mb-4 {
@@ -3164,10 +3151,6 @@ select {
 
 .text-justify {
   text-align: justify;
-}
-
-.align-top {
-  vertical-align: top;
 }
 
 .font-pretendard {

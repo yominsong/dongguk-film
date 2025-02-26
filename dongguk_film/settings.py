@@ -47,6 +47,8 @@ GCP_SA = get_secret("GCP_SA")
 
 GOOGLE_DOCS = get_secret("GOOGLE_DOCS")
 
+GOOGLE_SAFE_BROWSING = get_secret("GOOGLE_SAFE_BROWSING")
+
 KAKAO = get_secret("KAKAO")
 
 NCP = get_secret("NCP")

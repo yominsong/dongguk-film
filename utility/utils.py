@@ -1214,7 +1214,6 @@ def set_headers(type: str):
     elif type == "SHORT_IO":
         headers = {
             "accept": "application/json",
-            "content-type": "application/json",
             "Authorization": SHORT_IO_API_KEY,
         }
     elif type == "NOTION":
