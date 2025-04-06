@@ -1339,7 +1339,7 @@ def short_io(
 
         url = "https://api.short.io/links"
         payload = {
-            "tags": [category, f"{request.user}", expiration_date],
+            "tags": [f"{request.user}", expiration_date, category],
             "domain": "dgufilm.link",
             "allowDuplicates": True,
             "originalURL": target_url,
@@ -1367,8 +1367,8 @@ def short_io(
                 if len(tags) < 3:
                     continue
 
-                category = tags[0]
-                user = tags[1]
+                category = tags[2]
+                user = tags[0]
 
                 try:
                     if user != filter["user"]:
@@ -1377,7 +1377,7 @@ def short_io(
                     pass
 
                 user = mask_personal_information("student_id", user) if mask else user
-                expiration_date = tags[2]
+                expiration_date = tags[1]
 
                 dflink = {
                     "link_id": dflinks[i]["idString"],
@@ -1407,7 +1407,7 @@ def short_io(
 
         url = f"https://api.short.io/links/{link_id}"
         payload = {
-            "tags": [category, f"{request.user}", expiration_date],
+            "tags": [f"{request.user}", expiration_date, category],
             "originalURL": target_url,
             "path": slug,
             "title": title,
