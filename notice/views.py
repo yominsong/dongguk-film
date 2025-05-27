@@ -179,8 +179,12 @@ def notice_detail(request, notice_id):
             pass
 
         if user:
-            name = user.metadata.name
-            profile_img = user.socialaccount_set.all()[0].get_avatar_url()
+            try:
+                name = user.metadata.name
+                profile_img = user.socialaccount_set.all()[0].get_avatar_url()
+            except:
+                pass
+
         try:
             file_string = notice["properties"]["File"]["rich_text"][0]["plain_text"]
             file_dict = ast.literal_eval(file_string)

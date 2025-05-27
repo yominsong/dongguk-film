@@ -522,8 +522,8 @@ def update_subject(request):
 
     # Set Chrome options
     chrome_options = Options()
-    # chrome_options.add_experimental_option("detach", True)
-    chrome_options.add_argument("--headless=new")
+    chrome_options.add_experimental_option("detach", True)
+    # chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")

@@ -11,6 +11,25 @@ let clickCount = 0;
 // Sub functions
 //
 
+function handleMissingImageSrc() {
+    const images = document.querySelectorAll("img.class-profile-image");
+    const defaultSrc = "/static/images/d_dot_f_logo.jpg";
+    
+    images.forEach(img => {
+        if (!img.src || img.src === "" || img.src === window.location.href) {
+            img.src = defaultSrc;
+        };
+        
+        img.addEventListener("error", function() {
+            if (this.src !== defaultSrc) {
+                this.src = defaultSrc;
+            };
+        });
+    });
+}
+
+handleMissingImageSrc();
+
 function hideNavbarAndFooter() {
     let httpStatusCode = document.querySelector("#http_status_code");
 

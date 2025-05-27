@@ -36,6 +36,7 @@ blockInAppBrowser();
 
 function displayLoginRequestMsg() {
     const loginRequestMsg = urlParams.get("loginRequestMsg");
+    const next = urlParams.get("next");
 
     if (loginRequestMsg) {
         if (loginRequestMsg === "checkout") {
@@ -47,11 +48,34 @@ function displayLoginRequestMsg() {
         } else if (loginRequestMsg === "createNotice") {
             id_login_request_msg.innerText = "공지사항을 새로 작성하려면";
         };
-    } else if (!isAuthenticated()) {
-        if (urlParams.get("next").includes("account")) {
-            id_login_request_msg.innerText = "내 계정 서비스를 이용하려면";
-        };
+    } else if (!isAuthenticated() && next && next.includes("account")) {
+        id_login_request_msg.innerText = "내 계정 서비스를 이용하려면";
     };
 }
 
 displayLoginRequestMsg();
+
+function resetSignInForm() {
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+        const errorMessages = document.querySelectorAll(".text-flamingo-600");
+        
+        form.addEventListener("submit", function() {
+            errorMessages.forEach(error => {
+                error.style.display = "none";
+            });
+            
+            const inputs = form.querySelectorAll("input, textarea, select");
+            inputs.forEach(input => {
+                input.readOnly = true;
+            });
+            
+            const buttons = form.querySelectorAll("button");
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+        });
+    });
+}
+
+resetSignInForm();
