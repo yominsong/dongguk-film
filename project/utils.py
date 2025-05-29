@@ -185,9 +185,10 @@ def project(request):
 
                 user = User.objects.get(id=found_user["user"])
 
-                found_user["avatar_url"] = user.socialaccount_set.all()[
-                    0
-                ].get_avatar_url()
+                try:
+                    found_user["avatar_url"] = user.socialaccount_set.all()[0].get_avatar_url()
+                except (IndexError, AttributeError):
+                    found_user["avatar_url"] = "https://dongguk.film/static/images/d_dot_f_logo.jpg"
 
                 found_user["pk"] = found_user.pop("user")
 
