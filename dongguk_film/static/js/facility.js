@@ -426,40 +426,49 @@ function addHolidayInCalendar(holidayArray) {
 
     if (isHolidayAlreadyApplied) return;
 
-    // 날짜별로 공휴일들을 그룹핑
     const holidaysByDate = {};
+
     holidayArray.forEach(holiday => {
         if (!holidaysByDate[holiday.date]) {
             holidaysByDate[holiday.date] = [];
-        }
+        };
+
         holidaysByDate[holiday.date].push(holiday.name);
     });
 
-    // 각 날짜별로 하나의 span만 생성
     Object.keys(holidaysByDate).forEach(date => {
         const holidayElement = id_calendar_grid.querySelector(`time[datetime="${date}"]`);
-
+    
         if (holidayElement) {
             holidayElement.classList.replace("text-gray-900", "text-red-700");
-
+    
             const wrapperElement = holidayElement.parentElement;
-            wrapperElement.classList.add("flex", "justify-start", "space-x-2");
 
+            wrapperElement.classList.add("flex", "justify-start", "space-x-2");
+    
             const spanElement = document.createElement("span");
-            
-            // 첫 번째 공휴일 이름 + (여러 개면 " 외 N" 추가)
             const holidayNames = holidaysByDate[date];
-            const additionalCount = holidayNames.length - 1;
-            spanElement.textContent = holidayNames[0] + (additionalCount > 0 ? ` 외 ${additionalCount}` : "");
+            let displayName = holidayNames[0];
+
+            if (displayName.includes("임시공휴일(") && displayName.includes(")")) {
+                const match = displayName.match(/임시공휴일\((.+)\)/);
+
+                if (match) {
+                    displayName = match[1];
+                };
+            };
             
+            const additionalCount = holidayNames.length - 1;
+            
+            spanElement.textContent = displayName + (additionalCount > 0 ? ` 외 ${additionalCount}` : "");            
             spanElement.className = "hidden sm:flex justify-center items-center text-red-700 h-6 my-1 truncate opacity-0 transition-opacity duration-300 ease-in-out";
             wrapperElement.appendChild(spanElement);
-
+    
             setTimeout(() => {
                 spanElement.classList.remove("opacity-0");
                 spanElement.classList.add("opacity-100");
             }, 30);
-        }
+        };
     });
 }
 
