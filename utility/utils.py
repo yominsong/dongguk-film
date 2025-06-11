@@ -522,8 +522,8 @@ def update_subject(request):
 
     # Set Chrome options
     chrome_options = Options()
-    chrome_options.add_experimental_option("detach", True)
-    # chrome_options.add_argument("--headless=new")
+    # chrome_options.add_experimental_option("detach", True)
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
@@ -741,13 +741,12 @@ def update_subject(request):
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "//div[contains(@class, 'cl-control cl-inputbox cl-even-column cl-even-row cl-last-column')]//input",
+                    "//div[contains(@class, 'cl-control cl-inputbox cl-even-column cl-even-row cl-last-column')]/following-sibling::div[contains(@class, 'cl-control cl-inputbox')]//input",
                 )
             )
         )
 
         driver.execute_script("arguments[0].value = 'FIL'", subject_code_input)
-        subject_code_input.click()
         print("Set the subject code to 'FIL'.")
         subject_code_input.send_keys(Keys.RETURN)
         print("Pressed the Enter key to search.")
@@ -779,10 +778,11 @@ def update_subject(request):
     data = save_response()
     data["year"] = f"{current_year}학년도"
     data["semester"] = semester
+    print(data["body"])
 
     try:
-        data["status"] = "DONE"
         data["length"] = len(data["body"]["dsMain"])
+        data["status"] = "DONE" if data["length"] > 0 else "FAIL"
     except:
         data["status"] = "FAIL"
         data["length"] = 0
