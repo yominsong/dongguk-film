@@ -534,6 +534,13 @@ def update_subject(request):
     chrome_options.add_argument("--disable-web-security")
     chrome_options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--memory-pressure-off")
+    chrome_options.add_argument("--max_old_space_size=4096")
+    chrome_options.add_argument("--single-process")
+    chrome_options.add_argument("--disable-background-networking")
+    chrome_options.add_argument("--disable-background-timer-throttling")
+    chrome_options.add_argument("--disable-renderer-backgrounding")
+    chrome_options.add_argument("--disable-backgrounding-occluded-windows")
 
     # Set Selenium Wire options
     seleniumwire_options = {"disable_encoding": True}
