@@ -93,13 +93,13 @@ def evaluate_accessibility(request):
 
     if not is_readable(content):
         status = "FAIL"
-        reason = "이미지 대체 텍스트 미입력"
+        reason = "ALT_TEXT_MISSING"
         msg = "이미지 대체 텍스트를 입력해주세요."
         element = "id_content"
 
     elif not is_description_text_included(content):
         status = "FAIL"
-        reason = "텍스트 미포함"
+        reason = "TEXT_CONTENT_MISSING"
         msg = "내용에 텍스트를 포함해주세요."
         element = "id_content"
 
@@ -548,7 +548,7 @@ def notice(request):
                 status, reason, msg, element = evaluate_accessibility(request)
             except:
                 status = "FAIL"
-                reason = "접근성 검사 실패"
+                reason = "ACCESSIBILITY_CHECK_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -557,7 +557,7 @@ def notice(request):
                 status, reason, msg, element = moderate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유해성 검사 실패"
+                reason = "MODERATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -580,7 +580,7 @@ def notice(request):
 
             if response.status_code == 200:
                 status = "DONE"
-                reason = "접근성 및 유해성 검사 통과"
+                reason = None
                 msg = "공지사항이 등록되었어요! 👍"
             elif response.status_code == 400:
                 status = "FAIL"
@@ -589,7 +589,7 @@ def notice(request):
                 element = None
             elif response.status_code == 429:
                 status = "FAIL"
-                reason = "Notion API rate limit 초과"
+                reason = "NOTION_API_RATE_LIMIT_EXCEEDED"
                 msg = "앗, 잠시 후 다시 한 번 시도해주세요!"
                 element = None
             else:
@@ -643,7 +643,7 @@ def notice(request):
                 status, reason, msg, element = evaluate_accessibility(request)
             except:
                 status = "FAIL"
-                reason = "접근성 검사 실패"
+                reason = "ACCESSIBILITY_CHECK_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -652,7 +652,7 @@ def notice(request):
                 status, reason, msg, element = moderate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유해성 검사 실패"
+                reason = "MODERATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -682,7 +682,7 @@ def notice(request):
 
                     if response.status_code == 200:
                         status = "DONE"
-                        reason = "접근성 및 유해성 검사 통과"
+                        reason = None
                         msg = "공지사항이 수정되었어요! 👍"
                     elif response.status_code == 400:
                         status = "FAIL"

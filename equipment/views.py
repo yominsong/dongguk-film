@@ -13,11 +13,19 @@ from .utils import (
 )
 from utility.img import get_hero_img
 from utility.utils import parse_datetime, mask_personal_information, airtable
+from gksdudaovld import KoEnMapper
 import random, json, re
+
+with open("dongguk_film/static/words_alpha.txt") as f:
+    english_words = set(line.strip().lower() for line in f)
 
 #
 # Sub functions
 #
+
+
+def is_valid_english_word(word: str) -> bool:
+    return word.lower() in english_words
 
 
 def is_query_string_invalid(
@@ -144,6 +152,29 @@ def format_date_range(date_group_list):
     return formatted_range_list
 
 
+def search_equipment(query, equipment_collection_list):
+    query_result_list = []
+
+    for collection in equipment_collection_list:
+        if collection not in query_result_list:
+            for k, v in collection.items():
+                if isinstance(v, str):
+                    v = re.sub(r"[^\w]", "", v.lower())
+
+                    if query in v:
+                        query_result_list.append(collection)
+                        break
+                elif k == "subcategory" and isinstance(v, dict):
+                    if "keyword" in v and isinstance(v["keyword"], str):
+                        keyword = re.sub(r"[^\w]", "", v["keyword"].lower())
+
+                        if query in keyword:
+                            query_result_list.append(collection)
+                            break
+
+    return query_result_list, len(query_result_list), f"q={query}&"
+
+
 #
 # Main functions
 #
@@ -193,8 +224,12 @@ def equipment(request):
 
                     return redirect_with_query_string(base_url, query_string)
 
+    query = request.GET.get("q")
+    original_query = request.GET.get("oq")
+    params = request.GET.copy()
     query_string = ""
-    image_list = get_hero_img("equipment")
+    search_result_count = 0
+
     equipment_collection_list = get_equipment_data("collection")
 
     if not purpose_priority:
@@ -217,6 +252,7 @@ def equipment(request):
         ]
 
     equipment_collection_count = len(equipment_collection_list)
+    search_placeholder = random.choice(equipment_collection_list)["name"]
     subject_list, target_academic_year_and_semester = get_subject_list()
 
     # Query string and template tag
@@ -236,35 +272,44 @@ def equipment(request):
         purpose_list,
     )
 
-    # Search box
-    query = request.GET.get("q")
-    search_result_count = None
-    search_placeholder = random.choice(equipment_collection_list)["name"]
-
     if query:
-        query = re.sub(r"[^\w]", "", query.lower())
-        query_result_list = []
+        if original_query:
+            query = re.sub(r"[^\w]", "", query)
+        else:
+            query = re.sub(r"[^\w]", "", query.lower())
 
-        for collection in equipment_collection_list:
-            if collection not in query_result_list:
-                for k, v in collection.items():
-                    if isinstance(v, str):
-                        v = re.sub(r"[^\w]", "", v.lower())
+        equipment_collection_list, search_result_count, query_string = search_equipment(
+            query, equipment_collection_list
+        )
 
-                        if query in v:
-                            query_result_list.append(collection)
-                            break
-                    elif k == "subcategory" and isinstance(v, dict):
-                        if "keyword" in v and isinstance(v["keyword"], str):
-                            keyword = re.sub(r"[^\w]", "", v["keyword"].lower())
+        if search_result_count == 0:
+            if original_query:
+                params["q"] = request.GET.get("oq")
+                params["oq"] = None
+                request.GET = params
+            elif re.fullmatch(r"[가-힣ㄱ-ㅎㅏ-ㅣ]+", query):
+                equipment_brand_list = [
+                    brand["name"].lower()
+                    for brand in airtable(
+                        "get_all", "records", {"table_name": "equipment-brand"}
+                    )
+                ]
+                ko2en_query = KoEnMapper.conv_ko2en(" ".join(query.split()))
+                ko2en_lower = ko2en_query.lower()
 
-                            if query in keyword:
-                                query_result_list.append(collection)
-                                break
+                if (
+                    is_valid_english_word(ko2en_lower)
+                    or ko2en_lower in equipment_brand_list
+                ):
+                    params["s"] = ko2en_lower
+                    request.GET = params
+            elif query.isascii() and query.isalpha():
+                query = request.GET.get("q")
+                params["q"] = KoEnMapper.conv_en2ko(" ".join(query.split()))
+                params["oq"] = query
+                request.GET = params
 
-        equipment_collection_list = query_result_list
-        search_result_count = len(query_result_list)
-        query_string += f"q={query}&"
+                return equipment(request)
 
     # Pagination
     try:
@@ -281,7 +326,7 @@ def equipment(request):
         "equipment/equipment.html",
         {
             "query_string": query_string,
-            "image_list": image_list,
+            "image_list": get_hero_img("equipment"),
             "equipment_collection_count": equipment_collection_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,

@@ -1873,6 +1873,20 @@ def airtable(
             except:
                 pass
 
+        elif table_name == "equipment-brand":
+            try:
+                for record in records:
+                    fields = record["fields"]
+
+                    brand = {
+                        "name": fields.get("Name", None),
+                        "collection_count": fields.get("Collection count", None),
+                    }
+
+                    record_list.append(brand)
+            except:
+                pass
+
         elif table_name == "equipment-collection":
             try:
                 for record in records:
@@ -2401,8 +2415,6 @@ def notion(
     elif action == "retrieve" and target == "block_children":
         url = f"https://api.notion.com/v1/blocks/{page_id}/children"
         response = requests.get(url, headers=set_headers("NOTION")).json()
-        print("response\n", response)
-
         blocks = response["results"]
         block_id_list = []
         content = ""

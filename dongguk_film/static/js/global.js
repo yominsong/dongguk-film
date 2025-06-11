@@ -197,6 +197,12 @@ function adjustHrefTarget() {
 
                 params.delete("rentalLimited");
 
+                const id_edited_query = document.getElementById("id_edited_query");
+
+                if (id_edited_query !== null) {
+                    params.set("q", id_edited_query.textContent);
+                };
+
                 if ([...params].length > 0) {
                     detail.href += `?${params}`;
                 };

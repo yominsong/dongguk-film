@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 from utility.img import get_hero_img
 from utility.utils import get_permission_type_list, notion, parse_datetime
 from bs4 import BeautifulSoup
+from gksdudaovld import KoEnMapper
 import re, ast, random
+
+with open("dongguk_film/static/words_alpha.txt") as f:
+    english_words = set(line.strip().lower() for line in f)
 
 #
 # Global variables
@@ -25,6 +29,48 @@ NOTION_DB_ID = NOTION["DB_ID"]
 #
 
 
+def is_valid_english_word(word: str) -> bool:
+    return word.lower() in english_words
+
+
+def search_notice(query, notice_list):
+    search_result_list = []
+
+    for notice in notice_list:
+        searchable_text = (
+            notice.get("notice_id", "").lower().replace(" ", "")
+            + notice.get("title", "").lower().replace(" ", "")
+            + notice.get("category", "").lower().replace(" ", "")
+            + notice.get("keyword", "").lower().replace(" ", "")
+            + notice.get("listed_date", "").lower().replace(" ", "")
+            + User.objects.get(
+                pk=str(notice.get("user", "")).lower().replace(" ", "")
+            ).metadata.name
+        )
+
+        data = {"page_id": notice["page_id"]}
+
+        content = notion("retrieve", "block_children", data)[1]
+
+        content_search = remove_html_tags(content).lower().replace(" ", "")
+
+        img_key_list_search = "".join(
+            item.replace("_", "").lower() for item in notice.get("img_key_list", [])
+        )
+        file_name_search = "".join(
+            file["name"].lower().replace(" ", "").replace("_", "")
+            for file in notice.get("file", [])
+        )
+        full_searchable_text = (
+            searchable_text + img_key_list_search + file_name_search + content_search
+        )
+
+        if query in full_searchable_text:
+            search_result_list.append(notice)
+
+    return search_result_list, len(search_result_list), f"q={query}&"
+
+
 def remove_html_tags(html_string: str) -> str:
     soup = BeautifulSoup(html_string, "html.parser")
 
@@ -37,16 +83,50 @@ def remove_html_tags(html_string: str) -> str:
 
 
 def notice(request):
+    query = request.GET.get("q")
+    original_query = request.GET.get("oq")
+    params = request.GET.copy()
     query_string = ""
-    image_list = get_hero_img("notice")
+    search_result_count = 0
 
-    # Notion
-    notice_list = notion("query", "db", data={"db_name": "NOTICE"})
+    if original_query:
+        notice_list = request.GET.get("noticeList")
+    else:
+        notice_list = notion("query", "db", data={"db_name": "NOTICE"})
+        params["noticeList"] = notice_list
+        request.GET = params
+
     notice_count = len(notice_list)
 
-    # Search box
-    query = request.GET.get("q")
-    search_result_count = None
+    if query:
+        if original_query:
+            query = query.replace(" ", "")
+        else:
+            query = query.replace(" ", "").lower()
+
+        notice_list, search_result_count, query_string = search_notice(
+            query, notice_list
+        )
+
+        if search_result_count == 0:
+            if original_query:
+                params["q"] = request.GET.get("oq")
+                params["oq"] = None
+                request.GET = params
+            elif re.fullmatch(r"[가-힣ㄱ-ㅎㅏ-ㅣ]+", query):
+                ko2en_query = KoEnMapper.conv_ko2en(" ".join(query.split()))
+
+                if is_valid_english_word(ko2en_query):
+                    params["s"] = ko2en_query
+                    request.GET = params
+            elif query.isascii() and query.isalpha():
+                query = request.GET.get("q")
+                params["q"] = KoEnMapper.conv_en2ko(" ".join(query.split()))
+                params["oq"] = query
+                request.GET = params
+
+                return notice(request)
+
     default_search_placeholder_list = [
         "복학 신청",
         "희망강의 신청",
@@ -66,54 +146,12 @@ def notice(request):
         "부산국제영화제 시네필",
         "부산국제영화제",
     ]
+
     search_placeholder = (
-        random.choice(notice_list[: min(notice_count, 7)])["title"]
+        random.choice(request.GET.get("noticeList")[: min(notice_count, 7)])["title"]
         if notice_count > 0
         else random.choice(default_search_placeholder_list)
     )
-
-    if query:
-        query = query.lower().replace(" ", "")
-        search_result_list = []
-
-        for notice in notice_list:
-            searchable_text = (
-                notice.get("notice_id", "").lower().replace(" ", "")
-                + notice.get("title", "").lower().replace(" ", "")
-                + notice.get("category", "").lower().replace(" ", "")
-                + notice.get("keyword", "").lower().replace(" ", "")
-                + notice.get("listed_date", "").lower().replace(" ", "")
-                + User.objects.get(
-                    pk=str(notice.get("user", "")).lower().replace(" ", "")
-                ).metadata.name
-            )
-
-            data = {"page_id": notice["page_id"]}
-
-            content = notion("retrieve", "block_children", data)[1]
-
-            content_search = remove_html_tags(content).lower().replace(" ", "")
-
-            img_key_list_search = "".join(
-                item.replace("_", "").lower() for item in notice.get("img_key_list", [])
-            )
-            file_name_search = "".join(
-                file["name"].lower().replace(" ", "").replace("_", "")
-                for file in notice.get("file", [])
-            )
-            full_searchable_text = (
-                searchable_text
-                + img_key_list_search
-                + file_name_search
-                + content_search
-            )
-
-            if query in full_searchable_text:
-                search_result_list.append(notice)
-
-        notice_list = search_result_list
-        search_result_count = len(search_result_list)
-        query_string += f"q={query}&"
 
     # Pagination
     try:
@@ -124,12 +162,15 @@ def notice(request):
     page_value = paginator.get_page(page)
     page_range = paginator.page_range
 
+    params.pop("noticeList", None)
+    request.GET = params
+
     return render(
         request,
         "notice/notice.html",
         {
             "query_string": query_string,
-            "image_list": image_list,
+            "image_list": get_hero_img("notice"),
             "notice_count": notice_count,
             "search_result_count": search_result_count,
             "search_placeholder": search_placeholder,

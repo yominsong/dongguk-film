@@ -106,6 +106,15 @@
                     <span class="sr-only">검색</span>
                 </button>
             </div>
+            {% if request.GET.s %}
+                <p class="mt-2 -mb-1 text-sm text-gray-500">
+                    <a href="{% url 'project:project' %}?q={{ request.GET.s }}" class="underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white">{{ request.GET.s }}(으)로 검색</a>하시겠어요?
+                </p>
+            {% elif request.GET.oq %}
+                <p class="mt-2 -mb-1 text-sm text-gray-500">
+                    <span id="id_edited_query" class="font-semibold">{{ request.GET.q }}</span>{{ request.GET.q | handle_hangul:"으로로" }} 검색한 결과예요.
+                </p>
+            {% endif %}
         </div>
     </div>
     <div class="mt-6 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -202,9 +211,9 @@
                 <li class="relative flex flex-col justify-between px-4 py-5 sm:p-6">
                     <div class="flex justify-between items-center text-gray-500 text-sm font-medium">
                         {% if "?q=" in request.get_full_path or "&q=" in request.get_full_path %}
-                            검색된 프로젝트가 없어요.
+                            '{{ request.GET.q }}'에 대해 검색된 프로젝트가 없어요.
                         {% else %}
-                            등록된 프로젝트가 없어요.
+                            아직 등록된 프로젝트가 없어요.
                         {% endif %}
                     </div>
                 </li>

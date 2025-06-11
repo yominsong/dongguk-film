@@ -334,25 +334,25 @@ def validate_input_data(request):
 
     if not is_correct_url(target_url):
         status = "FAIL"
-        reason = "대상 URL 접속 불가"
+        reason = "TARGET_URL_INACCESSIBLE"
         msg = "대상 URL이 잘못 입력된 것 같아요."
         element = "id_target_url"
 
     elif not is_new_slug(id, slug):
         status = "FAIL"
-        reason = "이미 존재하는 동영링크 URL"
+        reason = "DUPLICATE_DFLINK_URL"
         msg = "앗, 이미 존재하는 동영링크 URL이에요!"
         element = "id_slug"
 
     elif not is_correct_expiration_date(expiration_date):
         status = "FAIL"
-        reason = "유효 범위를 벗어난 만료일"
+        reason = "INVALID_EXPIRATION_DATE"
         msg = "만료일이 유효 범위를 벗어난 것 같아요."
         element = "id_expiration_date"
 
     elif not is_valid(request):
         status = "FAIL"
-        reason = "허용되지 않은 입력값"
+        reason = "INVALID_INPUT_VALUE"
         msg = "뭔가 잘못 입력된 것 같아요."
         element = None
 
@@ -383,19 +383,19 @@ def moderate_input_data(request):
 
     if not is_listed(target_url) and not is_harmless(request, target_url):
         status = "FAIL"
-        reason = "유해 사이트"
+        reason = "HARMFUL_SITE"
         msg = "이 대상 URL은 현재 사용할 수 없어요."
         element = "id_target_url"
 
     elif not is_not_swearing(slug):
         status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 동영링크 URL"
+        reason = "PROFANITY_IN_URL"
         msg = "이 동영링크 URL은 사용할 수 없어요."
         element = "id_slug"
 
     elif not is_not_swearing(title):
         status = "FAIL"
-        reason = "비속어 또는 욕설로 해석될 수 있는 제목"
+        reason = "PROFANITY_IN_TITLE"
         msg = "이 제목은 사용할 수 없어요."
         element = "id_title"
 
@@ -445,7 +445,7 @@ def dflink(request):
                 status, reason, msg, element = validate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유효성 검사 실패"
+                reason = "VALIDATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -454,7 +454,7 @@ def dflink(request):
                 status, reason, msg, element = moderate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유해성 검사 실패"
+                reason = "MODERATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -467,14 +467,14 @@ def dflink(request):
 
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효성 및 유해성 검사 통과"
+                reason = None
                 msg = "동영링크가 생성되었어요! 👍"
             elif (
                 response.status_code == 409
                 and response.json()["error"] == "Link already exists"
             ):
                 status = "FAIL"
-                reason = "이미 존재하는 동영링크 URL"
+                reason = "DUPLICATE_DFLINK_URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
                 element = "id_slug"
 
@@ -501,7 +501,7 @@ def dflink(request):
                 status, reason, msg, element = validate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유효성 검사 실패"
+                reason = "VALIDATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -510,7 +510,7 @@ def dflink(request):
                 status, reason, msg, element = moderate_input_data(request)
             except:
                 status = "FAIL"
-                reason = "유해성 검사 실패"
+                reason = "MODERATION_FAILED"
                 msg = "앗, 새로고침 후 다시 한 번 시도해주세요!"
                 element = None
 
@@ -523,7 +523,7 @@ def dflink(request):
 
             if response.status_code == 200:
                 status = "DONE"
-                reason = "유효성 및 유해성 검사 통과"
+                reason = None
                 msg = "동영링크가 수정되었어요! 👍"
             elif (
                 response.status_code == 400
@@ -531,7 +531,7 @@ def dflink(request):
                 == "Update failed, link with this path already exists"
             ):
                 status = "FAIL"
-                reason = "이미 존재하는 동영링크 URL"
+                reason = "DUPLICATE_DFLINK_URL"
                 msg = "앗, 이미 존재하는 동영링크 URL이에요!"
                 element = "id_slug"
 

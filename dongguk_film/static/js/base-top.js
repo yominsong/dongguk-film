@@ -930,9 +930,9 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update, "descr");
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
 
-            if (response.reason.includes("대체 텍스트")) {
+            if (response.reason.includes("ALT_TEXT")) {
                 displayNoti(true, "IMAGE_ALT_TEXT_REQUIRED");
-            } else if (response.reason.includes("텍스트 미포함")) {
+            } else if (response.reason.includes("TEXT_CONTENT")) {
                 displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
             };
         };
@@ -974,9 +974,9 @@ function handleAjaxCallback(response) {
             displayButtonMsg(false, id_create_or_update, "descr");
             displayButtonMsg(true, id_create_or_update, "error", response.msg);
 
-            if (response.reason.includes("대체 텍스트")) {
+            if (response.reason.includes("ALT_TEXT")) {
                 displayNoti(true, "IMAGE_ALT_TEXT_REQUIRED");
-            } else if (response.reason.includes("설명 텍스트")) {
+            } else if (response.reason.includes("TEXT_CONTENT")) {
                 displayNoti(true, "IMAGE_DESCRIPTION_TEXT_REQUIRED");
             };
         };
