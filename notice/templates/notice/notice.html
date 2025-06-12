@@ -113,11 +113,11 @@
             </div>
             {% if request.GET.s %}
                 <p class="mt-2 -mb-1 text-sm text-gray-500">
-                    <a href="{% url 'notice:notice' %}?q={{ request.GET.s }}" class="underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white">{{ request.GET.s }}(으)로 검색</a>하시겠어요?
+                    <a id="id_suggested_query" href="{% url 'notice:notice' %}?q={{ request.GET.s }}" class="underline rounded-md hover:text-gray-700 focus:outline-none focus:df-focus-ring-offset-white">{{ request.GET.s }}(으)로 검색</a>하시겠어요?
                 </p>
             {% elif request.GET.oq %}
                 <p class="mt-2 -mb-1 text-sm text-gray-500">
-                    <span id="id_edited_query" class="font-semibold">{{ request.GET.q }}</span>{{ request.GET.q | handle_hangul:"으로로" }} 검색한 결과예요.
+                    <span id="id_corrected_query" class="font-semibold">{{ request.GET.q }}</span>{{ request.GET.q | handle_hangul:"으로로" }} 검색한 결과예요.
                 </p>
             {% endif %}
         </div>

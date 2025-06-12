@@ -145,6 +145,17 @@ function initSearchBar() {
                 id_submit_query.disabled = true;
             };
         });
+
+        const id_suggested_query = document.getElementById("id_suggested_query");
+
+        if (id_suggested_query !== null) {
+            id_suggested_query.addEventListener(type, event => {
+                if (type === "click" || event.key === "Enter" || event.key === " ") {
+                    freezeForm(true);
+                    console.log("clicked");
+                };
+            });
+        };        
     });
 
     if (urlParams.has("q")) {
@@ -197,10 +208,10 @@ function adjustHrefTarget() {
 
                 params.delete("rentalLimited");
 
-                const id_edited_query = document.getElementById("id_edited_query");
+                const id_corrected_query = document.getElementById("id_corrected_query");
 
-                if (id_edited_query !== null) {
-                    params.set("q", id_edited_query.textContent);
+                if (id_corrected_query !== null) {
+                    params.set("q", id_corrected_query.textContent);
                 };
 
                 if ([...params].length > 0) {
