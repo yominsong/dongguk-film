@@ -37,17 +37,22 @@ def search_notice(query, notice_list):
     search_result_list = []
 
     for notice in notice_list:
+        try:
+            user_name = User.objects.get(
+                pk=str(notice.get("user", "")).lower().replace(" ", "")
+            ).metadata.name
+        except User.DoesNotExist:
+            user_name = ""
+
         searchable_text = (
             notice.get("notice_id", "").lower().replace(" ", "")
             + notice.get("title", "").lower().replace(" ", "")
             + notice.get("category", "").lower().replace(" ", "")
             + notice.get("keyword", "").lower().replace(" ", "")
             + notice.get("listed_date", "").lower().replace(" ", "")
-            + User.objects.get(
-                pk=str(notice.get("user", "")).lower().replace(" ", "")
-            ).metadata.name
+            + user_name
         )
-
+        
         data = {"page_id": notice["page_id"]}
 
         content = notion("retrieve", "block_children", data)[1]
